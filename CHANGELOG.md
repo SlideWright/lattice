@@ -290,6 +290,14 @@ in patch versions.
 
 ### Changed
 
+- **Per-component gallery goldens refreshed to match current rendering (#569).** The committed
+  `lib/components/**/*.gallery.{light,dark}.pdf` catalog snapshots had drifted from what the engine
+  actually renders — accumulated staleness from CSS/engine changes that shipped without a gallery
+  rebuild (chiefly the chart-family masthead lift, which moved titles from centred to a left-aligned
+  masthead band, plus the Form cell-tree spacing). A full `npm run build:galleries` re-render moved
+  **772 slides across 98 gallery·moods**, reviewed per-slide against the prior goldens
+  (`tools/golden-diff.mjs` before │ after │ overlay montages). No engine behaviour changed — this
+  catches the committed artifacts up to already-shipped rendering.
 - **`logo-wall` marks are now token-coloured silhouettes — palette-driven, theme/mode-adaptive,
   AA on any ground.** A mark was a desaturated `<img>` (a CSS `filter` grey that couldn't follow
   the palette and fell below AA on a dark canvas). The new `logo-marks` transformer
