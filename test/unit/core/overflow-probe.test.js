@@ -87,13 +87,13 @@ describe('overflow-probe', () => {
     assert.equal(r.scrollH, 700 + 200);
   });
 
-  test('a CENTRED cell whose scrollHeight under-reports is caught via child layout boxes', () => {
+  test('a CENTERED cell whose scrollHeight under-reports is caught via child layout boxes', () => {
     // The blind spot: `justify-content:center` content that overflows spills off BOTH
     // edges; scrollHeight counts only the bottom half (here +6, under TOL), so the
     // legacy test reads clean while the head is clipped. The child-box spill (60 above
     // + 60 below the cell box) reveals the true 120px overflow.
     const r0 = { width: 1280, height: 360 };
-    const centred = {
+    const centered = {
       scrollHeight: 706, clientHeight: 700, scrollWidth: 1280, clientWidth: 1280,
       getBoundingClientRect: () => ({ top: 100, bottom: 800, left: 0, right: 1280 }),
       children: [
@@ -101,14 +101,14 @@ describe('overflow-probe', () => {
         { getBoundingClientRect: () => ({ top: 400, bottom: 860, left: 0, right: 1280, ...r0 }) },   // spills 60 below
       ],
     };
-    const s = fakeSection({ scrollHeight: 700, clientHeight: 700, clientWidth: 1280, cells: [centred] });
+    const s = fakeSection({ scrollHeight: 700, clientHeight: 700, clientWidth: 1280, cells: [centered] });
     const r = probeSectionOverflow(s, CLIP_CELL_SELECTOR, TOL);
-    assert.equal(r.over, true, 'centred overflow must be detected');
+    assert.equal(r.over, true, 'centered overflow must be detected');
     assert.equal(r.vOver, true);
     assert.equal(r.scrollH, 700 + 120, 'effective extent folds in the true 120px spill');
   });
 
-  test('a CENTRED cell that genuinely fits (children within the box) → no overflow', () => {
+  test('a CENTERED cell that genuinely fits (children within the box) → no overflow', () => {
     const fits = {
       scrollHeight: 700, clientHeight: 700, scrollWidth: 1280, clientWidth: 1280,
       getBoundingClientRect: () => ({ top: 100, bottom: 800, left: 0, right: 1280 }),
@@ -119,6 +119,34 @@ describe('overflow-probe', () => {
     };
     const s = fakeSection({ scrollHeight: 700, clientHeight: 700, clientWidth: 1280, cells: [fits] });
     assert.equal(probeSectionOverflow(s, CLIP_CELL_SELECTOR, TOL).over, false);
+  });
+
+  test('an OUT-OF-FLOW child (position:absolute) that spills is NOT counted — placement, not overflow', () => {
+    // The #198 4K false-positive: a full-width <footer> docked INSIDE a half-width
+    // `.panel-right` is position:absolute, so its layout box sits ~a panel-width to the
+    // left of the cell — counting it as content spill tripped the ring on a clean slide.
+    // The probe consults getComputedStyle (browser-only) to skip out-of-flow children.
+    const prevGCS = global.getComputedStyle;
+    global.getComputedStyle = (el) => ({ position: el._position || 'static' });
+    try {
+      const cell = {
+        scrollHeight: 700, clientHeight: 700, scrollWidth: 1280, clientWidth: 1280,
+        getBoundingClientRect: () => ({ top: 0, bottom: 700, left: 0, right: 1280 }),
+        children: [
+          // absolutely-positioned footer spilling 600px LEFT — must be ignored
+          { _position: 'absolute', getBoundingClientRect: () => ({ top: 650, bottom: 690, left: -600, right: 1280, width: 1880, height: 40 }) },
+          // the real in-flow body, fits cleanly
+          { getBoundingClientRect: () => ({ top: 10, bottom: 690, left: 0, right: 1280, width: 1280, height: 680 }) },
+        ],
+      };
+      const s = fakeSection({ scrollHeight: 700, clientHeight: 700, clientWidth: 1280, cells: [cell] });
+      assert.equal(probeSectionOverflow(s, CLIP_CELL_SELECTOR, TOL).over, false, 'absolute child must not trip the ring');
+      // …but a STATIC (in-flow) child spilling the same amount IS still caught.
+      cell.children[0]._position = 'static';
+      assert.equal(probeSectionOverflow(s, CLIP_CELL_SELECTOR, TOL).over, true, 'in-flow spill still caught');
+    } finally {
+      global.getComputedStyle = prevGCS;
+    }
   });
 
   test('CLIP_CELL_SELECTOR names the current bounded content cells', () => {
