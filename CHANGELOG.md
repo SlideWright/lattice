@@ -138,6 +138,14 @@ in patch versions.
     prose is skipped, not stalled). Built on a new `onFinish` signal on
     `useReadAloud` that fires only on a natural end (not a manual stop or slide nav);
     mutually exclusive with Rehearse.
+  - **Chrome & toolbar polish (mobile).** The two panel toggles now carry distinct,
+    meaningful icons (Architect vs Deck inspector) instead of two identical panel
+    glyphs; the top-bar and editor-header buttons (Present / Share / Insert / Fix all)
+    collapse to **icon-only** below desktop so a phone row doesn't crowd; the user
+    avatar holds a fixed **circle** (no more squish); the slide-rail reorder arrows
+    use unambiguous move-to-position icons (they reorder, they don't navigate); and
+    **deleting a slide now confirms** — the first tap arms the button, a second
+    within 3s deletes (it disarms on its own and on slide change).
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /
