@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { applyEdit, diffLines, EDIT_PROTOCOL, numberSlides, parseEdits } from '@/playground/architect-edits.js';
+import { buildRefinePrompt, cleanRewrite, REFINE_ACTIONS } from '@/playground/drawing-board-refine.js';
 import { budgetStatus, readBudgetCap, readBudgetMode, readSpend, recordSpend } from '@/playground/drawing-board-settings.js';
+
+// Re-export the canonical refine action list (Polish / Formalize / Elaborate /
+// Shorten) so the Studio's UI menu and the Drawing Board read from one source.
+export { REFINE_ACTIONS };
+export type RefineActionId = 'polish' | 'formalize' | 'elaborate' | 'shorten';
 
 // Studio Architect — the HONEST AI layer. It wraps the production architect model
 // (architect-model.js: OpenRouter cloud → in-browser tiers → deterministic floor)
@@ -85,6 +91,45 @@ export async function runArchitect(source: string, instruction: string): Promise
 	let next = source;
 	for (const e of [...edits].sort((a, b) => b.slide - a.slide)) next = applyEdit(next, e);
 	return { status: 'applied', source: next, applied: edits.length, note: text || `Applied ${edits.length} edit${edits.length > 1 ? 's' : ''}.` };
+}
+
+export type RefineOutcome =
+	| { status: 'ok'; text: string }
+	| { status: 'nochange' }
+	| { status: 'offline' }
+	| { status: 'blocked'; note: string };
+
+/**
+ * Refine a SELECTION of prose with the model (Polish / Formalize / Elaborate /
+ * Shorten). Reuses the Drawing Board's pure refine kernel (`buildRefinePrompt` +
+ * `cleanRewrite`) — the system brief forbids inventing facts or breaking markdown
+ * and asks for ONLY the rewritten text back, so the result applies verbatim. The
+ * model PROPOSES; the caller APPLIES it as one undoable editor transaction.
+ * Honest like the rest: `offline` with no model, `blocked` at the budget cap,
+ * `nochange` when the rewrite is empty or identical — never a fabricated edit.
+ */
+export async function refineSelection(action: RefineActionId, text: string): Promise<RefineOutcome> {
+	if (!text.trim()) return { status: 'nochange' };
+	const model = await architectModel();
+	if (!model) return { status: 'offline' };
+	const generation = model.availability().generation;
+	if (generation === 'floor') return { status: 'offline' };
+	if (generation === 'openrouter' && architectSpend().status.blocked) {
+		return { status: 'blocked', note: 'Budget cap reached — raise it in Workspace → Spend, or switch tier.' };
+	}
+	let out = '';
+	try {
+		out = await model.complete({
+			messages: buildRefinePrompt(action, text),
+			fallback: text,
+			onUsage: (u) => recordSpend(u?.cost ?? 0, u?.total_tokens ?? (u?.prompt_tokens || 0) + (u?.completion_tokens || 0)),
+		});
+	} catch {
+		return { status: 'offline' };
+	}
+	const next = cleanRewrite(out, text);
+	if (!next || next === text) return { status: 'nochange' };
+	return { status: 'ok', text: next };
 }
 
 export type ChatTurn = { role: 'user' | 'assistant'; content: string };

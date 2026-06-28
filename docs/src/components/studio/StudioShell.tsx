@@ -13,7 +13,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
 import { ArchitectChat } from './ArchitectChat';
-import { resumePendingAuth, runArchitect, useArchitectStatus } from './architect';
+import { REFINE_ACTIONS, type RefineActionId, refineSelection, resumePendingAuth, runArchitect, useArchitectStatus } from './architect';
 import { CommandPalette } from './CommandPalette';
 import { listStudioComponents, type StudioComponent } from './component-library';
 import { addSlideAfter, deleteSlide, duplicateSlide, moveSlide, replaceSlide } from './deck-ops';
@@ -341,6 +341,8 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	// ── Architect (AI) ───────────────────────────────────────────────────────
 	const ai = useArchitectStatus();
 	const [aiBusy, setAiBusy] = React.useState<string | null>(null);
+	const [hasSelection, setHasSelection] = React.useState(false);
+	const [refineBusy, setRefineBusy] = React.useState(false);
 	// On return from the OpenRouter OAuth redirect (?code=), finish the exchange.
 	React.useEffect(() => {
 		resumePendingAuth().then((ok) => {
@@ -378,6 +380,43 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			}
 		},
 		[aiBusy, source, notify, deck.id],
+	);
+
+	// Refine the editor SELECTION with the model (Polish/Formalize/Elaborate/
+	// Shorten). Checkpoints the pre-edit deck, applies the rewrite as one undoable
+	// editor transaction, and degrades honestly with no model / at the budget cap.
+	const refine = React.useCallback(
+		async (action: RefineActionId, label: string) => {
+			if (refineBusy) return;
+			const sel = editorRef.current?.getSelection();
+			if (!sel || sel.empty || !sel.text.trim()) {
+				notify('Select some text in the editor to refine first.');
+				return;
+			}
+			setRefineBusy(true);
+			notify(`${label}…`);
+			try {
+				const out = await refineSelection(action, sel.text);
+				if (out.status === 'offline') {
+					notify('Connect a model in Workspace → AI model to refine a selection.');
+					setWorkspaceOpen(true);
+				} else if (out.status === 'blocked') {
+					notify(out.note);
+					setWorkspaceOpen(true);
+				} else if (out.status === 'nochange') {
+					notify('No change — the selection already reads well.');
+				} else {
+					setCheckpoints(saveCheckpoint(deck.id, source, `Before ${label}`, Date.now()));
+					editorRef.current?.replaceSelection(out.text);
+					notify(`${label} applied — ⌘Z or restore from History to undo.`);
+				}
+			} catch {
+				notify(`${label} failed — try again.`);
+			} finally {
+				setRefineBusy(false);
+			}
+		},
+		[refineBusy, source, notify, deck.id],
 	);
 
 	// ⌘K
@@ -590,11 +629,33 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				Edit
 				<span className="flex-1" />
 				{issues > 0 && <span className="inline-flex items-center gap-1 rounded-full border border-[color-mix(in_srgb,var(--chart-2,#9c3f00)_35%,transparent)] bg-[color-mix(in_srgb,var(--chart-2,#9c3f00)_8%,transparent)] px-2 py-0.5 font-sans text-[11px] font-semibold normal-case tracking-normal text-[var(--chart-2,#9c3f00)]"><AlertTriangle className="size-3" />{issues} issue{issues > 1 ? 's' : ''}</span>}
+				{hasSelection && (
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<button type="button" disabled={refineBusy} className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] hover:bg-[var(--accent-soft)] disabled:opacity-40" aria-label="Refine selection"><Wand2 className="size-3" />Refine</button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end" className="w-60">
+							{ai.ready ? (
+								<>
+									<DropdownMenuLabel>Refine selection with AI</DropdownMenuLabel>
+									{(REFINE_ACTIONS as { id: RefineActionId; label: string; hint: string }[]).map((a) => (
+										<DropdownMenuItem key={a.id} onSelect={() => refine(a.id, a.label)} className="flex items-baseline gap-2">
+											<span className="font-semibold text-foreground">{a.label}</span>
+											<span className="ml-auto truncate font-sans text-[11px] normal-case tracking-normal text-muted-foreground">{a.hint}</span>
+										</DropdownMenuItem>
+									))}
+								</>
+							) : (
+								<DropdownMenuItem onSelect={() => setWorkspaceOpen(true)} className="gap-2"><Sparkles className="size-3.5 text-[var(--accent)]" />Connect a model to refine →</DropdownMenuItem>
+							)}
+						</DropdownMenuContent>
+					</DropdownMenu>
+				)}
 				{insertComponents.length > 0 && <button type="button" onClick={() => setInsertOpen(true)} className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] hover:bg-[var(--accent-soft)]"><Plus className="size-3" />Insert</button>}
 				<button type="button" onClick={() => editorRef.current?.fixAll()} className="rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] disabled:opacity-40" disabled={!issues}>Fix all</button>
 				<span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-foreground"><FileText className="size-3" />Markdown</span>
 			</div>
-			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? knownWithLocal : NO_KNOWN} completionComponents={insertComponents} lintVocab={lintVocab} extraComponentNames={localNames} onCursorSlide={onEditorCursorSlide} className="flex-1" />
+			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? knownWithLocal : NO_KNOWN} completionComponents={insertComponents} lintVocab={lintVocab} extraComponentNames={localNames} onCursorSlide={onEditorCursorSlide} onSelectionChange={setHasSelection} className="flex-1" />
 		</section>
 	);
 

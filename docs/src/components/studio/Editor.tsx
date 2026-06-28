@@ -90,7 +90,16 @@ function makeLinter(known: Set<string>) {
 	});
 }
 
-export type EditorHandle = { fixAll: () => void; revealSlide: (index: number) => void };
+export type EditorSelection = { empty: boolean; text: string; from: number; to: number };
+export type EditorHandle = {
+	fixAll: () => void;
+	revealSlide: (index: number) => void;
+	/** The current primary selection (text + range). `empty` when nothing is selected. */
+	getSelection: () => EditorSelection;
+	/** Replace the current selection with `text` as one undoable transaction, then
+	 *  re-select the inserted run so a follow-up refine stacks on the same span. */
+	replaceSelection: (text: string) => void;
+};
 
 export const Editor = React.forwardRef<EditorHandle, {
 	value: string;
@@ -108,14 +117,19 @@ export const Editor = React.forwardRef<EditorHandle, {
 	extraComponentNames?: string[];
 	/** Fired when the cursor crosses into a different slide — drives the preview. */
 	onCursorSlide?: (index: number) => void;
+	/** Fired when the selection emptiness changes — gates the Refine control. */
+	onSelectionChange?: (hasSelection: boolean) => void;
 	className?: string;
-}>(function Editor({ value, onChange, knownComponents = [], completionComponents = [], lintVocab, extraComponentNames, onCursorSlide, className }, ref) {
+}>(function Editor({ value, onChange, knownComponents = [], completionComponents = [], lintVocab, extraComponentNames, onCursorSlide, onSelectionChange, className }, ref) {
 	const hostRef = React.useRef<HTMLDivElement>(null);
 	const viewRef = React.useRef<EditorView | null>(null);
 	const onChangeRef = React.useRef(onChange);
 	onChangeRef.current = onChange;
 	const onCursorSlideRef = React.useRef(onCursorSlide);
 	onCursorSlideRef.current = onCursorSlide;
+	const onSelectionChangeRef = React.useRef(onSelectionChange);
+	onSelectionChangeRef.current = onSelectionChange;
+	const lastHasSelRef = React.useRef(false);
 	const lastSlideRef = React.useRef(-1);
 	const [failed, setFailed] = React.useState(false);
 	const known = React.useMemo(() => new Set(knownComponents), [knownComponents]);
@@ -169,6 +183,22 @@ export const Editor = React.forwardRef<EditorHandle, {
 			lastSlideRef.current = index;
 			v.dispatch({ selection: { anchor: pos }, scrollIntoView: true });
 		},
+		getSelection(): EditorSelection {
+			const v = viewRef.current;
+			if (!v) return { empty: true, text: '', from: 0, to: 0 };
+			const r = v.state.selection.main;
+			return { empty: r.empty, text: v.state.sliceDoc(r.from, r.to), from: r.from, to: r.to };
+		},
+		replaceSelection(text: string) {
+			const v = viewRef.current;
+			if (!v) return;
+			const r = v.state.selection.main;
+			if (r.empty) return;
+			// One undoable transaction; re-select the inserted run so a follow-up refine
+			// (or ⌘Z) acts on the same span the author was working.
+			v.dispatch({ changes: { from: r.from, to: r.to, insert: text }, selection: { anchor: r.from, head: r.from + text.length } });
+			v.focus();
+		},
 	}));
 
 	// Single init (StrictMode-safe): construct once, never on every render. `value`
@@ -221,6 +251,12 @@ export const Editor = React.forwardRef<EditorHandle, {
 									if (idx !== lastSlideRef.current) {
 										lastSlideRef.current = idx;
 										onCursorSlideRef.current?.(idx);
+									}
+									// Emit selection emptiness transitions only (gates the Refine control).
+									const hasSel = !u.state.selection.main.empty;
+									if (hasSel !== lastHasSelRef.current) {
+										lastHasSelRef.current = hasSel;
+										onSelectionChangeRef.current?.(hasSel);
 									}
 								}
 						}),

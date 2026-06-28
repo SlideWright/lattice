@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { architectSpend, runArchitect, setBudget } from './architect';
+import { architectSpend, refineSelection, runArchitect, setBudget } from './architect';
 import { suggestFor } from './Editor';
 
 afterEach(() => {
@@ -43,6 +43,19 @@ describe('runArchitect — honest offline degradation', () => {
 		// architect must NOT fabricate an edit; it reports offline so the UI can
 		// point the author at Workspace instead of faking a change.
 		const out = await runArchitect('<!-- _class: title -->\n\n# Hello', 'Rewrite slide 1.');
+		expect(out.status).toBe('offline');
+	});
+});
+
+describe('refineSelection — honest selection refine', () => {
+	it('returns `nochange` for empty/whitespace text without touching the model', async () => {
+		expect((await refineSelection('polish', '')).status).toBe('nochange');
+		expect((await refineSelection('shorten', '   \n  ')).status).toBe('nochange');
+	});
+	it('returns `offline` with no model connected (the floor) — never a fabricated rewrite', async () => {
+		// Same honesty contract as runArchitect: no model → no rewrite, just a
+		// signal the UI can act on (point at Workspace), not a faked change.
+		const out = await refineSelection('polish', 'Tighten this sentence please.');
 		expect(out.status).toBe('offline');
 	});
 });
