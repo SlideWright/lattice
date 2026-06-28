@@ -167,6 +167,35 @@ happened." Each cause-effect test names an **oracle** — what proves the effect
   the one present (per the Quality Bar's tight-space rule), not merely that *a*
   control rendered.
 
+### Watching a run — headed, UI mode, trace, video (RPA-style observability)
+
+A frequent ask: "can I watch it click through the UI, like an RPA bot?" Yes —
+and the suite is configured so that watchability is the default, not an
+afterthought. Four modes, in rough order of how interactive they are:
+
+- **Headed + `slowMo`** (`headless: false`, `launchOptions.slowMo`) — a real
+  browser window with a deliberate pause per action, so the clicks/typing/tab-
+  switches are eye-followable in real time. The literal "watch the bot work" view.
+- **UI mode** (`npx playwright test --ui`) — interactive runner: pick a test,
+  play it, and **time-travel** through every step with a live DOM snapshot at each.
+- **Codegen** (`npx playwright codegen <url>`) — the RPA *recorder*: click the
+  real site by hand and it writes the script. Useful for drafting a new flow.
+- **Trace + video artifacts** (`trace: 'on'`, `video: 'on'`) — every run saves a
+  scrubable trace (filmstrip + before/after screenshots + DOM/network/console)
+  and an `.mp4`. This is the same trace the §3 nightly relies on to make a 3am
+  failure reproducible — so we get the watchable record *for free* on every run.
+
+**Remote-sandbox caveat (this matters here).** Headed mode opens a window on the
+machine *running* the test — in the cloud sandbox that's the container, with no
+display a human can see. So the two practical paths are: **(a)** run the suite
+locally for live headed/UI poking, or **(b)** in the sandbox/CI, run headless
+with `trace`+`video` **on by default** and review the artifacts after the fact
+(`SendUserFile` the `.mp4`/trace). The scaffold (PR A) therefore enables
+`trace`+`video` by default precisely so the watchable record exists everywhere,
+not just on a developer's local machine. (Boundary: Playwright drives browsers —
+and the Tauri wrapper's webview content — but not native desktop chrome, unlike a
+general desktop RPA tool. For our web surfaces that boundary doesn't bite.)
+
 ## Out of scope (explicit)
 
 - **Slide/PDF visual regression** stays on `golden-diff`/screenshot. Playwright
@@ -199,7 +228,9 @@ independently-shippable feature that builds/tests against `main` alone:
   `check-preview-render.mjs` flow to Playwright and prove it green against the
   parity criterion; broaden to the core interaction + cause-effect flows
   (palette re-theme, nav, edit→preview) with their oracles and visual snapshots
-  + baseline contract; retire docs `puppeteer-core` → two stacks.
+  + baseline contract; enable `trace`+`video` by default (§"Watching a run") so
+  the watchable record exists in the sandbox/CI, not just locally; retire docs
+  `puppeteer-core` → two stacks.
 - **PR B (phases 3+4) — perf class split + re-tier.** Wire the deterministic
   bundle-size delta as a PR-blocking gate; add the Playwright E2E nightly
   workflow (issue-on-red) and the observational engine-`bench` nightly; confirm
