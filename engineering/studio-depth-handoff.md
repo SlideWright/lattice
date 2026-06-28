@@ -128,8 +128,16 @@ its own commit. Rough order by value.
      `@theme <name>` must equal the record name (slug of the label) or the engine
      registers the theme under the CSS name while the deck renders by record name
      → a blank, unthemed render. Re-serialize at save with the slug name.
-   - **TODO — Component/Layout Studio** (still a density radio): reuse
-     `component-studio.js` + `layout-core.generated.js`.
+   - **DONE — Component/Layout Studio** (branch
+     `claude/studio-depth-layout-studio`): the Layout tab is now a real local-
+     component authoring surface (`LayoutStudio.tsx`) — name a `.<name>`-scoped
+     component, write CSS + skeleton, see the live deterministic gate
+     (`layout-core.generated.js` `gateCss`/`skeletonInvokes`: no-hex, scope-leak,
+     skeleton-invokes), preview it live (new `extraCss` hook on
+     `single-slide-render.ts`/`DeckPreview`), and save to the shared library
+     (`component-library.ts` over `asset-store` + `componentAsset`). Insert a
+     saved local component into the deck (the InsertComponent palette) is the
+     remaining follow-on.
 3. **Settings: model picker + voice/weight management.** Reuse
    `architect-model.js` `listOpenRouterModels()`/`setOpenRouterModel()` and
    `voice-model.js` (`createVoiceModel().availability()`, Kokoro summon/download,

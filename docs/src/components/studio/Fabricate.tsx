@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 // repaired), auditBoth → live WCAG report, serializeTheme → a real themes/*.css.
 import { auditBoth, deriveTheme, STARTERS, serializeTheme, validateEssentials } from '@/playground/theme-core.generated.js';
 import { downloadText } from './download';
+import { LayoutStudio } from './LayoutStudio';
 import { saveStudioTheme, slugify } from './theme-library';
 
 // You pick ALL TEN essentials — the same set the engine derivation + the
@@ -29,7 +30,6 @@ const ESSENTIALS: { key: EssKey; label: string; group: string }[] = [
 	{ key: 'fail', label: 'Error', group: 'Signals' },
 ];
 const GROUPS = ['Surfaces', 'Ink', 'Brand', 'Signals'];
-const DENSITIES = ['Comfortable', 'Compact', 'Spacious'];
 const SPECIMEN = '<!-- _class: kpi -->\n\n`Theme · live specimen`\n\n## Your theme, derived & audited\n\n1. 100\n   - Tokens derived\n2. AA\n   - Contrast floor\n3. 10\n   - Colors you picked';
 
 const hash = (s: string) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -41,7 +41,6 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 	const [core, setCore] = React.useState<Record<EssKey, string>>(() => ({ ...(STARTERS[0].essentials as Record<EssKey, string>) }));
 	const [label, setLabel] = React.useState('Laguna Pro');
 	const [specimenMode, setSpecimenMode] = React.useState<'light' | 'dark'>('light');
-	const [density, setDensity] = React.useState('Comfortable');
 	const [saving, setSaving] = React.useState(false);
 	const accent = core.accent;
 	const setHex = (key: EssKey, hex: string) => setCore((c) => ({ ...c, [key]: hex }));
@@ -104,21 +103,31 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 			<div className="flex h-[50px] shrink-0 items-center gap-2 border-b border-border bg-card px-3 sm:gap-3 sm:px-4">
 				<button type="button" onClick={onClose} className="shrink-0 rounded-md p-1 text-muted-foreground hover:text-foreground" aria-label="Back to Compose"><X className="size-4" /></button>
 				<span className="size-2 shrink-0 rounded-full" style={{ background: accent }} />
-				<input value={label} onChange={(e) => setLabel(e.target.value)} aria-label="Theme name" spellCheck={false} className="min-w-0 max-w-[180px] flex-shrink rounded-md border border-transparent bg-transparent px-1 py-0.5 text-sm font-semibold text-[var(--text-heading)] outline-none hover:border-border focus:border-[var(--accent)]" />
-				<span className="hidden font-mono text-[11px] text-muted-foreground sm:inline">draft theme</span>
+				{tab === 'theme' ? (
+					<>
+						<input value={label} onChange={(e) => setLabel(e.target.value)} aria-label="Theme name" spellCheck={false} className="min-w-0 max-w-[180px] flex-shrink rounded-md border border-transparent bg-transparent px-1 py-0.5 text-sm font-semibold text-[var(--text-heading)] outline-none hover:border-border focus:border-[var(--accent)]" />
+						<span className="hidden font-mono text-[11px] text-muted-foreground sm:inline">draft theme</span>
+					</>
+				) : (
+					<span className="truncate text-sm font-semibold text-[var(--text-heading)]">Layout Studio</span>
+				)}
 				<div className="ml-1 inline-flex shrink-0 rounded-[10px] border border-border bg-background p-[3px] sm:ml-3">
 					<button type="button" onClick={() => setTab('theme')} aria-pressed={tab === 'theme'} className={cn('inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[13px] font-semibold sm:px-3', tab === 'theme' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Palette className="size-3.5" />Theme</button>
 					<button type="button" onClick={() => setTab('layout')} aria-pressed={tab === 'layout'} className={cn('inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[13px] font-semibold sm:px-3', tab === 'layout' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><LayoutGrid className="size-3.5" />Layout</button>
 				</div>
 				<div className="flex-1" />
-				<Button variant="outline" size="sm" className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={() => { downloadText(`${fileSlug}.css`, derived.css || '/* theme */', 'text/css'); notify(`Exported ${fileSlug}.css — a real theme token set.`); }}><Download className="size-4" /><span className="hidden sm:inline">Export theme</span></Button>
-				<Button size="sm" disabled={saving || !derived.css} className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={saveToLibrary}><Check className="size-4" /><span className="hidden sm:inline">{saving ? 'Saving…' : 'Save to library'}</span></Button>
+				{tab === 'theme' && (
+					<>
+						<Button variant="outline" size="sm" className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={() => { downloadText(`${fileSlug}.css`, derived.css || '/* theme */', 'text/css'); notify(`Exported ${fileSlug}.css — a real theme token set.`); }}><Download className="size-4" /><span className="hidden sm:inline">Export theme</span></Button>
+						<Button size="sm" disabled={saving || !derived.css} className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={saveToLibrary}><Check className="size-4" /><span className="hidden sm:inline">{saving ? 'Saving…' : 'Save to library'}</span></Button>
+					</>
+				)}
 			</div>
 
+			{tab === 'theme' ? (
 			<div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:grid md:overflow-hidden md:[grid-template-columns:340px_1fr]">
 				<aside className="shrink-0 border-b border-border md:overflow-y-auto md:border-r md:border-b-0">
-					<div className="border-b border-border px-4 py-3.5 font-mono text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{tab === 'theme' ? 'Theme Studio' : 'Layout Studio'}</div>
-					{tab === 'theme' ? (
+					<div className="border-b border-border px-4 py-3.5 font-mono text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Theme Studio</div>
 						<>
 							<Section icon={<Sparkles className="size-3.5" />} label="Start from a curated palette">
 								<div className="flex flex-wrap gap-2">
@@ -172,16 +181,6 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 								})}
 							</Section>
 						</>
-					) : (
-						<Section icon={<LayoutGrid className="size-3.5" />} label="Density — how the layouts breathe" last>
-							{DENSITIES.map((d) => (
-								<button type="button" key={d} onClick={() => { setDensity(d); notify(`Layout density → ${d}.`); }} aria-pressed={density === d} className={cn('my-1.5 flex w-full items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left', density === d ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-border hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]')}>
-									<span className="text-[13px] font-semibold text-[var(--text-heading)]">{d}</span>
-									<span className={cn('ml-auto size-[16px] rounded-full border-2', density === d ? 'border-[var(--accent)] bg-[var(--accent)]' : 'border-border')} />
-								</button>
-							))}
-						</Section>
-					)}
 				</aside>
 				<div className="flex flex-col items-center gap-4 bg-card p-4 md:overflow-y-auto md:p-7">
 					<div className="flex w-full max-w-[620px] items-center justify-between gap-3">
@@ -197,6 +196,9 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 					<DeckPreview options={options} sample={SPECIMEN} mermaid={false} paletteOverride={derived.name} extraTheme={derived.css ? { name: derived.name, css: derived.css } : undefined} modeOverride={specimenMode} className="relative aspect-video w-full max-w-[620px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Theme specimen" />
 				</div>
 			</div>
+			) : (
+				<LayoutStudio options={options} notify={notify} onSaved={onSaved} />
+			)}
 		</div>
 	);
 }

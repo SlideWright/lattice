@@ -185,13 +185,14 @@ describe('Studio — Fabricate + Present dock respond', () => {
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
 		await user.click(await screen.findByText('Fabricate'));
 		expect(await screen.findByText('Theme Studio')).toBeInTheDocument();
-		// Switch to the Layout tab — its density panel appears, the theme studio leaves.
-		await user.click(screen.getByRole('button', { name: /Layout/ }));
-		expect(await screen.findByText(/Density/)).toBeInTheDocument();
-		expect(screen.queryByText('Theme Studio')).not.toBeInTheDocument();
-		// Export theme confirms via toast.
+		// Export theme (theme tab) confirms via toast.
 		await user.click(screen.getByRole('button', { name: /Export theme/ }));
 		expect(await screen.findByText(/Exported/)).toBeInTheDocument();
+		// Switch to the Layout tab — the REAL component studio appears (name + live
+		// gate), the theme studio leaves.
+		await user.click(screen.getByRole('button', { name: /Layout/ }));
+		expect(await screen.findByLabelText('Component name')).toBeInTheDocument();
+		expect(screen.queryByText('Theme Studio')).not.toBeInTheDocument();
 	});
 
 	it('Fabricate derives a REAL token contract + WCAG audit from the engine', async () => {
