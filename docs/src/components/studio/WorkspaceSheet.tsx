@@ -2,7 +2,7 @@ import { Check, Cloud, FolderTree, MessageSquareText, Plug, Sparkles, Wallet, Za
 import * as React from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import { architectSpend, connectOpenRouter, disconnectOpenRouter, useArchitectStatus } from './architect';
+import { architectSpend, connectOpenRouter, disconnectOpenRouter, setBudget, useArchitectStatus } from './architect';
 
 // Workspace Settings — "your setup" (plan §4.2), distinct from the deck Inspector's
 // "this deck". Honest now: the AI-model + Cloud + Spend tabs read the REAL architect
@@ -107,14 +107,34 @@ export function WorkspaceSheet({ open, onOpenChange, notify }: { open: boolean; 
 								))}
 							</div>
 							<div className="mt-2 font-mono text-[11px] text-muted-foreground">{spend.sessionTokens.toLocaleString()} tokens this session · {spend.totalTokens.toLocaleString()} all-time</div>
-							{spend.cap > 0 ? (
-								<>
-									<div className="mt-3 flex items-center justify-between text-[12.5px]"><span>Session budget cap</span><span className="font-semibold text-[var(--text-heading)]">${spend.cap.toFixed(2)}</span></div>
-									<div className="my-2 h-[7px] overflow-hidden rounded-full bg-border"><span className="block h-full rounded-full bg-primary" style={{ width: `${Math.min(100, (spend.session / spend.cap) * 100)}%` }} /></div>
-								</>
-							) : (
-								<p className="mt-3 text-[11px] text-muted-foreground">No session cap set. {spend.status.message ?? 'Spend is metered per real OpenRouter request.'}</p>
+							{spend.cap > 0 && (
+								<div className="my-2 h-[7px] overflow-hidden rounded-full bg-border"><span className={cn('block h-full rounded-full', spend.status.level === 'over' ? 'bg-[var(--fail,#b3261e)]' : 'bg-primary')} style={{ width: `${Math.min(100, (spend.session / spend.cap) * 100)}%` }} /></div>
 							)}
+							{/* Editable session cap + enforcement — the architect honours this. */}
+							<div className="mt-3 flex items-center gap-2">
+								<label htmlFor="ws-cap" className="text-[12.5px] text-[var(--text-heading)]">Session cap</label>
+								<span className="text-[12.5px] text-muted-foreground">$</span>
+								<input
+									id="ws-cap"
+									type="number"
+									min={0}
+									step={0.5}
+									defaultValue={spend.cap || ''}
+									placeholder="none"
+									onBlur={(e) => { setBudget(Number(e.target.value) || null, spend.mode); setSpend(architectSpend()); }}
+									className="w-[72px] rounded-md border border-border bg-background px-2 py-1 text-[12.5px] text-foreground outline-none focus:border-[var(--accent)]"
+								/>
+								<select
+									aria-label="Budget enforcement mode"
+									value={spend.mode}
+									onChange={(e) => { setBudget(spend.cap || null, e.target.value as 'alert' | 'stop'); setSpend(architectSpend()); }}
+									className="ml-auto rounded-md border border-border bg-background px-2 py-1 text-[12.5px] font-semibold text-[var(--text-heading)] outline-none focus:border-[var(--accent)]"
+								>
+									<option value="alert">Warn at 80%</option>
+									<option value="stop">Hard stop</option>
+								</select>
+							</div>
+							<p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">{spend.cap > 0 ? `Cap $${spend.cap.toFixed(2)} · ${spend.mode === 'stop' ? 'AI edits blocked once reached' : 'warns past 80%'}.` : 'No cap — spend is metered per real OpenRouter request.'}{spend.status.message ? ` ${spend.status.message}.` : ''}</p>
 						</div>
 					)}
 

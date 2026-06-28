@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { runArchitect } from './architect';
+import { architectSpend, runArchitect, setBudget } from './architect';
 import { suggestFor } from './Editor';
 
 afterEach(() => {
@@ -21,6 +21,19 @@ describe('suggestFor — the shared "did you mean"', () => {
 	});
 	it('falls back to kpi when nothing is close', () => {
 		expect(suggestFor('zzz-bogus', known)).toBe('kpi');
+	});
+});
+
+describe('setBudget — the cap the architect honours', () => {
+	it('persists a cap + mode, and clears the cap at 0', () => {
+		setBudget(5, 'stop');
+		let s = architectSpend();
+		expect(s.cap).toBe(5);
+		expect(s.mode).toBe('stop');
+		setBudget(null, 'alert');
+		s = architectSpend();
+		expect(s.cap).toBe(0);
+		expect(s.mode).toBe('alert');
 	});
 });
 

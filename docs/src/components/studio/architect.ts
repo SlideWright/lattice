@@ -92,9 +92,24 @@ export function architectSpend() {
 	try {
 		const s = readSpend();
 		const cap = readBudgetCap();
-		return { ...s, cap, status: budgetStatus({ sessionSpend: s.session, cap, mode: readBudgetMode() }) };
+		const mode = readBudgetMode();
+		return { ...s, cap, mode, status: budgetStatus({ sessionSpend: s.session, cap, mode }) };
 	} catch {
-		return { total: 0, session: 0, totalTokens: 0, sessionTokens: 0, cap: 0, status: { level: 'ok', blocked: false, message: null } };
+		return { total: 0, session: 0, totalTokens: 0, sessionTokens: 0, cap: 0, mode: 'alert' as const, status: { level: 'ok', blocked: false, message: null } };
+	}
+}
+
+// The shared budget keys (lattice-db-*) the spend gauge + the architect gate read.
+const BUDGET_CAP_KEY = 'lattice-db-budget-cap';
+const BUDGET_MODE_KEY = 'lattice-db-budget-mode';
+/** Set (or clear with cap ≤ 0) the session budget cap + enforcement mode. */
+export function setBudget(cap: number | null, mode: 'alert' | 'stop'): void {
+	try {
+		if (cap && cap > 0) localStorage.setItem(BUDGET_CAP_KEY, String(cap));
+		else localStorage.removeItem(BUDGET_CAP_KEY);
+		localStorage.setItem(BUDGET_MODE_KEY, mode === 'stop' ? 'stop' : 'alert');
+	} catch {
+		/* storage unavailable */
 	}
 }
 
