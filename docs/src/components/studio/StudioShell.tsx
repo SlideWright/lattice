@@ -384,7 +384,7 @@ export default function StudioShell({ options, components = [] }: Props) {
 				<button type="button" onClick={() => editorRef.current?.fixAll()} className="rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] disabled:opacity-40" disabled={!issues}>Fix all</button>
 				<span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-foreground"><FileText className="size-3" />Markdown</span>
 			</div>
-			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? KNOWN : NO_KNOWN} onCursorSlide={onEditorCursorSlide} className="flex-1" />
+			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? KNOWN : NO_KNOWN} completionComponents={components} onCursorSlide={onEditorCursorSlide} className="flex-1" />
 		</section>
 	);
 

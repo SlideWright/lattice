@@ -1,9 +1,11 @@
+import { autocompletion, completionKeymap } from '@codemirror/autocomplete';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { markdown } from '@codemirror/lang-markdown';
 import { type Diagnostic, linter, lintGutter } from '@codemirror/lint';
 import { EditorState } from '@codemirror/state';
 import { EditorView, keymap, lineNumbers } from '@codemirror/view';
 import * as React from 'react';
+import { type CompletionComponent, makeStudioCompletion } from './editor-complete';
 import { slideIndexAt, slideStartOffset } from './lint';
 
 // A small, self-contained CodeMirror 6 markdown editor for the Studio prototype.
@@ -79,10 +81,12 @@ export const Editor = React.forwardRef<EditorHandle, {
 	value: string;
 	onChange: (next: string) => void;
 	knownComponents?: string[];
+	/** The component catalog, for autocomplete (name/bucket/description). */
+	completionComponents?: CompletionComponent[];
 	/** Fired when the cursor crosses into a different slide — drives the preview. */
 	onCursorSlide?: (index: number) => void;
 	className?: string;
-}>(function Editor({ value, onChange, knownComponents = [], onCursorSlide, className }, ref) {
+}>(function Editor({ value, onChange, knownComponents = [], completionComponents = [], onCursorSlide, className }, ref) {
 	const hostRef = React.useRef<HTMLDivElement>(null);
 	const viewRef = React.useRef<EditorView | null>(null);
 	const onChangeRef = React.useRef(onChange);
@@ -132,8 +136,9 @@ export const Editor = React.forwardRef<EditorHandle, {
 					extensions: [
 						lineNumbers(),
 						history(),
-						keymap.of([...defaultKeymap, ...historyKeymap]),
+						keymap.of([...defaultKeymap, ...historyKeymap, ...completionKeymap]),
 						markdown(),
+						autocompletion({ override: [makeStudioCompletion(completionComponents)], activateOnTyping: true, icons: false }),
 						makeLinter(known),
 						lintGutter(),
 						editorTheme,
