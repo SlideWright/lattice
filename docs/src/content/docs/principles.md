@@ -156,7 +156,7 @@ CSS underneath, and you can edit it directly.
 ## 7. The system carries the consistency. You carry the judgment.
 
 Most of what goes wrong in a slide deck is mechanical, and Lattice
-handles all of it. Contrast that meets WCAG AA, on every layout, in
+handles all of it. Contrast that meets WCAG AA, on every component, in
 light and dark — checked automatically, not left to chance. Color never
 the only signal: about one man in twelve is color-blind and won't say
 so — the one who can't read your red from your green might be the one
@@ -191,11 +191,11 @@ vigilance you pay, forever, guarding against one.
 
 ## 9. You don't memorize it; it shows you
 
-A new vocabulary reads as overhead: layout names, slot rules, a
+A new vocabulary reads as overhead: component names, slot rules, a
 four-layer model to memorize. You're not meant to memorize any of it.
 
 The floor is Markdown, which you already know. A plain text file with
-no Lattice vocabulary still renders as a clean deck; you add a layout
+no Lattice vocabulary still renders as a clean deck; you add a component
 name when you want one, one at a time, with no cliff to fall off. From
 there, the tooling does the teaching. Your editor autocompletes the
 components. The gallery shows you each one rendered before you pick it. A
@@ -236,7 +236,7 @@ changed. That part stays with you.
 ## 11. Constraint is what frees you
 
 Some people hear all this and worry that a system flattens the craft —
-that making slides is an art, and an engine that picks the layout
+that making slides is an art, and an engine that picks the component
 strips it out. It's a fair worry, and worth answering directly.
 
 Start with what's true. There is real craft in a good deck, and there
@@ -291,7 +291,7 @@ anyone hands you the room.
 
 - [The design system](https://github.com/slidewright/lattice/blob/main/design/design-system.md) —
   the full four-layer model, in depth.
-- [Author decks](/guides/authoring/) — the layout catalog and
+- [Author decks](/guides/authoring/) — the component catalog and
   the authoring contract.
-- [Browse components](/components/) — every layout, themable in
+- [Browse components](/components/) — every component, themable in
   any palette.

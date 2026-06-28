@@ -6,7 +6,7 @@ description: How Lattice palettes work, the palettes that ship, and how to autho
 Lattice components are **palette-blind**: every color goes through a
 `var(--token)`. The engine (`lattice.css`) defines the structure; a
 *palette* supplies the tokens. Swapping palettes restyles every deck
-without touching a single layout.
+without touching a single component.
 
 ## Selecting a palette
 

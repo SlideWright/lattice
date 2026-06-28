@@ -38,9 +38,9 @@ plain Markdown viewer, it does not belong in LFM.
 In everyday authoring there are really only three conventions to meet. None
 of them require memorizing the spec.
 
-### 1. Choosing a layout
+### 1. Choosing a component
 
-A slide picks its Lattice layout with a one-line comment:
+A slide picks its Lattice component with a one-line comment:
 
 ```markdown
 <!-- _class: split-compare -->
@@ -92,9 +92,9 @@ terms they answer "how much of LFM does this tool understand?"
 
 - **Level 0 — it's just Markdown.** Any Markdown viewer, with no idea Lattice
   exists, shows your file readably. *Every LFM document is at least this.*
-- **Level 1 — it builds the slides.** The tool understands the layout
+- **Level 1 — it builds the slides.** The tool understands the component
   comments, the card shape, and the status markers, and produces real Lattice
-  layouts. This is what the Lattice engine does.
+  components. This is what the Lattice engine does.
 - **Level 2 — it coaches you.** On top of that, the tool checks your document
   and tells you when something is valid Markdown but won't render the way you
   meant — with a clear message and, often, a one-click fix. That contract is

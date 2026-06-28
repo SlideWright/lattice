@@ -42,7 +42,7 @@ node lattice-emulator.js examples/gallery.md gallery.png    # → gallery.001.pn
 
 A deck is a Markdown file with a small front-matter block selecting a
 palette. Each slide is separated by `---`, and a `<!-- _class: ... -->`
-comment picks the layout.
+comment picks the component.
 
 ```markdown
 ---
@@ -84,9 +84,9 @@ Lattice itself never renders through Marp.
 
 ## What to read next
 
-- [Authoring decks](/guides/authoring/) — the layout catalog and the
-  authoring contract for each layout.
+- [Authoring decks](/guides/authoring/) — the component catalog and the
+  authoring contract for each component.
 - [Themes & palettes](/guides/themes/) — pick a palette, or author your
   own.
-- [Component reference](/components/) — every layout, slot,
+- [Component reference](/components/) — every component, slot,
   and modifier, browsable in any palette.

@@ -25,11 +25,11 @@ polished, repeatable, and easy to change.
 
 ## See it first
 
-The repository ships with a gallery deck that shows every layout the
+The repository ships with a gallery deck that shows every component the
 engine knows. Open
 [`examples/gallery.pdf`](https://github.com/slidewright/lattice/blob/main/examples/gallery.pdf).
 That is the answer to "what does this actually produce?". For an
-interactive tour of every layout — themable in any palette — see the
+interactive tour of every component — themable in any palette — see the
 [component reference](/components/).
 
 ## What you get
@@ -42,7 +42,7 @@ interactive tour of every layout — themable in any palette — see the
   deck's palette automatically — no per-diagram styling.
 - **Version control.** A deck is text. A normal `git diff` shows what
   changed between revisions, the way it does for code.
-- **Accessibility built in.** Contrast is WCAG AA across every layout.
+- **Accessibility built in.** Contrast is WCAG AA across every component.
 - **No service, no account, no telemetry.** Lattice runs on your
   laptop or in your build system. Fully offline-capable.
 
@@ -65,7 +65,7 @@ the notation your discipline already uses:
 - **Analysts** — radar, quadrant, KPI, stats, progress, pie, and
   word-cloud components that turn numbers into an argument.
 
-Fifty-two components in all — and you reach every one of them with the
+Fifty-three components in all — and you reach every one of them with the
 same Markdown, never a new tool to learn.
 
 ## What changes for…
@@ -75,7 +75,7 @@ them — whether the author sat in finance, engineering, or legal. The
 argument lands without formatting drift competing for attention.
 
 **Authors** stop fiddling with text boxes. They write the words, pick
-a layout, and the deck assembles itself.
+a component, and the deck assembles itself.
 
 **Brand and design** set the visual system once, in one file, and
 stop policing every deck individually.
@@ -111,7 +111,7 @@ own.
 
 - [Get started](/getting-started/) — install the toolchain and render
   your first deck.
-- [Author decks](/guides/authoring/) — the layout catalog and authoring
+- [Author decks](/guides/authoring/) — the component catalog and authoring
   contract.
-- [Browse components](/components/) — every layout,
+- [Browse components](/components/) — every component,
   themable in any palette.
