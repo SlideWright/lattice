@@ -146,6 +146,14 @@ in patch versions.
     use unambiguous move-to-position icons (they reorder, they don't navigate); and
     **deleting a slide now confirms** — the first tap arms the button, a second
     within 3s deletes (it disarms on its own and on slide change).
+  - **Preview & notes polish (mobile).** The compose preview card now takes the
+    **aspect ratio of the deck's selected Size** (16:9 / 4:3 / 1:1 / 4:5 / 9:16) —
+    portrait shapes bind to height so they fit the pane — instead of a hardcoded
+    16:9; the Size picker gains Portrait and Story, and the status readout shows the
+    real ratio. **Swipe** (touch) and a horizontal **trackpad wheel** now change the
+    viewed slide. And **speaker notes** moved out of the Deck Inspector into their
+    own drawer, opened from a Notes button in the editor row (and the mobile
+    Edit/Preview bar).
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /
