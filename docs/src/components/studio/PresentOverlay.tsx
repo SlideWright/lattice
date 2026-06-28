@@ -4,6 +4,7 @@ import DeckPreview from '@/components/DeckPreview';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
 import { type PresentLens, presentationSet } from './lint';
+import { slideToSpeech, useReadAloud } from './read-aloud';
 
 // Present = a verb (plan §17): a full-screen takeover you ENTER and exit, with a
 // reader-facing lens switch that actually RESHAPES the deck (meet the reader where
@@ -30,6 +31,21 @@ export function PresentOverlay({ open, onClose, options, slides, startIndex = 0,
 	const clamped = Math.min(idx, Math.max(0, count - 1));
 	const cur = set[clamped] ?? '';
 
+	// Real read-aloud: a synchronized teleprompter over the current slide's prose,
+	// with spoken audio when a voice is connected. Owns its own transport (the dock
+	// play button drives it in read-aloud mode; the rehearsal clock in Rehearse).
+	const reader = useReadAloud(React.useMemo(() => slideToSpeech(cur), [cur]));
+	const rungLabel = reader.rung && reader.rung !== 'silent' ? (reader.rung === 'kokoro' ? 'Aria · local' : 'Aria · cloud') : 'Captions';
+	// Stable caption keys (content + per-content occurrence — not the array index).
+	const captionParts = React.useMemo(() => {
+		const seen = new Map<string, number>();
+		return reader.sentences.map((s) => {
+			const n = seen.get(s) ?? 0;
+			seen.set(s, n + 1);
+			return { s, key: `${n}:${s}` };
+		});
+	}, [reader.sentences]);
+
 	// Practice's pacing math: a target talk length (~40s/slide) and a live timer;
 	// "behind" once you run past the expected pace for where you are in the deck.
 	const target = Math.max(60, count * 40);
@@ -51,6 +67,7 @@ export function PresentOverlay({ open, onClose, options, slides, startIndex = 0,
 		setIdx(0);
 	}
 	function toggleRehearse() {
+		reader.stop(); // read-aloud and rehearsal are mutually exclusive transports
 		setRehearse((v) => !v);
 		setElapsed(0);
 		setPlaying(false);
@@ -112,6 +129,18 @@ export function PresentOverlay({ open, onClose, options, slides, startIndex = 0,
 						<span className="inline-flex items-center gap-2 rounded-full border border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_14%,var(--bg))] px-3.5 py-2 text-[13px] font-semibold text-[var(--text-heading)] shadow-[0_8px_24px_rgba(10,22,40,.14)]"><Sparkles className="size-3.5 text-[var(--accent)]" />{beat}</span>
 					</div>
 				)}
+				{/* Read-aloud teleprompter — the spoken sentence, highlighted live. */}
+				{!rehearse && reader.playing && reader.sentences.length > 0 && (
+					<div className="pointer-events-none absolute inset-x-0 bottom-2 flex justify-center px-4">
+						<output className="max-w-[760px] rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg)_92%,transparent)] px-4 py-2.5 text-center text-[15px] leading-snug shadow-[0_8px_24px_rgba(10,22,40,.16)] backdrop-blur-sm sm:text-[17px]">
+							{captionParts.map((p, i) => (
+								<span key={p.key} className={cn('transition-colors', i === reader.index ? 'font-semibold text-[var(--text-heading)]' : 'text-muted-foreground/70')}>
+									{p.s}{' '}
+								</span>
+							))}
+						</output>
+					</div>
+				)}
 			</div>
 
 			<div className="mb-7 mt-4 flex items-center gap-3.5 rounded-full border border-border bg-card px-3.5 py-2.5 shadow-[0_8px_24px_rgba(10,22,40,.10)]">
@@ -119,15 +148,15 @@ export function PresentOverlay({ open, onClose, options, slides, startIndex = 0,
 				<span className="font-mono text-[12px] font-semibold text-[var(--text-heading)]">{clamped + 1} / {count}</span>
 				<button type="button" onClick={goNext} disabled={clamped >= count - 1} className="grid size-9 place-items-center rounded-full text-foreground hover:text-[var(--accent)] disabled:opacity-30 sm:hidden" aria-label="Next slide"><ChevronRight className="size-5" /></button>
 				<span className="h-5 w-px bg-border" />
-				<button type="button" onClick={() => setPlaying((v) => !v)} className="grid size-11 place-items-center rounded-full bg-primary text-primary-foreground" aria-label={rehearse ? (playing ? 'Pause rehearsal' : 'Start rehearsal') : playing ? 'Pause read-aloud' : 'Play read-aloud'}>{playing ? <Pause className="size-5" /> : <Play className="size-5" />}</button>
+				<button type="button" onClick={() => (rehearse ? setPlaying((v) => !v) : reader.toggle())} className="grid size-11 place-items-center rounded-full bg-primary text-primary-foreground" aria-label={rehearse ? (playing ? 'Pause rehearsal' : 'Start rehearsal') : reader.playing ? 'Pause read-aloud' : 'Play read-aloud'}>{(rehearse ? playing : reader.playing) ? <Pause className="size-5" /> : <Play className="size-5" />}</button>
 				<div className="relative hidden h-[5px] w-[180px] rounded-full bg-border sm:block">
-					<span className="absolute inset-y-0 left-0 rounded-full bg-primary" style={{ width: `${rehearse ? Math.min(100, (elapsed / target) * 100) : 38}%` }} />
+					<span className="absolute inset-y-0 left-0 rounded-full bg-primary transition-[width] duration-300" style={{ width: `${rehearse ? Math.min(100, (elapsed / target) * 100) : reader.sentences.length ? Math.round(((reader.index + 1) / reader.sentences.length) * 100) : 0}%` }} />
 				</div>
-				<span className="hidden font-mono text-[11px] text-muted-foreground sm:inline">{rehearse ? `${fmt(elapsed)} / ${fmt(target)}` : '0:21 / 0:54'}</span>
+				<span className="hidden font-mono text-[11px] text-muted-foreground sm:inline">{rehearse ? `${fmt(elapsed)} / ${fmt(target)}` : reader.sentences.length ? `${Math.max(0, reader.index + 1)} / ${reader.sentences.length}` : '0 / 0'}</span>
 				{rehearse ? (
 					<span className={cn('inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-semibold', behind ? 'border-[color-mix(in_srgb,var(--chart-2,#9c3f00)_45%,transparent)] text-[var(--chart-2,#9c3f00)]' : 'border-[color-mix(in_srgb,var(--chart-3,#2e6f00)_45%,transparent)] text-[var(--chart-3,#2e6f00)]')}><Timer className="size-3.5" />{behind ? 'Behind pace' : 'On pace'}</span>
 				) : (
-					<span className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[12px] font-semibold text-[var(--accent)]"><Volume2 className="size-3.5" />Aria</span>
+					<span className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[12px] font-semibold text-[var(--accent)]"><Volume2 className="size-3.5" />{rungLabel}</span>
 				)}
 			</div>
 		</div>

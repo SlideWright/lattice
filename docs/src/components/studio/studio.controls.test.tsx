@@ -106,13 +106,20 @@ describe('Studio — Fabricate + Present dock respond', () => {
 		expect(swatchInputs.length).toBe(4);
 	});
 
-	it('Present read-aloud Play/Pause toggles', async () => {
+	it('Present read-aloud Play/Pause toggles and shows the live teleprompter', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Present' }));
 		const dialog = await screen.findByRole('dialog', { name: 'Present' });
 		const dock = within(dialog).getByRole('button', { name: 'Play read-aloud' });
 		await user.click(dock);
 		expect(within(dialog).getByRole('button', { name: 'Pause read-aloud' })).toBeInTheDocument();
+		// The teleprompter (status region) renders the current slide's prose so the
+		// read-along is real and visible — captions even with no voice connected.
+		const prompter = within(dialog).getByRole('status');
+		expect(prompter.textContent?.trim().length ?? 0).toBeGreaterThan(0);
+		// Pausing returns the play affordance.
+		await user.click(within(dialog).getByRole('button', { name: 'Pause read-aloud' }));
+		expect(within(dialog).getByRole('button', { name: 'Play read-aloud' })).toBeInTheDocument();
 	});
 
 	it('Present → Rehearse mode (Practice) surfaces pacing + coaching', async () => {
