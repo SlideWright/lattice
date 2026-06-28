@@ -26,9 +26,41 @@
 
 const fs            = require('fs');
 const path          = require('path');
-const { pathToFileURL } = require('node:url');
+const { pathToFileURL, fileURLToPath } = require('node:url');
 const os            = require('os');
 const { execSync }  = require('child_process');
+
+// Inline each local `logo-wall` mark as a REAL `<svg>` for the export path.
+// The logo-marks transform emits `<span class="logo-mark" … style="--logo-mask:
+// url('<src>')">` — a CSS `mask` that renders cleanly in a live browser but NOT
+// reliably in print-to-PDF (different PDF rasterisers honour the soft-mask
+// differently: poppler-splash hairlines the group, cairo drops it and shows a
+// solid box). So for the PDF we swap each mask span for the mark's actual SVG
+// vector, given the marks authored with `fill="currentColor"`: the inline svg
+// inherits `color: var(--logo-ink)` (logo-mark-svg rule), so it's the SAME token
+// colour as the preview — robust across every PDF viewer. Local marks only;
+// remote (http) / already-inlined (data:) srcs are left as the mask span.
+// Order-independent: match an empty `<span>` carrying the `logo-mark` class
+// anywhere in its attribute run, and pull `--logo-mask` / `aria-label` out of the
+// captured attrs — so a future change to the span's attribute order can't silently
+// drop the inline-SVG swap and leave the unreliable mask in the PDF.
+const LOGO_MARK_RE = /<span\b([^>]*\bclass="[^"]*\blogo-mark\b[^"]*"[^>]*)><\/span>/g;
+function inlineLogoMarkSvg(html, baseFileUrl) {
+  if (typeof html !== 'string' || html.indexOf('logo-mark') === -1) return html;
+  return html.replace(LOGO_MARK_RE, (whole, attrs) => {
+    const urlM = attrs.match(/--logo-mask:url\('([^']*)'\)/);
+    if (!urlM || /^(?:data:|https?:)/i.test(urlM[1])) return whole;
+    const labelM = attrs.match(/aria-label="([^"]*)"/);
+    const label = labelM ? ` aria-label="${labelM[1]}"` : '';
+    try {
+      const svg = fs.readFileSync(fileURLToPath(new URL(urlM[1], baseFileUrl)), 'utf8')
+        .replace(/<\?xml[^>]*\?>/, '').trim();
+      return `<span class="logo-mark logo-mark-svg" role="img"${label}>${svg}</span>`;
+    } catch {
+      return whole;
+    }
+  });
+}
 
 // Package root for sibling-asset lookups (themes/, dist/lattice.css,
 // node_modules/.bin/mmdc). This file runs from two locations: as repo-root
@@ -1086,7 +1118,11 @@ function engineSlides() {
   // the output directory (the path-bug fix —
   // engineering/decisions/2026-06-17-image-rearchitecture.md).
   const deckBaseUrl = pathToFileURL(path.dirname(path.resolve(mdFile)) + path.sep).href;
-  const { html: renderedHtml } = engine.render(bgImage.liftBgImages(rawMd, deckBaseUrl), paletteName);
+  const rendered = engine.render(bgImage.liftBgImages(rawMd, deckBaseUrl), paletteName);
+  // logo-wall marks ride as CSS `mask` in the preview; for the PDF we swap each
+  // mask span for the mark's real `<svg>` vector (CSS mask isn't reliable in
+  // print-to-PDF). Read against the deck dir, the same base `![bg]` uses.
+  const renderedHtml = inlineLogoMarkSvg(rendered.html, deckBaseUrl);
   // Auto-split over-capacity slides into several, BEFORE the index-based
   // `data-lattice-slide` re-tag below renumbers them (the Fit Ladder's SPLIT move
   // — lib/core/auto-split.js; engineering/decisions/2026-06-22-the-fit-spine.md §3).

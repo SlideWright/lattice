@@ -6,19 +6,19 @@
 
 **Tags** `visual` · `showcase` · `pitch`
 
-Use for the credibility slide — the 'trusted by' / 'our funders' / 'participating agencies' wall. Marks render desaturated and uniform so mismatched brand colours don't fight each other; the `color` variant keeps them branded when the hues carry meaning.
+Use for the credibility slide — the 'trusted by' / 'our funders' / 'participating agencies' wall. Marks render as token-coloured silhouettes (a CSS mask filled with `var(--logo-ink)`), so the wall is one cohesive texture that re-tones per theme and colour-mode and stays AA on any ground; the `color` variant gives each mark its own categorical palette hue.
 
 ## When to use
 
 - **The proof is the logos.** Customers, partners, funders, accreditations, participating agencies — anywhere a set of recognisable marks carries more weight than a sentence. The audience scans the wall and concludes 'serious company keeps this company.'
-- **Marks read as one texture.** The default desaturates every mark to the same restrained grey so a loud red logo doesn't outshout a quiet one. The wall reads as a single credential, not a ransom note of competing brand colours.
+- **Marks read as one texture.** Every mark is filled with the same palette token, so a loud red logo can't outshout a quiet one — the wall reads as a single credential, not a ransom note of competing brand colours. Because the fill is a token, it re-tones for theme + dark mode and stays AA on any ground.
 - **Eight to eighteen marks.** Enough to signal breadth, few enough that each is legible. Fewer than six looks thin; past eighteen the marks shrink below recognition — curate to the most recognisable names or split across two slides.
 
 ## When NOT to use
 
 - **Names that need a sentence.** If each entity needs a role, a quote, or a metric beside it, this is the wrong layout. Use `actors` (who owns what), `cards-grid` (a short body per item), or `quote` (a single testimonial).
 - **Logos nobody recognises.** A wall of unknown marks proves nothing and asks the audience to squint. If the names don't carry on sight, state the count as a `big-number` ('400+ teams') instead.
-- **Mismatched raster art.** Low-resolution PNG logos pulled from web pages look ragged at projector scale and break the uniform grey treatment. Source vector (SVG) marks; the desaturation assumes clean edges.
+- **Mismatched raster art.** The mark is rendered as a silhouette (a CSS mask / inline SVG), so it must be clean vector with real transparency — a raster PNG or a logo whose negative space is a white fill won't read. Source SVG marks drawn as filled shapes; colour is supplied by the palette token, not the file.
 
 ## Authoring
 
@@ -67,9 +67,9 @@ Use for the credibility slide — the 'trusted by' / 'our funders' / 'participat
 
 ## Variants (component-specific)
 
-### `color` — Color — keep brand colours
+### `color` — Color — per-mark palette hues
 
-Drops the desaturation so each mark renders in its own brand colour. Reserve for cases where the hues carry meaning — government insignia, university crests, certification badges — or where brand guidelines forbid recolouring. The grey default is the boardroom-restrained pick.
+Gives each mark its own categorical palette hue (`--cat-*-mark`, cycling 1..12) instead of the single muted token — useful when telling the marks apart matters more than restraint, e.g. a partner directory. The hues are ours, so they stay cohesive with the deck's charts and AA on both grounds; the single-token default is the boardroom-restrained pick.
 
 ```markdown
 <!-- _class: logo-wall color -->

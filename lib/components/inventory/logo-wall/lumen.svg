@@ -1,6 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" role="img" aria-label="Lumen">
-  <circle cx="34" cy="40" r="19" fill="none" stroke="#c25a2b" stroke-width="3.5"/>
-  <circle cx="34" cy="40" r="11" fill="none" stroke="#c25a2b" stroke-width="3.5"/>
-  <circle cx="34" cy="40" r="4" fill="#c25a2b"/>
-  <text x="70" y="51" font-family="'Helvetica Neue', Arial, sans-serif" font-size="29" font-weight="600" fill="#1f2733">Lumen</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80"><g fill="none" stroke="currentColor"><circle cx="34" cy="40" r="19" stroke-width="3.5"/><circle cx="34" cy="40" r="11" stroke-width="3.5"/></g><circle cx="34" cy="40" r="4" fill="currentColor"/><text x="70" y="51" font-family="Helvetica Neue, Arial, sans-serif" font-size="29" font-weight="600" fill="currentColor">Lumen</text></svg>

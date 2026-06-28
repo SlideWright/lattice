@@ -244,6 +244,19 @@ in patch versions.
 
 ### Changed
 
+- **`logo-wall` marks are now token-coloured silhouettes — palette-driven, theme/mode-adaptive,
+  AA on any ground.** A mark was a desaturated `<img>` (a CSS `filter` grey that couldn't follow
+  the palette and fell below AA on a dark canvas). The new `logo-marks` transformer
+  (`lib/transformers/logo-marks.js`) rewrites each mark to a `<span class="logo-mark">` whose SVG
+  rides as a CSS `mask` and whose fill is `var(--logo-ink)` — a real token that resolves per theme
+  and per colour-mode via `light-dark()`, so the whole wall re-tones for free and stays AA. The
+  `color` variant cycles the categorical `--cat-*-mark` hues (1..12) per mark instead of the single
+  muted default — on-palette colour, not raw brand hex. The twelve placeholder marks are redrawn as
+  monochrome silhouettes (real transparency for negative space; `fill="currentColor"`). The preview
+  uses the mask; the PDF/export path inlines the mark's SVG vector instead (CSS mask doesn't render
+  reliably across PDF viewers), so exported decks stay crisp everywhere. **Breaking:** a `logo-wall`
+  mark must be a clean vector silhouette — a raster PNG, or an SVG whose negative space is a white
+  fill rather than transparency, no longer reads. See `lib/components/inventory/logo-wall/logo-wall.docs.md`.
 - **No-margins spacing model (phase 1, cell-tree) — margins out, `gap` in; stage height
   reclaimed.** Margins fight the virtual-list `scrollHeight` measurement (they collapse and
   sit outside the flex content box), so: the masthead band's `margin-bottom` becomes a `gap`
