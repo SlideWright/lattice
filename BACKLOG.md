@@ -9,7 +9,7 @@ The live, claimable work queue — a read-only mirror of [open issues](https://g
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
 only *status*. **43 open** items.
 
-> ⚠️ **3 cards need triage** (missing `area:`/`type:`/`priority:`): [#554](https://github.com/SlideWright/lattice/issues/554), [#581](https://github.com/SlideWright/lattice/issues/581), [#582](https://github.com/SlideWright/lattice/issues/582).
+> ⚠️ **5 cards need triage** (missing `area:`/`type:`/`priority:`): [#554](https://github.com/SlideWright/lattice/issues/554), [#581](https://github.com/SlideWright/lattice/issues/581), [#582](https://github.com/SlideWright/lattice/issues/582), [#587](https://github.com/SlideWright/lattice/issues/587), [#588](https://github.com/SlideWright/lattice/issues/588).
 
 ## Backlog (39)
 
