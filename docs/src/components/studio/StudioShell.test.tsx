@@ -94,6 +94,22 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		expect(d.getByText('1 / 1')).toBeInTheDocument();
 	});
 
+	it('Present opens the slide sorter and jumps from a thumbnail', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Present' }));
+		const dialog = await screen.findByRole('dialog', { name: 'Present' });
+		const d = within(dialog);
+		expect(d.getByText('1 / 6')).toBeInTheDocument();
+		// Open the sorter — a thumbnail per slide of the full deck.
+		await user.click(d.getByRole('button', { name: /Slides/ }));
+		const sorter = within(await screen.findByRole('dialog', { name: 'Slide overview' }));
+		expect(sorter.getByText('All slides — 6')).toBeInTheDocument();
+		// Jump to slide 4 → the sorter closes and Present is on that slide.
+		await user.click(sorter.getByRole('button', { name: 'Slide 4' }));
+		expect(screen.queryByRole('dialog', { name: 'Slide overview' })).not.toBeInTheDocument();
+		expect(d.getByText('4 / 6')).toBeInTheDocument();
+	});
+
 	it('opens the deck-scoped Share with both hand-off intents', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Share' }));

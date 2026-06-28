@@ -125,6 +125,12 @@ in patch versions.
     the Drawing Board's `requestSlideFix` (the edit-block protocol + canon grounding)
     and the chat's `DiffCard`. Honest with no model (the list still shows; the fix
     points at Workspace) and respects the budget cap.
+  - **Present — slide sorter.** A **Slides** button (and the **G** key) opens a grid
+    of rendered slide thumbnails over the presented set — the same engine render as
+    the stage, not screenshots — for jumping anywhere (handy in Q&A). Thumbnails are
+    **windowed**: each defers its render until it scrolls into view, so a long deck
+    stays light. Click a thumbnail to jump there and close the grid; the current
+    slide is marked. Honors the active lens, theme, and saved local components.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /
