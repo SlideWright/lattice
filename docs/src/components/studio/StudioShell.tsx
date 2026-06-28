@@ -17,7 +17,7 @@ import { DECKS, deckSource, type StudioDeck } from './decks';
 import { Editor, type EditorHandle } from './Editor';
 import { Fabricate } from './Fabricate';
 import { IntentTag } from './IntentTag';
-import { scoreDeck, slideClass, splitSlides, unknownComponents } from './lint';
+import { scoreDeck, slideClass, splitSlides, unknownComponents, usedComponents } from './lint';
 import { PresentOverlay } from './PresentOverlay';
 import { ShareSheet } from './ShareSheet';
 import { useBreakpoint } from './use-breakpoint';
@@ -26,6 +26,10 @@ import { WorkspaceSheet } from './WorkspaceSheet';
 // Module-level so the reference is stable — the Editor re-inits CodeMirror when
 // its `knownComponents` identity changes, so this must never be an inline literal.
 const KNOWN = ['title', 'kpi', 'quote', 'cards-grid', 'agenda', 'big-number', 'stats', 'statement', 'closing', 'q-and-a', 'pricing'];
+// Stable empty reference — passed to the editor when inline validation is OFF so
+// its linter stands down (an empty known-set flags nothing) without re-creating
+// the array each render (which would needlessly rebuild CodeMirror).
+const NO_KNOWN: string[] = [];
 const PALETTES = ['indaco', 'cuoio', 'burgundy', 'laguna', 'crepuscolo', 'atelier', 'carbone', 'onyx'];
 const PALETTE_DOTS: Record<string, string> = {
 	indaco: '#006FA8', cuoio: '#7A5A10', burgundy: '#742532', laguna: '#006D77',
@@ -55,6 +59,11 @@ export default function StudioShell({ options }: Props) {
 		}
 	});
 	const [mobilePane, setMobilePane] = React.useState<'edit' | 'preview'>('preview');
+	// Inspector "Authoring" / "Look" toggles — `validation` has real teeth (gates
+	// the editor's inline linter), the others hold state for the prototype.
+	const [validation, setValidation] = React.useState(true);
+	const [pageNumbers, setPageNumbers] = React.useState(true);
+	const [headerFooter, setHeaderFooter] = React.useState(false);
 	const editorRef = React.useRef<EditorHandle>(null);
 
 	const bp = useBreakpoint();
@@ -63,8 +72,11 @@ export default function StudioShell({ options }: Props) {
 
 	const slides = React.useMemo(() => splitSlides(source), [source]);
 	const slide = slides[Math.min(activeSlide, slides.length - 1)] ?? slides[0] ?? '';
-	const issues = React.useMemo(() => unknownComponents(source, KNOWN).length, [source]);
-	const deckScore = React.useMemo(() => scoreDeck(source, KNOWN), [source]);
+	// When inline validation is off, nothing is "unknown" — the editor, the issue
+	// count, and the Architect's component check all stand down together.
+	const lintKnown = React.useMemo(() => (validation ? KNOWN : usedComponents(source)), [validation, source]);
+	const issues = React.useMemo(() => unknownComponents(source, lintKnown).length, [source, lintKnown]);
+	const deckScore = React.useMemo(() => scoreDeck(source, lintKnown), [source, lintKnown]);
 
 	// Panels are persistent columns on desktop, on-demand sheets below it. Reset
 	// their open state to the right default whenever the breakpoint flips so a
@@ -158,21 +170,21 @@ export default function StudioShell({ options }: Props) {
 						))}
 					</div>
 				</Field>
-				<Field label="Size"><Control>16 : 9 <ChevronDown className="size-3.5" /></Control></Field>
-				<Field label="Page numbers"><Toggle on /></Field>
-				<Field label="Header / footer"><Toggle /></Field>
+				<Field label="Size"><Control onClick={() => notify('Slide size — 16:9, 4:3, and A4 in the full app.')}>16 : 9 <ChevronDown className="size-3.5" /></Control></Field>
+				<Field label="Page numbers"><Toggle label="Page numbers" on={pageNumbers} onClick={() => setPageNumbers((v) => !v)} /></Field>
+				<Field label="Header / footer"><Toggle label="Header / footer" on={headerFooter} onClick={() => setHeaderFooter((v) => !v)} /></Field>
 			</InspGroup>
 			<InspGroup icon={<Wand2 className="size-3.5" />} label="Authoring">
-				<Field label="Inline validation"><Toggle on /></Field>
+				<Field label="Inline validation"><Toggle label="Inline validation" on={validation} onClick={() => { setValidation((v) => { notify(v ? 'Inline validation off — the editor stops flagging components.' : 'Inline validation on — unknown components are flagged again.'); return !v; }); }} /></Field>
 			</InspGroup>
 			<InspGroup icon={<Volume2 className="size-3.5" />} label="Read">
-				<Field label="Voice"><Control>Aria <ChevronDown className="size-3.5" /></Control></Field>
-				<Field label="Pace"><Control>Steady <ChevronDown className="size-3.5" /></Control></Field>
+				<Field label="Voice"><Control onClick={() => notify('Read-aloud voice — Aria, Cedar, and more in the full app.')}>Aria <ChevronDown className="size-3.5" /></Control></Field>
+				<Field label="Pace"><Control onClick={() => notify('Read-aloud pace — slower for boardrooms, faster for review.')}>Steady <ChevronDown className="size-3.5" /></Control></Field>
 			</InspGroup>
 			<InspGroup icon={<Sparkles className="size-3.5" />} label="Lenses" last>
 				<Lens on icon={<FileText className="size-3.5" />} name="Full deck" desc="The canonical source" badge="source" />
-				<Lens icon={<Sparkles className="size-3.5" />} name="Exec summary" desc="5 slides · regenerated" />
-				<Lens icon={<Plus className="size-3.5" />} name="New lens…" desc="Reshape for a reader" />
+				<Lens icon={<Sparkles className="size-3.5" />} name="Exec summary" desc="Headline slides · regenerated" onClick={() => { setPresentOpen(true); notify('Open Present → Exec summary to preview this lens.'); }} />
+				<Lens icon={<Plus className="size-3.5" />} name="New lens…" desc="Reshape for a reader" onClick={() => notify('New lens — describe a reader and the deck reshapes for them.')} />
 			</InspGroup>
 		</>
 	);
@@ -187,7 +199,7 @@ export default function StudioShell({ options }: Props) {
 				<button type="button" onClick={() => editorRef.current?.fixAll()} className="rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] disabled:opacity-40" disabled={!issues}>Fix all</button>
 				<span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-foreground"><FileText className="size-3" />Markdown</span>
 			</div>
-			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={KNOWN} onCursorSlide={setActiveSlide} className="flex-1" />
+			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? KNOWN : NO_KNOWN} onCursorSlide={setActiveSlide} className="flex-1" />
 		</section>
 	);
 
@@ -456,18 +468,22 @@ function InspGroup({ icon, label, last, children }: { icon: React.ReactNode; lab
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
 	return <div className="my-2 flex items-center justify-between gap-2.5"><span className="text-[12.5px] text-foreground">{label}</span>{children}</div>;
 }
-function Control({ children }: { children: React.ReactNode }) {
-	return <span className="inline-flex min-w-[96px] items-center justify-between gap-1.5 rounded-md border border-border bg-background px-2.5 py-1.5 text-[12.5px] font-semibold text-[var(--text-heading)]">{children}</span>;
+function Control({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) {
+	return <button type="button" onClick={onClick} className="inline-flex min-w-[96px] items-center justify-between gap-1.5 rounded-md border border-border bg-background px-2.5 py-1.5 text-[12.5px] font-semibold text-[var(--text-heading)] hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]">{children}</button>;
 }
-function Toggle({ on }: { on?: boolean }) {
-	return <span className={cn('relative h-[22px] w-[38px] rounded-full', on ? 'bg-primary' : 'bg-border')}><span className={cn('absolute top-[2px] size-[18px] rounded-full bg-white shadow', on ? 'left-[18px]' : 'left-[2px]')} /></span>;
-}
-function Lens({ on, icon, name, desc, badge }: { on?: boolean; icon: React.ReactNode; name: string; desc: string; badge?: string }) {
+function Toggle({ on, onClick, label }: { on?: boolean; onClick?: () => void; label?: string }) {
 	return (
-		<div className={cn('my-1.5 flex cursor-pointer items-center gap-2.5 rounded-md border px-2.5 py-2', on ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-border')}>
+		<button type="button" role="switch" aria-checked={!!on} aria-label={label} onClick={onClick} className={cn('relative h-[22px] w-[38px] rounded-full transition-colors', on ? 'bg-primary' : 'bg-border')}>
+			<span className={cn('absolute top-[2px] size-[18px] rounded-full bg-white shadow transition-all', on ? 'left-[18px]' : 'left-[2px]')} />
+		</button>
+	);
+}
+function Lens({ on, icon, name, desc, badge, onClick }: { on?: boolean; icon: React.ReactNode; name: string; desc: string; badge?: string; onClick?: () => void }) {
+	return (
+		<button type="button" onClick={onClick} className={cn('my-1.5 flex w-full cursor-pointer items-center gap-2.5 rounded-md border px-2.5 py-2 text-left', on ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-border')}>
 			<span className={cn('grid size-[26px] place-items-center rounded-[7px]', on ? 'bg-primary text-primary-foreground' : 'bg-[var(--accent-soft)] text-[var(--accent)]')}>{icon}</span>
 			<span><div className="text-[12.5px] font-semibold text-[var(--text-heading)]">{name}</div><div className="text-[11px] text-muted-foreground">{desc}</div></span>
 			{badge && <span className="ml-auto rounded-full border border-[color-mix(in_srgb,var(--accent)_30%,transparent)] px-1.5 py-0.5 font-mono text-[9px] text-[var(--accent)]">{badge}</span>}
-		</div>
+		</button>
 	);
 }

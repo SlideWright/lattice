@@ -124,6 +124,16 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		expect(screen.getByText('Lenses')).toBeInTheDocument();
 	});
 
+	it('the Inspector "Inline validation" toggle has real teeth', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
+		const sw = await screen.findByRole('switch', { name: 'Inline validation' });
+		expect(sw).toBeChecked();
+		await user.click(sw);
+		expect(sw).not.toBeChecked();
+		expect(await screen.findByText(/Inline validation off/)).toBeInTheDocument();
+	});
+
 	it('reaches Fabricate from the launcher (not a deck mode)', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
