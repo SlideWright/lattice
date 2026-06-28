@@ -20,7 +20,7 @@ Executive KPI system — one base, five layout modifiers.
 
 `Financial · Q4 2026`
 
-## Revenue ahead of plan; margin and cash both expanded, against a plan we set.
+## Revenue ahead of plan; margin and cash both expanded.
 
 1. $2.4B
    - Total revenue
@@ -43,7 +43,7 @@ Executive KPI system — one base, five layout modifiers.
 
 `Framework · Q4 2026`
 
-## One metric below target; remediation under way, as it has been for two quarters.
+## One metric below target; remediation under way.
 
 1. 94%
    - Signal-classification success
@@ -53,7 +53,7 @@ Executive KPI system — one base, five layout modifiers.
    - target 20 min `On plan` `Ops`
 3. 0
    - Auditor findings
-   - target 0 — nobody has opened the log to check `On plan` `Audit`
+   - target 0 `On plan` `Audit`
 4. 3.2×
    - Calibration headroom
    - target 2× `On plan` `Framework`
@@ -89,7 +89,7 @@ Executive KPI system — one base, five layout modifiers.
 
 `Compliance · Q4 2026`
 
-## Three frameworks clean; one open finding under remediation since the last walk-through.
+## Three frameworks clean; one finding under remediation.
 
 1. 0
    - SOC 2 Type II open findings
@@ -103,8 +103,6 @@ Executive KPI system — one base, five layout modifiers.
 4. 0
    - Internal audit material findings
    - quarterly review complete `Compliant` `Audit Committee`
-
-Source · regulatory register · weekly export
 
 
 ---
@@ -161,7 +159,7 @@ Source · regulatory register · weekly export
 
 `Financial · Q4 2026`
 
-## Revenue ahead of plan; margin and cash both expanded, against a plan we set.
+## Revenue ahead of plan; margin and cash both expanded.
 
 1. $2.4B
    - Total revenue
@@ -184,7 +182,7 @@ Source · regulatory register · weekly export
 
 `Financial · Q4 2026`
 
-## Revenue ahead of plan; margin and cash both expanded, against a plan we set.
+## Revenue ahead of plan; margin and cash both expanded.
 
 1. $2.4B
    - Total revenue
@@ -207,7 +205,7 @@ Source · regulatory register · weekly export
 
 `Financial · Q4 2026`
 
-## Revenue ahead of plan; margin and cash both expanded, against a plan we set.
+## Revenue ahead of plan; margin and cash both expanded.
 
 1. $2.4B
    - Total revenue

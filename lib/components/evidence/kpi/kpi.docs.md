@@ -73,7 +73,7 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
 
 `Framework · Q4 2026`
 
-## One metric below target; remediation under way, as it has been for two quarters.
+## One metric below target; remediation under way.
 
 1. 94%
    - Signal-classification success
@@ -83,7 +83,7 @@ Promotes the one KPI in trouble to hero scale, with the supporting three holding
    - target 20 min `On plan` `Ops`
 3. 0
    - Auditor findings
-   - target 0 — nobody has opened the log to check `On plan` `Audit`
+   - target 0 `On plan` `Audit`
 4. 3.2×
    - Calibration headroom
    - target 2× `On plan` `Framework`
@@ -123,7 +123,7 @@ Binary-state pills (`Compliant`, `Remediating`, `Open`) with a source footer for
 
 `Compliance · Q4 2026`
 
-## Three frameworks clean; one open finding under remediation since the last walk-through.
+## Three frameworks clean; one finding under remediation.
 
 1. 0
    - SOC 2 Type II open findings
@@ -137,8 +137,6 @@ Binary-state pills (`Compliant`, `Remediating`, `Open`) with a source footer for
 4. 0
    - Internal audit material findings
    - quarterly review complete `Compliant` `Audit Committee`
-
-Source · regulatory register · weekly export
 ```
 
 ### `trajectory` — Trajectory — year-over-year cards

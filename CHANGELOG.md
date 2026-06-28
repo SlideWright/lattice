@@ -296,8 +296,17 @@ in patch versions.
   rebuild (chiefly the chart-family masthead lift, which moved titles from centred to a left-aligned
   masthead band, plus the Form cell-tree spacing). A full `npm run build:galleries` re-render moved
   **772 slides across 98 gallery·moods**, reviewed per-slide against the prior goldens
-  (`tools/golden-diff.mjs` before │ after │ overlay montages). No engine behaviour changed — this
-  catches the committed artifacts up to already-shipped rendering.
+  (`tools/golden-diff.mjs` before │ after │ overlay montages) plus a deterministic overflow re-scan.
+  No engine behaviour changed — this catches the committed artifacts up to already-shipped rendering.
+- **Fixed three masthead-lift overflow regressions the refresh exposed (#569).** The taller masthead
+  had begun clipping the densest gallery slides on current `main` (caught by the refresh, not caused
+  by it): `kpi` (default/attention/compliance + the dark/accent compositions that reuse default) had
+  its fourth metric collide with the footer; `citation-card` and `timeline-list` overlapped cards on
+  their "When NOT to reach for…" anti-pattern slides. Trimmed the over-long sample headlines and
+  anti-pattern prose in the three manifests so the supported content fits under the lifted masthead;
+  every affected slide now passes the overflow probe in both moods. (The underlying capacity question
+  — a default `kpi` holding four rows under a two-line headline — is tracked separately for a layout
+  fix rather than papered over here.)
 - **`logo-wall` marks are now token-coloured silhouettes — palette-driven, theme/mode-adaptive,
   AA on any ground.** A mark was a desaturated `<img>` (a CSS `filter` grey that couldn't follow
   the palette and fell below AA on a dark canvas). The new `logo-marks` transformer
