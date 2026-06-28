@@ -74,6 +74,31 @@ describe('Studio — Architect + editor controls respond', () => {
 	});
 });
 
+describe('Studio — Fabricate + Present dock respond', () => {
+	it('Fabricate switches Theme/Layout tabs and exports', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
+		await user.click(await screen.findByText('Fabricate'));
+		expect(await screen.findByText('Theme Studio')).toBeInTheDocument();
+		// Switch to the Layout tab — its density panel appears, the theme studio leaves.
+		await user.click(screen.getByRole('button', { name: /Layout/ }));
+		expect(await screen.findByText(/Density/)).toBeInTheDocument();
+		expect(screen.queryByText('Theme Studio')).not.toBeInTheDocument();
+		// Export theme confirms via toast.
+		await user.click(screen.getByRole('button', { name: /Export theme/ }));
+		expect(await screen.findByText(/Exported/)).toBeInTheDocument();
+	});
+
+	it('Present read-aloud Play/Pause toggles', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Present' }));
+		const dialog = await screen.findByRole('dialog', { name: 'Present' });
+		const dock = within(dialog).getByRole('button', { name: 'Play read-aloud' });
+		await user.click(dock);
+		expect(within(dialog).getByRole('button', { name: 'Pause read-aloud' })).toBeInTheDocument();
+	});
+});
+
 describe('Studio — Inspector controls respond', () => {
 	it('a theme swatch in the Inspector applies the palette', async () => {
 		const user = setup();

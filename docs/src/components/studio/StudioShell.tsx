@@ -349,7 +349,7 @@ export default function StudioShell({ options }: Props) {
 
 			{/* ── Body ─────────────────────────────────────────────────── */}
 			{view === 'fabricate' ? (
-				<Fabricate options={options} onClose={() => setView('compose')} />
+				<Fabricate options={options} onClose={() => setView('compose')} notify={notify} />
 			) : mobile ? (
 				/* Mobile: one swappable Edit/Preview pane; panels live in sheets. */
 				<div className="flex min-h-0 flex-1 flex-col">
@@ -433,7 +433,7 @@ export default function StudioShell({ options }: Props) {
 			{/* ── Overlays ─────────────────────────────────────────────── */}
 			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} source={source} onPresent={() => setPresentOpen(true)} notify={notify} />
 			<WorkspaceSheet open={workspaceOpen} onOpenChange={setWorkspaceOpen} notify={notify} />
-			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} startIndex={activeFullIndex} />
+			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} startIndex={activeFullIndex} notify={notify} />
 			<CommandPalette
 				open={cmdOpen}
 				onOpenChange={setCmdOpen}
