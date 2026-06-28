@@ -65,6 +65,10 @@ in patch versions.
     its first heading), and **version history**: an Inspector timeline of saved
     checkpoints with one-click Restore, captured manually and automatically
     before each AI edit (so an AI change is reversible beyond undo).
+  - **Architect chat** — a real conversational thread (Coach/Chat toggle,
+    per-deck history) that runs through the connected model with the deck in
+    context and returns proposed edits as a reviewable **Apply/Discard diff
+    card**; plus an editable **session budget cap** the architect honours.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /
