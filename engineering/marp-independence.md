@@ -28,7 +28,7 @@ through a clean handoff — its own thing, behind a boundary.
 | Source imports | **zero** real `@marp-team` / `marpit` imports | repo-wide grep; remaining marp strings are comments citing the porting source |
 | First-party render (CLI · emulator · playground) | **owned engine** | `lib/engine/` |
 | `marp.config.js` (BYO marp-cli render path) | **retired** | deleted; the owned engine is the only render path |
-| Export-to-Marp (#250 / #257) | **stays — generates recipient bundles** | the bundle pins marp-cli for the *recipient*, not for us; its generated config ships no engine (split + theme only — full fidelity via the bundled emulator/runtime) |
+| Export-to-Marp (#250 / #257) | **stays — generates recipient bundles** | the bundle pins marp-cli for the *recipient*, not for us; its generated config ships no engine — the deck is **rendered by the recipient's Marp**, and the bundle carries the minified `lattice.css` + themes, the browser runtime, and Mermaid for fidelity. There is **no bundled emulator** (`lib/core/marp-bundle.js`). |
 | VS Code live preview | **clean handoff** | the Export-to-Marp bundle is self-contained — anyone who wants Marp tooling exports it and runs Marp on the far side of the boundary; not our concern after the handoff |
 
 **Marp is fully externalized.** We render every first-party path; Marp is an

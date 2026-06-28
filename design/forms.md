@@ -470,14 +470,31 @@ mechanism — the flex cell-tree** (`engineering/decisions/2026-06-26-frames-as-
 overflow to the cell-aware probe (`lib/core/overflow-probe.js`) — the responsiveness +
 content-height win of B, plus the clip-and-detect A wanted, without grid's fixed track.
 
-**This is what ships today.** The `STAGE_MIGRATED` set in
-`lib/forms/cell/masthead/masthead.transform.js` wraps **30 standard components** in
-`.cell-stage`; the chart-family / `journey` / `roadmap` / etc. and the sovereign
-split/redline frames stay on **direct-child** bodies (intentionally out of cell-tree
-scope, gated). So `.cell-stage` is **not** a retired idea — it is the live bounded-body
-cell, reached via **flex, not grid**. (Mechanism B — Cells as pure in-flow bands with
-bodies as direct children — survives for the un-migrated set; the two coexist by design,
-selected per-component by `wrapsStageBody`.)
+**This is what ships today, and the standard-set migration is complete.** Every
+component is in exactly one of three buckets, a total partition the drift test in
+`test/unit/transformers/masthead-lift.test.js` keeps honest (a new component can't
+sit unclassified):
+
+- **`STAGE_MIGRATED`** (`lib/forms/cell/masthead/masthead.transform.js`) — the **30
+  standard components** (plus generic `content`) whose body wraps into `.cell-stage`.
+  `redline` was the last to join (#587); the set is now closed over the standard set.
+- **`STAGE_DEFERRED`** — the **14 sized-media / own-grid** layouts that get the
+  masthead band but keep **direct-child** bodies: the 13 `chart`-bucket layouts
+  (`funnel`, `gantt`, `journey`, `kanban`, `map`, `piechart`, `progress`, `quadrant`,
+  `radar`, `roadmap`, `state-chart`, `timeline-list`, `word-cloud`), each driving its
+  own `.chart-body` grid, and `diagram` (one fit-to-frame Mermaid SVG). Their body is
+  a single sized canvas, not flowing prose that can overstuff, so the stage clip buys
+  nothing — and an over-large canvas is still caught at the section level by the
+  overflow probe.
+- **chrome-exempt sovereign frames** (`FORM_TOGGLE_SKIP`) — `title`, `closing`,
+  `divider`, `image`, `split-panel`, `split-compare`, `math`, `compare-code` get **no**
+  band at all (they own their whole frame, incl. split frames' own bounded
+  `.panel-right` / `.compare-right` clip cells).
+
+So `.cell-stage` is **not** a retired idea — it is the live bounded-body cell, reached
+via **flex, not grid**. (Mechanism B — Cells as pure in-flow bands with bodies as
+direct children — survives for the deferred set; the two coexist by design, selected
+per-component by `wrapsStageBody`.)
 
 Changes are still gated so an unintended visual change fails a gate, not a
 reviewer's eye: the per-component galleries (light + dark page counts asserted) and

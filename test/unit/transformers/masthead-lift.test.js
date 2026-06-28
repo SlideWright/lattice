@@ -167,4 +167,35 @@ describe('masthead-lift — stage-wrap eligibility', () => {
     assert.deepEqual([...kernel.STAGE_MIGRATED].filter((n) => !all.has(n)), [], 'STAGE_MIGRATED has a non-layout');
     assert.ok(!kernel.STAGE_MIGRATED.has('title'), 'a sovereign frame must never be in STAGE_MIGRATED');
   });
+
+  test('every layout is classified: ALL_LAYOUTS = STAGE_MIGRATED ⊎ STAGE_DEFERRED ⊎ chrome-exempt', () => {
+    // The migration taxonomy is a TOTAL partition — every component is in exactly
+    // one of three buckets: wrapped into `.cell-stage` (STAGE_MIGRATED), gets the
+    // band but keeps a direct-child sized-media body (STAGE_DEFERRED), or is a
+    // sovereign frame that gets no band at all (FORM_TOGGLE_SKIP, chrome-exempt).
+    // This guard closes the gap that let `diagram` sit un-migrated yet
+    // un-enumerated: a brand-new component MUST be placed into one bucket or this
+    // fails — it can never default to "unwrapped and undocumented".
+    const { FORM_TOGGLE_SKIP } = require('../../../lib/integrations/markdown-it/plugins.js');
+    const all = kernel.ALL_LAYOUTS;
+    const migrated = kernel.STAGE_MIGRATED;
+    const deferred = kernel.STAGE_DEFERRED;
+    const exempt = new Set(FORM_TOGGLE_SKIP);
+
+    // disjoint — no layout wears two hats
+    assert.deepEqual([...migrated].filter((n) => deferred.has(n)), [], 'a layout is in both STAGE_MIGRATED and STAGE_DEFERRED');
+    assert.deepEqual([...migrated].filter((n) => exempt.has(n)), [], 'a migrated layout is also chrome-exempt');
+    assert.deepEqual([...deferred].filter((n) => exempt.has(n)), [], 'a deferred layout is also chrome-exempt');
+
+    // every member is a real layout (no stale names in the deferred set)
+    assert.deepEqual([...deferred].filter((n) => !all.has(n)), [], 'STAGE_DEFERRED has a non-layout');
+
+    // total — the three buckets cover ALL_LAYOUTS exactly, no gaps
+    const classified = new Set([...migrated, ...deferred, ...exempt]);
+    assert.deepEqual([...all].filter((n) => !classified.has(n)), [], 'an ALL_LAYOUTS component is unclassified (add it to a bucket)');
+    assert.deepEqual([...classified].filter((n) => !all.has(n)), [], 'a bucket names something outside ALL_LAYOUTS');
+
+    // diagram specifically is the deferred sized-media case, not silently dropped
+    assert.ok(deferred.has('diagram'), 'diagram must be an enumerated deferred layout');
+  });
 });

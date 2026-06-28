@@ -512,9 +512,11 @@ returns SVG sized to the chart-frame. Register the kind in
 deck.
 
 **Adding a new graph language (substance = graph).** Detect the fence
-in `lattice-emulator.js`, `marp.config.js`, and `lattice-runtime.js`.
-Resolve palette tokens. Inject into the language's theming API. Invoke
-the external CLI. Inline the SVG. Add DIAGRAM OVERRIDES if needed.
+in the shared kernel and the two render surfaces — `lattice-emulator.js`
+and `lattice-runtime.js` (the owned engine, `lib/engine/`, composes the
+same plugins; `marp.config.js` is retired). Resolve palette tokens. Inject
+into the language's theming API. Invoke the external CLI. Inline the SVG.
+Add DIAGRAM OVERRIDES if needed.
 
 **Adding a new structure layout (substance = structure).** Define the
 canonical list shape. Write the post-processor. Wire into all three
