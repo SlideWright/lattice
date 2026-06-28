@@ -167,12 +167,16 @@ its own commit. Rough order by value.
      document) — the DeckPreview must be `pointer-events-none` so the wrapping
      button's onClick fires. jsdom has no real iframe, so the unit test passed while
      the live UI was dead until the pointer-events fix; caught by puppeteer.
-   - **TODO — autoplay:** chain read-aloud across slides. `useReadAloud` `advance()`
-     calls `stop()` at the end but exposes no "finished naturally" signal (it also
-     stops on slide change / manual pause) — add an `onFinish` option fired only on
-     natural completion, then on finish advance + auto-play the next slide's reader
-     (mind the text-change `stop` effect — play AFTER it settles). Voice-gated, so
-     lower value without a connected voice.
+   - **DONE — autoplay** (branch `claude/studio-present-autoplay`): an **Auto**
+     toggle in read-aloud mode chains across slides. `useReadAloud` gained an
+     `onFinish` option fired ONLY on natural completion (the `advance` walk-off-end
+     branch — not a manual stop or slide-change `stop`); Present's onFinish advances
+     and an `autoAdvanceRef`-gated `[clamped]` effect plays the next slide's reader
+     (deferred a frame so the slide-change `stop()` settles first). Works with NO
+     voice — the caption cadence timer drives the chain; an empty-prose slide is
+     skipped (a `reader.sentences.length === 0` effect) rather than stalling.
+     Mutually exclusive with Rehearse; resets on close. **This clears the entire
+     #580 Studio depth backlog.**
 5. **Architect: selection Refine + per-finding AI fix.**
    - **DONE — selection Refine** (branch `claude/studio-architect-refine`):
      selecting prose in the editor reveals a **Refine** dropdown

@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, FileText, Grid2x2, LayoutGrid, Monitor, Pause, Play, Sparkles, Timer, Volume2, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FastForward, FileText, Grid2x2, LayoutGrid, Monitor, Pause, Play, Sparkles, Timer, Volume2, X } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
@@ -31,6 +31,7 @@ export function PresentOverlay({ open, onClose, options, slides, frontMatter = '
 	const [idx, setIdx] = React.useState(0);
 	const [playing, setPlaying] = React.useState(false);
 	const [overviewOpen, setOverviewOpen] = React.useState(false); // slide sorter (G)
+	const [autoplay, setAutoplay] = React.useState(false); // chain read-aloud across slides
 	const [rehearse, setRehearse] = React.useState(false); // Practice mode — folded into Present (plan §line 266)
 	const [elapsed, setElapsed] = React.useState(0); // rehearsal seconds
 
@@ -86,7 +87,58 @@ export function PresentOverlay({ open, onClose, options, slides, frontMatter = '
 	// play button drives it in read-aloud mode; the rehearsal clock in Rehearse).
 	// Read the slide's speaker note when it has one (the real talk track), else the
 	// on-slide prose.
-	const reader = useReadAloud(React.useMemo(() => getNote(cur) || slideToSpeech(cur), [cur]));
+	// Autoplay = read-aloud that chains across slides. Refs let the once-bound
+	// onFinish read live position/intent without re-binding the reader each slide.
+	const autoplayRef = React.useRef(false);
+	autoplayRef.current = autoplay;
+	const autoAdvanceRef = React.useRef(false);
+	const reader = useReadAloud(
+		React.useMemo(() => getNote(cur) || slideToSpeech(cur), [cur]),
+		{
+			onFinish: () => {
+				if (!autoplayRef.current) return;
+				if (clampedRef.current < countRef.current - 1) {
+					autoAdvanceRef.current = true; // play the next slide once it mounts
+					setIdx((i) => Math.min(i + 1, countRef.current - 1));
+				} else {
+					setAutoplay(false); // walked off the last slide — autoplay is done
+				}
+			},
+		},
+	);
+	// After an autoplay advance, start the new slide's reader. Deferred a frame so
+	// the reader's own slide-change stop() settles first; only fires for an auto
+	// advance (manual prev/next/jump leave it untouched).
+	const readerRef = React.useRef(reader);
+	readerRef.current = reader;
+	// biome-ignore lint/correctness/useExhaustiveDependencies: `clamped` is the TRIGGER — the effect must run on each slide change; it reads reader/flag via refs by design.
+	React.useEffect(() => {
+		if (!autoAdvanceRef.current) return;
+		autoAdvanceRef.current = false;
+		const id = requestAnimationFrame(() => readerRef.current.play());
+		return () => cancelAnimationFrame(id);
+	}, [clamped]);
+	// A slide with no readable prose never fires onFinish (nothing to read), which
+	// would stall the chain — so while autoplaying, skip an empty slide straight to
+	// the next (or end the run if it's the last).
+	React.useEffect(() => {
+		if (!autoplay || reader.sentences.length > 0) return;
+		if (clamped < count - 1) {
+			autoAdvanceRef.current = true;
+			setIdx((i) => Math.min(i + 1, count - 1));
+		} else {
+			setAutoplay(false);
+		}
+	}, [autoplay, reader.sentences.length, clamped, count]);
+	// Toggle autoplay: turning it on starts reading the deck now; off stops.
+	const toggleAutoplay = React.useCallback(() => {
+		setAutoplay((on) => {
+			const next = !on;
+			if (next) readerRef.current.play();
+			else readerRef.current.stop();
+			return next;
+		});
+	}, []);
 	const rungLabel = reader.rung && reader.rung !== 'silent' ? (reader.rung === 'kokoro' ? 'Aria · local' : 'Aria · cloud') : 'Captions';
 	// Stable caption keys (content + per-content occurrence — not the array index).
 	const captionParts = React.useMemo(() => {
@@ -145,6 +197,7 @@ export function PresentOverlay({ open, onClose, options, slides, frontMatter = '
 	}
 	function toggleRehearse() {
 		reader.stop(); // read-aloud and rehearsal are mutually exclusive transports
+		setAutoplay(false);
 		setRehearse((v) => !v);
 		setElapsed(0);
 		setPlaying(false);
@@ -158,7 +211,7 @@ export function PresentOverlay({ open, onClose, options, slides, frontMatter = '
 	}, [open, rehearse, playing]);
 	// Reset rehearsal state whenever Present closes.
 	React.useEffect(() => {
-		if (!open) { setRehearse(false); setElapsed(0); setPlaying(false); presenterRef.current?.close(); }
+		if (!open) { setRehearse(false); setElapsed(0); setPlaying(false); setAutoplay(false); presenterRef.current?.close(); }
 	}, [open]);
 	const goNext = React.useCallback(() => setIdx((i) => Math.min(i + 1, count - 1)), [count]);
 	const goPrev = React.useCallback(() => setIdx((i) => Math.max(i - 1, 0)), []);
@@ -251,7 +304,10 @@ export function PresentOverlay({ open, onClose, options, slides, frontMatter = '
 				{rehearse ? (
 					<span className={cn('inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-semibold', behind ? 'border-[color-mix(in_srgb,var(--chart-2,#9c3f00)_45%,transparent)] text-[var(--chart-2,#9c3f00)]' : 'border-[color-mix(in_srgb,var(--chart-3,#2e6f00)_45%,transparent)] text-[var(--chart-3,#2e6f00)]')}><Timer className="size-3.5" />{behind ? 'Behind pace' : 'On pace'}</span>
 				) : (
-					<span className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[12px] font-semibold text-[var(--accent)]"><Volume2 className="size-3.5" />{rungLabel}</span>
+					<>
+						<button type="button" onClick={toggleAutoplay} aria-pressed={autoplay} title="Autoplay — read every slide, advancing on its own" className={cn('inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[12px] font-semibold', autoplay ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]' : 'border-border text-muted-foreground hover:text-foreground')}><FastForward className="size-3.5" />Auto</button>
+						<span className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[12px] font-semibold text-[var(--accent)]"><Volume2 className="size-3.5" />{rungLabel}</span>
+					</>
 				)}
 			</div>
 			<SlideOverview open={overviewOpen} onClose={() => setOverviewOpen(false)} options={options} set={set} frontMatter={frontMatter} current={clamped} onJump={setIdx} paletteOverride={paletteOverride} extraTheme={extraTheme} extraCss={extraCss} />
