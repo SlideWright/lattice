@@ -205,11 +205,11 @@ describe('Studio — Fabricate + Present dock respond', () => {
 		// and a tier badge (AAA/AA/FAIL) — auditBoth output, not a static list.
 		expect(screen.getByText(/WCAG audit —/)).toBeInTheDocument();
 		expect(screen.getAllByText(/\d+\.\d+ : 1/).length).toBeGreaterThan(0);
-		// Changing a core colour re-derives — the export carries a fresh token set.
+		// Changing a core color re-derives — the export carries a fresh token set.
 		// All TEN essentials are editable (the engine's full ESSENTIAL_KEYS set).
 		const swatchInputs = document.querySelectorAll('input[type="color"]');
 		expect(swatchInputs.length).toBe(10);
-		// Picking a curated starter reseeds the core colours and re-derives.
+		// Picking a curated starter reseeds the core colors and re-derives.
 		await user.click(screen.getByRole('button', { name: /Start from Ember/ }));
 		expect(await screen.findByText(/Engine-derived contract — 18 tokens/)).toBeInTheDocument();
 	});
