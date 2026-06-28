@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { ArchitectChat } from './ArchitectChat';
 import { resumePendingAuth, runArchitect, useArchitectStatus } from './architect';
 import { CommandPalette } from './CommandPalette';
+import { listStudioComponents, type StudioComponent } from './component-library';
 import { addSlideAfter, deleteSlide, duplicateSlide, moveSlide, replaceSlide } from './deck-ops';
 import { DECKS, deckSource, type StudioDeck } from './decks';
 import { Editor, type EditorHandle } from './Editor';
@@ -121,6 +122,38 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			.catch(() => setSavedThemes([]));
 	}, []);
 	React.useEffect(() => { refreshThemes(); }, [refreshThemes]);
+	// Saved LOCAL components from the same shared library (kind:'component') —
+	// authored + saved in the Fabricate Layout Studio. They become insertable AND
+	// render styled (their CSS is injected where the deck uses them).
+	const [localComponents, setLocalComponents] = React.useState<StudioComponent[]>([]);
+	const refreshComponents = React.useCallback(() => {
+		// Keep a STABLE reference when nothing actually changed. The store resolves
+		// async to a fresh array each call (often an empty one when IndexedDB is
+		// absent); blindly setting it would flip `localComponents` identity, churn
+		// `knownWithLocal`, and needlessly re-init the editor (wiping its doc state).
+		const same = (a: StudioComponent[], b: StudioComponent[]) => a.length === b.length && a.every((c, i) => c.id === b[i].id && c.css === b[i].css && c.skeleton === b[i].skeleton && c.name === b[i].name);
+		listStudioComponents()
+			.then((list) => setLocalComponents((prev) => (same(prev, list) ? prev : list)))
+			.catch(() => setLocalComponents((prev) => (prev.length ? [] : prev)));
+	}, []);
+	React.useEffect(() => { refreshComponents(); }, [refreshComponents]);
+	// The insert palette = your saved local components (first) + the built-in catalog.
+	const insertComponents = React.useMemo<ComponentEntry[]>(
+		() => [...localComponents.map((c) => ({ name: c.name, bucket: 'local', description: 'Your saved component', skeleton: c.skeleton })), ...components],
+		[localComponents, components],
+	);
+	// CSS of the local components the deck actually USES, injected so an inserted
+	// local component renders STYLED (the engine theme doesn't know it). The engine
+	// applies its `.<name>` class; this supplies the matching rules.
+	const usedLocalCss = React.useMemo(() => {
+		if (!localComponents.length) return undefined;
+		const used = new Set(usedComponents(source));
+		const css = localComponents
+			.filter((c) => used.has(c.name))
+			.map((c) => c.css)
+			.join('\n\n');
+		return css || undefined;
+	}, [localComponents, source]);
 	// `validation` is an editor preference (persisted in settings). The deck-level
 	// Look controls (size / page numbers / header+footer) are NOT separate state —
 	// they READ from and WRITE to the deck's front-matter, so the toggle always
@@ -144,7 +177,14 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const slide = viewSlides[Math.min(activeSlide, viewSlides.length - 1)] ?? viewSlides[0] ?? '';
 	// When inline validation is off, nothing is "unknown" — the editor, the issue
 	// count, and the Architect's component check all stand down together.
-	const lintKnown = React.useMemo(() => (validation ? KNOWN : usedComponents(source)), [validation, source]);
+	// Your saved local components are first-class names too — fold them into the
+	// known set so validation never flags a `.<name>` you authored in Layout Studio.
+	// One memo, used both for deck scoring and the editor's inline lint (its stable
+	// identity also gates the CodeMirror re-init — it only changes when KNOWN or your
+	// saved components do).
+	const localNames = React.useMemo(() => localComponents.map((c) => c.name), [localComponents]);
+	const knownWithLocal = React.useMemo(() => [...KNOWN, ...localNames], [localNames]);
+	const lintKnown = React.useMemo(() => (validation ? knownWithLocal : usedComponents(source)), [validation, source, knownWithLocal]);
 	const issues = React.useMemo(() => unknownComponents(source, lintKnown).length, [source, lintKnown]);
 	const deckScore = React.useMemo(() => scoreDeck(source, lintKnown), [source, lintKnown]);
 
@@ -550,11 +590,11 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				Edit
 				<span className="flex-1" />
 				{issues > 0 && <span className="inline-flex items-center gap-1 rounded-full border border-[color-mix(in_srgb,var(--chart-2,#9c3f00)_35%,transparent)] bg-[color-mix(in_srgb,var(--chart-2,#9c3f00)_8%,transparent)] px-2 py-0.5 font-sans text-[11px] font-semibold normal-case tracking-normal text-[var(--chart-2,#9c3f00)]"><AlertTriangle className="size-3" />{issues} issue{issues > 1 ? 's' : ''}</span>}
-				{components.length > 0 && <button type="button" onClick={() => setInsertOpen(true)} className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] hover:bg-[var(--accent-soft)]"><Plus className="size-3" />Insert</button>}
+				{insertComponents.length > 0 && <button type="button" onClick={() => setInsertOpen(true)} className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] hover:bg-[var(--accent-soft)]"><Plus className="size-3" />Insert</button>}
 				<button type="button" onClick={() => editorRef.current?.fixAll()} className="rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] disabled:opacity-40" disabled={!issues}>Fix all</button>
 				<span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-foreground"><FileText className="size-3" />Markdown</span>
 			</div>
-			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? KNOWN : NO_KNOWN} completionComponents={components} lintVocab={lintVocab} onCursorSlide={onEditorCursorSlide} className="flex-1" />
+			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? knownWithLocal : NO_KNOWN} completionComponents={insertComponents} lintVocab={lintVocab} extraComponentNames={localNames} onCursorSlide={onEditorCursorSlide} className="flex-1" />
 		</section>
 	);
 
@@ -574,7 +614,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				<button type="button" onClick={() => goToSlide(slideNo)} className="rounded px-1.5 text-muted-foreground hover:text-[var(--accent)]" aria-label="Next slide">›</button>
 			</div>
 			<div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-card p-4 sm:p-5">
-				<DeckPreview options={options} sample={fm ? fm + slide : slide} mermaid={false} paletteOverride={activeTheme?.name} extraTheme={extraTheme} className="relative aspect-video w-full max-w-[760px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Live deck preview" />
+				<DeckPreview options={options} sample={fm ? fm + slide : slide} mermaid={false} paletteOverride={activeTheme?.name} extraTheme={extraTheme} extraCss={usedLocalCss} className="relative aspect-video w-full max-w-[760px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Live deck preview" />
 			</div>
 			{/* Slide navigator — jump to any slide, see its component type */}
 			<div className="flex items-center gap-1.5 border-t border-border bg-background px-3 py-2">
@@ -711,7 +751,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 
 			{/* ── Body ─────────────────────────────────────────────────── */}
 			{view === 'fabricate' ? (
-				<Fabricate options={options} onClose={() => setView('compose')} notify={notify} onSaved={refreshThemes} />
+				<Fabricate options={options} onClose={() => setView('compose')} notify={notify} onSaved={() => { refreshThemes(); refreshComponents(); }} />
 			) : mobile ? (
 				/* Mobile: one swappable Edit/Preview pane; panels live in sheets. */
 				<div className="flex min-h-0 flex-1 flex-col">
@@ -793,9 +833,9 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			)}
 
 			{/* ── Overlays ─────────────────────────────────────────────── */}
-			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} source={source} options={options} palette={palette} mode={mode === 'dark' ? 'dark' : 'light'} extraTheme={extraTheme} onPresent={() => setPresentOpen(true)} notify={notify} />
+			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} source={source} options={options} palette={palette} mode={mode === 'dark' ? 'dark' : 'light'} extraTheme={extraTheme} extraCss={usedLocalCss} onPresent={() => setPresentOpen(true)} notify={notify} />
 			<WorkspaceSheet open={workspaceOpen} onOpenChange={setWorkspaceOpen} notify={notify} />
-			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} frontMatter={fm} startIndex={activeFullIndex} paletteOverride={activeTheme?.name} extraTheme={extraTheme} notify={notify} />
+			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} frontMatter={fm} startIndex={activeFullIndex} paletteOverride={activeTheme?.name} extraTheme={extraTheme} extraCss={usedLocalCss} notify={notify} />
 			<CommandPalette
 				open={cmdOpen}
 				onOpenChange={setCmdOpen}
@@ -807,9 +847,9 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				onShare={() => setShareOpen(true)}
 				onFabricate={() => setView('fabricate')}
 				onReshape={() => setInspectorOpen(true)}
-				onInsert={components.length > 0 ? () => setInsertOpen(true) : undefined}
+				onInsert={insertComponents.length > 0 ? () => setInsertOpen(true) : undefined}
 			/>
-			<InsertComponent open={insertOpen} onOpenChange={setInsertOpen} components={components} onInsert={onInsertComponent} />
+			<InsertComponent open={insertOpen} onOpenChange={setInsertOpen} components={insertComponents} onInsert={onInsertComponent} />
 			{/* Hidden file input for "Import deck…" (.md upload). */}
 			<input ref={importInputRef} type="file" accept=".md,.markdown,.mdx,text/markdown,text/plain" onChange={onImportFile} className="hidden" aria-hidden="true" tabIndex={-1} />
 

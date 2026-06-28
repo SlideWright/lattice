@@ -17,7 +17,7 @@ import { buildDeckRender, type ExtraTheme } from './share-export';
  * the self-contained doc string + the slide total. Honors a saved library theme
  * (`extraTheme`) and the active palette/mode, exactly like the live preview.
  */
-export async function buildPresenterStageDoc(options: SingleSlideOptions, source: string, total: number, paletteOverride?: string, extraTheme?: ExtraTheme): Promise<{ doc: string; total: number }> {
+export async function buildPresenterStageDoc(options: SingleSlideOptions, source: string, total: number, paletteOverride?: string, extraTheme?: ExtraTheme, extraCss?: string): Promise<{ doc: string; total: number }> {
 	const { palette, mode } = currentPaletteMode(paletteOverride);
 	const render = await buildDeckRender(options, source, palette, mode, extraTheme);
 	const bg = mode === 'dark' ? '#0c0c0c' : '#15110d';
@@ -28,7 +28,9 @@ export async function buildPresenterStageDoc(options: SingleSlideOptions, source
 		bg,
 		// Register the vendored faces first (the engine's @import is inert inside an
 		// isolated srcdoc — the same reason single-slide-render injects fontCss).
-		css: render.fontCss + render.css,
+		// Local-component CSS (extraCss) rides last so the deck's `.<name>` slides
+		// are styled on the second screen too.
+		css: render.fontCss + render.css + (extraCss ? `\n${extraCss}` : ''),
 		runtimeUrl: render.runtimeUrl,
 		katexUrl: KATEX_URL,
 		mermaidUrl: MERMAID_URL,

@@ -135,9 +135,21 @@ its own commit. Rough order by value.
      (`layout-core.generated.js` `gateCss`/`skeletonInvokes`: no-hex, scope-leak,
      skeleton-invokes), preview it live (new `extraCss` hook on
      `single-slide-render.ts`/`DeckPreview`), and save to the shared library
-     (`component-library.ts` over `asset-store` + `componentAsset`). Insert a
-     saved local component into the deck (the InsertComponent palette) is the
-     remaining follow-on.
+     (`component-library.ts` over `asset-store` + `componentAsset`).
+   - **DONE — Insert + render saved local components** (branch
+     `claude/studio-insert-local-component`): saved local components surface in the
+     InsertComponent palette under a `local` group (front of `BUCKET_ORDER`);
+     inserting drops the skeleton as a new slide. The CSS of the local components
+     the deck actually uses (`usedComponents(source)` ∩ saved) is composed into one
+     `usedLocalCss` string and injected as `extraCss` everywhere the deck renders —
+     compose preview, presenter window (`studio-presenter.ts` → `buildDeckRender`),
+     and Share exports (`share-export.ts` `buildDeckRender`/`sharePdf`/`sharePptx`/
+     `sharePrintDeck`). Local names also fold into the editor's known-set
+     (`knownWithLocal`) + completion list so validation never flags them.
+     **Gotcha fixed:** `refreshComponents` must keep a STABLE array reference when
+     the resolved list is unchanged (the store resolves async to a fresh — often
+     empty — array each call); otherwise `localComponents` identity flips,
+     `knownWithLocal` churns, and the editor re-inits mid-edit and wipes its doc.
 3. **Settings: model picker + voice/weight management.** Reuse
    `architect-model.js` `listOpenRouterModels()`/`setOpenRouterModel()` and
    `voice-model.js` (`createVoiceModel().availability()`, Kokoro summon/download,

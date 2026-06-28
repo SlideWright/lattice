@@ -103,10 +103,13 @@ export const Editor = React.forwardRef<EditorHandle, {
 	 *  unknown-component-only fallback. */
 	// biome-ignore lint/suspicious/noExplicitAny: serialized vocab handoff from the page (Sets-as-arrays).
 	lintVocab?: any;
+	/** Saved local-component names (Layout Studio). Folded into the real lint-core
+	 *  vocabulary so a `.<name>` you authored isn't flagged "unknown component". */
+	extraComponentNames?: string[];
 	/** Fired when the cursor crosses into a different slide — drives the preview. */
 	onCursorSlide?: (index: number) => void;
 	className?: string;
-}>(function Editor({ value, onChange, knownComponents = [], completionComponents = [], lintVocab, onCursorSlide, className }, ref) {
+}>(function Editor({ value, onChange, knownComponents = [], completionComponents = [], lintVocab, extraComponentNames, onCursorSlide, className }, ref) {
 	const hostRef = React.useRef<HTMLDivElement>(null);
 	const viewRef = React.useRef<EditorView | null>(null);
 	const onChangeRef = React.useRef(onChange);
@@ -119,7 +122,17 @@ export const Editor = React.forwardRef<EditorHandle, {
 	// Real grammar lint when a vocabulary is supplied; otherwise the unknown-
 	// component-only fallback (keeps tests + vocab-less surfaces working).
 	const useRealLint = !!lintVocab?.names;
-	const vocabSets = React.useMemo(() => (useRealLint ? buildVocabSets(lintVocab) : null), [lintVocab, useRealLint]);
+	// A stable join key so the memo only rebuilds when the local-name SET changes.
+	const extraNamesKey = (extraComponentNames || []).join(',');
+	// biome-ignore lint/correctness/useExhaustiveDependencies: extraNamesKey is the stable content-proxy for extraComponentNames; depending on the array itself would rebuild every render.
+	const vocabSets = React.useMemo(() => {
+		if (!useRealLint) return null;
+		const sets = buildVocabSets(lintVocab);
+		// Union your saved local components into the known names so lint-core treats
+		// them as first-class, not unknown. (Built-in `names` stays authoritative.)
+		for (const n of extraComponentNames || []) sets.names.add(n);
+		return sets;
+	}, [lintVocab, useRealLint, extraNamesKey]);
 
 	React.useImperativeHandle(ref, () => ({
 		fixAll() {

@@ -9,8 +9,9 @@ import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, C
 
 export type ComponentEntry = { name: string; bucket: string; description: string; skeleton: string };
 
-// The 12 buckets in a deliberate reading order (anchor first, legal last).
-const BUCKET_ORDER = ['anchor', 'statement', 'inventory', 'comparison', 'progression', 'evidence', 'imagery', 'chart', 'diagram', 'math', 'code', 'legal'];
+// 'local' (your saved Layout-Studio components) leads, then the 12 built-in
+// buckets in a deliberate reading order (anchor first, legal last).
+const BUCKET_ORDER = ['local', 'anchor', 'statement', 'inventory', 'comparison', 'progression', 'evidence', 'imagery', 'chart', 'diagram', 'math', 'code', 'legal'];
 
 export function InsertComponent({ open, onOpenChange, components, onInsert }: { open: boolean; onOpenChange: (v: boolean) => void; components: ComponentEntry[]; onInsert: (c: ComponentEntry) => void }) {
 	const groups = React.useMemo(() => {
@@ -29,7 +30,7 @@ export function InsertComponent({ open, onOpenChange, components, onInsert }: { 
 
 	return (
 		<CommandDialog open={open} onOpenChange={onOpenChange} title="Insert a component" description="Search the component library and insert one as a new slide.">
-			<CommandInput placeholder="Search 53 components — name, bucket, or what it's for…" />
+			<CommandInput placeholder={`Search ${components.length} components — name, bucket, or what it's for…`} />
 			<CommandList>
 				<CommandEmpty>No matching component.</CommandEmpty>
 				{groups.map(({ bucket, list }) => (
