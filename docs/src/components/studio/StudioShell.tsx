@@ -1,6 +1,6 @@
 import {
 	AlertTriangle, ArrowLeftToLine, ArrowRightToLine, Check, ChevronDown, ChevronLeft,
-	Copy, Eye, FileText, History, Layers, LayoutGrid, ListChecks, Palette, PencilLine, PencilRuler, Play, Plus, Save, Search, Settings2, Share2, SlidersHorizontal, Sparkles, Trash2, Upload, Volume2, Wand2, X,
+	Copy, Eye, FileText, History, Layers, LayoutGrid, ListChecks, Palette, PencilLine, PencilRuler, Play, Plus, Save, Search, Settings2, Share2, SlidersHorizontal, Sparkles, StickyNote, Trash2, Upload, Volume2, Wand2, X,
 } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
@@ -44,11 +44,28 @@ const LENS_LABEL: Record<string, string> = { exec: 'Exec summary', onepager: 'On
 // Slide sizes the engine themes define (@size tokens). `size:` front-matter picks one.
 const SIZES = [
 	{ value: '16:9', label: 'Widescreen 16 : 9' },
+	{ value: '4k', label: '4K (16 : 9)' },
 	{ value: 'standard', label: 'Standard 4 : 3' },
 	{ value: 'square', label: 'Square 1 : 1' },
-	{ value: '4k', label: '4K (16 : 9)' },
+	{ value: 'portrait', label: 'Portrait 4 : 5' },
+	{ value: 'story', label: 'Story 9 : 16' },
 ];
 const SIZE_LABELS: Record<string, string> = Object.fromEntries(SIZES.map((s) => [s.value, s.label.replace(/ \(.*\)/, '')]));
+// Aspect ratio (w:h) per engine `@size` token, so the preview CARD matches the
+// deck's real shape — not a hardcoded 16:9. Covers the @size table in lib/_theme.css
+// (incl. aliases); an unknown size falls back to 16:9.
+const SIZE_RATIO: Record<string, [number, number]> = {
+	'16:9': [16, 9], hd: [16, 9], '4k': [16, 9], '4K': [16, 9],
+	standard: [4, 3], '4:3': [4, 3],
+	square: [1, 1], '1:1': [1, 1],
+	portrait: [4, 5], '4:5': [4, 5],
+	story: [9, 16], '9:16': [9, 16], reel: [9, 16],
+	mobile: [1080, 2340],
+};
+function sizeRatio(size: string): [number, number] {
+	return SIZE_RATIO[size] ?? SIZE_RATIO[(size || '').toLowerCase()] ?? [16, 9];
+}
+const ratioText = ([w, h]: [number, number]): string => (w === 1080 ? '9 : 19.5' : `${w} : ${h}`);
 // Relative time for the version-history list (just now / Nm / Nh / Nd).
 function timeAgo(ts: number): string {
 	const s = Math.max(0, Math.round((Date.now() - ts) / 1000));
@@ -81,6 +98,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const [composeLens, setComposeLens] = React.useState<PresentLens>('full'); // reader lens for the preview
 	const [architectOpen, setArchitectOpen] = React.useState(true);
 	const [inspectorOpen, setInspectorOpen] = React.useState(false); // PM-4: preview is sacred
+	const [notesOpen, setNotesOpen] = React.useState(false); // speaker-notes drawer (own surface, not the Inspector)
 	const [view, setView] = React.useState<'compose' | 'fabricate'>('compose');
 	const [shareOpen, setShareOpen] = React.useState(false);
 	const [workspaceOpen, setWorkspaceOpen] = React.useState(false);
@@ -513,6 +531,33 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	// The full-deck index of the slide currently in view (for handing off to Present).
 	const activeFullIndex = composeLens === 'full' ? slideNo - 1 : Math.max(0, slides.indexOf(viewSlides[slideNo - 1]));
 
+	// The preview card's aspect follows the deck's selected Size (not a fixed 16:9);
+	// portrait shapes bind to height so they fit the pane, landscape to width.
+	const previewRatio = sizeRatio(deckSize);
+	const previewPortrait = previewRatio[1] > previewRatio[0];
+	// Touch swipe (mobile) + horizontal wheel (trackpad) change the viewed slide.
+	// goToSlide(slideNo) is next, goToSlide(slideNo - 2) is prev (both clamp).
+	const swipeRef = React.useRef<{ x: number; y: number } | null>(null);
+	const wheelAtRef = React.useRef(0);
+	const onPreviewTouchStart = (e: React.TouchEvent) => { const t = e.touches[0]; swipeRef.current = { x: t.clientX, y: t.clientY }; };
+	const onPreviewTouchEnd = (e: React.TouchEvent) => {
+		const s = swipeRef.current;
+		swipeRef.current = null;
+		if (!s) return;
+		const t = e.changedTouches[0];
+		const dx = t.clientX - s.x;
+		// Horizontal intent only — ignore vertical scrolls and small jitters.
+		if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(t.clientY - s.y)) return;
+		goToSlide(dx < 0 ? slideNo : slideNo - 2);
+	};
+	const onPreviewWheel = (e: React.WheelEvent) => {
+		if (Math.abs(e.deltaX) < 30 || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return; // horizontal only
+		const now = Date.now();
+		if (now - wheelAtRef.current < 400) return; // debounce a continuous trackpad swipe
+		wheelAtRef.current = now;
+		goToSlide(e.deltaX > 0 ? slideNo : slideNo - 2);
+	};
+
 	// Structural slide ops (full lens only). Each rewrites the source, moves the
 	// active slide to follow the edit, and reveals it in the editor next frame
 	// (after the value-sync effect has pushed the new doc into CodeMirror).
@@ -692,17 +737,6 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			<InspGroup icon={<Wand2 className="size-3.5" />} label="Authoring">
 				<Field label="Inline validation"><Toggle label="Inline validation" on={validation} onClick={() => { setValidation((v) => { notify(v ? 'Inline validation off — the editor stops flagging components.' : 'Inline validation on — unknown components are flagged again.'); return !v; }); }} /></Field>
 			</InspGroup>
-			<InspGroup icon={<FileText className="size-3.5" />} label={`Speaker notes — slide ${activeFullIndex + 1}`}>
-				<textarea
-					value={noteDraft}
-					onChange={(e) => setNoteDraft(e.target.value)}
-					onBlur={commitNote}
-					rows={3}
-					aria-label="Speaker note for this slide"
-					placeholder="What you'll say on this slide — read aloud in Present, exported as PDF/PPTX notes."
-					className="w-full resize-none rounded-lg border border-border bg-background p-2.5 text-[12.5px] leading-relaxed text-foreground outline-none focus:border-[var(--accent)]"
-				/>
-			</InspGroup>
 			<InspGroup icon={<History className="size-3.5" />} label="History">
 				<button type="button" onClick={saveVersion} className="mb-1.5 flex w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-[12.5px] font-semibold text-[var(--accent)] hover:bg-[var(--accent-soft)]"><Save className="size-3.5" />Save a version</button>
 				{checkpoints.length === 0 ? (
@@ -761,6 +795,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				)}
 				{insertComponents.length > 0 && <button type="button" onClick={() => setInsertOpen(true)} className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] hover:bg-[var(--accent-soft)]" aria-label="Insert component" title="Insert component"><Plus className="size-3" /><span className="hidden lg:inline">Insert</span></button>}
 				<button type="button" onClick={() => editorRef.current?.fixAll()} className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] disabled:opacity-40" disabled={!issues} aria-label="Fix all issues" title="Fix all issues"><ListChecks className="size-3" /><span className="hidden lg:inline">Fix all</span></button>
+				<button type="button" onClick={() => setNotesOpen(true)} aria-label="Speaker notes" title="Speaker notes" className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] hover:bg-[var(--accent-soft)]"><StickyNote className="size-3" /><span className="hidden lg:inline">Notes</span></button>
 				<span className="hidden items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-foreground lg:inline-flex"><FileText className="size-3" />Markdown</span>
 			</div>
 			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? knownWithLocal : NO_KNOWN} completionComponents={insertComponents} lintVocab={lintVocab} extraComponentNames={localNames} onCursorSlide={onEditorCursorSlide} onSelectionChange={setHasSelection} className="flex-1" />
@@ -782,8 +817,14 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				<span className="rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--text-heading)]">Slide {slideNo} / {viewSlides.length}</span>
 				<button type="button" onClick={() => goToSlide(slideNo)} className="rounded px-1.5 text-muted-foreground hover:text-[var(--accent)]" aria-label="Next slide">›</button>
 			</div>
-			<div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-card p-4 sm:p-5">
-				<DeckPreview options={options} sample={fm ? fm + slide : slide} mermaid={false} paletteOverride={activeTheme?.name} extraTheme={extraTheme} extraCss={usedLocalCss} className="relative aspect-video w-full max-w-[760px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Live deck preview" />
+			{/* Swipe (touch) + horizontal-wheel (trackpad) change slides; the card's
+			    aspect ratio follows the deck's selected Size, not a fixed 16:9. */}
+			<div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-card p-4 sm:p-5" onTouchStart={onPreviewTouchStart} onTouchEnd={onPreviewTouchEnd} onWheel={onPreviewWheel}>
+				{/* pointer-events-none so a swipe over the slide (an engine iframe, which
+				    would otherwise swallow the touch) reaches the swipe container. */}
+				<div className={cn('pointer-events-none relative overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]', previewPortrait ? 'h-full w-auto' : 'h-auto w-full max-w-[760px]')} style={{ aspectRatio: `${previewRatio[0]} / ${previewRatio[1]}` }}>
+					<DeckPreview options={options} sample={fm ? fm + slide : slide} mermaid={false} paletteOverride={activeTheme?.name} extraTheme={extraTheme} extraCss={usedLocalCss} className="size-full" aria-label="Live deck preview" />
+				</div>
 			</div>
 			{/* Slide navigator — jump to any slide, see its component type */}
 			<div className="flex items-center gap-1.5 border-t border-border bg-background px-3 py-2">
@@ -819,7 +860,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			<div className="flex items-center gap-3 border-t border-border px-4 py-1.5 font-mono text-[11px] text-muted-foreground">
 				<span className="inline-flex items-center gap-1 text-[var(--chart-3,#2e6f00)]">● Live</span>
 				<span className="truncate">{palette} · {mode}</span>
-				<span className="flex-1" /><span className="hidden sm:inline">16 : 9 · {viewSlides.length} slide{viewSlides.length === 1 ? '' : 's'}</span>
+				<span className="flex-1" /><span className="hidden sm:inline">{ratioText(previewRatio)} · {viewSlides.length} slide{viewSlides.length === 1 ? '' : 's'}</span>
 			</div>
 		</section>
 	);
@@ -932,6 +973,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 						</div>
 						<span className="flex-1" />
 						{issues > 0 && <span className="inline-flex items-center gap-1 rounded-full border border-[color-mix(in_srgb,var(--chart-2,#9c3f00)_35%,transparent)] bg-[color-mix(in_srgb,var(--chart-2,#9c3f00)_8%,transparent)] px-2 py-0.5 text-[11px] font-semibold text-[var(--chart-2,#9c3f00)]"><AlertTriangle className="size-3" />{issues}</span>}
+						<button type="button" onClick={() => setNotesOpen(true)} aria-label="Speaker notes" title="Speaker notes" className="grid size-8 place-items-center rounded-md text-muted-foreground hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]"><StickyNote className="size-4" /></button>
 					</div>
 					{mobilePane === 'edit' ? editorPane : previewPane}
 				</div>
@@ -1003,6 +1045,25 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			)}
 
 			{/* ── Overlays ─────────────────────────────────────────────── */}
+			<Sheet open={notesOpen} onOpenChange={setNotesOpen}>
+				<SheetContent side="right" className="w-[88vw] gap-0 sm:max-w-[420px]">
+					<SheetHeader className="border-b border-border">
+						<SheetTitle className="flex items-center gap-2 text-[15px]"><StickyNote className="size-4 text-[var(--accent)]" />Speaker notes<span className="ml-1 rounded-full bg-[var(--accent-soft)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-[var(--accent)]">slide {activeFullIndex + 1}</span></SheetTitle>
+						<SheetDescription className="sr-only">The talk track for the current slide — read aloud in Present, exported as PDF/PPTX notes.</SheetDescription>
+					</SheetHeader>
+					<div className="flex min-h-0 flex-1 flex-col p-4">
+						<textarea
+							value={noteDraft}
+							onChange={(e) => setNoteDraft(e.target.value)}
+							onBlur={commitNote}
+							aria-label="Speaker note for this slide"
+							placeholder="What you'll say on this slide — read aloud in Present, exported as PDF/PPTX notes."
+							className="min-h-[180px] w-full flex-1 resize-none rounded-lg border border-border bg-background p-3 text-[13.5px] leading-relaxed text-foreground outline-none focus:border-[var(--accent)]"
+						/>
+						<p className="mt-2 text-[11px] text-muted-foreground">Notes ride with the slide — read aloud in Present and exported to PDF/PPTX.</p>
+					</div>
+				</SheetContent>
+			</Sheet>
 			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} source={source} options={options} palette={palette} mode={mode === 'dark' ? 'dark' : 'light'} extraTheme={extraTheme} extraCss={usedLocalCss} onPresent={() => setPresentOpen(true)} notify={notify} />
 			<WorkspaceSheet open={workspaceOpen} onOpenChange={setWorkspaceOpen} notify={notify} />
 			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} frontMatter={fm} startIndex={activeFullIndex} paletteOverride={activeTheme?.name} extraTheme={extraTheme} extraCss={usedLocalCss} notify={notify} />
