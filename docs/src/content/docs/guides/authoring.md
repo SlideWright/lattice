@@ -46,8 +46,8 @@ Three things to notice:
 2. **Headings** separate slides by default — each `##` starts a new one (and a
    `---` still works too). Set `split: rule` for separators-only (see The
    `split:` key below).
-3. **`<!-- _class: NAME -->`** picks the layout for that slide. The
-   layout decides the structure; your Markdown fills the slots.
+3. **`<!-- _class: NAME -->`** picks the component for that slide. The
+   component decides the structure; your Markdown fills the slots.
 
 ## Picking a component
 
@@ -101,7 +101,7 @@ every deck.
 
 ## Modifiers
 
-Any layout accepts universal modifiers appended to the class —
+Any component accepts universal modifiers appended to the class —
 `dark`, `compact`, `loose`, `accent`, state markers, and treatments.
 For example `<!-- _class: cards-grid dark -->` renders the grid on the
 dark canvas. The catalog of modifiers lives in the design system
@@ -190,10 +190,10 @@ reference and the linter use. Every suggestion is deterministic and offline;
 - **`split:` in front matter** — the two split modes (`rule`, `headings`), again
   linter-validated. The **Deck setup** drawer exposes it as the Slide-splitting
   picker.
-- **Inside `<!-- _class: … -->`** — layout names (tagged by bucket), then the
-  modifiers that layout accepts, its own variants first and the universal ones
+- **Inside `<!-- _class: … -->`** — component names (tagged by bucket), then the
+  modifiers that component accepts, its own variants first and the universal ones
   after.
-- **On an empty slide** — a `skeleton` completion drops the layout's slot
+- **On an empty slide** — a `skeleton` completion drops the component's slot
   scaffold already in the correct nesting, so a card-style slide starts from
   the `- Title` / `  - body` shape rather than the inline-bold trap above.
 - **Other slide directives** — `_paginate`, `_header`, `_footer`, and friends
@@ -208,8 +208,8 @@ reference and the linter use. Every suggestion is deterministic and offline;
 ### Type-ahead — suggestions open on their own
 
 By default the popup opens **the moment your cursor enters a `<!-- _class: … -->`
-directive**, before you type anything — so the layout list is right there, and
-picking a layout then pressing space cascades straight into its modifiers. Deck
+directive**, before you type anything — so the component list is right there, and
+picking a component then pressing space cascades straight into its modifiers. Deck
 directives (`theme:`, `finish:`, fence languages, …) stay quiet until you type or
 press `Ctrl-Space`, so front matter doesn't pop a menu in your face. **Settings →
 Workspace → "Open suggestions automatically"** changes the reach: *Components
@@ -264,7 +264,7 @@ than going unstyled, and the drawer flags it.
 ## Where to go next
 
 - [Themes & palettes](/guides/themes/) — choose or author a palette.
-- [Component reference](/components/) — every layout's
+- [Component reference](/components/) — every component's
   authoring contract.
 - [Drawing Board](/drawing-board/) — author a full deck in the
   browser (autocomplete, live linting).

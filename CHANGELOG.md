@@ -417,6 +417,17 @@ in patch versions.
 
 ### Fixed
 
+- **Docs say "component", and the count reads 53 — the terminology sweep is finished.**
+  Completes #560 on top of #561/#563: the author-facing docs-site prose that still called a
+  component a "layout" (the landing/getting-started/principles pages and the authoring + spec
+  guides — `introduction.md`, `getting-started.md`, `principles.md`, `guides/authoring.md`,
+  `guides/themes.md`, `404.md`, `spec/understanding-lfm.md`) now says **component**; the
+  legitimate architectural senses (the Forms "Layout" axis, "layout CSS", grid/geometry, the
+  LFM "stable surfaces" contract term) are deliberately left. Reconciled the post-#563 count
+  to **53** everywhere it had drifted (`design-system.gallery.md`'s rendered deck still read
+  "52 components"; `introduction.md` read "Fifty-two"), and added the `inventory` component to
+  the Inventory-bucket example list in `design/design-system.md`. (Repo description is a
+  Settings-level field with no API hook — still on the maintainer to update.)
 - **`redline three-col` (and `split`) no longer clip their card prose under Form.** redline
   draws its own `section`-level grid and isn't `.cell-stage`-migrated, so the masthead band
   the Form lifts (eyebrow + title) auto-flowed into the grid's narrow first cell — the title
