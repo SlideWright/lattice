@@ -5,7 +5,7 @@ import StudioShell from './StudioShell';
 
 // A DeckPreview stub that surfaces the theme-wiring props as data-attributes, so a
 // test can assert that selecting a saved theme threads it into the live preview
-// (and that Fabricate's specimen honours the light/dark mode override).
+// (and that Fabricate's specimen honors the light/dark mode override).
 vi.mock('@/components/DeckPreview', () => ({
 	default: ({ 'aria-label': label, paletteOverride, extraTheme, modeOverride }: { 'aria-label'?: string; paletteOverride?: string; extraTheme?: { name: string }; modeOverride?: string }) => (
 		<div data-testid="deck-preview" data-label={label} data-palette-override={paletteOverride ?? ''} data-extra-theme={extraTheme?.name ?? ''} data-mode-override={modeOverride ?? ''}>

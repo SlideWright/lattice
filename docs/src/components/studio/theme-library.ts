@@ -19,7 +19,7 @@ export type StudioTheme = {
 	name: string; // lowercase slug — the engine theme name
 	label: string; // human-facing name
 	css: string; // the serialized themes/*.css
-	essentials: Record<string, string> | null; // the 10 picked colours (for re-editing)
+	essentials: Record<string, string> | null; // the 10 picked colors (for re-editing)
 };
 
 // The asset record as asset-store persists it (themeAsset shape).

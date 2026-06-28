@@ -30,7 +30,7 @@ const ESSENTIALS: { key: EssKey; label: string; group: string }[] = [
 ];
 const GROUPS = ['Surfaces', 'Ink', 'Brand', 'Signals'];
 const DENSITIES = ['Comfortable', 'Compact', 'Spacious'];
-const SPECIMEN = '<!-- _class: kpi -->\n\n`Theme · live specimen`\n\n## Your theme, derived & audited\n\n1. 100\n   - Tokens derived\n2. AA\n   - Contrast floor\n3. 10\n   - Colours you picked';
+const SPECIMEN = '<!-- _class: kpi -->\n\n`Theme · live specimen`\n\n## Your theme, derived & audited\n\n1. 100\n   - Tokens derived\n2. AA\n   - Contrast floor\n3. 10\n   - Colors you picked';
 
 const hash = (s: string) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
 const isColour = (v: unknown): v is string => typeof v === 'string' && /^(#|oklch|rgb|hsl)/i.test(v.trim());
@@ -138,13 +138,13 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 									})}
 								</div>
 							</Section>
-							<Section icon={<Palette className="size-3.5" />} label="Core colours — you pick all 10">
+							<Section icon={<Palette className="size-3.5" />} label="Core colors — you pick all 10">
 								{GROUPS.map((g) => (
 									<div key={g} className="mb-2.5 last:mb-0">
 										<div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">{g}</div>
 										{ESSENTIALS.filter((c) => c.group === g).map((c) => (
 											<div key={c.key} className="my-1.5 flex items-center gap-3">
-												<label className="relative size-[28px] cursor-pointer rounded-lg border border-border" style={{ background: core[c.key] }} aria-label={`${c.label} colour`}>
+												<label className="relative size-[28px] cursor-pointer rounded-lg border border-border" style={{ background: core[c.key] }} aria-label={`${c.label} color`}>
 													<input type="color" value={core[c.key]} onChange={(e) => setHex(c.key, e.target.value)} className="absolute inset-0 size-full cursor-pointer opacity-0" />
 												</label>
 												<span className="flex-1 text-[12.5px] font-semibold text-[var(--text-heading)]">{c.label}</span>
