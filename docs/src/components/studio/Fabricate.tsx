@@ -1,4 +1,4 @@
-import { Check, Download, LayoutGrid, Palette, Sparkles, TriangleAlert, X } from 'lucide-react';
+import { Check, Download, LayoutGrid, Moon, Palette, Sparkles, Sun, TriangleAlert, X } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
 import { Button } from '@/components/ui/button';
@@ -9,42 +9,57 @@ import { cn } from '@/lib/utils';
 // repaired), auditBoth → live WCAG report, serializeTheme → a real themes/*.css.
 import { auditBoth, deriveTheme, STARTERS, serializeTheme, validateEssentials } from '@/playground/theme-core.generated.js';
 import { downloadText } from './download';
+import { saveStudioTheme, slugify } from './theme-library';
 
-// The four colours the author picks → essentials keys; the rest seed from a
-// neutral starter and the derivation contrast-repairs everything.
-const CORE: { label: string; key: 'bg' | 'bgAlt' | 'textHeading' | 'accent'; init: string }[] = [
-	{ label: 'Background', key: 'bg', init: '#F8F2E5' },
-	{ label: 'Surface', key: 'bgAlt', init: '#F1E9D4' },
-	{ label: 'Text', key: 'textHeading', init: '#0E2F33' },
-	{ label: 'Accent', key: 'accent', init: '#006D77' },
+// You pick ALL TEN essentials — the same set the engine derivation + the
+// Workbench Theme Studio take (theme-core ESSENTIAL_KEYS). The derivation
+// contrast-repairs everything else (~100 tokens) from these. Grouped for the
+// eye: light surfaces, the ink trio, brand, then the semantic signals.
+type EssKey = 'bg' | 'bgAlt' | 'textHeading' | 'textBody' | 'textMuted' | 'accent' | 'accentSoft' | 'pass' | 'warn' | 'fail';
+const ESSENTIALS: { key: EssKey; label: string; group: string }[] = [
+	{ key: 'bg', label: 'Background', group: 'Surfaces' },
+	{ key: 'bgAlt', label: 'Surface', group: 'Surfaces' },
+	{ key: 'textHeading', label: 'Heading ink', group: 'Ink' },
+	{ key: 'textBody', label: 'Body ink', group: 'Ink' },
+	{ key: 'textMuted', label: 'Muted ink', group: 'Ink' },
+	{ key: 'accent', label: 'Accent', group: 'Brand' },
+	{ key: 'accentSoft', label: 'Accent wash', group: 'Brand' },
+	{ key: 'pass', label: 'Success', group: 'Signals' },
+	{ key: 'warn', label: 'Warning', group: 'Signals' },
+	{ key: 'fail', label: 'Error', group: 'Signals' },
 ];
+const GROUPS = ['Surfaces', 'Ink', 'Brand', 'Signals'];
 const DENSITIES = ['Comfortable', 'Compact', 'Spacious'];
-const SPECIMEN = '<!-- _class: kpi -->\n\n`Theme · live specimen`\n\n## Your theme, derived & audited\n\n1. 100\n   - Tokens derived\n2. AA\n   - Contrast floor\n3. 4\n   - Colours you picked';
+const SPECIMEN = '<!-- _class: kpi -->\n\n`Theme · live specimen`\n\n## Your theme, derived & audited\n\n1. 100\n   - Tokens derived\n2. AA\n   - Contrast floor\n3. 10\n   - Colours you picked';
 
 const hash = (s: string) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
 const isColour = (v: unknown): v is string => typeof v === 'string' && /^(#|oklch|rgb|hsl)/i.test(v.trim());
 
-export function Fabricate({ options, onClose, notify }: { options: SingleSlideOptions; onClose: () => void; notify: (msg: string) => void }) {
+export function Fabricate({ options, onClose, notify, onSaved }: { options: SingleSlideOptions; onClose: () => void; notify: (msg: string) => void; onSaved?: () => void }) {
 	const [tab, setTab] = React.useState<'theme' | 'layout'>('theme');
-	const [core, setCore] = React.useState<Record<string, string>>(() => Object.fromEntries(CORE.map((c) => [c.key, c.init])));
+	// All ten essentials in state, seeded from the first curated starter.
+	const [core, setCore] = React.useState<Record<EssKey, string>>(() => ({ ...(STARTERS[0].essentials as Record<EssKey, string>) }));
+	const [label, setLabel] = React.useState('Laguna Pro');
+	const [specimenMode, setSpecimenMode] = React.useState<'light' | 'dark'>('light');
 	const [density, setDensity] = React.useState('Comfortable');
+	const [saving, setSaving] = React.useState(false);
 	const accent = core.accent;
-	const setHex = (key: string, hex: string) => setCore((c) => ({ ...c, [key]: hex }));
+	const setHex = (key: EssKey, hex: string) => setCore((c) => ({ ...c, [key]: hex }));
 
-	// Derive the full token map from the picked essentials — REAL, every render.
+	// Derive the full token map from the ten picked essentials — REAL, every render.
 	const derived = React.useMemo(() => {
-		const essentials = { ...STARTERS[0].essentials, bg: core.bg, bgAlt: core.bgAlt, textHeading: core.textHeading, textBody: core.textHeading, accent: core.accent };
+		const essentials = { ...core };
 		try {
 			validateEssentials(essentials);
 			const map = deriveTheme(essentials);
 			const audit = auditBoth(map, { level: 'full' });
 			const name = `fab-${hash(JSON.stringify(essentials))}`;
-			const css = serializeTheme(map, { name, label: 'Laguna Pro' });
+			const css = serializeTheme(map, { name, label });
 			return { map, audit, name, css, error: null as string | null };
 		} catch (e) {
 			return { map: {} as Record<string, unknown>, audit: { light: { results: [] }, dark: { results: [] }, ok: false }, name: 'indaco', css: '', error: String((e as Error)?.message || e) };
 		}
-	}, [core]);
+	}, [core, label]);
 
 	// 18 representative derived colour tokens for the contract strip (keep the
 	// token name so the swatch key is stable across re-derivations).
@@ -61,20 +76,43 @@ export function Fabricate({ options, onClose, notify }: { options: SingleSlideOp
 		return [...byRole.values()].filter((r) => r.status === 'pass' || r.status === 'fail').slice(0, 5);
 	}, [derived.audit]);
 
+	const fileSlug = slugify(label) || derived.name;
+	async function saveToLibrary() {
+		if (saving || !derived.css) return;
+		setSaving(true);
+		try {
+			// Re-serialize under the FINAL library slug so the CSS's `@theme <name>`
+			// matches the stored record name. The live specimen uses a stable content-
+			// hash name (no churn while you type); the SAVED theme must instead carry
+			// the slug the library keys on, or the engine registers it under the css's
+			// name and `render(md, <recordName>)` finds no theme (a blank render).
+			const finalLabel = label.trim() || 'Untitled theme';
+			const name = slugify(finalLabel) || derived.name;
+			const css = serializeTheme(derived.map, { name, label: finalLabel });
+			const t = await saveStudioTheme({ name, label: finalLabel, essentials: core, css });
+			notify(`Saved “${t.label}” to your theme library — pick it from Look.`);
+			onSaved?.();
+		} catch {
+			notify('Could not save — your browser may block storage (private mode?).');
+		} finally {
+			setSaving(false);
+		}
+	}
+
 	return (
 		<div className="flex min-h-0 flex-1 flex-col">
 			<div className="flex h-[50px] shrink-0 items-center gap-2 border-b border-border bg-card px-3 sm:gap-3 sm:px-4">
 				<button type="button" onClick={onClose} className="shrink-0 rounded-md p-1 text-muted-foreground hover:text-foreground" aria-label="Back to Compose"><X className="size-4" /></button>
 				<span className="size-2 shrink-0 rounded-full" style={{ background: accent }} />
-				<span className="truncate text-sm font-semibold text-[var(--text-heading)]">Laguna Pro</span>
+				<input value={label} onChange={(e) => setLabel(e.target.value)} aria-label="Theme name" spellCheck={false} className="min-w-0 max-w-[180px] flex-shrink rounded-md border border-transparent bg-transparent px-1 py-0.5 text-sm font-semibold text-[var(--text-heading)] outline-none hover:border-border focus:border-[var(--accent)]" />
 				<span className="hidden font-mono text-[11px] text-muted-foreground sm:inline">draft theme</span>
 				<div className="ml-1 inline-flex shrink-0 rounded-[10px] border border-border bg-background p-[3px] sm:ml-3">
 					<button type="button" onClick={() => setTab('theme')} aria-pressed={tab === 'theme'} className={cn('inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[13px] font-semibold sm:px-3', tab === 'theme' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Palette className="size-3.5" />Theme</button>
 					<button type="button" onClick={() => setTab('layout')} aria-pressed={tab === 'layout'} className={cn('inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[13px] font-semibold sm:px-3', tab === 'layout' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><LayoutGrid className="size-3.5" />Layout</button>
 				</div>
 				<div className="flex-1" />
-				<Button variant="outline" size="sm" className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={() => { downloadText('laguna-pro.css', derived.css || '/* theme */', 'text/css'); notify('Exported laguna-pro.css — a real theme token set.'); }}><Download className="size-4" /><span className="hidden sm:inline">Export theme</span></Button>
-				<Button size="sm" className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={() => { try { localStorage.setItem('lattice-studio-theme-saved', derived.css); } catch {} notify('Saved “Laguna Pro” to your theme library.'); }}><Check className="size-4" /><span className="hidden sm:inline">Save to library</span></Button>
+				<Button variant="outline" size="sm" className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={() => { downloadText(`${fileSlug}.css`, derived.css || '/* theme */', 'text/css'); notify(`Exported ${fileSlug}.css — a real theme token set.`); }}><Download className="size-4" /><span className="hidden sm:inline">Export theme</span></Button>
+				<Button size="sm" disabled={saving || !derived.css} className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={saveToLibrary}><Check className="size-4" /><span className="hidden sm:inline">{saving ? 'Saving…' : 'Save to library'}</span></Button>
 			</div>
 
 			<div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:grid md:overflow-hidden md:[grid-template-columns:340px_1fr]">
@@ -88,7 +126,7 @@ export function Fabricate({ options, onClose, notify }: { options: SingleSlideOp
 										const e = s.essentials as Record<string, string>;
 										const active = core.bg === e.bg && core.accent === e.accent;
 										return (
-											<button type="button" key={s.name} onClick={() => setCore({ bg: e.bg, bgAlt: e.bgAlt, textHeading: e.textHeading, accent: e.accent })} title={s.description} aria-label={`Start from ${s.label}`} className={cn('flex items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left', active ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-border hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]')}>
+											<button type="button" key={s.name} onClick={() => setCore({ ...(e as Record<EssKey, string>) })} title={s.description} aria-label={`Start from ${s.label}`} className={cn('flex items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left', active ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-border hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]')}>
 												<span className="flex -space-x-1">
 													<span className="size-4 rounded-full border border-border" style={{ background: e.bg }} />
 													<span className="size-4 rounded-full border border-border" style={{ background: e.accent }} />
@@ -100,14 +138,19 @@ export function Fabricate({ options, onClose, notify }: { options: SingleSlideOp
 									})}
 								</div>
 							</Section>
-							<Section icon={<Palette className="size-3.5" />} label="Core colours — you pick 4">
-								{CORE.map((c) => (
-									<div key={c.key} className="my-2.5 flex items-center gap-3">
-										<label className="relative size-[30px] cursor-pointer rounded-lg border border-border" style={{ background: core[c.key] }} aria-label={`${c.label} colour`}>
-											<input type="color" value={core[c.key]} onChange={(e) => setHex(c.key, e.target.value)} className="absolute inset-0 size-full cursor-pointer opacity-0" />
-										</label>
-										<span className="flex-1 text-[12.5px] font-semibold text-[var(--text-heading)]">{c.label}</span>
-										<span className="rounded-md border border-border px-2 py-0.5 font-mono text-[12px] uppercase text-muted-foreground">{core[c.key]}</span>
+							<Section icon={<Palette className="size-3.5" />} label="Core colours — you pick all 10">
+								{GROUPS.map((g) => (
+									<div key={g} className="mb-2.5 last:mb-0">
+										<div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">{g}</div>
+										{ESSENTIALS.filter((c) => c.group === g).map((c) => (
+											<div key={c.key} className="my-1.5 flex items-center gap-3">
+												<label className="relative size-[28px] cursor-pointer rounded-lg border border-border" style={{ background: core[c.key] }} aria-label={`${c.label} colour`}>
+													<input type="color" value={core[c.key]} onChange={(e) => setHex(c.key, e.target.value)} className="absolute inset-0 size-full cursor-pointer opacity-0" />
+												</label>
+												<span className="flex-1 text-[12.5px] font-semibold text-[var(--text-heading)]">{c.label}</span>
+												<span className="rounded-md border border-border px-2 py-0.5 font-mono text-[12px] uppercase text-muted-foreground">{core[c.key]}</span>
+											</div>
+										))}
 									</div>
 								))}
 							</Section>
@@ -141,8 +184,17 @@ export function Fabricate({ options, onClose, notify }: { options: SingleSlideOp
 					)}
 				</aside>
 				<div className="flex flex-col items-center gap-4 bg-card p-4 md:overflow-y-auto md:p-7">
-					<span className="self-start font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Live specimen — your theme, rendered</span>
-					<DeckPreview options={options} sample={SPECIMEN} mermaid={false} paletteOverride={derived.name} extraTheme={derived.css ? { name: derived.name, css: derived.css } : undefined} className="relative aspect-video w-full max-w-[620px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Theme specimen" />
+					<div className="flex w-full max-w-[620px] items-center justify-between gap-3">
+						<span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Live specimen — your theme, rendered</span>
+						{/* Audition the SAME derived theme in light or dark — the derivation
+						    emits light-dark() pairs, so flipping the canvas color-scheme
+						    (modeOverride) resolves the chosen side. */}
+						<div className="inline-flex shrink-0 rounded-lg border border-border bg-background p-[3px]">
+							<button type="button" onClick={() => setSpecimenMode('light')} aria-pressed={specimenMode === 'light'} aria-label="Light specimen" className={cn('inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11.5px] font-semibold', specimenMode === 'light' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Sun className="size-3.5" />Light</button>
+							<button type="button" onClick={() => setSpecimenMode('dark')} aria-pressed={specimenMode === 'dark'} aria-label="Dark specimen" className={cn('inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11.5px] font-semibold', specimenMode === 'dark' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Moon className="size-3.5" />Dark</button>
+						</div>
+					</div>
+					<DeckPreview options={options} sample={SPECIMEN} mermaid={false} paletteOverride={derived.name} extraTheme={derived.css ? { name: derived.name, css: derived.css } : undefined} modeOverride={specimenMode} className="relative aspect-video w-full max-w-[620px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Theme specimen" />
 				</div>
 			</div>
 		</div>

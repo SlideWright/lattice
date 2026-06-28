@@ -206,9 +206,9 @@ describe('Studio — Fabricate + Present dock respond', () => {
 		expect(screen.getByText(/WCAG audit —/)).toBeInTheDocument();
 		expect(screen.getAllByText(/\d+\.\d+ : 1/).length).toBeGreaterThan(0);
 		// Changing a core colour re-derives — the export carries a fresh token set.
-		// (Smoke: pick a new accent, the panel stays consistent and still exports.)
+		// All TEN essentials are editable (the engine's full ESSENTIAL_KEYS set).
 		const swatchInputs = document.querySelectorAll('input[type="color"]');
-		expect(swatchInputs.length).toBe(4);
+		expect(swatchInputs.length).toBe(10);
 		// Picking a curated starter reseeds the core colours and re-derives.
 		await user.click(screen.getByRole('button', { name: /Start from Ember/ }));
 		expect(await screen.findByText(/Engine-derived contract — 18 tokens/)).toBeInTheDocument();

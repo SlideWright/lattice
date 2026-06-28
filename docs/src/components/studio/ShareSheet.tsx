@@ -19,7 +19,7 @@ function Row({ icon, title, desc, dev, busy, onClick }: { icon: React.ReactNode;
 	);
 }
 
-export function ShareSheet({ open, onOpenChange, deckTitle, source, options, palette, mode, onPresent, notify }: { open: boolean; onOpenChange: (v: boolean) => void; deckTitle: string; source: string; options: SingleSlideOptions; palette: string; mode: 'light' | 'dark'; onPresent: () => void; notify: (msg: string) => void }) {
+export function ShareSheet({ open, onOpenChange, deckTitle, source, options, palette, mode, extraTheme, onPresent, notify }: { open: boolean; onOpenChange: (v: boolean) => void; deckTitle: string; source: string; options: SingleSlideOptions; palette: string; mode: 'light' | 'dark'; extraTheme?: { name: string; css: string }; onPresent: () => void; notify: (msg: string) => void }) {
 	const close = () => onOpenChange(false);
 	const [busy, setBusy] = React.useState<string | null>(null);
 
@@ -55,14 +55,14 @@ export function ShareSheet({ open, onOpenChange, deckTitle, source, options, pal
 						<h3 className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Hand off the deck</h3>
 						<p className="text-xs text-muted-foreground">The rendered, paginated deck — for your audience.</p>
 						<Row icon={<Link2 className="size-4" />} title="Present link" desc="A live, themed link that opens in Present" onClick={() => { close(); onPresent(); }} />
-						<Row busy={busy === 'pdf'} icon={<Download className="size-4" />} title="PDF" desc="One slide per page, high-resolution" onClick={() => run('pdf', 'PDF', () => sharePdf(options, source, name, palette, mode))} />
-						<Row busy={busy === 'pptx'} icon={<Monitor className="size-4" />} title="PowerPoint" desc="PPTX, one slide per page" onClick={() => run('pptx', 'PowerPoint', () => sharePptx(options, source, name, palette, mode))} />
-						<Row busy={busy === 'print'} icon={<Printer className="size-4" />} title="Print deck" desc="The rendered slides, vector — default print" onClick={() => run('print', 'Print', () => sharePrintDeck(options, source, name, palette, mode))} />
+						<Row busy={busy === 'pdf'} icon={<Download className="size-4" />} title="PDF" desc="One slide per page, high-resolution" onClick={() => run('pdf', 'PDF', () => sharePdf(options, source, name, palette, mode, extraTheme))} />
+						<Row busy={busy === 'pptx'} icon={<Monitor className="size-4" />} title="PowerPoint" desc="PPTX, one slide per page" onClick={() => run('pptx', 'PowerPoint', () => sharePptx(options, source, name, palette, mode, extraTheme))} />
+						<Row busy={busy === 'print'} icon={<Printer className="size-4" />} title="Print deck" desc="The rendered slides, vector — default print" onClick={() => run('print', 'Print', () => sharePrintDeck(options, source, name, palette, mode, extraTheme))} />
 					</section>
 					<section className="space-y-2">
 						<h3 className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Hand off the source</h3>
 						<p className="text-xs text-muted-foreground">The Markdown — for editing, review, or portability.</p>
-						<Row dev busy={busy === 'md'} icon={<FileText className="size-4" />} title="Markdown" desc="Source with the theme embedded" onClick={() => run('md', 'Markdown', () => shareMarkdown(options, source, name, palette))} />
+						<Row dev busy={busy === 'md'} icon={<FileText className="size-4" />} title="Markdown" desc="Source with the theme embedded" onClick={() => run('md', 'Markdown', () => shareMarkdown(options, source, name, palette, extraTheme))} />
 						<Row dev busy={busy === 'marp'} icon={<Package className="size-4" />} title="Marp bundle" desc="Self-contained ZIP — renders anywhere" onClick={() => run('marp', 'Marp bundle', () => shareMarp(options, source, name, palette))} />
 						<Row dev icon={<Printer className="size-4" />} title="Print source" desc="The Markdown, monospace — for markup &amp; review" onClick={() => run('printsrc', 'Print source', () => sharePrintSource(source, name))} />
 					</section>
