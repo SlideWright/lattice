@@ -61,6 +61,10 @@ in patch versions.
     **autocomplete** (component names, front-matter keys, fenced-block
     languages), and the full **grammar linter** (the shared lint-core: severity
     tiers, hover fix guidance, and one-click per-finding quick-fixes).
+  - **Library depth** — **import a deck** from a `.md` file (title derived from
+    its first heading), and **version history**: an Inspector timeline of saved
+    checkpoints with one-click Restore, captured manually and automatically
+    before each AI edit (so an AI change is reversible beyond undo).
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /

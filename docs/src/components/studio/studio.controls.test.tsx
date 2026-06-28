@@ -48,6 +48,19 @@ describe('Studio — every top-bar control responds', () => {
 		expect(screen.getByRole('button', { name: /Untitled deck/ })).toBeInTheDocument();
 	});
 
+	it('imports a deck from a .md file (title from its heading)', async () => {
+		const user = setup();
+		// Drive the hidden file input directly (a real <input type=file> change).
+		const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+		const file = new File(['<!-- _class: title -->\n\n# Acme Annual Review\n\nThe year in numbers.'], 'acme.md', { type: 'text/markdown' });
+		// jsdom File has no .text() by default in some setups — polyfill for the test.
+		if (!file.text) Object.defineProperty(file, 'text', { value: () => Promise.resolve('<!-- _class: title -->\n\n# Acme Annual Review\n\nThe year in numbers.') });
+		await user.upload(input, file);
+		// The new deck is created, titled from the first heading, and made active.
+		expect(await screen.findByRole('button', { name: /Acme Annual Review/ })).toBeInTheDocument();
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/Acme Annual Review/);
+	});
+
 	it('runs the REAL grammar linter when a lint vocabulary is provided', async () => {
 		const user = userEvent.setup();
 		const lintVocab = { names: ['cards-grid', 'kpi', 'title'], modifiers: [], mapRegions: {}, finishNames: [], splitNames: [], capacity: {} };
@@ -224,6 +237,23 @@ describe('Studio — Inspector controls respond', () => {
 		// The Look group exposes the first five palettes as swatches (aria-labelled).
 		await user.click(await screen.findByRole('button', { name: 'cuoio' }));
 		expect(document.documentElement.getAttribute('data-palette')).toBe('cuoio');
+	});
+
+	it('version history saves a checkpoint and restores it', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
+		// Save the current deck as a version.
+		await user.click(await screen.findByRole('button', { name: /Save a version/ }));
+		expect(await screen.findByText('Saved version')).toBeInTheDocument();
+		// Edit the deck, then restore — the saved content comes back.
+		const editor = screen.getByLabelText('Deck source');
+		await user.click(editor);
+		await user.keyboard('{Control>}a{/Control}');
+		await user.paste('<!-- _class: title -->\n\n# TOTALLY DIFFERENT\n');
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/TOTALLY DIFFERENT/);
+		await user.click(screen.getByRole('button', { name: 'Restore' }));
+		expect(screen.getByLabelText('Deck source').textContent).not.toMatch(/TOTALLY DIFFERENT/);
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/Q3 Board Review/);
 	});
 
 	it('the Page-numbers switch writes paginate front-matter to the source', async () => {

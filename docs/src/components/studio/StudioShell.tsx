@@ -1,6 +1,6 @@
 import {
 	AlertTriangle, ChevronDown, ChevronLeft, 
-	ChevronRight, Copy, Eye, FileText, Layers, LayoutGrid,Palette, PanelLeft, PanelRight, PencilLine, PencilRuler, Play, Plus, Search, Settings2, Share2, Sparkles, Trash2, Volume2, Wand2, X,
+	ChevronRight, Copy, Eye, FileText, History, Layers, LayoutGrid, Palette, PanelLeft, PanelRight, PencilLine, PencilRuler, Play, Plus, Save, Search, Settings2, Share2, Sparkles, Trash2, Upload, Volume2, Wand2, X,
 } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
@@ -24,7 +24,7 @@ import { IntentTag } from './IntentTag';
 import { type PresentLens, presentationSet, scoreDeck, slideClass, splitSlides, unknownComponents, usedComponents } from './lint';
 import { PresentOverlay } from './PresentOverlay';
 import { ShareSheet } from './ShareSheet';
-import { createDeck, deleteDeck as deleteDeckStore, loadDeckList, loadSettings, loadSource, metaFor, renameDeck as renameDeckStore, saveSettings, saveSource } from './studio-store';
+import { type Checkpoint, createDeck, deleteDeck as deleteDeckStore, loadCheckpoints, loadDeckList, loadSettings, loadSource, metaFor, renameDeck as renameDeckStore, saveCheckpoint, saveSettings, saveSource, titleFromSource } from './studio-store';
 import { useBreakpoint } from './use-breakpoint';
 import { WorkspaceSheet } from './WorkspaceSheet';
 
@@ -44,6 +44,16 @@ const SIZES = [
 	{ value: '4k', label: '4K (16 : 9)' },
 ];
 const SIZE_LABELS: Record<string, string> = Object.fromEntries(SIZES.map((s) => [s.value, s.label.replace(/ \(.*\)/, '')]));
+// Relative time for the version-history list (just now / Nm / Nh / Nd).
+function timeAgo(ts: number): string {
+	const s = Math.max(0, Math.round((Date.now() - ts) / 1000));
+	if (s < 45) return 'just now';
+	const m = Math.round(s / 60);
+	if (m < 60) return `${m}m ago`;
+	const h = Math.round(m / 60);
+	if (h < 24) return `${h}h ago`;
+	return `${Math.round(h / 24)}d ago`;
+}
 const PALETTES = ['indaco', 'cuoio', 'burgundy', 'laguna', 'crepuscolo', 'atelier', 'carbone', 'onyx'];
 const PALETTE_DOTS: Record<string, string> = {
 	indaco: '#006FA8', cuoio: '#7A5A10', burgundy: '#742532', laguna: '#006D77',
@@ -72,6 +82,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const [presentOpen, setPresentOpen] = React.useState(false);
 	const [cmdOpen, setCmdOpen] = React.useState(false);
 	const [insertOpen, setInsertOpen] = React.useState(false);
+	const [checkpoints, setCheckpoints] = React.useState<Checkpoint[]>(() => loadCheckpoints((loadDeckList()[0] ?? DECKS[0]).id));
 	const [toast, setToast] = React.useState<string | null>(null);
 	const toastTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 	const [palette, setPalette] = React.useState(() => {
@@ -164,6 +175,26 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		setView('compose');
 		notify('New deck created.');
 	}
+	// Import a deck from an external `.md` file — seed a new persisted deck with its
+	// content (title from the first heading) and load it.
+	const importInputRef = React.useRef<HTMLInputElement>(null);
+	function importDeckFromText(text: string) {
+		if (!text.trim()) { notify('That file was empty — nothing to import.'); return; }
+		saveSource(deck.id, source);
+		const d = createDeck(titleFromSource(text), text);
+		setDecks(loadDeckList());
+		setDeck(d);
+		setSource(text);
+		setActiveSlide(0);
+		setView('compose');
+		notify(`Imported “${d.title}”.`);
+	}
+	function onImportFile(e: React.ChangeEvent<HTMLInputElement>) {
+		const file = e.target.files?.[0];
+		e.target.value = ''; // allow re-importing the same file
+		if (!file) return;
+		file.text().then(importDeckFromText).catch(() => notify('Could not read that file.'));
+	}
 	function renameActiveDeck(title: string) {
 		const t = title.trim();
 		if (!t || t === deck.title) return;
@@ -250,8 +281,11 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				} else if (out.status === 'advice') {
 					notify(out.note);
 				} else {
+					// Checkpoint the pre-edit deck so an AI change is reversible from
+					// history, not just ⌘Z.
+					setCheckpoints(saveCheckpoint(deck.id, source, `Before ${label}`, Date.now()));
 					setSource(out.source);
-					notify(`${out.note} — ⌘Z to undo.`);
+					notify(`${out.note} — ⌘Z or restore from History to undo.`);
 				}
 			} catch {
 				notify(`${label} failed — try again.`);
@@ -259,7 +293,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				setAiBusy(null);
 			}
 		},
-		[aiBusy, source, notify],
+		[aiBusy, source, notify, deck.id],
 	);
 
 	// ⌘K
@@ -305,6 +339,21 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	// Insert a library component as a new slide after the current one (its authored
 	// skeleton), via the same deck-op the toolbar uses.
 	const onInsertComponent = (c: ComponentEntry) => { applyDeckOp(addSlideAfter(source, curIndex, c.skeleton)); notify(`Inserted “${c.name}”.`); };
+
+	// ── Version history (checkpoints) ────────────────────────────────────────
+	// Load the active deck's checkpoints when it changes.
+	React.useEffect(() => setCheckpoints(loadCheckpoints(deck.id)), [deck.id]);
+	const checkpoint = React.useCallback((label: string) => setCheckpoints(saveCheckpoint(deck.id, source, label, Date.now())), [deck.id, source]);
+	const saveVersion = () => { checkpoint('Saved version'); notify('Version saved to history.'); };
+	function restoreCheckpoint(cp: Checkpoint) {
+		// Snapshot the current state first so a restore is itself reversible.
+		saveCheckpoint(deck.id, source, 'Before restore', Date.now());
+		setSource(cp.source);
+		setActiveSlide(0);
+		setCheckpoints(loadCheckpoints(deck.id));
+		requestAnimationFrame(() => editorRef.current?.revealSlide(0));
+		notify('Version restored.');
+	}
 
 	// ── Architect body (cards) — shared by the desktop column and the sheet ──
 	const architectBody = (
@@ -361,6 +410,21 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			</InspGroup>
 			<InspGroup icon={<Wand2 className="size-3.5" />} label="Authoring">
 				<Field label="Inline validation"><Toggle label="Inline validation" on={validation} onClick={() => { setValidation((v) => { notify(v ? 'Inline validation off — the editor stops flagging components.' : 'Inline validation on — unknown components are flagged again.'); return !v; }); }} /></Field>
+			</InspGroup>
+			<InspGroup icon={<History className="size-3.5" />} label="History">
+				<button type="button" onClick={saveVersion} className="mb-1.5 flex w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-[12.5px] font-semibold text-[var(--accent)] hover:bg-[var(--accent-soft)]"><Save className="size-3.5" />Save a version</button>
+				{checkpoints.length === 0 ? (
+					<p className="px-0.5 py-1 text-[11.5px] leading-relaxed text-muted-foreground">No saved versions yet. Versions are also captured automatically before each AI edit.</p>
+				) : (
+					<ul className="max-h-[180px] space-y-0.5 overflow-y-auto">
+						{checkpoints.map((cp) => (
+							<li key={cp.id} className="group flex items-center gap-2 rounded-md px-1.5 py-1.5 hover:bg-[var(--accent-soft)]">
+								<span className="min-w-0 flex-1"><span className="block truncate text-[12px] font-semibold text-[var(--text-heading)]">{cp.label}</span><span className="block font-mono text-[10.5px] text-muted-foreground">{timeAgo(cp.ts)} · {metaFor(cp.source)}</span></span>
+								<button type="button" onClick={() => restoreCheckpoint(cp)} className="shrink-0 rounded-md border border-border px-2 py-0.5 text-[11px] font-semibold text-[var(--accent)] opacity-0 hover:bg-background group-hover:opacity-100">Restore</button>
+							</li>
+						))}
+					</ul>
+				)}
 			</InspGroup>
 			<InspGroup icon={<Volume2 className="size-3.5" />} label="Read">
 				<Field label="Voice"><Control onClick={() => notify('Read-aloud voice — Aria, Cedar, and more in the full app.')}>Aria <ChevronDown className="size-3.5" /></Control></Field>
@@ -464,6 +528,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 						<DropdownMenuItem onSelect={() => setView('fabricate')}><PencilRuler className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Fabricate</div><div className="text-[11px] text-muted-foreground">Theme &amp; Layout Studio</div></div></DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem onSelect={() => newDeck()}><Plus className="size-4" />New deck</DropdownMenuItem>
+						<DropdownMenuItem onSelect={() => importInputRef.current?.click()}><Upload className="size-4" />Import deck…</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 
@@ -632,6 +697,8 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				onInsert={components.length > 0 ? () => setInsertOpen(true) : undefined}
 			/>
 			<InsertComponent open={insertOpen} onOpenChange={setInsertOpen} components={components} onInsert={onInsertComponent} />
+			{/* Hidden file input for "Import deck…" (.md upload). */}
+			<input ref={importInputRef} type="file" accept=".md,.markdown,.mdx,text/markdown,text/plain" onChange={onImportFile} className="hidden" aria-hidden="true" tabIndex={-1} />
 
 			{/* Transient toast — no dead clicks in the prototype */}
 			{toast && (

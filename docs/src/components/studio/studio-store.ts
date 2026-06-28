@@ -31,6 +31,12 @@ function write(key: string, value: unknown): void {
 	}
 }
 
+/** Derive a deck title from its source — the first heading, else a fallback. */
+export function titleFromSource(source: string, fallback = 'Imported deck'): string {
+	const m = stripFrontMatter(source).match(/^#{1,3}\s+(.+?)\s*$/m);
+	return (m?.[1] ?? '').replace(/[`*_]/g, '').trim().slice(0, 60) || fallback;
+}
+
 /** `N slides` for the deck-switcher meta line — the SAME splitter the live rail
  *  uses (splitSlides), front-matter excluded, so the count never disagrees with
  *  the rendered rail. */
@@ -86,16 +92,20 @@ export function loadDeckList(): StudioDeck[] {
 	});
 }
 
-/** Create + persist a new deck; returns it (with its starter source saved). */
-export function createDeck(title = 'Untitled deck'): StudioDeck {
+/**
+ * Create + persist a new deck. With `source` given (a deck import) the deck is
+ * seeded with that content; otherwise the blank starter. Returns the new deck.
+ */
+export function createDeck(title = 'Untitled deck', source?: string): StudioDeck {
 	// Date.now is fine in app code (unlike workflow scripts). Add a short random
 	// suffix so two creates in the same millisecond (double-click) can't collide.
 	const id = `deck-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+	const body = source?.trim() ? source : NEW_DECK_TEMPLATE;
 	const index = loadIndex();
 	index.push({ id, title, builtin: false });
 	saveIndex(index);
-	saveSource(id, NEW_DECK_TEMPLATE);
-	return { id, title, meta: metaFor(NEW_DECK_TEMPLATE), slides: NEW_DECK_TEMPLATE.split(/\n\n---\n\n/) };
+	saveSource(id, body);
+	return { id, title, meta: metaFor(body), slides: splitSlides(stripFrontMatter(body)) };
 }
 
 /** Rename a deck in the index. */
@@ -109,6 +119,30 @@ export function renameDeck(id: string, title: string): void {
 export function deleteDeck(id: string): void {
 	saveIndex(loadIndex().filter((e) => e.id !== id));
 	dropSource(id);
+}
+
+// ── Version history (checkpoints) ──────────────────────────────────────────
+const SNAP_PREFIX = 'lattice-studio-snap-'; // + deckId → Checkpoint[]
+const SNAP_CAP = 25; // keep the most recent N per deck
+
+export type Checkpoint = { id: string; ts: number; label: string; source: string };
+
+/** Checkpoints for a deck, newest first. */
+export function loadCheckpoints(deckId: string): Checkpoint[] {
+	return read<Checkpoint[]>(SNAP_PREFIX + deckId) ?? [];
+}
+/**
+ * Save a checkpoint of `source` (skipping a no-op if it matches the latest), cap
+ * the list, and return the updated list. `ts` is passed in so the store stays
+ * free of Date.now (callers stamp it).
+ */
+export function saveCheckpoint(deckId: string, source: string, label: string, ts: number): Checkpoint[] {
+	const list = loadCheckpoints(deckId);
+	if (list[0]?.source === source) return list; // nothing changed since the last one
+	const cp: Checkpoint = { id: `cp-${ts.toString(36)}-${Math.random().toString(36).slice(2, 6)}`, ts, label, source };
+	const next = [cp, ...list].slice(0, SNAP_CAP);
+	write(SNAP_PREFIX + deckId, next);
+	return next;
 }
 
 export type StudioSettings = { validation: boolean; pageNumbers: boolean; headerFooter: boolean };
