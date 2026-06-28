@@ -38,6 +38,22 @@ describe('Studio — every top-bar control responds', () => {
 		expect(screen.getByRole('button', { name: /Untitled deck/ })).toBeInTheDocument();
 	});
 
+	it('the slide toolbar adds, duplicates, and deletes slides', async () => {
+		const user = setup();
+		const railCount = () => document.querySelector('nav[aria-label="Slide navigator"]')?.querySelectorAll('button').length ?? 0;
+		const start = railCount();
+		expect(start).toBeGreaterThan(1);
+		// Add a slide → the rail grows by one.
+		await user.click(screen.getByRole('button', { name: 'Add slide' }));
+		expect(railCount()).toBe(start + 1);
+		// Duplicate → grows again.
+		await user.click(screen.getByRole('button', { name: 'Duplicate slide' }));
+		expect(railCount()).toBe(start + 2);
+		// Delete → shrinks.
+		await user.click(screen.getByRole('button', { name: 'Delete slide' }));
+		expect(railCount()).toBe(start + 1);
+	});
+
 	it('edits survive a deck switch (persistence)', async () => {
 		const user = setup();
 		// Edit deck 1 — paste a unique marker into the source.

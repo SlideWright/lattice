@@ -1,6 +1,6 @@
 import {
-	AlertTriangle, ChevronDown, ChevronLeft, Eye, FileText, Layers, LayoutGrid,
-	Palette, PanelLeft, PanelRight, PencilLine, PencilRuler, Play, Plus, Search, Settings2, Share2, Sparkles, Trash2, Volume2, Wand2, X,
+	AlertTriangle, ChevronDown, ChevronLeft, 
+	ChevronRight, Copy, Eye, FileText, Layers, LayoutGrid,Palette, PanelLeft, PanelRight, PencilLine, PencilRuler, Play, Plus, Search, Settings2, Share2, Sparkles, Trash2, Volume2, Wand2, X,
 } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
@@ -14,6 +14,7 @@ import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
 import { resumePendingAuth, runArchitect, useArchitectStatus } from './architect';
 import { CommandPalette } from './CommandPalette';
+import { addSlideAfter, deleteSlide, duplicateSlide, moveSlide } from './deck-ops';
 import { DECKS, deckSource, type StudioDeck } from './decks';
 import { Editor, type EditorHandle } from './Editor';
 import { Fabricate } from './Fabricate';
@@ -285,6 +286,20 @@ export default function StudioShell({ options }: Props) {
 	// The full-deck index of the slide currently in view (for handing off to Present).
 	const activeFullIndex = composeLens === 'full' ? slideNo - 1 : Math.max(0, slides.indexOf(viewSlides[slideNo - 1]));
 
+	// Structural slide ops (full lens only). Each rewrites the source, moves the
+	// active slide to follow the edit, and reveals it in the editor next frame
+	// (after the value-sync effect has pushed the new doc into CodeMirror).
+	const curIndex = slideNo - 1;
+	function applyDeckOp(r: { source: string; active: number }) {
+		setSource(r.source);
+		setActiveSlide(r.active);
+		requestAnimationFrame(() => editorRef.current?.revealSlide(r.active));
+	}
+	const opAddSlide = () => { applyDeckOp(addSlideAfter(source, curIndex)); notify('Slide added.'); };
+	const opDuplicate = () => { applyDeckOp(duplicateSlide(source, curIndex)); notify('Slide duplicated.'); };
+	const opDelete = () => { if (slides.length <= 1) { notify('A deck needs at least one slide.'); return; } applyDeckOp(deleteSlide(source, curIndex)); notify('Slide deleted.'); };
+	const opMove = (dir: -1 | 1) => applyDeckOp(moveSlide(source, curIndex, curIndex + dir));
+
 	// ── Architect body (cards) — shared by the desktop column and the sheet ──
 	const architectBody = (
 		<>
@@ -386,7 +401,17 @@ export default function StudioShell({ options }: Props) {
 				<DeckPreview options={options} sample={fm ? fm + slide : slide} mermaid={false} className="relative aspect-video w-full max-w-[760px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Live deck preview" />
 			</div>
 			{/* Slide navigator — jump to any slide, see its component type */}
-			<nav className="flex items-center gap-1.5 overflow-x-auto border-t border-border bg-background px-3 py-2" aria-label="Slide navigator">
+			<div className="flex items-center gap-1.5 border-t border-border bg-background px-3 py-2">
+				{composeLens === 'full' && (
+					<div className="flex shrink-0 items-center gap-0.5 rounded-lg border border-border bg-card p-0.5">
+						<RailOp label="Add slide" onClick={opAddSlide}><Plus className="size-3.5" /></RailOp>
+						<RailOp label="Duplicate slide" onClick={opDuplicate}><Copy className="size-3.5" /></RailOp>
+						<RailOp label="Move slide left" onClick={() => opMove(-1)} disabled={curIndex <= 0}><ChevronLeft className="size-3.5" /></RailOp>
+						<RailOp label="Move slide right" onClick={() => opMove(1)} disabled={curIndex >= slides.length - 1}><ChevronRight className="size-3.5" /></RailOp>
+						<RailOp label="Delete slide" onClick={opDelete} disabled={slides.length <= 1} danger><Trash2 className="size-3.5" /></RailOp>
+					</div>
+				)}
+			<nav className="flex items-center gap-1.5 overflow-x-auto" aria-label="Slide navigator">
 				{viewSlides.map((s, i) => {
 					const on = i === slideNo - 1;
 					return (
@@ -405,6 +430,7 @@ export default function StudioShell({ options }: Props) {
 					);
 				})}
 			</nav>
+			</div>
 			<div className="flex items-center gap-3 border-t border-border px-4 py-1.5 font-mono text-[11px] text-muted-foreground">
 				<span className="inline-flex items-center gap-1 text-[var(--chart-3,#2e6f00)]">● Live</span>
 				<span className="truncate">{palette} · {mode}</span>
@@ -630,6 +656,11 @@ function ScoreRow({ ok, label, v }: { ok?: boolean; label: string; v: string }) 
 			<span className="text-foreground">{label}</span>
 			<span className={cn('ml-auto font-mono text-[11px]', ok ? 'text-[var(--chart-3,#2e6f00)]' : 'text-[var(--chart-2,#9c3f00)]')}>{v}</span>
 		</div>
+	);
+}
+function RailOp({ label, onClick, disabled, danger, children }: { label: string; onClick: () => void; disabled?: boolean; danger?: boolean; children: React.ReactNode }) {
+	return (
+		<button type="button" aria-label={label} title={label} onClick={onClick} disabled={disabled} className={cn('grid size-7 place-items-center rounded-md text-muted-foreground hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] disabled:opacity-30 disabled:hover:bg-transparent', danger && 'hover:bg-[color-mix(in_srgb,var(--fail,#b3261e)_12%,transparent)] hover:text-[var(--fail,#b3261e)]')}>{children}</button>
 	);
 }
 function Chip({ children, onClick, busy }: { children: React.ReactNode; onClick?: () => void; busy?: boolean }) {
