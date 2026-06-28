@@ -7,7 +7,7 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **38 open** items.
+only *status*. **40 open** items.
 
 > ⚠️ **2 cards need triage** (missing `area:`/`type:`/`priority:`): [#554](https://github.com/SlideWright/lattice/issues/554), [#569](https://github.com/SlideWright/lattice/issues/569).
 
@@ -50,10 +50,12 @@ only *status*. **38 open** items.
 - [#554](https://github.com/SlideWright/lattice/issues/554) feat(forms): N-up split Frame — compose multiple components in a grid (generalize split-panel)
 - [#569](https://github.com/SlideWright/lattice/issues/569) galleries: per-component goldens are broadly stale (~840-slide drift from current render) — docs
 
-## Ready (2)
+## Ready (4)
 
+- [#577](https://github.com/SlideWright/lattice/issues/577) US English sweep: convert British spellings in prose (docs, comments, manifest text) — medium · docs
 - [#501](https://github.com/SlideWright/lattice/issues/501) fix(inventory): glossary range pill is stale on cover-paginate split pages — low · inventory
 - [#519](https://github.com/SlideWright/lattice/issues/519) examples: ship the four portrait demo decks + PDFs for the retired landscape locks — low · docs
+- [#578](https://github.com/SlideWright/lattice/issues/578) US English: rename internal UK-spelled identifiers (progress-centre, --footer-centre-*) — low · engine
 
 ## In progress (0)
 
