@@ -155,10 +155,24 @@ its own commit. Rough order by value.
    `voice-model.js` (`createVoiceModel().availability()`, Kokoro summon/download,
    voice list + play-sample) and `drawing-board-settings.js`. Note: the picker
    only works once OAuth-connected, so it's lower demo value without a key.
-4. **Present: rendered slide thumbnails + autoplay.** Thumbnails = many
-   `DeckPreview` instances (watch perf — virtualize). Autoplay = chain read-aloud
-   across slides (advance on natural finish; `useReadAloud` auto-stops on slide
-   change — add a "finished naturally" signal to chain).
+4. **Present: rendered slide thumbnails + autoplay.**
+   - **DONE — slide sorter** (branch `claude/studio-present-thumbnails`): a
+     **Slides** button + **G** key open `SlideOverview.tsx` — a grid of rendered
+     thumbnails (DeckPreview, the same engine render as the stage) over the presented
+     set; click to jump + close, current marked. **Perf:** thumbnails are WINDOWED —
+     each defers its render via `DeckPreview active={false}` until an
+     `IntersectionObserver` brings it into view (then renders once and stays), so a
+     long deck never mounts dozens of iframes at once. **Gotcha fixed (visual only):**
+     the thumbnail render is an engine iframe, which swallows the click (separate
+     document) — the DeckPreview must be `pointer-events-none` so the wrapping
+     button's onClick fires. jsdom has no real iframe, so the unit test passed while
+     the live UI was dead until the pointer-events fix; caught by puppeteer.
+   - **TODO — autoplay:** chain read-aloud across slides. `useReadAloud` `advance()`
+     calls `stop()` at the end but exposes no "finished naturally" signal (it also
+     stops on slide change / manual pause) — add an `onFinish` option fired only on
+     natural completion, then on finish advance + auto-play the next slide's reader
+     (mind the text-change `stop` effect — play AFTER it settles). Voice-gated, so
+     lower value without a connected voice.
 5. **Architect: selection Refine + per-finding AI fix.**
    - **DONE — selection Refine** (branch `claude/studio-architect-refine`):
      selecting prose in the editor reveals a **Refine** dropdown

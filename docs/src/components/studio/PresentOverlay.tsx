@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, FileText, LayoutGrid, Monitor, Pause, Play, Sparkles, Timer, Volume2, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileText, Grid2x2, LayoutGrid, Monitor, Pause, Play, Sparkles, Timer, Volume2, X } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
@@ -7,6 +7,7 @@ import { buildPlanFromMetas, metasFromSource } from '@/playground/drawing-board-
 import { createPresenterController } from '@/playground/presenter-window.js';
 import { type PresentLens, presentationSet } from './lint';
 import { slideToSpeech, useReadAloud } from './read-aloud';
+import { SlideOverview } from './SlideOverview';
 import { getNote } from './slide-notes';
 import { buildPresenterStageDoc } from './studio-presenter';
 
@@ -29,6 +30,7 @@ export function PresentOverlay({ open, onClose, options, slides, frontMatter = '
 	const [lens, setLens] = React.useState<PresentLens>('full');
 	const [idx, setIdx] = React.useState(0);
 	const [playing, setPlaying] = React.useState(false);
+	const [overviewOpen, setOverviewOpen] = React.useState(false); // slide sorter (G)
 	const [rehearse, setRehearse] = React.useState(false); // Practice mode — folded into Present (plan §line 266)
 	const [elapsed, setElapsed] = React.useState(0); // rehearsal seconds
 
@@ -164,8 +166,20 @@ export function PresentOverlay({ open, onClose, options, slides, frontMatter = '
 	React.useEffect(() => {
 		if (!open) return;
 		const onKey = (e: KeyboardEvent) => {
+			// In the overview, Escape just closes the sorter (not all of Present), and
+			// the deck keys are inert (the grid owns navigation by click).
+			if (overviewOpen) {
+				if (e.key === 'Escape' || e.key === 'g' || e.key === 'G') {
+					e.preventDefault();
+					setOverviewOpen(false);
+				}
+				return;
+			}
 			if (e.key === 'Escape') onClose();
-			else if (e.key === 'ArrowRight' || e.key === ' ') {
+			else if (e.key === 'g' || e.key === 'G') {
+				e.preventDefault();
+				setOverviewOpen(true);
+			} else if (e.key === 'ArrowRight' || e.key === ' ') {
 				e.preventDefault();
 				goNext();
 			} else if (e.key === 'ArrowLeft') {
@@ -175,7 +189,11 @@ export function PresentOverlay({ open, onClose, options, slides, frontMatter = '
 		};
 		window.addEventListener('keydown', onKey);
 		return () => window.removeEventListener('keydown', onKey);
-	}, [open, onClose, goNext, goPrev]);
+	}, [open, onClose, goNext, goPrev, overviewOpen]);
+	// Close the sorter whenever Present closes, so re-opening starts on the slide.
+	React.useEffect(() => {
+		if (!open) setOverviewOpen(false);
+	}, [open]);
 
 	if (!open) return null;
 	return (
@@ -190,6 +208,7 @@ export function PresentOverlay({ open, onClose, options, slides, frontMatter = '
 						))}
 					</div>
 				</div>
+				<button type="button" onClick={() => setOverviewOpen((v) => !v)} aria-pressed={overviewOpen} title="All slides (G) — jump anywhere" className={cn('inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[12px] font-semibold sm:text-[13px]', overviewOpen ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]' : 'border-border text-muted-foreground hover:text-foreground')}><Grid2x2 className="size-4" /><span className="hidden sm:inline">Slides</span></button>
 				<button type="button" onClick={toggleRehearse} aria-pressed={rehearse} className={cn('inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[12px] font-semibold sm:text-[13px]', rehearse ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]' : 'border-border text-muted-foreground hover:text-foreground')}><Timer className="size-4" />Rehearse</button>
 				<button type="button" onClick={() => { const wasOpen = presenterRef.current?.isOpen(); presenterRef.current?.toggle(); if (!wasOpen && !presenterRef.current?.isOpen()) notify('Allow pop-ups to open the presenter view on your second screen.'); }} aria-pressed={presenterOn} title="Presenter view on your second screen — current + next slide, speaker notes, timer" className={cn('hidden shrink-0 items-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] font-semibold hover:text-foreground md:inline-flex', presenterOn ? 'text-[var(--accent)]' : 'text-muted-foreground')}><Monitor className="size-4" />{presenterOn ? 'Presenter on' : 'Presenter screen'}</button>
 			</div>
@@ -235,6 +254,7 @@ export function PresentOverlay({ open, onClose, options, slides, frontMatter = '
 					<span className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[12px] font-semibold text-[var(--accent)]"><Volume2 className="size-3.5" />{rungLabel}</span>
 				)}
 			</div>
+			<SlideOverview open={overviewOpen} onClose={() => setOverviewOpen(false)} options={options} set={set} frontMatter={frontMatter} current={clamped} onJump={setIdx} paletteOverride={paletteOverride} extraTheme={extraTheme} extraCss={extraCss} />
 		</div>
 	);
 }
