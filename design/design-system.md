@@ -475,7 +475,7 @@ npm run new:slide -- compare-prose    # generate the skeleton
 ```
 
 …copies the skeleton into their deck, fills in the slots, runs
-`npm run build:gallery`, ships. The decision tree (which component
+`npm run build:galleries`, ships. The decision tree (which component
 to use) lives in `design/skill.md` and the visual gallery; it is not
 encoded in the directive name.
 
@@ -771,6 +771,10 @@ discovery story that markdown alone can't provide.
 - **`tools/pixel-check.js`** — same-sandbox before/after PDF byte-compare with pdftoppm + ImageMagick pixel-diff fallback for mmdc non-determinism. Built mid-branch; got us through the 30+ extraction commits without a single false-positive regression slipping through.
 
 **Shipped on the bucketed-layout branch (2026-05-18):**
+
+> *Historical snapshot — the counts below (9 buckets, 58 components, 89 gallery
+> pages) are as of that branch. The catalog ships **53 components across 12
+> buckets** today; the live count is `dist/docs/components.json` `.count`.*
 
 - **Disk reorg into 9 buckets** (anchor, statement, inventory,
   comparison, progression, evidence, imagery + chart, diagram).

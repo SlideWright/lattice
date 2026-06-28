@@ -1198,8 +1198,9 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   box with `padding`, and *between* flex/grid children with `gap` — both are part of
   the border box / the container's own geometry, so they measure cleanly and never
   collapse. `checkMarginDiscipline` in `tools/check-ownership.js` (HARD RULE #20)
-  ratchets the count of nonzero `margin` declarations toward zero and hard-fails
-  `build:check` on any new one; a bare `margin: 0` reset is exempt (it adds no space).
+  enforces a layout budget of **0** plus the enumerated `SANCTIONED_MARGINS` allowlist,
+  hard-failing `build:check` on any unsanctioned margin (and on a *stale* sanction, so the
+  list can't rot); a bare `margin: 0` reset is exempt (it adds no space).
 - **Triggered by:** Any code path that measures an element to lay out another —
   virtual/windowed lists, the Fit Spine solver, fit-to-height scaling, export
   pagination.

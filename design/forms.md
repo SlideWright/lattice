@@ -6,11 +6,11 @@ progress rail unless it opts out with `form: off` (or quietens to `form: minimal
 The `form:` toggle and per-slide `form` / `no-form` tokens still select per
 deck/slide; only the *default* moved from off to `standard`. Supersedes the
 *Islands* working name and the `berth` / `island` / `island-group` terms in
-`engineering/decisions/2026-06-11-islands.md`. The **model** below is canonical;
-the **rename** of the in-tree identifiers (`isl-*` tokens, `.m-bay` classes, the
-`islands:` toggle, the `island`/`berth` symbols) is staged — see §10. Where this
-doc names current code, it flags the old identifier so it stays honest during the
-transition.
+`engineering/decisions/2026-06-11-islands.md`. The **model** below is canonical, and
+the **CSS-identifier rename has shipped** — `--frame-*` / `.cell-*` / `.tile-*` are the
+live names and zero `--isl-*` / `.isl-*` / `.m-bay` remain in code (see §10). The only
+residue is `island` / `berth` wording in code comments and manifest prose, a tracked
+cosmetic cleanup. Where this doc shows a retired identifier it is flagged as such.
 
 This is the canonical doc for the composition axis. Read it before working on
 slide-level layout, chrome, the masthead/footer bands, the resolution contract,
@@ -348,7 +348,7 @@ axis. Lattice ships default Frames; designers add more; authors pick one and fil
 its Cells.
 
 > **What ships vs. what's proposed:** author *selection* of a Frame exists today
-> (the `islands:` class toggle, renaming to `form:` — §10). The designer-facing
+> (the `form:` toggle — §10, **default-on since 2026-06-26**). The designer-facing
 > **Workbench Frame studio** and **AI-assisted Frame generation** are future work,
 > not built.
 
@@ -415,29 +415,32 @@ page number at bottom-right.
 
 ## 10. Status and the rename
 
-The **model** is canonical now. The **identifiers** rename in a staged sweep
-(pre-release, so no compatibility shims). The map:
+The **model** is canonical, and the **CSS-identifier rename has shipped** — `lib/forms/`
+and `lib/base/base.tokens.css` use `--frame-*` / `.cell-*` / `.tile-*` and **zero**
+`--isl-*` / `.isl-*` / `.m-bay` remain in code. What's left is cosmetic: residual
+`island` / `berth` wording in code comments and manifest prose (a tracked cleanup, not
+a functional rename). The map, now a **retired → shipped** record:
 
-| Concept | Old identifier | New |
+| Concept | Retired identifier | Shipped |
 |---|---|---|
 | System / feature | "Islands" | **Form** |
-| Composition axis + `form:` field | `form` | **`form`** *(unchanged — now canonical)* |
+| Composition axis + `form:` field | `form` | **`form`** *(unchanged — canonical)* |
 | Slicer | island group / group | **Frame** |
 | Slicer catalog | `FORMS` constant values | **Frame types** |
 | Typed slot | `berth` | **Cell** |
 | Leaf filler | `island` | **Tile** |
-| CSS tokens | `--isl-inset-x/-y`, `--isl-page-reserve` | `--frame-*` / `--cell-*` |
-| CSS classes | `.isl-masthead`, `.m-stage`, `.m-bay` | `.frame-*` / `.cell-*` |
+| CSS tokens | `--isl-inset-x/-y`, `--isl-page-reserve` | `--frame-inset-x/-y`, `--frame-page-reserve` |
+| CSS classes | `.isl-masthead`, `.m-stage`, `.m-bay` | `.cell-masthead`, `.cell-stage`, `.masthead-bay` |
 | Deck/section toggle | `islands: on / off / minimal` | **`form: <frame>`** (author selects a Frame) |
-| Transform | `transformMastheadSection` / `lib/core/masthead-lift.js` | `lib/forms/cell/masthead/masthead.transform.js` (kernel, co-located) + `lib/transformers/masthead-lift.js` (adapter) |
+| Transform | (inline `transformMastheadSection`) | `lib/forms/cell/masthead/masthead.transform.js` (kernel, co-located) + `lib/transformers/masthead-lift.js` (adapter) |
 
-Two cautions for the sweep, captured so the rename is a reviewed plan, not a blind
-regex: (1) **`form` is a substring of `transform`** — and the engine is full of
-*transform* (`lib/transformers/`, `applyToRenderedHtml`). The `form:` axis stays,
-so there is no "form" sweep; only `island`/`berth`/`isl-*` are retired, which are
-unique tokens. (2) The rename must land in **all three render paths** (emulator,
-marp-cli plugins, runtime) in lock-step (HARD RULE 1), with the cross-renderer
-parity gate and the per-component galleries asserting no pixel drift.
+Two cautions that governed the sweep (left as a record): (1) **`form` is a substring of
+`transform`** — and the engine is full of *transform* (`lib/transformers/`,
+`applyToRenderedHtml`). The `form:` axis stayed, so there was no "form" sweep; only
+`island` / `berth` / `isl-*` were retired, which are unique tokens. (2) The rename landed
+in **all three render paths** (emulator, marp-cli plugins, runtime) in lock-step
+(HARD RULE 1), with the cross-renderer parity gate and the per-component galleries
+asserting no pixel drift.
 
 What ships **today** is the masthead lift, the `meta` / `progress` / `watermark`
 injectors, and the `form:` toggle with its skip-list — **now on by default**
@@ -448,27 +451,33 @@ title lift into the masthead Cell; the chart's own subtitle/caption and body are
 untouched — see the chart-family in-form rules). The default flip lands in the
 single shared `readFormMode` kernel, so all three render paths inherit it in
 lock-step (HARD RULE 1); the cross-renderer parity gate and per-component
-galleries hold because page counts are section-count-stable. The identifier
-rename (`isl-*` → `frame-*`/`cell-*`) remains the staged backlog item above.
+galleries hold because page counts are section-count-stable.
 
-### The model is realized by B — flex + in-flow bands (section-as-grid retired)
+### How bodies are bounded: the flex cell-tree (grid was retired; flex reopened `.cell-stage`)
 
-Two mechanisms were once weighed (per the originating ADR): **B — berth/Cell
-overlay** (keep `section` flex; Cells are content-height in-flow bands / reserved
-token-contract bands, component bodies stay direct children of `section` —
-*zero component risk*) and **A — section-as-grid** (`section { display:grid }`, the
-body wrapped in a `.cell-stage` element; a large per-component migration) — **A is
-RETIRED (see the next paragraph); named here only for the record**.
+The history matters because it's easy to misread. **Mechanism A — section-as-`display:grid`**
+(`section { display:grid }`, a fixed-track row layout) **is retired — rejected on merit,
+not deferred** (`engineering/decisions/2026-06-16-retire-section-as-grid.md`): a fixed
+grid track fights content-driven sizing (the masthead Cell was deliberately moved *from*
+a fixed-height box *to* an in-flow content-height band exactly to fix the
+dead-space-under-short-titles / can't-grow-for-two-lines failure a grid row reintroduces)
+and it costs responsiveness.
 
-**B is now the canonical end state; A (section-as-grid) is retired — rejected on
-merit, not deferred** (`engineering/decisions/2026-06-16-retire-section-as-grid.md`).
-A fixed-track grid fights content-driven sizing — the masthead Cell was deliberately
-moved *from* a fixed-height box *to* an in-flow content-height band exactly to fix
-the dead-space-under-short-titles / can't-grow-for-two-lines failure, which a grid
-row would reintroduce — and it costs responsiveness (desktop/tablet/mobile) and
-feasibility (~373 `section.X > …` selectors) for a marginal payoff. So component
-bodies staying **direct children of `section`** is correct by design, permanently;
-there is no `.cell-stage` wrapper to migrate toward.
+**But the bounded-body goal that A chased was later reopened on merit by a *third*
+mechanism — the flex cell-tree** (`engineering/decisions/2026-06-26-frames-as-flex-cell-trees.md`).
+`section` stays **flex**, and a migrated component's body is wrapped in a `.cell-stage`
+**flex child** (`overflow: clip; min-height: 0`) that bounds the body and *reports* its
+overflow to the cell-aware probe (`lib/core/overflow-probe.js`) — the responsiveness +
+content-height win of B, plus the clip-and-detect A wanted, without grid's fixed track.
+
+**This is what ships today.** The `STAGE_MIGRATED` set in
+`lib/forms/cell/masthead/masthead.transform.js` wraps **30 standard components** in
+`.cell-stage`; the chart-family / `journey` / `roadmap` / etc. and the sovereign
+split/redline frames stay on **direct-child** bodies (intentionally out of cell-tree
+scope, gated). So `.cell-stage` is **not** a retired idea — it is the live bounded-body
+cell, reached via **flex, not grid**. (Mechanism B — Cells as pure in-flow bands with
+bodies as direct children — survives for the un-migrated set; the two coexist by design,
+selected per-component by `wrapsStageBody`.)
 
 Changes are still gated so an unintended visual change fails a gate, not a
 reviewer's eye: the per-component galleries (light + dark page counts asserted) and

@@ -165,7 +165,9 @@ in patch versions.
   card), a dedicated divider slot with no overlay and no mask. The `decision` variant's
   DECISION tag loses its background and the connector slot is widened so the label sits in
   the divide, clear of the cards. Closes the per-component migration
-  (`2026-06-26-frames-as-flex-cell-trees.md` §6) for the standard set.
+  (`2026-06-26-frames-as-flex-cell-trees.md` §6) for the standard set — with one
+  exception: `redline` keeps direct-child bodies bounded by its own `.compare-right`
+  clip cell rather than `.cell-stage` (tracked for a separate migration).
 
 - **`authority-chain`, `statute-stack`, `verdict-grid` adopt the stage cell — and fill it.**
   Three more legal/comparison components migrate into the frame's bounded `.cell-stage`:
