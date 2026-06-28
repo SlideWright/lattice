@@ -388,6 +388,21 @@ in patch versions.
   manifest schema's `capacity.escalateTo` contract. See
   `engineering/decisions/2026-06-22-the-fit-spine.md` §3 and `2026-06-23-read-across-carousel.md`.
 
+### Changed
+
+- **HARD RULE #20 reaches zero: no `margin` in engine layout CSS.** The last keystone —
+  the base block-flow typographic rhythm (`section h2…h6 / p { margin-bottom }`, the `hr`
+  centering, and the eyebrow / KEY-INSIGHT / below-note / display-math riders) — now lives
+  on the `.cell-stage` flow `gap` + `padding` instead of per-element margins. margin is
+  invisible to the overflow probe / autosplit and margin-collapses, so it corrupted the
+  height math a measuring layout depends on; `gap`/`padding` measure cleanly and leave no
+  trailing space inside the clip. The budget ratchet is replaced by a hard **layout budget
+  of 0 + a one-entry sanctioned allowlist** (the irreducible flex `margin-left:auto` push),
+  and the gate now also fails on a *stale* sanction so the allowlist can't rot. Prose
+  rhythm is unchanged to the eye (the stage owns the same `--sp-xs` step the cascade
+  margins carried; under Form the title h2 lifts to the masthead, so the in-stage rhythm
+  was already uniform). See `engineering/decisions/2026-06-27-stage-flow-no-margins.md`.
+
 ### Fixed
 
 - **The overflow probe now catches centred (and bottom-anchored) content that clips its

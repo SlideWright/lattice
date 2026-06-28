@@ -107,10 +107,23 @@ section.form:has(> .cell-stage) {
   display: flex;
   flex-direction: column;
 }
+/* The stage cell is itself a FLEX COLUMN that OWNS the inter-block vertical
+ * rhythm via `gap` — the prose step that `section h2/h3/p { margin-bottom }`
+ * used to carry before HARD RULE #20 retired those margins (margin is invisible
+ * to the overflow probe / autosplit and margin-collapses;
+ * 2026-06-27-stage-flow-no-margins.md). `gap` measures cleanly and leaves NO
+ * trailing space inside the clip (unlike a last-child margin). The step is the
+ * universal `--sp-xs`: under Form the title h2 lifts into the masthead, so the
+ * stage body is body prose + sub-headings, whose rhythm was uniform `--sp-xs`.
+ * A component that wants a different body rhythm sets its own `gap` on its
+ * `> .cell-stage` rule (most already do). */
 section.form > .cell-stage {
   flex: 1 1 auto;
   min-height: 0;
   overflow: clip;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-xs);
 }
 
 /* ── FOOTER Cell — the frame's third chrome band (flex cell-tree §6) ──────────
@@ -197,7 +210,9 @@ section.form:has(> .cell-footer)::after { content: none; }
  * `middle` vs `center` disambiguates the axis (middle = vertical). Horizontal
  * moves the content BLOCK, never `text-align` (centred prose lines rag badly).
  * `fill-center`/`fill-anchor` are retained as legacy aliases of align-middle/
- * align-bottom (consolidation tracked in #527). */
+ * align-bottom (consolidation tracked in #527). The stage is ALWAYS a flex
+ * column now (it owns prose rhythm via `gap`, above), so these modifiers only
+ * need to set the justify/align axis — the flex promotion is already in force. */
 section.form:is(.align-top, .align-middle, .align-bottom, .align-left, .align-center, .align-right,
                 .fill-center, .fill-anchor) > .cell-stage {
   display: flex;

@@ -239,11 +239,15 @@ lint/test catches a violation, *discipline* = no automated gate, so it's on you)
   measuring layout (virtual lists, the Fit Spine) depends on. Use `padding` (space
   inside a box) and `gap` (space between flex/grid children), which measure
   cleanly. A bare `margin: 0` reset is fine (it adds no space); everything else —
-  lengths, `auto`, negatives — is barred. A margin is allowed **only where it is
-  provably the only answer**, admitted by raising `MARGIN_BUDGET` in
-  `tools/check-ownership.js` with that justification in the PR — never a silent
-  edit. *(gated — `checkMarginDiscipline` ratchet in `tools/check-ownership.js`,
-  via `build:check`; exceed-only, target zero; `engineering/gotchas.md`.)*
+  lengths, `auto`, negatives — is barred. **Target zero is achieved**: the layout
+  budget is **0**, and the only margins allowed are the explicitly enumerated
+  `SANCTIONED_MARGINS` allowlist (today: one irreducible flex `margin-left:auto`
+  push). A margin is admitted **only where it is provably the only answer**, by
+  adding an entry to that allowlist with its justification in the PR — never a
+  silent edit; the gate also fails on a *stale* sanction, so the list can't rot.
+  *(gated — `checkMarginDiscipline` in `tools/check-ownership.js`, via `build:check`;
+  layout budget 0 + allowlist; `engineering/gotchas.md`,
+  `engineering/decisions/2026-06-27-stage-flow-no-margins.md`.)*
 
 ---
 
