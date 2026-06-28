@@ -3,6 +3,7 @@ import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
+import { buildPlanFromMetas, metasFromSource } from '@/playground/drawing-board-rehearsal.js';
 import { type PresentLens, presentationSet } from './lint';
 import { slideToSpeech, useReadAloud } from './read-aloud';
 
@@ -15,9 +16,11 @@ const LENSES: { key: PresentLens; icon: React.ReactNode; label: string }[] = [
 	{ key: 'exec', icon: <Sparkles className="size-3.5" />, label: 'Exec summary' },
 	{ key: 'onepager', icon: <LayoutGrid className="size-3.5" />, label: 'One-pager' },
 ];
-// Practice's delivery coaching — ambient, timed beats over the slide.
-const BEATS = ['Pause — let the number land.', 'Look up from the slide.', 'Signpost what comes next.', 'Slow down — half pace here.', 'Breathe. One beat of silence.'];
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+type RehearsalBeat = { at: number; kind: string; text: string; hold: number };
+type RehearsalSlide = { index: number; target: number; why: string; beats: RehearsalBeat[] };
+type RehearsalPlan = { totalTarget: number; suggestMinutes: number; slides: RehearsalSlide[] };
 
 export function PresentOverlay({ open, onClose, options, slides, startIndex = 0, notify }: { open: boolean; onClose: () => void; options: SingleSlideOptions; slides: string[]; startIndex?: number; notify: (msg: string) => void }) {
 	const [lens, setLens] = React.useState<PresentLens>('full');
@@ -46,12 +49,37 @@ export function PresentOverlay({ open, onClose, options, slides, startIndex = 0,
 		});
 	}, [reader.sentences]);
 
-	// Practice's pacing math: a target talk length (~40s/slide) and a live timer;
-	// "behind" once you run past the expected pace for where you are in the deck.
-	const target = Math.max(60, count * 40);
-	const expected = Math.round((target * (clamped + 1)) / count);
-	const behind = elapsed > expected + 5;
-	const beat = BEATS[Math.floor(elapsed / 7) % BEATS.length];
+	// REAL rehearsal plan — the deterministic planner the Drawing Board ships
+	// (drawing-board-rehearsal.js): metas → per-slide dwell targets, role-specific
+	// "why", and timed delivery beats. Pure (no engine). Two-pass: probe for the
+	// suggested length, then build the plan to it.
+	const plan = React.useMemo<RehearsalPlan | null>(() => {
+		try {
+			const metas = metasFromSource(set.join('\n\n---\n\n'));
+			if (!metas.length) return null;
+			const probe = buildPlanFromMetas(metas, 1) as RehearsalPlan;
+			return buildPlanFromMetas(metas, Math.max(1, probe.suggestMinutes)) as RehearsalPlan;
+		} catch {
+			return null;
+		}
+	}, [set]);
+	const slidePlan = plan?.slides[clamped] ?? null;
+	// Target = the plan's total; "behind" once you run past the cumulative budget
+	// for where you are in the deck.
+	const target = plan?.totalTarget ?? Math.max(60, count * 40);
+	const cumTarget = plan ? plan.slides.slice(0, clamped + 1).reduce((s, sp) => s + sp.target, 0) : Math.round((target * (clamped + 1)) / count);
+	const behind = elapsed > cumTarget + 5;
+	// Slide-local elapsed drives the timed beat (its `at` is a 0–1 fraction of the
+	// slide's target). Reset slideStart whenever the slide changes.
+	const elapsedRef = React.useRef(0);
+	elapsedRef.current = elapsed;
+	const [slideStart, setSlideStart] = React.useState(0);
+	// biome-ignore lint/correctness/useExhaustiveDependencies: reset on slide change; elapsed read via ref to avoid re-reset each tick.
+	React.useEffect(() => setSlideStart(elapsedRef.current), [clamped]);
+	const slideElapsed = Math.max(0, elapsed - slideStart);
+	const frac = slidePlan?.target ? slideElapsed / slidePlan.target : 0;
+	const activeBeat = slidePlan?.beats?.filter((b) => frac >= b.at).slice(-1)[0] ?? null;
+	const coach = activeBeat?.text || slidePlan?.why || '';
 
 	// On open, start the full lens on the slide you were editing; the reshaping
 	// lenses always start at the top of their reshaped set.
@@ -123,10 +151,11 @@ export function PresentOverlay({ open, onClose, options, slides, startIndex = 0,
 				<button type="button" onClick={goPrev} disabled={clamped === 0} className="hidden shrink-0 rounded-full border border-border bg-card p-2 text-foreground hover:text-[var(--accent)] disabled:opacity-30 sm:block" aria-label="Previous slide"><ChevronLeft className="size-5" /></button>
 				<DeckPreview options={options} sample={cur} mermaid={false} className="relative aspect-video w-full max-w-[960px] overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_60px_rgba(10,22,40,.18)]" aria-label="Presented slide" />
 				<button type="button" onClick={goNext} disabled={clamped >= count - 1} className="hidden shrink-0 rounded-full border border-border bg-card p-2 text-foreground hover:text-[var(--accent)] disabled:opacity-30 sm:block" aria-label="Next slide"><ChevronRight className="size-5" /></button>
-				{/* Practice's delivery coaching — ambient beat over the slide while rehearsing. */}
-				{rehearse && playing && (
+				{/* Real delivery coaching — the plan's role-specific guidance, with the
+				    active timed beat surfacing as you cross its mark in the slide. */}
+				{rehearse && playing && coach && (
 					<div className="pointer-events-none absolute inset-x-0 bottom-2 flex justify-center px-4">
-						<span className="inline-flex items-center gap-2 rounded-full border border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_14%,var(--bg))] px-3.5 py-2 text-[13px] font-semibold text-[var(--text-heading)] shadow-[0_8px_24px_rgba(10,22,40,.14)]"><Sparkles className="size-3.5 text-[var(--accent)]" />{beat}</span>
+						<span className="inline-flex max-w-[680px] items-center gap-2 rounded-full border border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_14%,var(--bg))] px-3.5 py-2 text-center text-[13px] font-semibold text-[var(--text-heading)] shadow-[0_8px_24px_rgba(10,22,40,.14)]"><Sparkles className="size-3.5 shrink-0 text-[var(--accent)]" />{coach}</span>
 					</div>
 				)}
 				{/* Read-aloud teleprompter — the spoken sentence, highlighted live. */}

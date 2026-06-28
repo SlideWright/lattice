@@ -40,6 +40,9 @@ in patch versions.
   - **Share** runs the real export pipeline — Markdown (theme embedded), the
     Marp ZIP bundle, one-click image PDF/PPTX, and vector Print — reusing the
     Drawing Board's exporters.
+  - **Rehearse** (in Present) runs the deterministic rehearsal planner: real
+    per-slide dwell targets, an on-pace/behind indicator against the cumulative
+    budget, and role-specific delivery coaching with timed beats.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /

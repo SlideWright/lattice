@@ -131,6 +131,10 @@ describe('Studio — Fabricate + Present dock respond', () => {
 		// The transport becomes a rehearsal clock, with an on-pace indicator.
 		expect(d.getByRole('button', { name: 'Start rehearsal' })).toBeInTheDocument();
 		expect(d.getByText('On pace')).toBeInTheDocument();
+		// Starting the rehearsal surfaces REAL per-slide coaching from the planner
+		// (the opening slide's delivery beat), not a canned cycling string.
+		await user.click(d.getByRole('button', { name: 'Start rehearsal' }));
+		expect(await d.findByText(/eye contact|Set the frame|signpost/i)).toBeInTheDocument();
 	});
 });
 
