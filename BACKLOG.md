@@ -7,11 +7,11 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **41 open** items.
+only *status*. **43 open** items.
 
 > ⚠️ **3 cards need triage** (missing `area:`/`type:`/`priority:`): [#554](https://github.com/SlideWright/lattice/issues/554), [#581](https://github.com/SlideWright/lattice/issues/581), [#582](https://github.com/SlideWright/lattice/issues/582).
 
-## Backlog (37)
+## Backlog (39)
 
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
 - [#506](https://github.com/SlideWright/lattice/issues/506) feat(runtime): runtime auto-split (Option B) via eventual consistency — high · engine
@@ -50,6 +50,8 @@ only *status*. **41 open** items.
 - [#554](https://github.com/SlideWright/lattice/issues/554) feat(forms): N-up split Frame — compose multiple components in a grid (generalize split-panel)
 - [#581](https://github.com/SlideWright/lattice/issues/581) kpi: default layout overflows 4 rows under a two-line headline (masthead-lift capacity regression) — components
 - [#582](https://github.com/SlideWright/lattice/issues/582) galleries: add a non-flaky content-drift signal so goldens don't silently rot — infra
+- [#587](https://github.com/SlideWright/lattice/issues/587) redline: migrate into the .cell-stage cell-tree (the one standard component left on direct-child bodies) — comparison
+- [#588](https://github.com/SlideWright/lattice/issues/588) check-ownership: extend the hex-literal gate (HARD RULE #3) to shipped component CSS — infra
 
 ## Ready (4)
 
