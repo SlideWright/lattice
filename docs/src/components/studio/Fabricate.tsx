@@ -1,39 +1,65 @@
-import { Check, Download, LayoutGrid, Palette, Sparkles, X } from 'lucide-react';
+import { Check, Download, LayoutGrid, Palette, Sparkles, TriangleAlert, X } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
 import { Button } from '@/components/ui/button';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
+// The REAL theme engine — same maths as the Node tooling + the WCAG gate
+// (lib/theme/*, bundled browser-safe). deriveTheme → ~100 tokens (contrast-
+// repaired), auditBoth → live WCAG report, serializeTheme → a real themes/*.css.
+import { auditBoth, deriveTheme, STARTERS, serializeTheme, validateEssentials } from '@/playground/theme-core.generated.js';
+import { downloadText } from './download';
 
-// Fabricate — the Workbench Theme/Layout Studio (plan §2.3). Reached from the
-// launcher, NOT a deck mode. Pick core colours → engine-derived contract → live
-// WCAG audit → live specimen. Prototype: you really pick the four core colours
-// (they drive the swatches + the accent chrome); the derived contract + audit are
-// the engine's job and shown illustratively; the specimen renders through the
-// engine (laguna stands in for the crafted "Laguna Pro").
-const CORE0: [string, string][] = [
-	['Background', '#F8F2E5'],
-	['Surface', '#F1E9D4'],
-	['Text', '#0E2F33'],
-	['Accent', '#006D77'],
-];
-const DERIVED = ['#0E2F33', '#3D5559', '#6F7C7F', '#006D77', '#D2E8EA', '#DBCFB2', '#2B7E85', '#831A5A', '#7F7523', '#3A417F', '#248442', '#982B2B'];
-const AUDIT: [string, string, string][] = [
-	['Body on background', '9.4 : 1', 'AAA'],
-	['Accent on background', '4.9 : 1', 'AA'],
-	['Heading on surface', '11.8 : 1', 'AAA'],
-	['On-accent on accent', '5.2 : 1', 'AA'],
+// The four colours the author picks → essentials keys; the rest seed from a
+// neutral starter and the derivation contrast-repairs everything.
+const CORE: { label: string; key: 'bg' | 'bgAlt' | 'textHeading' | 'accent'; init: string }[] = [
+	{ label: 'Background', key: 'bg', init: '#F8F2E5' },
+	{ label: 'Surface', key: 'bgAlt', init: '#F1E9D4' },
+	{ label: 'Text', key: 'textHeading', init: '#0E2F33' },
+	{ label: 'Accent', key: 'accent', init: '#006D77' },
 ];
 const DENSITIES = ['Comfortable', 'Compact', 'Spacious'];
+const SPECIMEN = '<!-- _class: kpi -->\n\n`Theme · live specimen`\n\n## Your theme, derived & audited\n\n1. 100\n   - Tokens derived\n2. AA\n   - Contrast floor\n3. 4\n   - Colours you picked';
 
-const SPECIMEN = '<!-- _class: kpi -->\n## Laguna Pro, derived & audited\n\n- 9.4 : 1\n  - Body contrast\n- 18\n  - Tokens derived';
+const hash = (s: string) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
+const isColour = (v: unknown): v is string => typeof v === 'string' && /^(#|oklch|rgb|hsl)/i.test(v.trim());
 
 export function Fabricate({ options, onClose, notify }: { options: SingleSlideOptions; onClose: () => void; notify: (msg: string) => void }) {
 	const [tab, setTab] = React.useState<'theme' | 'layout'>('theme');
-	const [core, setCore] = React.useState(CORE0);
+	const [core, setCore] = React.useState<Record<string, string>>(() => Object.fromEntries(CORE.map((c) => [c.key, c.init])));
 	const [density, setDensity] = React.useState('Comfortable');
-	const accent = core.find(([n]) => n === 'Accent')?.[1] ?? '#006D77';
-	const setHex = (i: number, hex: string) => setCore((cs) => cs.map((c, j) => (j === i ? [c[0], hex] : c)));
+	const accent = core.accent;
+	const setHex = (key: string, hex: string) => setCore((c) => ({ ...c, [key]: hex }));
+
+	// Derive the full token map from the picked essentials — REAL, every render.
+	const derived = React.useMemo(() => {
+		const essentials = { ...STARTERS[0].essentials, bg: core.bg, bgAlt: core.bgAlt, textHeading: core.textHeading, textBody: core.textHeading, accent: core.accent };
+		try {
+			validateEssentials(essentials);
+			const map = deriveTheme(essentials);
+			const audit = auditBoth(map, { level: 'full' });
+			const name = `fab-${hash(JSON.stringify(essentials))}`;
+			const css = serializeTheme(map, { name, label: 'Laguna Pro' });
+			return { map, audit, name, css, error: null as string | null };
+		} catch (e) {
+			return { map: {} as Record<string, unknown>, audit: { light: { results: [] }, dark: { results: [] }, ok: false }, name: 'indaco', css: '', error: String((e as Error)?.message || e) };
+		}
+	}, [core]);
+
+	// 18 representative derived colour tokens for the contract strip (keep the
+	// token name so the swatch key is stable across re-derivations).
+	const tokens = React.useMemo(() => Object.entries(derived.map).filter(([, v]) => isColour(v)).slice(0, 18).map(([k, v]) => ({ name: k, value: v as string })), [derived.map]);
+	// Curated WCAG rows: one per role, worst ratio across modes.
+	const auditRows = React.useMemo(() => {
+		const byRole = new Map<string, { role: string; ratio: number | null; status: string }>();
+		for (const mode of ['light', 'dark'] as const) {
+			for (const r of derived.audit[mode]?.results ?? []) {
+				const prev = byRole.get(r.role);
+				if (!prev || (r.ratio ?? 99) < (prev.ratio ?? 99)) byRole.set(r.role, { role: r.role, ratio: r.ratio, status: r.status });
+			}
+		}
+		return [...byRole.values()].filter((r) => r.status === 'pass' || r.status === 'fail').slice(0, 5);
+	}, [derived.audit]);
 
 	return (
 		<div className="flex min-h-0 flex-1 flex-col">
@@ -47,38 +73,42 @@ export function Fabricate({ options, onClose, notify }: { options: SingleSlideOp
 					<button type="button" onClick={() => setTab('layout')} aria-pressed={tab === 'layout'} className={cn('inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[13px] font-semibold sm:px-3', tab === 'layout' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><LayoutGrid className="size-3.5" />Layout</button>
 				</div>
 				<div className="flex-1" />
-				<Button variant="outline" size="sm" className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={() => notify('Exported Laguna Pro as a theme file (.css token set).')}><Download className="size-4" /><span className="hidden sm:inline">Export theme</span></Button>
-				<Button size="sm" className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={() => notify('Saved “Laguna Pro” to your theme library.')}><Check className="size-4" /><span className="hidden sm:inline">Save to library</span></Button>
+				<Button variant="outline" size="sm" className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={() => { downloadText('laguna-pro.css', derived.css || '/* theme */', 'text/css'); notify('Exported laguna-pro.css — a real theme token set.'); }}><Download className="size-4" /><span className="hidden sm:inline">Export theme</span></Button>
+				<Button size="sm" className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={() => { try { localStorage.setItem('lattice-studio-theme-saved', derived.css); } catch {} notify('Saved “Laguna Pro” to your theme library.'); }}><Check className="size-4" /><span className="hidden sm:inline">Save to library</span></Button>
 			</div>
 
-			{/* Stacked on mobile (the fixed 340px column would overflow), two columns ≥ md. */}
 			<div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:grid md:overflow-hidden md:[grid-template-columns:340px_1fr]">
 				<aside className="shrink-0 border-b border-border md:overflow-y-auto md:border-r md:border-b-0">
 					<div className="border-b border-border px-4 py-3.5 font-mono text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{tab === 'theme' ? 'Theme Studio' : 'Layout Studio'}</div>
 					{tab === 'theme' ? (
 						<>
 							<Section icon={<Palette className="size-3.5" />} label="Core colours — you pick 4">
-								{core.map(([name, hex], i) => (
-									<div key={name} className="my-2.5 flex items-center gap-3">
-										<label className="relative size-[30px] cursor-pointer rounded-lg border border-border" style={{ background: hex }} aria-label={`${name} colour`}>
-											<input type="color" value={hex} onChange={(e) => setHex(i, e.target.value)} className="absolute inset-0 size-full cursor-pointer opacity-0" />
+								{CORE.map((c) => (
+									<div key={c.key} className="my-2.5 flex items-center gap-3">
+										<label className="relative size-[30px] cursor-pointer rounded-lg border border-border" style={{ background: core[c.key] }} aria-label={`${c.label} colour`}>
+											<input type="color" value={core[c.key]} onChange={(e) => setHex(c.key, e.target.value)} className="absolute inset-0 size-full cursor-pointer opacity-0" />
 										</label>
-										<span className="flex-1 text-[12.5px] font-semibold text-[var(--text-heading)]">{name}</span>
-										<span className="rounded-md border border-border px-2 py-0.5 font-mono text-[12px] uppercase text-muted-foreground">{hex}</span>
+										<span className="flex-1 text-[12.5px] font-semibold text-[var(--text-heading)]">{c.label}</span>
+										<span className="rounded-md border border-border px-2 py-0.5 font-mono text-[12px] uppercase text-muted-foreground">{core[c.key]}</span>
 									</div>
 								))}
 							</Section>
-							<Section icon={<Sparkles className="size-3.5" />} label="Engine-derived contract — 18 tokens">
-								<div className="flex flex-wrap gap-1.5">{DERIVED.map((d) => <span key={d} className="size-[26px] rounded-md border border-border" style={{ background: d }} />)}</div>
+							<Section icon={<Sparkles className="size-3.5" />} label={`Engine-derived contract — ${tokens.length} tokens`}>
+								<div className="flex flex-wrap gap-1.5">{tokens.map((t) => <span key={t.name} className="size-[26px] rounded-md border border-border" style={{ background: t.value }} title={`--${t.name}: ${t.value}`} />)}</div>
 							</Section>
-							<Section icon={<Check className="size-3.5" />} label="WCAG audit — all pass" last>
-								{AUDIT.map(([what, ratio, pill]) => (
-									<div key={what} className="my-2 flex items-center gap-2.5 text-[12.5px] text-foreground">
-										<span className="grid size-[18px] place-items-center rounded-md bg-[color-mix(in_srgb,var(--chart-3,#2e6f00)_18%,transparent)] text-[var(--chart-3,#2e6f00)]"><Check className="size-3" /></span>
-										{what}<span className="ml-auto font-mono text-[11px] text-muted-foreground">{ratio}</span>
-										<span className="rounded-full border border-[color-mix(in_srgb,var(--chart-3,#2e6f00)_35%,transparent)] px-1.5 py-px font-mono text-[10px] font-bold text-[var(--chart-3,#2e6f00)]">{pill}</span>
-									</div>
-								))}
+							<Section icon={derived.audit.ok ? <Check className="size-3.5" /> : <TriangleAlert className="size-3.5" />} label={derived.audit.ok ? 'WCAG audit — all pass' : 'WCAG audit — review'} last>
+								{auditRows.map((r) => {
+									const ok = r.status === 'pass';
+									const tier = (r.ratio ?? 0) >= 7 ? 'AAA' : ok ? 'AA' : 'FAIL';
+									const colour = ok ? 'var(--chart-3,#2e6f00)' : 'var(--chart-2,#9c3f00)';
+									return (
+										<div key={r.role} className="my-2 flex items-center gap-2.5 text-[12.5px] text-foreground">
+											<span className="grid size-[18px] place-items-center rounded-md" style={{ background: `color-mix(in srgb, ${colour} 18%, transparent)`, color: colour }}>{ok ? <Check className="size-3" /> : <TriangleAlert className="size-3" />}</span>
+											<span className="capitalize">{r.role}</span><span className="ml-auto font-mono text-[11px] text-muted-foreground">{r.ratio ? `${r.ratio.toFixed(1)} : 1` : '—'}</span>
+											<span className="rounded-full border px-1.5 py-px font-mono text-[10px] font-bold" style={{ borderColor: `color-mix(in srgb, ${colour} 35%, transparent)`, color: colour }}>{tier}</span>
+										</div>
+									);
+								})}
 							</Section>
 						</>
 					) : (
@@ -94,7 +124,7 @@ export function Fabricate({ options, onClose, notify }: { options: SingleSlideOp
 				</aside>
 				<div className="flex flex-col items-center gap-4 bg-card p-4 md:overflow-y-auto md:p-7">
 					<span className="self-start font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Live specimen — your theme, rendered</span>
-					<DeckPreview options={options} sample={SPECIMEN} mermaid={false} paletteOverride="laguna" className="relative aspect-video w-full max-w-[620px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Theme specimen" />
+					<DeckPreview options={options} sample={SPECIMEN} mermaid={false} paletteOverride={derived.name} extraTheme={derived.css ? { name: derived.name, css: derived.css } : undefined} className="relative aspect-video w-full max-w-[620px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Theme specimen" />
 				</div>
 			</div>
 		</div>
