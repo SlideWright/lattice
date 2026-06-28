@@ -115,15 +115,11 @@ export function createPresent({ host, getSource, runtimeUrl, themeBase }) {
     bg = mode === 'dark' ? '#0c0c0c' : '#15110d';
   }
 
-  // The stage iframe document: ONE slide centred + uniformly scaled to fit, the
-  // slide box pinned through frame-css so container-query layouts resolve against
-  // the real `@size` (preview parity). A no-zoom viewport + touch-action kill the
-  // iOS double-tap jolt. `show(n)` is driven from the parent via postMessage.
-  // Mirrors drawing-board-practice.js's frameDoc; Present drops the rehearsal
-  // chrome and the card shadow for an edge-to-edge presentation feel.
-  // The single-slide stage doc — now the shared kernel (presenter-window.js), the
-  // SAME builder the dual-screen presenter feeds its current/next iframes. The
-  // Present-specific bits are just the inputs: this deck's geometry/css/bg + the
+  // The single-slide stage doc — now the shared kernel (presenter-window.js's
+  // buildStageDoc), the SAME builder the dual-screen presenter feeds its current/
+  // next iframes: ONE slide centred + uniformly scaled, the slide box pinned
+  // through frame-css for `@size` parity, `show(n)` driven by postMessage. The
+  // Present-specific bits are just the inputs — this deck's geometry/css/bg + the
   // engine's KaTeX/Mermaid/a11y assets.
   function frameDoc(allHtml) {
     return buildStageDoc({

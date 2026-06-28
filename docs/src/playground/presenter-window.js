@@ -208,7 +208,8 @@ export function createPresenterController({ buildDoc, getState, onGo, onToggle }
 		if (!presenterWin || presenterWin.closed || !presenterReady) return;
 		const st = getState() || {};
 		try {
-			presenterWin.postMessage({ ppIndex: st.index || 0, note: st.note || '' }, '*');
+			// `?? 0` not `|| 0` — slide index 0 is a legitimate value, not "missing".
+			presenterWin.postMessage({ ppIndex: st.index ?? 0, note: st.note || '' }, '*');
 		} catch {
 			/* gone */
 		}
