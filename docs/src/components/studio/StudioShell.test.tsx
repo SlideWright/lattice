@@ -11,6 +11,19 @@ vi.mock('@/components/DeckPreview', () => ({
 	default: ({ 'aria-label': label }: { 'aria-label'?: string }) => <div data-testid="deck-preview">{label}</div>,
 }));
 
+// The Share exporters drive the engine render + heavy lazy chunks (jspdf, jszip,
+// pptxgenjs) — out of scope for a jsdom shell test. Mock them so we assert the
+// WIRING (the right export runs on the right click) without booting the engine.
+const shareSpies = vi.hoisted(() => ({
+	shareMarkdown: vi.fn(async () => {}),
+	shareMarp: vi.fn(async () => {}),
+	sharePdf: vi.fn(async () => {}),
+	sharePptx: vi.fn(async () => {}),
+	sharePrintDeck: vi.fn(async () => {}),
+	sharePrintSource: vi.fn(() => {}),
+}));
+vi.mock('./share-export', () => shareSpies);
+
 const options = { themeBase: '', runtimeUrl: '', engineUrl: '' };
 
 const realMatchMedia = window.matchMedia;
@@ -90,16 +103,23 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		expect(screen.getByText('Print source')).toBeInTheDocument();
 	});
 
-	it('Share wires real actions and toasts the not-yet-wired ones', async () => {
+	it('Share runs the REAL export pipeline for every format', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Share' }));
 		const sheet = within(await screen.findByRole('dialog', { name: /Share/ }));
-		// Markdown is the real source handoff → confirms with a toast.
+		// Markdown → the real source handoff, confirmed with a success toast.
 		await user.click(sheet.getByText('Markdown'));
-		expect(await screen.findByText(/Downloaded .*\.md/)).toBeInTheDocument();
-		// A rendered-artifact action is honestly flagged, not a dead click.
+		expect(shareSpies.shareMarkdown).toHaveBeenCalled();
+		expect(await screen.findByText(/Markdown ready/)).toBeInTheDocument();
+		// The rendered-artifact actions each run their own exporter (not a toast).
 		await user.click(sheet.getByText('PDF'));
-		expect(await screen.findByText(/export pipeline/)).toBeInTheDocument();
+		expect(shareSpies.sharePdf).toHaveBeenCalled();
+		await user.click(sheet.getByText('PowerPoint'));
+		expect(shareSpies.sharePptx).toHaveBeenCalled();
+		await user.click(sheet.getByText('Marp bundle'));
+		expect(shareSpies.shareMarp).toHaveBeenCalled();
+		await user.click(sheet.getByText('Print source'));
+		expect(shareSpies.sharePrintSource).toHaveBeenCalled();
 	});
 
 	it('Share → Present link opens Present', async () => {

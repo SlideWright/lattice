@@ -1,0 +1,155 @@
+// Studio Share — the REAL export pipeline, wired to the engine exporters.
+//
+// WRAP, DON'T REINVENT (HARD RULE #15). Every format below is produced by the
+// SAME code the Drawing Board ships (drawing-board-export.js) — Markdown (source
+// + embedded theme/components), the Marp ZIP bundle, the one-click image PDF /
+// PPTX, and the browser's vector Print. This module only assembles the inputs
+// those functions need (an engine render of the FULL deck) from the Studio's
+// renderer options + current palette, so Share hands off real artifacts rather
+// than a toast.
+
+import { ensureEngine } from '@/lib/load-engine';
+import type { SingleSlideOptions } from '@/lib/single-slide-render';
+import { createThemeFetcher } from '@/lib/theme-fetch';
+
+type EngineRender = { html: string; css: string; width?: number; height?: number };
+type PG = {
+	render: (source: string, theme: string, opts?: { baseUrl?: string }) => EngineRender;
+	hasTheme: (name: string) => boolean;
+	marp?: unknown;
+};
+
+/** The `render` object the image exporters (exportPdf/exportPptx) consume. */
+export type DeckRender = {
+	html: string;
+	css: string;
+	mode: 'light' | 'dark';
+	geom: { w: number; h: number };
+	runtimeUrl: string;
+	fontCss: string;
+};
+
+function pg(): PG | undefined {
+	return typeof window !== 'undefined' ? (window as unknown as { LatticePlayground?: PG }).LatticePlayground : undefined;
+}
+
+/** Ensure the engine bundle is loaded (no-op once present). */
+async function ensureReady(options: SingleSlideOptions): Promise<PG> {
+	if (!pg() && options.engineUrl) await ensureEngine(options.engineUrl);
+	const PG = pg();
+	if (!PG) throw new Error('engine not ready — try again in a moment');
+	return PG;
+}
+
+/** Register the palette (+ dark companion) and return the theme name to render. */
+async function ensureTheme(options: SingleSlideOptions, palette: string, mode: 'light' | 'dark'): Promise<string> {
+	const themes = createThemeFetcher(options.themeBase);
+	await themes.ensure(palette, mode);
+	const PG = pg();
+	return mode === 'dark' && PG?.hasTheme(`${palette}-dark`) ? `${palette}-dark` : palette;
+}
+
+/**
+ * Render the FULL deck through the engine and assemble the `render` object the
+ * image exporters need. This is the single piece of glue Share adds on top of
+ * the shared exporters.
+ */
+export async function buildDeckRender(options: SingleSlideOptions, source: string, palette: string, mode: 'light' | 'dark'): Promise<DeckRender> {
+	const PG = await ensureReady(options);
+	const theme = await ensureTheme(options, palette, mode);
+	const out = PG.render(source, theme);
+	const { previewFontFaceCss } = await import('@/playground/font-embed.js');
+	return {
+		html: out.html,
+		css: out.css,
+		mode,
+		geom: { w: out.width || 1280, h: out.height || 720 },
+		runtimeUrl: options.runtimeUrl,
+		fontCss: previewFontFaceCss(),
+	};
+}
+
+type ExportMod = typeof import('@/playground/drawing-board-export.js');
+function exporters(): Promise<ExportMod> {
+	return import('@/playground/drawing-board-export.js');
+}
+
+/** Markdown source with the current theme + referenced components embedded. */
+export async function shareMarkdown(options: SingleSlideOptions, source: string, name: string, palette: string): Promise<void> {
+	const ex = await exporters();
+	// Embed the live palette CSS so the .md keeps its look even where the theme
+	// isn't installed. Best-effort: a failed fetch still exports the bare source.
+	let theme: { name: string; css: string } | undefined;
+	try {
+		const css = await createThemeFetcher(options.themeBase).fetch(palette);
+		theme = { name: palette, css };
+	} catch {
+		theme = undefined;
+	}
+	ex.exportMarkdown(source, name, theme, []);
+}
+
+/** The self-contained Marp ZIP bundle (renders anywhere). */
+export async function shareMarp(options: SingleSlideOptions, source: string, name: string, palette: string): Promise<void> {
+	await ensureReady(options); // PG.marp must be present
+	const ex = await exporters();
+	await ex.exportMarp(source, name, palette, options.themeBase, { includeAgent: true });
+}
+
+/** One-click image PDF (2× raster, one slide per page). */
+export async function sharePdf(options: SingleSlideOptions, source: string, name: string, palette: string, mode: 'light' | 'dark', onStatus?: (m: string) => void): Promise<void> {
+	const render = await buildDeckRender(options, source, palette, mode);
+	const ex = await exporters();
+	await ex.exportPdf(render, name, onStatus, { deck: name, engine: 'lattice' });
+}
+
+/** PowerPoint (image-slides, full-bleed). */
+export async function sharePptx(options: SingleSlideOptions, source: string, name: string, palette: string, mode: 'light' | 'dark', onStatus?: (m: string) => void): Promise<void> {
+	const render = await buildDeckRender(options, source, palette, mode);
+	const ex = await exporters();
+	await ex.exportPptx(render, name, onStatus, { deck: name, engine: 'lattice' });
+}
+
+/**
+ * Vector, selectable Print — the browser's own PDF engine. Builds a printable
+ * full-deck frame from the render (print rules ON, visible to the print box) and
+ * invokes print; the frame is removed once the dialog closes.
+ */
+export async function sharePrintDeck(options: SingleSlideOptions, source: string, name: string, palette: string, mode: 'light' | 'dark'): Promise<void> {
+	const render = await buildDeckRender(options, source, palette, mode);
+	const { buildSrcdoc } = await import('@/playground/deck-preview.js');
+	const ex = await exporters();
+	const host = document.createElement('div');
+	host.dataset.studioPrint = 'deck';
+	host.style.cssText = 'position:fixed;inset:0;width:0;height:0;overflow:hidden;opacity:0;pointer-events:none;';
+	const frame = document.createElement('iframe');
+	frame.title = 'Print render';
+	frame.style.cssText = `width:${render.geom.w}px;height:${render.geom.h}px;border:0;`;
+	host.appendChild(frame);
+	document.body.appendChild(host);
+	await new Promise<void>((res) => {
+		frame.addEventListener('load', () => res(), { once: true });
+		frame.srcdoc = buildSrcdoc({ html: render.html, css: render.css, mode: render.mode, geom: render.geom, runtimeUrl: render.runtimeUrl, fontCss: render.fontCss, contentVisibility: false, cursor: false, sync: false, printRules: true });
+	});
+	try {
+		if (frame.contentWindow && (frame.contentWindow as Window & { __latticeFit?: () => void }).__latticeFit) (frame.contentWindow as Window & { __latticeFit?: () => void }).__latticeFit?.();
+		await new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res)));
+		ex.exportPrint(frame, { deck: name, engine: 'lattice' });
+	} finally {
+		// Remove after the print dialog settles (give the browser a beat).
+		window.setTimeout(() => host.remove(), 1000);
+	}
+}
+
+/** Print the Markdown source itself — monospace, for markup review. */
+export function sharePrintSource(source: string, name: string): void {
+	const win = window.open('', '_blank');
+	if (!win) throw new Error('Popup blocked — allow popups to print the source.');
+	const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+	win.document.write(
+		`<!doctype html><title>${esc(name)}</title><style>body{font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;padding:32px;color:#111}</style><pre>${esc(source)}</pre>`,
+	);
+	win.document.close();
+	win.focus();
+	win.print();
+}

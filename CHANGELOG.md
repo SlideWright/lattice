@@ -27,6 +27,19 @@ in patch versions.
 
 ### Added
 
+- **Studio — a unified authoring surface on the docs site (`/studio/`).** A
+  React-island redesign that folds composing, theming, presenting, and sharing
+  into one workspace, wired to the real engine — not placeholders:
+  - **Fabricate** derives a complete, contrast-repaired theme from four picked
+    core colours via the shared theme engine (`deriveTheme`/`auditBoth`/
+    `serializeTheme`), with a live WCAG audit that can fail and a specimen
+    rendered in the derived theme; Export downloads a real `themes/*.css`.
+  - **Present read-aloud** is a real synchronized teleprompter (each sentence
+    highlighted as read), with spoken audio over the production voice ladder
+    (connected OpenRouter voice → in-browser Kokoro → captions-only floor).
+  - **Share** runs the real export pipeline — Markdown (theme embedded), the
+    Marp ZIP bundle, one-click image PDF/PPTX, and vector Print — reusing the
+    Drawing Board's exporters.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /
