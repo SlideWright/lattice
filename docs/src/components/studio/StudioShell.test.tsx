@@ -1,7 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import StudioShell from './StudioShell';
+
+// The live preview loads the real engine by polling `window.LatticePlayground`
+// on a timer that never resolves in jsdom and leaks past teardown. These tests
+// assert shell behavior (text, labels, navigation), not the rendered slide, so
+// stub DeckPreview to a static element — also covers its use in Present/Fabricate.
+vi.mock('@/components/DeckPreview', () => ({
+	default: ({ 'aria-label': label }: { 'aria-label'?: string }) => <div data-testid="deck-preview">{label}</div>,
+}));
 
 const options = { themeBase: '', runtimeUrl: '', engineUrl: '' };
 

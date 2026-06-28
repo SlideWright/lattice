@@ -16,6 +16,15 @@ if (typeof window !== 'undefined') {
 	if (!Element.prototype.scrollIntoView) {
 		Element.prototype.scrollIntoView = () => {};
 	}
+	// CodeMirror measures selection geometry on a scrollIntoView dispatch (the
+	// editor↔preview sync uses one); jsdom's Range has no real layout, so stub the
+	// rect APIs to empty so the measurement is a no-op instead of throwing.
+	if (typeof Range !== 'undefined') {
+		const emptyRects = () => ({ length: 0, item: () => null, [Symbol.iterator]: function* () {} }) as unknown as DOMRectList;
+		const emptyRect = () => ({ x: 0, y: 0, width: 0, height: 0, top: 0, left: 0, right: 0, bottom: 0, toJSON: () => ({}) }) as DOMRect;
+		Range.prototype.getClientRects = emptyRects;
+		Range.prototype.getBoundingClientRect = emptyRect;
+	}
 	// jsdom ships no matchMedia; the Studio's responsive hook needs it. Default to
 	// "desktop" (no query matches) so component tests render the full layout.
 	if (!window.matchMedia) {

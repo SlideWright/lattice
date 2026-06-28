@@ -75,6 +75,13 @@ export default function StudioShell({ options }: Props) {
 		setPalette(name);
 		document.documentElement.setAttribute('data-palette', name);
 	}
+	// Navigate to a slide from the preview side (rail / arrows): move the preview
+	// AND scroll the editor to that slide, so the two panes stay in lock-step.
+	function goToSlide(i: number) {
+		const idx = Math.max(0, Math.min(i, slides.length - 1));
+		setActiveSlide(idx);
+		editorRef.current?.revealSlide(idx);
+	}
 
 	// ⌘K
 	React.useEffect(() => {
@@ -160,7 +167,7 @@ export default function StudioShell({ options }: Props) {
 				<button type="button" onClick={() => editorRef.current?.fixAll()} className="rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] disabled:opacity-40" disabled={!issues}>Fix all</button>
 				<span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-foreground"><FileText className="size-3" />Markdown</span>
 			</div>
-			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={KNOWN} className="flex-1" />
+			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={KNOWN} onCursorSlide={setActiveSlide} className="flex-1" />
 		</section>
 	);
 
@@ -169,9 +176,9 @@ export default function StudioShell({ options }: Props) {
 		<section className="flex min-h-0 flex-1 flex-col overflow-hidden">
 			<div className="flex items-center gap-2 border-b border-border px-3.5 py-1.5 font-mono text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
 				Preview<span className="flex-1" />
-				<button type="button" onClick={() => setActiveSlide((s) => Math.max(0, s - 1))} className="rounded px-1.5 text-muted-foreground hover:text-[var(--accent)]" aria-label="Previous slide">‹</button>
+				<button type="button" onClick={() => goToSlide(slideNo - 2)} className="rounded px-1.5 text-muted-foreground hover:text-[var(--accent)]" aria-label="Previous slide">‹</button>
 				<span className="rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--text-heading)]">Slide {slideNo} / {slides.length}</span>
-				<button type="button" onClick={() => setActiveSlide((s) => Math.min(slides.length - 1, s + 1))} className="rounded px-1.5 text-muted-foreground hover:text-[var(--accent)]" aria-label="Next slide">›</button>
+				<button type="button" onClick={() => goToSlide(slideNo)} className="rounded px-1.5 text-muted-foreground hover:text-[var(--accent)]" aria-label="Next slide">›</button>
 			</div>
 			<div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-card p-4 sm:p-5">
 				<DeckPreview options={options} sample={slide} mermaid={false} className="relative aspect-video w-full max-w-[760px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Live deck preview" />
@@ -185,7 +192,7 @@ export default function StudioShell({ options }: Props) {
 							type="button"
 							// biome-ignore lint/suspicious/noArrayIndexKey: the slide rail is positional — slide N's index IS its identity.
 							key={i}
-							onClick={() => setActiveSlide(i)}
+							onClick={() => goToSlide(i)}
 							aria-current={on}
 							aria-label={`Slide ${i + 1} — ${slideClass(s)}`}
 							className={cn('flex shrink-0 items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-left transition-colors', on ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-border hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]')}

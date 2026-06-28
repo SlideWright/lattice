@@ -33,3 +33,26 @@ export function slideClass(slideSrc: string): string {
 	CLASS_RE.lastIndex = 0;
 	return CLASS_RE.exec(String(slideSrc ?? ''))?.[1] ?? 'text';
 }
+
+/** Zero-based index of the slide containing character offset `pos` — the count of
+ *  `---` fences before it. Pairs with splitSlides() to sync editor cursor ↔ preview. */
+export function slideIndexAt(src: string, pos: number): number {
+	const before = String(src ?? '').slice(0, Math.max(0, pos));
+	return before.match(/\n-{3,}\n/g)?.length ?? 0;
+}
+
+/** Character offset where slide `index` begins — just past its preceding fence.
+ *  The inverse of slideIndexAt, for scrolling the editor to a slide. */
+export function slideStartOffset(src: string, index: number): number {
+	if (index <= 0) return 0;
+	const text = String(src ?? '');
+	const re = /\n-{3,}\n/g;
+	let m: RegExpExecArray | null;
+	let pos = 0;
+	let count = 0;
+	while ((m = re.exec(text)) && count < index) {
+		pos = m.index + m[0].length;
+		count++;
+	}
+	return pos;
+}

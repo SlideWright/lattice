@@ -1,6 +1,6 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { slideClass, splitSlides, unknownComponents, usedComponents } from './lint';
+import { slideClass, slideIndexAt, slideStartOffset, splitSlides, unknownComponents, usedComponents } from './lint';
 
 const KNOWN = ['title', 'kpi', 'quote', 'cards-grid', 'stats'];
 // Component-name-ish tokens (won't accidentally contain a `-->` or a fence).
@@ -88,5 +88,39 @@ describe('slideClass (fuzz)', () => {
 
 	it('reads only the FIRST class when a slide somehow carries two', () => {
 		expect(slideClass('<!-- _class: kpi -->\n<!-- _class: quote -->')).toBe('kpi');
+	});
+});
+
+describe('slideIndexAt / slideStartOffset (editor↔preview sync, fuzz)', () => {
+	it('the index at a slide start round-trips back to that slide — for any deck', () => {
+		fc.assert(
+			fc.property(fc.array(bodyArb.filter((b) => b.trim().length > 0), { minLength: 1, maxLength: 8 }), (bodies) => {
+				const src = bodies.join('\n---\n');
+				for (let i = 0; i < bodies.length; i++) {
+					const start = slideStartOffset(src, i);
+					// The offset lands inside slide i, so reading the index back gives i.
+					expect(slideIndexAt(src, start)).toBe(i);
+				}
+			}),
+		);
+	});
+
+	it('the index is monotonic across the document and never throws', () => {
+		fc.assert(
+			fc.property(fc.string(), fc.nat(), (src, pos) => {
+				expect(() => slideIndexAt(src, pos)).not.toThrow();
+				const here = slideIndexAt(src, pos);
+				// A position never sees more fences than the whole doc has.
+				expect(here).toBeLessThanOrEqual(slideIndexAt(src, src.length));
+				expect(here).toBeGreaterThanOrEqual(0);
+			}),
+		);
+	});
+
+	it('clamps degenerate input', () => {
+		expect(slideIndexAt('', 0)).toBe(0);
+		expect(slideIndexAt(undefined as unknown as string, 5)).toBe(0);
+		expect(slideStartOffset('a\n---\nb', 0)).toBe(0);
+		expect(slideStartOffset('a\n---\nb', 1)).toBe(6);
 	});
 });

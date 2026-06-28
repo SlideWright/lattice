@@ -4,6 +4,7 @@ import { type Diagnostic, linter, lintGutter } from '@codemirror/lint';
 import { EditorState } from '@codemirror/state';
 import { EditorView, keymap, lineNumbers } from '@codemirror/view';
 import * as React from 'react';
+import { slideIndexAt, slideStartOffset } from './lint';
 
 // A small, self-contained CodeMirror 6 markdown editor for the Studio prototype.
 // WRAP, DON'T REINVENT — but this is a fresh, bus-free wrapper (the playground's
@@ -64,18 +65,23 @@ function makeLinter(known: Set<string>) {
 	});
 }
 
-export type EditorHandle = { fixAll: () => void };
+export type EditorHandle = { fixAll: () => void; revealSlide: (index: number) => void };
 
 export const Editor = React.forwardRef<EditorHandle, {
 	value: string;
 	onChange: (next: string) => void;
 	knownComponents?: string[];
+	/** Fired when the cursor crosses into a different slide — drives the preview. */
+	onCursorSlide?: (index: number) => void;
 	className?: string;
-}>(function Editor({ value, onChange, knownComponents = [], className }, ref) {
+}>(function Editor({ value, onChange, knownComponents = [], onCursorSlide, className }, ref) {
 	const hostRef = React.useRef<HTMLDivElement>(null);
 	const viewRef = React.useRef<EditorView | null>(null);
 	const onChangeRef = React.useRef(onChange);
 	onChangeRef.current = onChange;
+	const onCursorSlideRef = React.useRef(onCursorSlide);
+	onCursorSlideRef.current = onCursorSlide;
+	const lastSlideRef = React.useRef(-1);
 	const [failed, setFailed] = React.useState(false);
 	const known = React.useMemo(() => new Set(knownComponents), [knownComponents]);
 
@@ -91,6 +97,16 @@ export const Editor = React.forwardRef<EditorHandle, {
 			if (text !== v.state.doc.toString()) {
 				v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: text } });
 			}
+		},
+		// Scroll the editor to a slide (rail / arrow nav). Sets the cursor at the
+		// slide's start; the resulting selectionSet echoes the SAME index back, so
+		// onCursorSlide no-ops — no sync loop.
+		revealSlide(index: number) {
+			const v = viewRef.current;
+			if (!v) return;
+			const pos = Math.min(slideStartOffset(v.state.doc.toString(), index), v.state.doc.length);
+			lastSlideRef.current = index;
+			v.dispatch({ selection: { anchor: pos }, scrollIntoView: true });
 		},
 	}));
 
@@ -117,6 +133,13 @@ export const Editor = React.forwardRef<EditorHandle, {
 						EditorView.contentAttributes.of({ 'aria-label': 'Deck source' }),
 						EditorView.updateListener.of((u) => {
 							if (u.docChanged) onChangeRef.current(u.state.doc.toString());
+								if (u.docChanged || u.selectionSet) {
+									const idx = slideIndexAt(u.state.doc.toString(), u.state.selection.main.head);
+									if (idx !== lastSlideRef.current) {
+										lastSlideRef.current = idx;
+										onCursorSlideRef.current?.(idx);
+									}
+								}
 						}),
 					],
 				}),
@@ -132,10 +155,13 @@ export const Editor = React.forwardRef<EditorHandle, {
 	}, [known]);
 
 	// External value changes (deck switch) → replace doc without losing the editor.
+	// Reset the cursor to the top so the doc-replace can't map the caret to the end
+	// and fire a spurious cursor→preview jump to the last slide.
 	React.useEffect(() => {
 		const v = viewRef.current;
 		if (v && value !== v.state.doc.toString()) {
-			v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: value } });
+			lastSlideRef.current = 0;
+			v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: value }, selection: { anchor: 0 } });
 		}
 	}, [value]);
 
