@@ -149,7 +149,7 @@
     "compliance": {
       "label": "Compliance — binary state",
       "caption": "Binary-state pills (`Compliant`, `Remediating`, `Open`) with a source footer for the regulatory register. Best for audit committee packs, examiner reviews, and quarterly compliance walk-throughs.",
-      "sample": "<!-- _class: kpi compliance -->\n\n`Compliance · Q4 2026`\n\n## Three frameworks clean; one finding under remediation.\n\n1. 0\n   - SOC 2 Type II open findings\n   - 2026 audit complete `Compliant` `Auditor`\n2. 0\n   - PCI-DSS open findings\n   - QSA review Oct 2026 `Compliant` `QSA`\n3. 1\n   - GDPR open findings\n   - remediation due Q1 2027 `Remediating` `DPO`\n4. 0\n   - Internal audit material findings\n   - quarterly review complete `Compliant` `Audit Committee`\n"
+      "sample": "<!-- _class: kpi compliance -->\n\n`Compliance · Q4 2026`\n\n## Three frameworks clean; one finding under remediation.\n\n1. 0\n   - SOC 2 Type II open findings\n   - 2026 audit complete `Compliant` `Auditor`\n2. 0\n   - PCI-DSS open findings\n   - QSA review Oct 2026 `Compliant` `QSA`\n3. 1\n   - GDPR open findings\n   - remediation due Q1 2027 `Remediating` `DPO`\n4. 0\n   - Internal audit material findings\n   - quarterly review complete `Compliant` `Audit Committee`\n\nSource · regulatory register · weekly export\n"
     },
     "trajectory": {
       "label": "Trajectory — year-over-year cards",

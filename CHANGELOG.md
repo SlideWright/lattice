@@ -293,11 +293,11 @@ in patch versions.
 - **Per-component gallery goldens refreshed to match current rendering (#569).** The committed
   `lib/components/**/*.gallery.{light,dark}.pdf` catalog snapshots had drifted from what the engine
   actually renders — accumulated staleness from CSS/engine changes that shipped without a gallery
-  rebuild (chiefly the chart-family masthead lift, which moved titles from centred to a left-aligned
+  rebuild (chiefly the chart-family masthead lift, which moved titles from centered to a left-aligned
   masthead band, plus the Form cell-tree spacing). A full `npm run build:galleries` re-render moved
   **772 slides across 98 gallery·moods**, reviewed per-slide against the prior goldens
   (`tools/golden-diff.mjs` before │ after │ overlay montages) plus a deterministic overflow re-scan.
-  No engine behaviour changed — this catches the committed artifacts up to already-shipped rendering.
+  No engine behavior changed — this catches the committed artifacts up to already-shipped rendering.
 - **Fixed three masthead-lift overflow regressions the refresh exposed (#569).** The taller masthead
   had begun clipping the densest gallery slides on current `main` (caught by the refresh, not caused
   by it): `kpi` (default/attention/compliance + the dark/accent compositions that reuse default) had

@@ -104,6 +104,8 @@ Executive KPI system — one base, five layout modifiers.
    - Internal audit material findings
    - quarterly review complete `Compliant` `Audit Committee`
 
+Source · regulatory register · weekly export
+
 
 ---
 

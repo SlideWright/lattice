@@ -3636,6 +3636,8 @@ Binary-state pills (`Compliant`, `Remediating`, `Open`) with a source footer for
 4. 0
    - Internal audit material findings
    - quarterly review complete `Compliant` `Audit Committee`
+
+Source · regulatory register · weekly export
 ```
 
 ##### `trajectory` — Trajectory — year-over-year cards
