@@ -4,9 +4,11 @@ import DeckPreview from '@/components/DeckPreview';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
 import { buildPlanFromMetas, metasFromSource } from '@/playground/drawing-board-rehearsal.js';
+import { createPresenterController } from '@/playground/presenter-window.js';
 import { type PresentLens, presentationSet } from './lint';
 import { slideToSpeech, useReadAloud } from './read-aloud';
 import { getNote } from './slide-notes';
+import { buildPresenterStageDoc } from './studio-presenter';
 
 // Present = a verb (plan §17): a full-screen takeover you ENTER and exit, with a
 // reader-facing lens switch that actually RESHAPES the deck (meet the reader where
@@ -34,6 +36,48 @@ export function PresentOverlay({ open, onClose, options, slides, frontMatter = '
 	const count = set.length;
 	const clamped = Math.min(idx, Math.max(0, count - 1));
 	const cur = set[clamped] ?? '';
+
+	// ── Dual-screen presenter window (the shared kernel; same speaker view as the
+	// Drawing Board). We render THIS deck's stage doc asynchronously (the engine)
+	// and hand the kernel live position + per-slide note; its prev/next relay back
+	// into setIdx. Refs keep the once-created controller reading current values.
+	const [presenterOn, setPresenterOn] = React.useState(false);
+	const stageDocRef = React.useRef('');
+	const clampedRef = React.useRef(0);
+	const countRef = React.useRef(0);
+	const curRef = React.useRef('');
+	clampedRef.current = clamped;
+	countRef.current = count;
+	curRef.current = cur;
+	const presenterRef = React.useRef<ReturnType<typeof createPresenterController> | null>(null);
+	if (!presenterRef.current) {
+		presenterRef.current = createPresenterController({
+			buildDoc: () => stageDocRef.current,
+			getState: () => ({ index: clampedRef.current, total: countRef.current, note: getNote(curRef.current) || '' }),
+			onGo: (delta: number) => setIdx((i) => Math.max(0, Math.min(i + delta, countRef.current - 1))),
+			onToggle: (on: boolean) => setPresenterOn(on),
+		});
+	}
+	// Build (and rebuild) the presenter stage doc while presenting — async (engine
+	// render), so a presenter already open is refreshed once the doc lands.
+	const fmAll = frontMatter;
+	// biome-ignore lint/correctness/useExhaustiveDependencies: rebuild when the presented SET or theme changes; extraTheme keyed by name (its content hash).
+	React.useEffect(() => {
+		if (!open) return;
+		let cancelled = false;
+		const source = fmAll + set.join('\n\n---\n\n');
+		buildPresenterStageDoc(options, source, set.length, paletteOverride, extraTheme)
+			.then(({ doc }) => {
+				if (cancelled) return;
+				stageDocRef.current = doc;
+				presenterRef.current?.refresh();
+			})
+			.catch(() => {});
+		return () => { cancelled = true; };
+	}, [open, set, fmAll, paletteOverride, extraTheme?.name, options]);
+	// Keep the second screen's current/next + notes in step with navigation.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: sync on index change; the controller reads live state via refs.
+	React.useEffect(() => { presenterRef.current?.sync(); }, [clamped]);
 
 	// Real read-aloud: a synchronized teleprompter over the current slide's prose,
 	// with spoken audio when a voice is connected. Owns its own transport (the dock
@@ -112,7 +156,7 @@ export function PresentOverlay({ open, onClose, options, slides, frontMatter = '
 	}, [open, rehearse, playing]);
 	// Reset rehearsal state whenever Present closes.
 	React.useEffect(() => {
-		if (!open) { setRehearse(false); setElapsed(0); setPlaying(false); }
+		if (!open) { setRehearse(false); setElapsed(0); setPlaying(false); presenterRef.current?.close(); }
 	}, [open]);
 	const goNext = React.useCallback(() => setIdx((i) => Math.min(i + 1, count - 1)), [count]);
 	const goPrev = React.useCallback(() => setIdx((i) => Math.max(i - 1, 0)), []);
@@ -147,7 +191,7 @@ export function PresentOverlay({ open, onClose, options, slides, frontMatter = '
 					</div>
 				</div>
 				<button type="button" onClick={toggleRehearse} aria-pressed={rehearse} className={cn('inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[12px] font-semibold sm:text-[13px]', rehearse ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]' : 'border-border text-muted-foreground hover:text-foreground')}><Timer className="size-4" />Rehearse</button>
-				<button type="button" onClick={() => notify('Presenter screen — speaker notes + next-slide preview on your second display.')} className="hidden shrink-0 items-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] font-semibold text-muted-foreground hover:text-foreground md:inline-flex"><Monitor className="size-4" />Presenter screen</button>
+				<button type="button" onClick={() => { const wasOpen = presenterRef.current?.isOpen(); presenterRef.current?.toggle(); if (!wasOpen && !presenterRef.current?.isOpen()) notify('Allow pop-ups to open the presenter view on your second screen.'); }} aria-pressed={presenterOn} title="Presenter view on your second screen — current + next slide, speaker notes, timer" className={cn('hidden shrink-0 items-center gap-1.5 rounded-md px-2 py-1.5 text-[13px] font-semibold hover:text-foreground md:inline-flex', presenterOn ? 'text-[var(--accent)]' : 'text-muted-foreground')}><Monitor className="size-4" />{presenterOn ? 'Presenter on' : 'Presenter screen'}</button>
 			</div>
 
 			<div className="relative flex min-h-0 w-full flex-1 items-center justify-center gap-4 px-4 sm:px-6">

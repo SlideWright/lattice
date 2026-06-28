@@ -81,6 +81,12 @@ in patch versions.
     library the Workbench Theme Studio uses) so a saved theme becomes selectable
     from the Inspector's Look group and the topbar theme menu, and renders your
     deck live (and through every Share export) — not just the specimen.
+  - **Present — dual-screen presenter window.** The "Presenter screen" button now
+    opens a real second-window speaker view (current + next slide, your speaker
+    notes, an elapsed timer with reset, prev/next), kept in sync over
+    `postMessage` and auto-placed on a second screen when the browser grants it.
+    It is the **same** reveal-style presenter the Drawing Board ships — both now
+    drive a shared kernel (`presenter-window.js`), one source of truth.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /
