@@ -417,6 +417,14 @@ in patch versions.
 
 ### Fixed
 
+- **`split-panel watermark` numbered cards: the bold header now left-aligns with its body
+  text.** The numbered (`ol`) card insets its header `1.25cqi` from the accent counter, but a
+  shared body rule (meant for the plain `ul` card, whose header has no inset) clobbered the
+  numbered card's body padding to `0` — so the body sat a notch left of its header. The body
+  inset is now scoped to the numbered card (a doubled-class bump so it wins regardless of
+  source order) and carries `box-sizing: border-box` so the `width:100%` body doesn't spill
+  its right edge; the plain `ul` card is unchanged (header and body already flush). Verified
+  light + dark across both card shapes. (#198)
 - **Docs say "component", and the count reads 53 — the terminology sweep is finished.**
   Completes #560 on top of #561/#563: the author-facing docs-site prose that still called a
   component a "layout" (the landing/getting-started/principles pages and the authoring + spec
