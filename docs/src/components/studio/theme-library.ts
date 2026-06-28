@@ -36,7 +36,9 @@ export function slugify(text: string): string {
 		.replace(/[^a-z0-9]+/g, '-')
 		.replace(/^-+|-+$/g, '')
 		.replace(/^[^a-z]+/, ''); // a theme name must START with a letter
-	return s.slice(0, 40);
+	// Trim again AFTER truncation so a cut that lands on a hyphen can't leave a
+	// trailing '-'.
+	return s.slice(0, 40).replace(/-+$/, '');
 }
 
 function toStudioTheme(a: ThemeAssetRecord): StudioTheme {
@@ -51,8 +53,13 @@ function toStudioTheme(a: ThemeAssetRecord): StudioTheme {
  * Resolves to the stored Studio theme; rejects if the store is unavailable.
  */
 export async function saveStudioTheme(input: { name: string; label: string; essentials: Record<string, string>; css: string }): Promise<StudioTheme> {
-	const labelSlug = slugify(input.label);
-	const name = labelSlug || (/^[a-z][a-z0-9-]*$/.test(input.name) ? input.name : `theme-${input.name}`);
+	// The invariant the feature rests on: the stored record name MUST equal the
+	// name the CSS was serialized under (its `@theme <name>`), or the engine
+	// registers the theme under the CSS name while the deck renders by record name
+	// → a blank, unthemed render. The caller already serialized `css` under
+	// `input.name`, so TRUST it when it's a valid slug; only fall back (to the
+	// label slug, then a stamped form) when it isn't.
+	const name = /^[a-z][a-z0-9-]*$/.test(input.name) ? input.name : slugify(input.label) || `theme-${slugify(input.name) || 'studio'}`;
 	const asset = themeAsset({ name, label: input.label, essentials: input.essentials, css: input.css });
 	const stored = (await putAsset(asset)) as ThemeAssetRecord;
 	return toStudioTheme(stored);

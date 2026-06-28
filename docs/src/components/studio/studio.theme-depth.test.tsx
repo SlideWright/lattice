@@ -23,10 +23,9 @@ vi.mock('./theme-library', async (orig) => {
 	return {
 		...actual,
 		saveStudioTheme: vi.fn(async (input: { name: string; label: string; css: string; essentials: Record<string, string> }) => {
-			// Mirror the real name resolution (slug the label, else the given name) so
-			// the mock's stored name matches production.
-			const slug = (actual.slugify as (s: string) => string)(input.label);
-			const name = slug || input.name;
+			// Mirror the real name resolution (trust a valid slug name, else the label
+			// slug) so the mock's stored name matches production.
+			const name = /^[a-z][a-z0-9-]*$/.test(input.name) ? input.name : (actual.slugify as (s: string) => string)(input.label) || input.name;
 			const t = { id: `t_${name}`, name, label: input.label, css: input.css, essentials: input.essentials };
 			const i = themeStore.findIndex((x) => x.name === t.name);
 			if (i >= 0) themeStore[i] = t;

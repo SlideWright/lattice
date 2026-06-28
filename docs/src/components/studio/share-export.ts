@@ -52,7 +52,10 @@ export type ExtraTheme = { name: string; css: string };
 async function ensureTheme(options: SingleSlideOptions, palette: string, mode: 'light' | 'dark', extra?: ExtraTheme): Promise<string> {
 	const PG = pg();
 	if (extra) {
-		if (PG && !PG.hasTheme(extra.name)) (PG as unknown as { addThemes: (c: string[]) => void }).addThemes([extra.css]);
+		// ALWAYS (re-)register so an edited theme re-saved under the same name
+		// exports with the current CSS (addThemes overwrites by name); a hasTheme
+		// guard would silently export the stale theme.
+		if (PG) (PG as unknown as { addThemes: (c: string[]) => void }).addThemes([extra.css]);
 		return extra.name;
 	}
 	const themes = createThemeFetcher(options.themeBase);

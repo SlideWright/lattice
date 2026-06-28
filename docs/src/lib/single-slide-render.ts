@@ -176,7 +176,10 @@ export function createSingleSlideRenderer(opts: SingleSlideOptions) {
 		const mode = modeOverride ?? docMode;
 		const themeReady = extra
 			? Promise.all([themes.ensureBase(), ensurePreviewFonts()]).then(() => {
-					if (!PG.hasTheme(extra.name)) PG.addThemes([extra.css]);
+					// ALWAYS (re-)register — addThemes overwrites by name, so an edited
+					// theme re-saved under the same name takes effect immediately. A
+					// hasTheme() guard would silently keep rendering the stale CSS.
+					PG.addThemes([extra.css]);
 				})
 			: Promise.all([themes.ensure(palette, mode), ensurePreviewFonts()]);
 		return themeReady

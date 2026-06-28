@@ -101,8 +101,24 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	// theme derived + saved in Fabricate lands here and becomes selectable. Loaded
 	// async (the store is IndexedDB); refreshed after a save/delete.
 	const [savedThemes, setSavedThemes] = React.useState<StudioTheme[]>([]);
+	// Current palette read through a ref so refreshThemes (a stable callback) can
+	// self-heal without re-subscribing on every palette flip.
+	const paletteRef = React.useRef(palette);
+	paletteRef.current = palette;
+	// biome-ignore lint/correctness/useExhaustiveDependencies: applyPalette closes only over stable setters/consts, and palette is read via paletteRef — a stable callback is intended (no re-subscribe per palette flip).
 	const refreshThemes = React.useCallback(() => {
-		listStudioThemes().then(setSavedThemes).catch(() => setSavedThemes([]));
+		listStudioThemes()
+			.then((list) => {
+				setSavedThemes(list);
+				// Self-heal a dead active palette: if the persisted choice is neither a
+				// built-in nor a (still-)present saved theme — e.g. it was deleted in
+				// another session — fall back to the default, so the preview isn't stuck
+				// rendering an unresolvable name. Checked AFTER the list resolves, so a
+				// valid saved slug is never reset mid-load.
+				const p = paletteRef.current;
+				if (!PALETTES.includes(p) && !list.some((t) => t.name === p)) applyPalette('indaco');
+			})
+			.catch(() => setSavedThemes([]));
 	}, []);
 	React.useEffect(() => { refreshThemes(); }, [refreshThemes]);
 	// `validation` is an editor preference (persisted in settings). The deck-level

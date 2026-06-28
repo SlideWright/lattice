@@ -69,15 +69,17 @@ export function DeckPreview({
 	const activeRef = React.useRef(active);
 	activeRef.current = active;
 
-	// `extraTheme.name` is a content hash of the theme (Fabricate derives both name
-	// and css from the same essentials), so the name fully captures the object's
-	// identity — depending on the whole object would re-render on every parent
-	// render for no benefit.
-	// biome-ignore lint/correctness/useExhaustiveDependencies: extraTheme.name is the theme's content hash; depending on the whole object would thrash.
+	// Re-render when the theme's NAME or its CSS CONTENT changes. The live-derived
+	// specimen has a content-hash name (so name alone would suffice), but a SAVED
+	// library theme keeps a stable slug name while its CSS can change (re-save after
+	// an edit) — so we must also depend on the css. Deps compare strings by value,
+	// and `extraTheme.css` is a stable reference for a given theme, so identical
+	// content never thrashes; only a real css change re-renders.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: extraTheme is read whole; its identity is captured by (name, css) — depending on the wrapper object would thrash.
 	const render = React.useCallback(() => {
 		const host = stageRef.current;
 		if (host && activeRef.current) engineRef.current?.renderInto(host, sample, mermaid, paletteOverride, extraTheme, modeOverride);
-	}, [sample, mermaid, paletteOverride, extraTheme?.name, modeOverride]);
+	}, [sample, mermaid, paletteOverride, extraTheme?.name, extraTheme?.css, modeOverride]);
 
 	// First render once the engine bundle has loaded.
 	React.useEffect(() => {
