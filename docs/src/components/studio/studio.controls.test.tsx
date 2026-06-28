@@ -1,0 +1,94 @@
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import StudioShell from './StudioShell';
+
+// Stub the live preview (its engine poller leaks a post-teardown timer in jsdom).
+vi.mock('@/components/DeckPreview', () => ({
+	default: ({ 'aria-label': label }: { 'aria-label'?: string }) => <div data-testid="deck-preview">{label}</div>,
+}));
+
+const options = { themeBase: '', runtimeUrl: '', engineUrl: '' };
+
+afterEach(() => {
+	document.documentElement.removeAttribute('data-palette');
+});
+
+function setup() {
+	const user = userEvent.setup();
+	render(<StudioShell options={options} />);
+	return user;
+}
+
+// A control-by-control sweep: every interactive surface that the flow tests don't
+// already cover gets an explicit "click it → observe the effect" assertion, so a
+// regression in any single affordance fails a named test.
+describe('Studio — every top-bar control responds', () => {
+	it('the palette dropdown applies a Studio theme to the document', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Theme' }));
+		await user.click(await screen.findByRole('menuitem', { name: /burgundy/i }));
+		expect(document.documentElement.getAttribute('data-palette')).toBe('burgundy');
+	});
+
+	it('the launcher creates a New deck', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
+		await user.click(await screen.findByText('New deck'));
+		expect(screen.getByRole('button', { name: /Untitled deck/ })).toBeInTheDocument();
+	});
+
+	it('⌘K runs a command (Fabricate) and a theme', async () => {
+		const user = setup();
+		await user.keyboard('{Meta>}k{/Meta}');
+		const dialog = await screen.findByRole('dialog', { name: /Studio commands/i });
+		await user.click(within(dialog).getByText(/Fabricate/));
+		expect(await screen.findByText('Theme Studio')).toBeInTheDocument();
+		// Re-open and pick a theme command.
+		await user.keyboard('{Meta>}k{/Meta}');
+		const d2 = await screen.findByRole('dialog', { name: /Studio commands/i });
+		await user.click(within(d2).getByText('cuoio'));
+		expect(document.documentElement.getAttribute('data-palette')).toBe('cuoio');
+	});
+});
+
+describe('Studio — Architect + editor controls respond', () => {
+	it('"Fix all" clears an unknown component flagged inline', async () => {
+		const user = setup();
+		const editor = screen.getByLabelText('Deck source');
+		await user.click(editor);
+		await user.paste('<!-- _class: bogus-zzz -->\n# Oops\n\n---\n\n');
+		// The unknown component surfaces as an inline issue.
+		expect(await screen.findByText(/\d+ issue/)).toBeInTheDocument();
+		// Fix all (Architect banner or Edit header — both fix) clears it.
+		await user.click(screen.getAllByRole('button', { name: 'Fix all' })[0]);
+		expect(screen.queryByText(/\d+ issue/)).not.toBeInTheDocument();
+	});
+
+	it('the Architect Coach + Reshape chips respond (toast)', async () => {
+		const user = setup();
+		await user.click(screen.getByText('Rewrite lead'));
+		expect(await screen.findByText(/rewrite the lead/i)).toBeInTheDocument();
+		await user.click(screen.getByText('Technical'));
+		expect(await screen.findByText(/detail-forward/i)).toBeInTheDocument();
+	});
+});
+
+describe('Studio — Inspector controls respond', () => {
+	it('a theme swatch in the Inspector applies the palette', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
+		// The Look group exposes the first five palettes as swatches (aria-labelled).
+		await user.click(await screen.findByRole('button', { name: 'cuoio' }));
+		expect(document.documentElement.getAttribute('data-palette')).toBe('cuoio');
+	});
+
+	it('the Page-numbers switch toggles', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
+		const sw = await screen.findByRole('switch', { name: 'Page numbers' });
+		expect(sw).toBeChecked();
+		await user.click(sw);
+		expect(sw).not.toBeChecked();
+	});
+});

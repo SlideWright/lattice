@@ -16,6 +16,15 @@ if (typeof window !== 'undefined') {
 	if (!Element.prototype.scrollIntoView) {
 		Element.prototype.scrollIntoView = () => {};
 	}
+	// cmdk (the ⌘K command palette) observes its list with ResizeObserver, which
+	// jsdom doesn't implement; a no-op stub lets the dialog mount in tests.
+	if (!('ResizeObserver' in window)) {
+		(window as unknown as { ResizeObserver: unknown }).ResizeObserver = class {
+			observe() {}
+			unobserve() {}
+			disconnect() {}
+		};
+	}
 	// CodeMirror measures selection geometry on a scrollIntoView dispatch (the
 	// editor↔preview sync uses one); jsdom's Range has no real layout, so stub the
 	// rect APIs to empty so the measurement is a no-op instead of throwing.
