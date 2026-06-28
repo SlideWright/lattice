@@ -240,6 +240,9 @@ export default function StudioShell({ options }: Props) {
 				if (out.status === 'offline') {
 					notify('Connect a model in Workspace → AI model, then this applies automatically.');
 					setWorkspaceOpen(true);
+				} else if (out.status === 'blocked') {
+					notify(out.note);
+					setWorkspaceOpen(true);
 				} else if (out.status === 'advice') {
 					notify(out.note);
 				} else {
@@ -267,7 +270,17 @@ export default function StudioShell({ options }: Props) {
 		return () => window.removeEventListener('keydown', onKey);
 	}, []);
 
-	const mode = typeof document !== 'undefined' ? (document.documentElement.getAttribute('data-mode') ?? 'light') : 'light';
+	// Track the document's light/dark mode reactively so exports + the preview
+	// follow a mode flip while Studio is open (the topbar writes <html data-mode>).
+	const [mode, setMode] = React.useState<string>(() => (typeof document !== 'undefined' ? (document.documentElement.getAttribute('data-mode') ?? 'light') : 'light'));
+	React.useEffect(() => {
+		const root = document.documentElement;
+		const sync = () => setMode(root.getAttribute('data-mode') ?? 'light');
+		sync();
+		const obs = new MutationObserver(sync);
+		obs.observe(root, { attributes: true, attributeFilter: ['data-mode'] });
+		return () => obs.disconnect();
+	}, []);
 	const slideNo = Math.min(activeSlide, viewSlides.length - 1) + 1;
 	// The full-deck index of the slide currently in view (for handing off to Present).
 	const activeFullIndex = composeLens === 'full' ? slideNo - 1 : Math.max(0, slides.indexOf(viewSlides[slideNo - 1]));

@@ -1,5 +1,6 @@
 import { DECKS, deckSource, type StudioDeck } from './decks';
 import { stripFrontMatter } from './front-matter';
+import { splitSlides } from './lint';
 
 // Studio persistence — localStorage-backed, Studio-scoped (lattice-studio-*).
 // Three concerns, kept independent so a corrupt value in one never breaks the
@@ -30,9 +31,11 @@ function write(key: string, value: unknown): void {
 	}
 }
 
-/** `N slides` for the deck-switcher meta line (front-matter excluded). */
+/** `N slides` for the deck-switcher meta line — the SAME splitter the live rail
+ *  uses (splitSlides), front-matter excluded, so the count never disagrees with
+ *  the rendered rail. */
 export function metaFor(source: string): string {
-	const n = stripFrontMatter(source).split(/^\s*---\s*$/m).filter((s) => s.trim()).length || 1;
+	const n = splitSlides(stripFrontMatter(source)).length || 1;
 	return `${n} slide${n === 1 ? '' : 's'}`;
 }
 
@@ -79,14 +82,15 @@ function canonicalSource(entry: IndexEntry): string {
 export function loadDeckList(): StudioDeck[] {
 	return loadIndex().map((e) => {
 		const source = loadSource(e.id) ?? canonicalSource(e);
-		return { id: e.id, title: e.title, meta: metaFor(source), slides: stripFrontMatter(source).split(/\n\n---\n\n/) };
+		return { id: e.id, title: e.title, meta: metaFor(source), slides: splitSlides(stripFrontMatter(source)) };
 	});
 }
 
 /** Create + persist a new deck; returns it (with its starter source saved). */
 export function createDeck(title = 'Untitled deck'): StudioDeck {
-	// Date.now is fine in app code (unlike workflow scripts) — a stable unique id.
-	const id = `deck-${Date.now().toString(36)}`;
+	// Date.now is fine in app code (unlike workflow scripts). Add a short random
+	// suffix so two creates in the same millisecond (double-click) can't collide.
+	const id = `deck-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
 	const index = loadIndex();
 	index.push({ id, title, builtin: false });
 	saveIndex(index);

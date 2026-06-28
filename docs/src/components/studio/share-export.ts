@@ -127,8 +127,12 @@ export async function sharePrintDeck(options: SingleSlideOptions, source: string
 	frame.style.cssText = `width:${render.geom.w}px;height:${render.geom.h}px;border:0;`;
 	host.appendChild(frame);
 	document.body.appendChild(host);
+	// Bound the load wait — a srcdoc whose `load` never fires must not hang the
+	// export forever (mirrors createCaptureFrame's withTimeout in the export core).
 	await new Promise<void>((res) => {
-		frame.addEventListener('load', () => res(), { once: true });
+		const done = () => res();
+		const t = window.setTimeout(done, 10000);
+		frame.addEventListener('load', () => { window.clearTimeout(t); done(); }, { once: true });
 		frame.srcdoc = buildSrcdoc({ html: render.html, css: render.css, mode: render.mode, geom: render.geom, runtimeUrl: render.runtimeUrl, fontCss: render.fontCss, contentVisibility: false, cursor: false, sync: false, printRules: true });
 	});
 	try {

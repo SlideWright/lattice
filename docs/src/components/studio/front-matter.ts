@@ -6,9 +6,10 @@
 // Deliberately tiny + line-based (not a YAML lib): the directives we set are
 // flat `key: value` scalars. Pure — no DOM, no engine.
 
-// Match a leading `---` block AND any blank lines that follow it, so stripping
-// the block leaves the body flush (no stray leading newline).
-const FM_RE = /^---[ \t]*\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n[ \t]*)*/;
+// Match a leading `---` block AND any fully-blank lines that follow it, so
+// stripping the block leaves the body flush — WITHOUT eating a content line's own
+// leading indentation (each consumed blank line must end in a newline).
+const FM_RE = /^---[ \t]*\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n(?:[ \t]*\r?\n)*)?/;
 
 /** The raw leading front-matter block (incl. delimiters + trailing newline), or ''. */
 export function frontMatterBlock(source: string): string {
@@ -61,6 +62,8 @@ export function setFrontMatter(source: string, key: string, value: string | null
 	if (value !== null) pairs.push([key, value]);
 	if (!pairs.length) return body;
 	const block = pairs.map(([k, v]) => `${k}: ${quoteIfNeeded(v)}`).join('\n');
-	// Single blank line between the block and the body (collapse any the body led with).
-	return `---\n${block}\n---\n\n${body.replace(/^\s+/, '')}`;
+	// Single blank line between the block and the body. Collapse only leading blank
+	// LINES (not all whitespace) so meaningful indentation on the body's first line
+	// survives.
+	return `---\n${block}\n---\n\n${body.replace(/^(?:[ \t]*\r?\n)+/, '')}`;
 }

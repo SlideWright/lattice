@@ -39,9 +39,13 @@ describe('studio-store — per-deck source', () => {
 		expect(loadDeckList().find((d) => d.id === id)?.slides[0]).toContain('# Edited');
 	});
 
-	it('metaFor counts slides', () => {
+	it('metaFor counts slides — agreeing with the rail splitter on tight separators', () => {
 		expect(metaFor('a\n\n---\n\nb\n\n---\n\nc')).toBe('3 slides');
 		expect(metaFor('only one')).toBe('1 slide');
+		// Tight + trailing separators count the same as the live rail (splitSlides),
+		// not the old per-variant regex (which over/under-counted these).
+		expect(metaFor('# A\n---\n# B')).toBe('2 slides');
+		expect(metaFor('# A\n\n---\n\n# B\n\n---\n')).toBe('2 slides');
 	});
 });
 

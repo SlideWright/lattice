@@ -35,6 +35,12 @@ describe('front-matter', () => {
 		expect(getFrontMatter(out, 'header')).toBe('Q3 Board Review');
 	});
 
+	it('preserves meaningful leading indentation on the body (only blank lines collapse)', () => {
+		const body = '  indented first line\n\n# Body';
+		const out = setFrontMatter(body, 'size', 'square');
+		expect(stripFrontMatter(out)).toBe(body); // the two leading spaces survive
+	});
+
 	it('the body separator `---` is not mistaken for front-matter', () => {
 		// No leading block → the inter-slide `---` stays in the body.
 		expect(frontMatterBlock(BODY)).toBe('');

@@ -45,17 +45,26 @@ export function architectModel(): Promise<ArchitectModel | null> {
 export type ArchitectOutcome =
 	| { status: 'applied'; source: string; applied: number; note: string }
 	| { status: 'advice'; note: string }
-	| { status: 'offline' };
+	| { status: 'offline' }
+	| { status: 'blocked'; note: string };
 
 /**
  * Run one architect instruction against the deck. Returns the edited source +
  * count when a connected model proposes edits, the model's advice when it only
- * advises, or `offline` when no model is connected (so the UI degrades honestly).
+ * advises, `offline` when no model is connected, or `blocked` when the user's
+ * hard budget cap (mode: 'stop') is reached on the cloud tier — so the UI degrades
+ * honestly and never spends real credit past the guardrail.
  */
 export async function runArchitect(source: string, instruction: string): Promise<ArchitectOutcome> {
 	const model = await architectModel();
 	if (!model) return { status: 'offline' };
-	if (model.availability().generation === 'floor') return { status: 'offline' };
+	const generation = model.availability().generation;
+	if (generation === 'floor') return { status: 'offline' };
+	// Respect the user's hard budget cap on the paid cloud tier — the same gate the
+	// production chat enforces (drawing-board-chat.js). Local tiers are free.
+	if (generation === 'openrouter' && architectSpend().status.blocked) {
+		return { status: 'blocked', note: 'Budget cap reached — raise it in Workspace → Spend, or switch tier.' };
+	}
 	const messages = [
 		{ role: 'system', content: SYSTEM },
 		{ role: 'user', content: `${instruction}\n\nThe deck — address slides by their [slide N] markers, and never include a marker in an edit body:\n\n${numberSlides(source)}` },
