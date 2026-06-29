@@ -43,7 +43,13 @@ in patch versions.
   `expression()` / `-moz-binding` / `javascript:` in component CSS (inline `data:` and
   `#fragment` refs stay allowed). Sanitizing is a no-op on legitimate decks, so no
   exported artifact's bytes change. Closes the §5.1 preconditions in the
-  component-transformer threat model.
+  component-transformer threat model. Independently red-teamed in real Chromium
+  (key-exfil harness, full mXSS catalog + the Mermaid `securityLevel:'loose'` path —
+  0 bypass) and assessed — both clean; DOMPurify pinned `^3.4.11` (past the patched
+  2026 CVE cluster). **Regression-gated:** new HARD RULE #22 + `checkPreviewHtmlSinks`
+  (`tools/check-ownership.js`, via `build:check`) fail the build if any preview-frame
+  builder stops sanitizing or a new un-sanitized one is added; the killer payloads are
+  locked in a permanent XSS corpus test.
 
 ### Added
 

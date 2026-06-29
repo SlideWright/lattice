@@ -262,6 +262,18 @@ lint/test catches a violation, *discipline* = no automated gate, so it's on you)
   `checkUsEnglish` ratchet in `tools/check-ownership.js`, via `build:check`;
   exceed-only, target zero; dated `engineering/decisions/` records, the `CHANGELOG`
   ledger, and generated bundles are exempt.)*
+- **#22 — Untrusted slide HTML reaches a preview frame ONLY through
+  `sanitizeSlideHtml`.** The docs-site Studio renders untrusted markdown (shared /
+  AI-generated decks + component skeletons) into a SAME-ORIGIN, un-sandboxed `srcdoc`
+  iframe; un-sanitized engine HTML there is XSS → OpenRouter-key theft
+  (`engineering/decisions/2026-06-29-component-transformer-threat-model.md` §5.1, #616).
+  Every preview-frame BUILDER — any `docs/src` module that assembles a live preview
+  document, marked by the split runtime-`<script>` injection idiom — must run its slide
+  HTML through `sanitizeSlideHtml` (`docs/src/lib/sanitize-slide-html.js`, DOMPurify)
+  before it enters the frame. Add a new builder to the allowlist with its justification;
+  the gate fails on an un-listed builder, a builder that drops the call, AND a stale
+  entry. *(gated — `checkPreviewHtmlSinks` + `SANCTIONED_PREVIEW_BUILDERS` in
+  `tools/check-ownership.js`, via `build:check`; `engineering/gotchas.md`.)*
 
 ---
 
