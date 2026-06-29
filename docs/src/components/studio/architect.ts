@@ -310,6 +310,15 @@ const FLOOR_STATUS: ArchitectStatus = {
 	promptApi: 'unknown', webgpu: false, webllmReady: false, universalReady: false, openRouterReady: false,
 };
 
+// The universal Transformers.js backend reports its active name as 'transformers'
+// (architect-model.js), but the Studio's tier vocabulary — tierPref, setStudioTier,
+// the UI's ON_DEVICE_TIERS / "active" checks — is 'universal'. Normalize at this
+// boundary so the active-tier badge + helper reflect the truth. The kernel name is
+// left as-is because the Drawing Board keys off `generation === 'transformers'`.
+export function normalizeGeneration(generation: string): string {
+	return generation === 'transformers' ? 'universal' : generation;
+}
+
 /**
  * Live model status — re-evaluates on connect/disconnect/model-swap/tier-summon
  * (the `db-model-changed` event the adapter fires) and whenever `pulse` changes
@@ -335,9 +344,10 @@ export function useArchitectStatus(pulse = 0): ArchitectStatus {
 			// floor placeholder until the fetch resolves.
 			const a = m.availability();
 			if (canceled) return;
+			const generation = normalizeGeneration(a.generation);
 			setState({
-				ready: a.generation !== 'floor',
-				generation: a.generation,
+				ready: generation !== 'floor',
+				generation,
 				modelName: m.openRouterModelName?.() ?? null,
 				modelId: m.openRouterModel?.() ?? null,
 				remaining: null,

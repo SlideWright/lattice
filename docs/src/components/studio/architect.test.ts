@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { applyDeckEdit, architectSpend, refineSelection, requestFindingFix, runArchitect, setBudget } from './architect';
+import { applyDeckEdit, architectSpend, normalizeGeneration, refineSelection, requestFindingFix, runArchitect, setBudget } from './architect';
 import { suggestFor } from './Editor';
 
 afterEach(() => {
@@ -8,6 +8,20 @@ afterEach(() => {
 	} catch {
 		/* no storage */
 	}
+});
+
+// The universal Transformers.js backend's active name is 'transformers', but the
+// Studio's tier vocabulary is 'universal' — normalizeGeneration bridges them so the
+// "active" badge + helper reflect the truth (the red-team caught the mismatch).
+describe('normalizeGeneration — the transformers→universal bridge', () => {
+	it('maps the universal backend name into the Studio tier vocabulary', () => {
+		expect(normalizeGeneration('transformers')).toBe('universal');
+	});
+	it('passes every other tier through unchanged', () => {
+		for (const g of ['floor', 'openrouter', 'webllm', 'prompt-api', 'universal']) {
+			expect(normalizeGeneration(g)).toBe(g);
+		}
+	});
 });
 
 // Bug A11: fixAll used to hardcode `kpi`; it now lands the SAME "did you mean"

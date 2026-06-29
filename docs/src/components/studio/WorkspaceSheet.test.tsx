@@ -132,6 +132,18 @@ describe('WorkspaceSheet — G6 on-device tier', () => {
 		await user.click(await sheet.findByRole('button', { name: 'Use Cloud' }));
 		expect(setTierSpy).toHaveBeenCalledWith('auto');
 	});
+
+	it('when an on-device tier is the ACTIVE generation, the badge + helper reflect it (not a "loaded" flag)', () => {
+		// generation is the normalized Studio value ('universal'); useArchitectStatus
+		// maps the backend's 'transformers' name to this before the UI ever sees it.
+		statusSpy.mockReturnValue({ ...connectedStatus, generation: 'universal', universalReady: true });
+		const { sheet } = openSheet();
+		// The active-tier helper agrees with the real active tier.
+		expect(sheet.getByText(/On-device is active/)).toBeInTheDocument();
+		// The Universal rung shows the live "active" badge + its running subtext.
+		expect(sheet.getByText('active')).toBeInTheDocument();
+		expect(sheet.getByText('Running on this device')).toBeInTheDocument();
+	});
 });
 
 describe('WorkspaceSheet — G6 authoritative spend', () => {
