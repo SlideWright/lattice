@@ -199,8 +199,8 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
 		await user.click(await screen.findByText('Fabricate'));
-		expect(await screen.findByText('Theme Studio')).toBeInTheDocument();
-		expect(screen.getByText(/Core colors/)).toBeInTheDocument();
+		expect(await screen.findByPlaceholderText(/Describe a look/i)).toBeInTheDocument();
+		expect(screen.getByText('Essentials')).toBeInTheDocument();
 	});
 
 	it('switches decks from the deck switcher', async () => {

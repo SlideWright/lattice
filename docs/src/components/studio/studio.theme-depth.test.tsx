@@ -65,9 +65,9 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 		render(<StudioShell options={options} />);
 		await openFabricate(user);
 
-		// All ten engine essentials are editable (not just the original four). The
-		// `… color` aria-label is the essentials picker; the contract adds `… light/dark`.
-		expect(screen.getAllByLabelText(/ color$/).length).toBe(10);
+		// All ten engine essentials are listed in the token tree (the three ink roles
+		// are unique to the essentials group vs the contract's Heading/Body/Muted).
+		for (const ink of ['Heading ink', 'Body ink', 'Muted ink']) expect(screen.getByRole('button', { name: ink })).toBeInTheDocument();
 
 		const specimen = document.querySelector('[data-label="Theme specimen"]') as HTMLElement;
 		expect(specimen.getAttribute('data-mode-override')).toBe('light');
@@ -86,7 +86,9 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 
 		const specimen = document.querySelector('[data-label="Theme specimen"]') as HTMLElement;
 		const before = specimen.getAttribute('data-extra-theme');
-		// Each contract role exposes an editable light AND dark well (#48/#49).
+		// Select the Accent contract role → the inspector exposes light AND dark wells (#48/#49).
+		const accentRows = screen.getAllByRole('button', { name: 'Accent' });
+		await user.click(accentRows[accentRows.length - 1]);
 		const darkWell = screen.getByLabelText('Accent dark') as HTMLInputElement;
 		fireEvent.input(darkWell, { target: { value: '#123456' } });
 		// The override re-derives a fresh theme (content-hashed name changes), and the
@@ -94,7 +96,7 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 		await waitFor(() => expect(specimen.getAttribute('data-extra-theme')).not.toBe(before));
 		expect(specimen.getAttribute('data-extra-theme')).toMatch(/^fab-/);
 		// A reset affordance appears for the overridden role and clears the pin.
-		await user.click(screen.getByRole('button', { name: 'Reset Accent' }));
+		await user.click(screen.getByRole('button', { name: /Reset role/ }));
 		await waitFor(() => expect(specimen.getAttribute('data-extra-theme')).toBe(before));
 	});
 
