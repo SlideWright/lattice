@@ -1,6 +1,6 @@
 import {
 	AlertTriangle, ArrowLeftToLine, ArrowRightToLine, Check, ChevronDown, ChevronLeft,
-	Copy, Eye, FileText, History, Layers, LayoutGrid, ListChecks, Moon, Palette, PencilLine, PencilRuler, Play, Plus, Save, Search, Settings2, Share2, SlidersHorizontal, Sparkles, StickyNote, Sun, Trash2, Upload, Volume2, Wand2, X,
+	Copy, Eye, FileBox, FileText, History, Layers, LayoutGrid, ListChecks, Moon, Palette, PencilLine, PencilRuler, Play, Plus, Save, Search, Settings2, Share2, SlidersHorizontal, Sparkles, StickyNote, Sun, Trash2, Upload, Volume2, Wand2, X,
 } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
@@ -24,6 +24,7 @@ import { Fabricate } from './Fabricate';
 import { frontMatterBlock, getFrontMatter, setFrontMatter, stripFrontMatter } from './front-matter';
 import { type ComponentEntry, InsertComponent } from './InsertComponent';
 import { IntentTag } from './IntentTag';
+import { Library } from './Library';
 import { type PresentLens, presentationSet, scoreDeck, slideClass, splitSlides, unknownComponents, usedComponents } from './lint';
 import { PresentOverlay } from './PresentOverlay';
 import { ShareSheet } from './ShareSheet';
@@ -102,6 +103,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const [view, setView] = React.useState<'compose' | 'fabricate'>('compose');
 	const [shareOpen, setShareOpen] = React.useState(false);
 	const [workspaceOpen, setWorkspaceOpen] = React.useState(false);
+	const [libraryOpen, setLibraryOpen] = React.useState(false);
 	const [presentOpen, setPresentOpen] = React.useState(false);
 	const [cmdOpen, setCmdOpen] = React.useState(false);
 	const [insertOpen, setInsertOpen] = React.useState(false);
@@ -950,6 +952,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				{/* Semantic icons (not two identical panel glyphs): the AI Architect vs the deck Inspector. */}
 				<Button variant="ghost" size="icon-sm" aria-pressed={architectOpen} onClick={() => setArchitectOpen((v) => !v)} aria-label="Toggle Architect" title="Architect — AI coach &amp; chat" className={cn(architectOpen && 'text-[var(--accent)]')}><Sparkles className="size-[18px]" /></Button>
 				<Button variant="ghost" size="icon-sm" aria-pressed={inspectorOpen} onClick={() => setInspectorOpen((v) => !v)} aria-label="Toggle Deck inspector" title="Deck inspector — look, size, notes, history" className={cn(inspectorOpen && 'text-[var(--accent)]')}><SlidersHorizontal className="size-[18px]" /></Button>
+				<Button variant="ghost" size="icon-sm" onClick={() => setLibraryOpen(true)} aria-label="Open Library" title="Library — saved themes &amp; components"><FileBox className="size-[18px]" /></Button>
 				<Button variant="ghost" size="icon-sm" onClick={() => setWorkspaceOpen(true)} aria-label="Workspace settings" className="hidden sm:inline-flex"><Settings2 className="size-[18px]" /></Button>
 				<span className="hidden size-7 shrink-0 place-items-center rounded-full bg-[var(--surface-inverse)] text-[12px] font-bold text-white sm:grid">SA</span>
 			</header>
@@ -1060,6 +1063,16 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			</Sheet>
 			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} source={source} options={options} palette={palette} mode={mode === 'dark' ? 'dark' : 'light'} extraTheme={extraTheme} extraCss={usedLocalCss} onPresent={() => setPresentOpen(true)} notify={notify} />
 			<WorkspaceSheet open={workspaceOpen} onOpenChange={setWorkspaceOpen} notify={notify} />
+			<Library
+				open={libraryOpen}
+				onOpenChange={setLibraryOpen}
+				options={options}
+				activePalette={palette}
+				onApplyTheme={applyPalette}
+				onInsert={(skeleton) => applyDeckOp(addSlideAfter(source, curIndex, skeleton))}
+				onChanged={() => { refreshThemes(); refreshComponents(); }}
+				notify={notify}
+			/>
 			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} frontMatter={fm} startIndex={activeFullIndex} paletteOverride={activeTheme?.name} extraTheme={extraTheme} extraCss={usedLocalCss} notify={notify} />
 			<CommandPalette
 				open={cmdOpen}

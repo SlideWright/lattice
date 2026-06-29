@@ -193,6 +193,19 @@ in patch versions.
     dark), line numbers, and undo — sharing the deck editor's theme (`editor-theme`,
     extracted to reuse). Degrades to an accessible `<textarea>` where CodeMirror
     can't lay out (jsdom). The live palette-blind + scoped gate is unchanged.
+  - **Library — one shelf for every saved theme + component**, opened from the
+    topbar. Browse/search/filter, **Apply** a theme or **Insert** a component,
+    **delete**, and a unified **Share** that downloads a `.zip` on the new
+    lattice-asset contract: a theme zip carries `manifest.json` + `<slug>.css` +
+    a **live-rendered `showcase.pdf`** (title · KPIs · journey chart · Mermaid ·
+    split-panel · closer, in the theme) + README; a component zip carries its CSS
+    + skeleton; multi-select packs a `lattice-assets.zip` bundle. **Import** a
+    `.zip` re-hydrates straight into the Library. See
+    `engineering/decisions/2026-06-29-lattice-asset-share.md`.
+  - **Share→PDF renders Mermaid from the local copy** (the Studio's `mermaidUrl`
+    now threads through the export capture), so exported decks' diagrams no longer
+    depend on the jsdelivr CDN. `renderPdfBlob` extracts the PDF-to-bytes core of
+    `exportPdf` for embedding (the Library's showcase).
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /

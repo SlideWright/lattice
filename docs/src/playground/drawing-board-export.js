@@ -254,7 +254,7 @@ function withTimeout(p, ms) {
 	return Promise.race([Promise.resolve(p), new Promise((res) => setTimeout(res, ms))]);
 }
 
-async function createCaptureFrame({ html, css, mode, geom, runtimeUrl, fontCss }) {
+async function createCaptureFrame({ html, css, mode, geom, runtimeUrl, fontCss, mermaidUrl }) {
 	const gw = geom?.w || 1280;
 	const gh = geom?.h || 720;
 	const host = document.createElement('div');
@@ -272,6 +272,7 @@ async function createCaptureFrame({ html, css, mode, geom, runtimeUrl, fontCss }
 		// cursor / sync / print chrome. The FIT agent still scales + reveals against
 		// the real width; rasterizeSection undoes the scale (transform:none) per slide.
 		const srcdoc = buildSrcdoc({ html, css, mode, geom: { w: gw, h: gh }, runtimeUrl, fontCss,
+			...(mermaidUrl ? { mermaidUrl } : {}),
 			contentVisibility: false, cursor: false, sync: false, printRules: false });
 		// Every settle await below is BOUNDED — an unbounded wait could hang the
 		// export forever (a srcdoc whose load never fires, or a `fonts.ready` that
@@ -442,44 +443,45 @@ async function rasterizeSection(section, fontEmbedCSS) {
 // `render` is the engine result for the deck ({ html, css, mode, geom, runtimeUrl,
 // fontCss }) — see the controller's `__dbExportRender`. We rasterize a dedicated
 // capture host built from it, never the live preview.
-export async function exportPdf(render, name, onStatus, meta) {
-	if (onStatus) onStatus('Preparing PDF…');
+// Build the jsPDF document (every slide rasterized + embedded) and RETURN it,
+// without saving. The shared core of exportPdf (which saves) and renderPdfBlob
+// (which hands the bytes to a caller — e.g. the Library's theme-zip showcase).
+async function buildPdfDoc(render, name, onStatus, meta) {
 	const { frame, dispose } = await createCaptureFrame(render);
 	try {
-	const { sections, fontEmbedCSS } = await sectionsOf(frame);
-	const { jsPDF } = await import('jspdf');
-	// The PAGE is a fixed physical size — the deck's aspect ratio at a canonical
-	// 720pt height — NOT the pixel box. `@size` changes the RASTER resolution (a
-	// 4K slide rasterizes to a 3840px PNG), not the page: a 4K page sized from the
-	// pixel box would be 3840px → a ~71-inch sheet. So normalize the box to height
-	// 720 (HD/standard already are; 4K scales 3840×2160→1280×720) and let the
-	// native-resolution PNG embed at high DPI inside it. HD/standard pages are
-	// unchanged; 4K now matches HD's page with a sharper image.
-	const { w: boxW, h: boxH } = slideGeom(sections[0]);
-	const PAGE_H = 720;
-	const pageH = PAGE_H;
-	const pageW = Math.round((boxW * PAGE_H) / boxH);
-	const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [pageW, pageH], compress: true });
-	const { eng, summary, keywords } = provenance(meta, sections.length);
-	pdf.setProperties({
-		title: (name || 'deck').trim(),
-		subject: summary,
-		author: 'Lattice Drawing Board',
-		keywords,
-		creator: `Lattice · ${eng}`,
-	});
-	for (let i = 0; i < sections.length; i++) {
-		// Pass a structured {current,total} alongside the message so the caller can
-		// drive a determinate progress bar — the rasterizing loop is the slow part
-		// (seconds-to-tens-of-seconds on a phone), and the only feedback worth a bar.
-		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…', { current: i, total: sections.length });
-		const png = await rasterizeSection(sections[i], fontEmbedCSS);
-		if (i > 0) pdf.addPage([pageW, pageH], 'landscape');
-		pdf.addImage(png, 'PNG', 0, 0, pageW, pageH);
+		const { sections, fontEmbedCSS } = await sectionsOf(frame);
+		const { jsPDF } = await import('jspdf');
+		const { w: boxW, h: boxH } = slideGeom(sections[0]);
+		const PAGE_H = 720;
+		const pageH = PAGE_H;
+		const pageW = Math.round((boxW * PAGE_H) / boxH);
+		const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [pageW, pageH], compress: true });
+		const { eng, summary, keywords } = provenance(meta, sections.length);
+		pdf.setProperties({ title: (name || 'deck').trim(), subject: summary, author: 'Lattice Drawing Board', keywords, creator: `Lattice · ${eng}` });
+		for (let i = 0; i < sections.length; i++) {
+			if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…', { current: i, total: sections.length });
+			const png = await rasterizeSection(sections[i], fontEmbedCSS);
+			if (i > 0) pdf.addPage([pageW, pageH], 'landscape');
+			pdf.addImage(png, 'PNG', 0, 0, pageW, pageH);
+		}
+		return pdf;
+	} finally {
+		dispose();
 	}
-	if (onStatus) onStatus('Saving PDF…', { current: sections.length, total: sections.length });
+}
+
+/** Render a deck to PDF bytes (Blob) without downloading — for embedding (zips). */
+export async function renderPdfBlob(render, name, onStatus, meta) {
+	if (onStatus) onStatus('Rendering PDF…');
+	const pdf = await buildPdfDoc(render, name, onStatus, meta);
+	return pdf.output('blob');
+}
+
+export async function exportPdf(render, name, onStatus, meta) {
+	if (onStatus) onStatus('Preparing PDF…');
+	const pdf = await buildPdfDoc(render, name, onStatus, meta);
+	if (onStatus) onStatus('Saving PDF…');
 	pdf.save(safeName(name) + '.pdf');
-	} finally { dispose(); }
 }
 
 // ── PPTX (image-slides) ───────────────────────────────────────────────────────
