@@ -26,16 +26,53 @@ const SYSTEM =
 	EDIT_PROTOCOL;
 
 type Usage = { cost?: number; total_tokens?: number; prompt_tokens?: number; completion_tokens?: number };
+
+/** A catalog entry, the shape architect-model.js `listOpenRouterModels()` yields. */
+export type ORModel = {
+	id: string;
+	name: string;
+	promptPerM: number | null;
+	completionPerM: number | null;
+	contextLength: number | null;
+	maxOutput: number | null;
+	vision: boolean;
+};
+
+/** The OpenRouter account readout — authoritative spend (usage) + remaining credit. */
+export type ORAccount = { usage?: number | null; limit?: number | null; remaining?: number | null };
+
+/** The generation-ladder availability flags `architect-model.js` reports. */
+export type ModelAvailability = {
+	generation: string;
+	promptApi: string; // 'available' | 'downloadable' | 'downloading' | 'unavailable' | 'unknown'
+	webgpu: boolean;
+	webllmReady: boolean;
+	universalReady: boolean;
+	openRouterReady: boolean;
+	modelOn: boolean;
+};
+
+/** Download progress for an on-device tier (0–1 fraction + a status line). */
+export type TierProgress = { progress: number; text?: string; status?: string };
+
 type ArchitectModel = {
 	complete: (o: { messages: { role: string; content: string }[]; json?: boolean; fallback?: string; onUsage?: (u: Usage) => void }) => Promise<string>;
-	availability: () => { generation: string };
+	availability: () => ModelAvailability;
 	refreshAvailability?: () => Promise<unknown>;
 	beginOpenRouterAuth: (cb: string) => Promise<string | null>;
 	resumeOpenRouterAuth: (code: string) => Promise<boolean>;
 	hasPendingOpenRouterAuth: () => boolean;
 	disconnectOpenRouter: () => void;
-	openRouterAccount: () => Promise<{ remaining?: number | null; limit?: number | null } | null> | { remaining?: number | null } | null;
+	openRouterAccount: () => Promise<ORAccount | null> | ORAccount | null;
 	openRouterModelName: () => string | null;
+	// The catalog + selection the Workspace model picker drives.
+	listOpenRouterModels: () => Promise<ORModel[]>;
+	openRouterModel: () => string;
+	setOpenRouterModel: (id: string) => void;
+	// The on-device ladder the Workspace restores to its UI.
+	setTier: (name: string) => void;
+	summon: (onProgress?: (p: TierProgress) => void, signal?: AbortSignal) => Promise<boolean>;
+	loadUniversal: (onProgress?: (p: TierProgress) => void, signal?: AbortSignal) => Promise<boolean>;
 };
 
 let modelPromise: Promise<ArchitectModel | null> | null = null;
@@ -250,40 +287,149 @@ export function setBudget(cap: number | null, mode: 'alert' | 'stop'): void {
 	}
 }
 
-export type ArchitectStatus = { ready: boolean; generation: string; modelName: string | null; remaining: number | null };
+export type ArchitectStatus = {
+	ready: boolean;
+	generation: string;
+	modelName: string | null;
+	modelId: string | null;
+	remaining: number | null;
+	usage: number | null;
+	limit: number | null;
+	// The on-device ladder readiness, so the AI-model tab can reflect each rung.
+	promptApi: string;
+	webgpu: boolean;
+	webllmReady: boolean;
+	universalReady: boolean;
+	openRouterReady: boolean;
+};
 
-/** Live model status — re-evaluates on connect/disconnect (`db-model-changed`). */
-export function useArchitectStatus(): ArchitectStatus {
-	const [state, setState] = React.useState<ArchitectStatus>({ ready: false, generation: 'floor', modelName: null, remaining: null });
+const FLOOR_STATUS: ArchitectStatus = {
+	ready: false, generation: 'floor', modelName: null, modelId: null, remaining: null, usage: null, limit: null,
+	promptApi: 'unknown', webgpu: false, webllmReady: false, universalReady: false, openRouterReady: false,
+};
+
+/**
+ * Live model status — re-evaluates on connect/disconnect/model-swap/tier-summon
+ * (the `db-model-changed` event the adapter fires) and whenever `pulse` changes
+ * (the Workspace bumps it on open so the authoritative account spend is fresh).
+ */
+export function useArchitectStatus(pulse = 0): ArchitectStatus {
+	const [state, setState] = React.useState<ArchitectStatus>(FLOOR_STATUS);
+	// `pulse` is an intentional dependency: the caller bumps it to force a re-fetch
+	// of the live status (incl. the authoritative account spend) on demand.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: pulse is the explicit refetch trigger
 	React.useEffect(() => {
-		let cancelled = false;
+		let canceled = false;
 		const refresh = async () => {
 			const m = await architectModel();
-			if (!m || cancelled) return;
+			if (!m || canceled) return;
 			try {
 				await m.refreshAvailability?.();
 			} catch {
 				/* best-effort */
 			}
-			const gen = m.availability().generation;
-			let remaining: number | null = null;
+			// Set the SYNC availability (tier, picker readiness) immediately — it must
+			// not wait on the account network call below, or the whole panel sits on the
+			// floor placeholder until the fetch resolves.
+			const a = m.availability();
+			if (canceled) return;
+			setState({
+				ready: a.generation !== 'floor',
+				generation: a.generation,
+				modelName: m.openRouterModelName?.() ?? null,
+				modelId: m.openRouterModel?.() ?? null,
+				remaining: null,
+				usage: null,
+				limit: null,
+				promptApi: a.promptApi,
+				webgpu: a.webgpu,
+				webllmReady: a.webllmReady,
+				universalReady: a.universalReady,
+				openRouterReady: a.openRouterReady,
+			});
+			// Then fold in the authoritative account spend when it arrives (best-effort).
 			try {
-				const acct = await m.openRouterAccount();
-				remaining = acct?.remaining ?? null;
+				const acct = (await m.openRouterAccount()) ?? null;
+				if (!canceled && acct) {
+					setState((s) => ({ ...s, remaining: acct.remaining ?? null, usage: acct.usage ?? null, limit: acct.limit ?? null }));
+				}
 			} catch {
-				remaining = null;
+				/* account unavailable — the strip just stays hidden */
 			}
-			if (!cancelled) setState({ ready: gen !== 'floor', generation: gen, modelName: m.openRouterModelName?.() ?? null, remaining });
 		};
 		refresh();
 		const onChange = () => refresh();
 		window.addEventListener('db-model-changed', onChange);
 		return () => {
-			cancelled = true;
+			canceled = true;
 			window.removeEventListener('db-model-changed', onChange);
 		};
-	}, []);
+	}, [pulse]);
 	return state;
+}
+
+// ── Model picker + on-device tier bridge (the Workspace AI-model tab) ───────────
+
+/** The OpenRouter catalog (id/name/pricing/ctx/vision), or [] when unavailable. */
+export async function listStudioModels(): Promise<ORModel[]> {
+	const m = await architectModel();
+	if (!m) return [];
+	try {
+		return await m.listOpenRouterModels();
+	} catch {
+		return [];
+	}
+}
+
+/** The currently-selected OpenRouter model id (the connect-time default until set). */
+export async function currentStudioModel(): Promise<string | null> {
+	const m = await architectModel();
+	return m?.openRouterModel?.() ?? null;
+}
+
+/** Choose the active OpenRouter model — announces `db-model-changed` for live UI. */
+export async function setStudioModel(id: string): Promise<void> {
+	const m = await architectModel();
+	m?.setOpenRouterModel?.(id);
+}
+
+/** Force a generation tier ('floor' | 'prompt-api' | 'webllm' | 'universal' | 'auto'). */
+export async function setStudioTier(name: string): Promise<void> {
+	const m = await architectModel();
+	m?.setTier?.(name);
+}
+
+/** Summon WebLLM (~1GB, WebGPU). Resolves true once loaded; never throws to the UI. */
+export async function summonWebLLM(onProgress?: (p: TierProgress) => void, signal?: AbortSignal): Promise<boolean> {
+	const m = await architectModel();
+	if (!m) return false;
+	try {
+		return await m.summon(onProgress, signal);
+	} catch {
+		return false;
+	}
+}
+
+/** Load the universal Transformers.js tier (~350MB WASM, runs everywhere). */
+export async function loadUniversalModel(onProgress?: (p: TierProgress) => void, signal?: AbortSignal): Promise<boolean> {
+	const m = await architectModel();
+	if (!m) return false;
+	try {
+		return await m.loadUniversal(onProgress, signal);
+	} catch {
+		return false;
+	}
+}
+
+/** The authoritative OpenRouter account readout (usage + remaining credit), or null. */
+export async function architectAccount(): Promise<ORAccount | null> {
+	const m = await architectModel();
+	if (!m) return null;
+	try {
+		return (await m.openRouterAccount()) ?? null;
+	} catch {
+		return null;
+	}
 }
 
 /** Start the OpenRouter one-click OAuth (PKCE) — navigates to the auth page. */

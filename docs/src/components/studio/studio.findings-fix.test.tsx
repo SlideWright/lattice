@@ -33,6 +33,13 @@ vi.mock('./architect', () => ({
 	setBudget: vi.fn(),
 	connectOpenRouter: vi.fn(),
 	disconnectOpenRouter: vi.fn(),
+	listStudioModels: vi.fn(async () => []),
+	currentStudioModel: vi.fn(async () => null),
+	setStudioModel: vi.fn(async () => {}),
+	setStudioTier: vi.fn(async () => {}),
+	summonWebLLM: vi.fn(async () => false),
+	loadUniversalModel: vi.fn(async () => false),
+	architectAccount: vi.fn(async () => null),
 }));
 
 const options = { themeBase: '', runtimeUrl: '', engineUrl: '' };

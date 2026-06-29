@@ -157,11 +157,14 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		expect(sheet.getByText('Active generation tier')).toBeInTheDocument();
 		expect(sheet.getByText(/Floor/)).toBeInTheDocument();
 		expect(sheet.getByRole('button', { name: /Connect OpenRouter/ })).toBeInTheDocument();
-		// Spend tab shows real (zero) spend, not a fabricated figure.
+		// Spend tab shows real (zero) session spend, not a fabricated figure. With no
+		// model connected there's no authoritative account line — only the honest live
+		// session tally ($0.00) plus a prompt to connect for the balance. (The old broken
+		// local "all-time $0.00" card is gone — that was the bug G6 fixed.)
 		await user.click(sheet.getByRole('tab', { name: 'Spend' }));
-		expect(await sheet.findByText('this session')).toBeInTheDocument();
-		// Real spend is zero in the test env (no model calls) — both cards show $0.00.
-		expect(sheet.getAllByText('$0.00').length).toBeGreaterThanOrEqual(2);
+		const sessionLine = await sheet.findByText(/This session:/);
+		expect(sessionLine).toHaveTextContent('$0.00');
+		expect(sheet.getByText(/Connect OpenRouter to see your authoritative account balance/)).toBeInTheDocument();
 		// Instructions tab — the textarea persists to localStorage.
 		await user.click(sheet.getByRole('tab', { name: 'Instructions' }));
 		const ta = await sheet.findByRole('textbox', { name: 'Standing instructions' });
