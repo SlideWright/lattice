@@ -33,7 +33,9 @@ export async function buildPresenterStageDoc(options: SingleSlideOptions, source
 		css: render.fontCss + render.css + (extraCss ? `\n${extraCss}` : ''),
 		runtimeUrl: render.runtimeUrl,
 		katexUrl: KATEX_URL,
-		mermaidUrl: MERMAID_URL,
+		// Prefer the Studio's locally-vendored Mermaid (studio.astro passes it); the
+		// dual-screen presenter renders diagrams from our own origin, not jsdelivr.
+		mermaidUrl: options.mermaidUrl || MERMAID_URL,
 		a11yDefs: A11Y_DEFS,
 	});
 	return { doc, total };

@@ -1,3 +1,8 @@
+---
+status: in-progress
+summary: Durable tracker for the 29 polish + feature items a live mobile/landscape review of the Studio surfaced, grouped into cohesive workstreams (G1–G8) each shipped as its own PR with merge sign-off. G1/G2 (mobile chrome, preview/notes, grouped theme picker + light/dark) and G3 (editable light/dark contract, explicit naming) have shipped; AI-chat/voice/model items (G6/G7) wait on an OpenRouter key. Delete once the backlog is cleared.
+---
+
 # Studio polish backlog (mobile review, 2026-06-28)
 
 A live review of the Studio (`lattice.style`) on mobile/landscape surfaced 29
@@ -42,13 +47,26 @@ thing). A group may split into two PRs if a sub-item balloons.
 - **Theme naming** mirrors component creation — an explicit name field, no magic.
 
 ## G3 · Theme Studio depth  *(AI part needs key)*
-- **Editable + labeled** engine-derived contract tokens (click → color picker; each
-  token labeled with its role; the WCAG audit stays the guardrail).
-- Make **light vs dark curation** explicit (and tunable, not just an audition
-  toggle).
-- **AI "describe a look"** → generate a theme, AA-compliant via
-  `deriveTheme`/`auditBoth`.
-- Save/Share as **icon buttons on the Studio header row** (consistent w/ Component).
+- ✅ **Editable + labeled** engine-derived contract — a labeled role table (Background,
+  Surface, Border, ink trio, Accent + wash, signals), each with a Light AND Dark well;
+  a click pins a per-side override on top of the derivation, the WCAG audit re-checks it
+  live, and a reset restores the engine value. *(#48 — shipped)*
+- ✅ **Light vs dark curation** made explicit by the same two-column contract table — you
+  pick light, the engine derives an AA-safe dark, override either side. *(#49 — shipped)*
+- ⏸️ **AI "describe a look"** → generate a theme, AA-compliant via
+  `deriveTheme`/`auditBoth`. *(#47 — deferred, needs OpenRouter key)*
+- ✅ Theme **naming consistent with Component** — no magic default; you name it, Save is
+  disabled until you do. *(#57 — shipped)*
+- ✅ Save/Export as **icon buttons on the Studio header row** (theme tab). *(#58 — shipped;
+  the Component-tab header equivalent rides with G4.)*
+- ✅ **Editable data-viz band on a live canvas** (G3b — emerged from review: "what about the
+  cat/band colours charts + Mermaid use?"). The 8 chart series + 12 categorical fill/mark
+  pairs + diagram/chart-state tokens are edited on a slide·pie·Mermaid live canvas with a
+  docked select-and-edit tray (light/dark wells for paired tokens, one for single), per-token
+  reset, WCAG re-audit. Iteration 2 of 5 mocked directions; responsive 3-up/stacked.
+- ✅ **Studio Mermaid goes local** — `single-slide-render` gains `mermaidUrl`; the Studio +
+  presenter use the committed `mermaid-v11.min.js` (Export bundle), no jsdelivr CDN. Principle:
+  the Studio uses local engine assets, not third-party CDNs.
 
 ## G4 · Component Studio depth  *(AI part needs key)*
 - Rename **"Layout" → "Component"** (user-facing labels).

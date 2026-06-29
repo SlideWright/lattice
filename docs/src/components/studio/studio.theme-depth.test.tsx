@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import StudioShell from './StudioShell';
@@ -65,8 +65,9 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 		render(<StudioShell options={options} />);
 		await openFabricate(user);
 
-		// All ten engine essentials are editable (not just the original four).
-		expect(document.querySelectorAll('input[type="color"]').length).toBe(10);
+		// All ten engine essentials are editable (not just the original four). The
+		// `… color` aria-label is the essentials picker; the contract adds `… light/dark`.
+		expect(screen.getAllByLabelText(/ color$/).length).toBe(10);
 
 		const specimen = document.querySelector('[data-label="Theme specimen"]') as HTMLElement;
 		expect(specimen.getAttribute('data-mode-override')).toBe('light');
@@ -76,6 +77,63 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 		await waitFor(() => expect(specimen.getAttribute('data-mode-override')).toBe('dark'));
 		// It renders against the derived theme, not a built-in palette.
 		expect(specimen.getAttribute('data-extra-theme')).toMatch(/^fab-/);
+	});
+
+	it('overrides a contract token side and re-derives the live specimen', async () => {
+		const user = userEvent.setup();
+		render(<StudioShell options={options} />);
+		await openFabricate(user);
+
+		const specimen = document.querySelector('[data-label="Theme specimen"]') as HTMLElement;
+		const before = specimen.getAttribute('data-extra-theme');
+		// Each contract role exposes an editable light AND dark well (#48/#49).
+		const darkWell = screen.getByLabelText('Accent dark') as HTMLInputElement;
+		fireEvent.input(darkWell, { target: { value: '#123456' } });
+		// The override re-derives a fresh theme (content-hashed name changes), and the
+		// specimen renders it — the edit is real, not cosmetic.
+		await waitFor(() => expect(specimen.getAttribute('data-extra-theme')).not.toBe(before));
+		expect(specimen.getAttribute('data-extra-theme')).toMatch(/^fab-/);
+		// A reset affordance appears for the overridden role and clears the pin.
+		await user.click(screen.getByRole('button', { name: 'Reset Accent' }));
+		await waitFor(() => expect(specimen.getAttribute('data-extra-theme')).toBe(before));
+	});
+
+	it('edits the data-viz band on the live canvas — slide·chart·diagram previews + selectable strip', async () => {
+		const user = userEvent.setup();
+		render(<StudioShell options={options} />);
+		await openFabricate(user);
+
+		// The canvas shows all three live previews so a band edit shows everywhere.
+		expect(document.querySelector('[data-label="Theme specimen"]')).toBeTruthy();
+		expect(document.querySelector('[data-label="Chart specimen"]')).toBeTruthy();
+		expect(document.querySelector('[data-label="Diagram specimen"]')).toBeTruthy();
+
+		const slide = document.querySelector('[data-label="Theme specimen"]') as HTMLElement;
+		const before = slide.getAttribute('data-extra-theme');
+		// Pick a chart series from the band strip → it loads into the tray editor,
+		// which exposes light + dark wells for a mode-varying token.
+		await user.click(screen.getByRole('button', { name: 'Series 3' }));
+		const darkWell = screen.getByLabelText('Series 3 dark') as HTMLInputElement;
+		fireEvent.input(darkWell, { target: { value: '#0a0a0a' } });
+		// The override re-derives — every preview re-renders against the new theme.
+		await waitFor(() => expect(slide.getAttribute('data-extra-theme')).not.toBe(before));
+
+		// A categorical fill is mode-independent — one "value" well, no light/dark split.
+		await user.click(screen.getByRole('button', { name: 'Categorical 1 · fill' }));
+		expect(screen.getByLabelText('Categorical 1 · fill value')).toBeTruthy();
+		expect(screen.queryByLabelText('Categorical 1 · fill dark')).toBeNull();
+	});
+
+	it('requires a name before saving — no magic default (consistent with components)', async () => {
+		const user = userEvent.setup();
+		render(<StudioShell options={options} />);
+		await openFabricate(user);
+		// No pre-filled name, and Save is disabled until you name it (#57).
+		const nameInput = screen.getByLabelText('Theme name') as HTMLInputElement;
+		expect(nameInput.value).toBe('');
+		expect(screen.getByRole('button', { name: /Save to library/ })).toBeDisabled();
+		await user.type(nameInput, 'Harbor');
+		expect(screen.getByRole('button', { name: /Save to library/ })).toBeEnabled();
 	});
 
 	it('saves a named theme to the library, then lets you pick it for the deck', async () => {
