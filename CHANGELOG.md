@@ -27,6 +27,24 @@ in patch versions.
 
 ### Added
 
+- **Studio — AI model backbone & live spend in the Workspace (G6, #610).** The Workspace
+  "AI model" tab gains the curated OpenRouter **model picker** the Studio had been missing —
+  the collapsed summary (model name + ctx · price), search, and **Featured / Value / Free / All**
+  lenses with vendor-grouped, priced rows (`vision` badge on image models), defaulting to Claude
+  Sonnet 4. The dropped **on-device tier** is restored as a **Generation switch** (Cloud / On-device)
+  that picks the *active* tier — exposing the full free, private ladder (browser built-in · WebLLM
+  ~1GB · universal Transformers.js ~350MB, with confirm-before-download + cancel). A red-team
+  hardened this: *connected ≠ active* — a deliberate on-device pick now outranks the connected cloud
+  (opt-in `explicitTierWins`, so the Drawing Board's cloud-first order is untouched), the "active"
+  badge reflects the true active tier, and one tap resumes the cloud (no disconnect). The vestigial
+  **Cloud tab is folded in** (5 tabs → 4). See
+  `engineering/decisions/2026-06-29-studio-tier-precedence.md`. The **Spend** tab now shows the *authoritative* OpenRouter account
+  balance (`$X left · $Y used` via `openRouterAccount()`) beside the live per-session tally,
+  dropping the old local "all-time" figure that always read `$0.00`. The curated lists + pricing/
+  grouping helpers are extracted to a shared `or-catalog.js` so the Studio and the Drawing Board
+  picker can't drift (HARD RULE #1/#15). Also fixed: the model-status hook no longer blocks the
+  whole panel on the account network call — the tier/picker render immediately, the balance folds
+  in when it arrives.
 - **HARD RULE #3 now gated over shipped CSS — `checkHexLiterals` (#588).** The no-hex-literal rule
   (always `var(--token)` so colour follows the palette + keeps WCAG AA) was enforced only on the
   Layout-Studio authoring path; it now runs over the engine's layout CSS (`lib/**`, minus

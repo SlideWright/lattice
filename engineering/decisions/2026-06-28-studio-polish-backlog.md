@@ -1,6 +1,6 @@
 ---
 status: in-progress
-summary: Durable tracker for the 29 polish + feature items a live mobile/landscape review of the Studio surfaced, grouped into cohesive workstreams (G1–G8) each shipped as its own PR with merge sign-off. G1/G2 (mobile chrome, preview/notes, grouped theme picker + light/dark) and G3 (editable light/dark contract, explicit naming) have shipped; AI-chat/voice/model items (G6/G7) wait on an OpenRouter key. Delete once the backlog is cleared.
+summary: Durable tracker for the 29 polish + feature items a live mobile/landscape review of the Studio surfaced, grouped into cohesive workstreams (G1–G8) each shipped as its own PR with merge sign-off. G1/G2 (mobile chrome, preview/notes, grouped theme picker + light/dark) and G3 (editable light/dark contract, explicit naming) have shipped; G6 (AI model picker, on-device tier, live spend) shipped with the live key (#610). The remaining AI-chat (theme/component) + voice items (G7) are next on the same key. Delete once the backlog is cleared.
 ---
 
 # Studio polish backlog (mobile review, 2026-06-28)
@@ -91,12 +91,19 @@ thing). A group may split into two PRs if a sub-item balloons.
   so a derived theme renders piechart/quadrant/progress coloured standalone (the
   showcase uses `journey` to sidestep it for now).
 
-## G6 · AI models & spend  *(verify w/ live key)*
-- **Model picker + curated grouping** in Workspace; default to **Claude Sonnet**.
-- **Restore the local/on-device tier** (in-browser: WebLLM / Prompt API / built-in)
-  — the architect ladder rung the Studio dropped from its UI.
-- **Realtime, accurate spend** — today it reads $0 despite real usage; pull live
-  OpenRouter usage + credits (`openRouterAccount()`), not just a local estimate.
+## G6 · AI models & spend  *(verify w/ live key)*  ✅ shipped — #610
+- ✅ **Model picker + curated grouping** in Workspace; default to **Claude Sonnet**.
+  A React port of the Drawing Board accordion (search + Featured/Value/Free/All lenses,
+  vendor-grouped priced rows, `vision` badge), reusing the SAME curated lists — extracted
+  to a shared `or-catalog.js` so the two surfaces can't drift (HARD RULE #1/#15).
+- ✅ **Restore the local/on-device tier** — a Cloud / On-device control surfacing the
+  architect ladder the Studio dropped: browser built-in (Prompt API) · WebLLM (~1GB) ·
+  universal Transformers.js (~350MB), with download progress, via the adapter's
+  `summon`/`loadUniversal`/`setTier`.
+- ✅ **Realtime, accurate spend** — the Spend tab now shows the authoritative OpenRouter
+  account balance (`$X left · $Y used` via `openRouterAccount()`) beside the live per-session
+  tally, replacing the broken local "all-time" that always read $0. Also fixed the status hook
+  so the account network call no longer blocks the tier/picker render.
 
 ## G7 · Real voice / TTS  *(verify w/ live key)*
 - Get **browser TTS actually speaking** (not silently falling through to captions).

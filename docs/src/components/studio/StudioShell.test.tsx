@@ -152,16 +152,21 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace settings' }));
 		const sheet = within(await screen.findByRole('dialog', { name: /Workspace/ }));
-		// Default tab = AI model: the ACTIVE tier is reported honestly (floor in the
-		// test env, no model connected) with a one-click Connect affordance.
-		expect(sheet.getByText('Active generation tier')).toBeInTheDocument();
-		expect(sheet.getByText(/Floor/)).toBeInTheDocument();
+		// Default tab = AI model: a Generation switch (Cloud / On-device) that picks the
+		// active tier. With no model in the test env, nothing is active yet, and the
+		// Cloud pane offers a one-click Connect affordance.
+		expect(sheet.getByText('Generation')).toBeInTheDocument();
+		expect(sheet.getByRole('tab', { name: 'On-device' })).toBeInTheDocument();
+		expect(sheet.getByText(/No tier active yet/)).toBeInTheDocument();
 		expect(sheet.getByRole('button', { name: /Connect OpenRouter/ })).toBeInTheDocument();
-		// Spend tab shows real (zero) spend, not a fabricated figure.
+		// Spend tab shows real (zero) session spend, not a fabricated figure. With no
+		// model connected there's no authoritative account line — only the honest live
+		// session tally ($0.00) plus a prompt to connect for the balance. (The old broken
+		// local "all-time $0.00" card is gone — that was the bug G6 fixed.)
 		await user.click(sheet.getByRole('tab', { name: 'Spend' }));
-		expect(await sheet.findByText('this session')).toBeInTheDocument();
-		// Real spend is zero in the test env (no model calls) — both cards show $0.00.
-		expect(sheet.getAllByText('$0.00').length).toBeGreaterThanOrEqual(2);
+		const sessionLine = await sheet.findByText(/This session:/);
+		expect(sessionLine).toHaveTextContent('$0.00');
+		expect(sheet.getByText(/Connect OpenRouter to see your authoritative account balance/)).toBeInTheDocument();
 		// Instructions tab — the textarea persists to localStorage.
 		await user.click(sheet.getByRole('tab', { name: 'Instructions' }));
 		const ta = await sheet.findByRole('textbox', { name: 'Standing instructions' });

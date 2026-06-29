@@ -10,6 +10,17 @@
 import { orSupportsCache } from './architect-model.js';
 import { getPref, PREFS, setPref } from './drawing-board-prefs.js';
 import {
+  emptyMessage,
+  filterModels,
+  fmtTokens,
+  fmtUSD,
+  groupByVendor,
+  metaLabel,
+  OR_VIEWS,
+  rowTitle,
+  shortName,
+} from './or-catalog.js';
+import {
   PERF_OVERLAY_AVAILABLE,
   perfOverlayEnabled,
   setPerfOverlayEnabled,
@@ -399,11 +410,6 @@ export function createModelSettings({ host, trigger, model, voice, onChange, isO
   // The connect button lives in the Converse panel; this section is the ongoing
   // control: the OpenRouter model picker (with pricing), caching, standing
   // instructions, and Disconnect. Shown only once OpenRouter is connected.
-  function fmtPrice(n) {
-    if (n == null || Number.isNaN(n)) return '';
-    if (n === 0) return 'free';
-    return n < 1 ? '$' + n.toFixed(3) : '$' + n.toFixed(2);
-  }
 
   // ── the OpenRouter model picker (accordion) + its sibling controls ────────────
   // OpenRouter ships 500+ models — a native <select> made that an unscannable wall
@@ -412,38 +418,9 @@ export function createModelSettings({ host, trigger, model, voice, onChange, isO
   // "Tap to change model" hint; expanded it reveals search + a Featured/All toggle +
   // the vendor-grouped, priced list. Every control announces itself (cue + tip) —
   // nothing is "click and hope".
-  const OR_FEATURED = [ // the short list worth defaulting to (matched by id prefix)
-    'anthropic/claude-sonnet-4', 'anthropic/claude-opus-4', 'anthropic/claude-3.5-sonnet',
-    'openai/gpt-5', 'openai/gpt-5-mini', 'openai/gpt-4o',
-    'google/gemini-2.5-pro', 'google/gemini-2.5-flash',
-  ];
-  const OR_VALUE = [ // strong performers that punch above their price (the "Value" lens)
-    'deepseek/deepseek-r1', 'deepseek/deepseek-chat',
-    'meta-llama/llama-3.3-70b-instruct',
-    'qwen/qwen-2.5-72b-instruct', 'qwen/qwq',
-    'google/gemini-2.5-flash', 'openai/gpt-5-mini', 'openai/gpt-4o-mini',
-    'anthropic/claude-3.5-haiku',
-  ];
-  const inSet = (set, id) => set.some((f) => id === f || id.startsWith(f));
-  const isFree = (m) => m.promptPerM === 0 && m.completionPerM === 0; // OpenRouter ":free" rows
-  const vendorOf = (id) => (id.split('/')[0] || 'other').replace(/[-_]/g, ' ');
-  const shortName = (m) => (m.name || m.id).replace(/^[^:]+:\s*/, ''); // drop "Vendor: " — we group by vendor
-  const priceLabel = (m) => (m.promptPerM != null
-    ? `${fmtPrice(m.promptPerM)}/M in · ${fmtPrice(m.completionPerM)}/M out`
-    : 'pricing varies'); // variable/router models (sentinel -1) — never "$-1000000"
-  const fmtCtx = (n) => {
-    if (!n) return '';
-    if (n >= 1e6) return `${(n / 1e6).toFixed(n % 1e6 ? 1 : 0)}M`;
-    if (n >= 1000) return `${Math.round(n / 1000)}K`;
-    return String(n);
-  };
-  // The model's meta line: context window (when known) + pricing.
-  const metaLabel = (m) => `${m.contextLength ? `${fmtCtx(m.contextLength)} ctx · ` : ''}${priceLabel(m)}`;
-  const rowTitle = (m) => [
-    m.contextLength ? `Context ${m.contextLength.toLocaleString()} tokens` : null,
-    m.maxOutput ? `Max output ${m.maxOutput.toLocaleString()}` : null,
-    m.vision ? 'Accepts images' : null,
-  ].filter(Boolean).join(' · ');
+  // The curated lists, pricing/format/grouping helpers, and the view tabs live in
+  // the shared catalog module (or-catalog.js) so the Studio Workspace picker reuses
+  // the exact same curation — see the imports at the top of this file.
   const wordCount = (s) => { const t = s.trim(); return t ? t.split(/\s+/).length : 0; };
 
   function orPicker() {
@@ -466,9 +443,8 @@ export function createModelSettings({ host, trigger, model, voice, onChange, isO
     search.placeholder = 'Search 500+ models…';
     search.setAttribute('aria-label', 'Search OpenRouter models');
     const seg = el('div', 'db-or-seg');
-    const TABS = [['featured', 'Featured'], ['value', 'Value'], ['free', 'Free'], ['all', 'All']];
     const segBtns = {};
-    for (const [key, label] of TABS) {
+    for (const [key, label] of OR_VIEWS) {
       const btn = el('button', 'db-or-seg-btn' + (key === 'featured' ? ' is-on' : ''), label);
       btn.type = 'button';
       btn.addEventListener('click', () => {
@@ -494,22 +470,14 @@ export function createModelSettings({ host, trigger, model, voice, onChange, isO
     const renderList = () => {
       list.innerHTML = '';
       if (!orModelsCache) { list.append(el('p', 'db-or-empty', 'Loading models…')); return; }
-      let items = orModelsCache.filter((m) => `${m.name || ''} ${m.id}`.toLowerCase().includes(q));
-      if (view === 'featured') items = items.filter((m) => inSet(OR_FEATURED, m.id));
-      else if (view === 'value') items = items.filter((m) => inSet(OR_VALUE, m.id));
-      else if (view === 'free') items = items.filter(isFree);
+      const items = filterModels(orModelsCache, view, q);
       if (!items.length) {
-        const msg = view === 'all' ? 'No models match.'
-          : view === 'free' ? 'No free models in the catalog right now.'
-            : `No ${view} models match — try All.`;
-        list.append(el('p', 'db-or-empty', msg));
+        list.append(el('p', 'db-or-empty', emptyMessage(view)));
         return;
       }
-      const groups = {};
-      for (const m of items) (groups[vendorOf(m.id)] ||= []).push(m);
-      for (const v of Object.keys(groups).sort()) {
-        list.append(el('div', 'db-or-group', v));
-        for (const m of groups[v].sort((x, y) => shortName(x).localeCompare(shortName(y)))) {
+      for (const { vendor, models } of groupByVendor(items)) {
+        list.append(el('div', 'db-or-group', vendor));
+        for (const m of models) {
           const row = el('label', 'db-or-row');
           const sel = m.id === model.openRouterModel();
           if (sel) row.classList.add('is-sel');
@@ -666,14 +634,6 @@ export function createModelSettings({ host, trigger, model, voice, onChange, isO
     showButton();
     return wrap;
   }
-
-  const fmtUSD = (n) => '$' + (Number(n) || 0).toFixed(Number(n) > 0 && Number(n) < 1 ? 3 : 2);
-  const fmtTokens = (n) => {
-    n = Number(n) || 0;
-    if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
-    if (n >= 1000) return `${(n / 1000).toFixed(n < 10000 ? 1 : 0)}K`;
-    return String(Math.round(n));
-  };
 
   // The account readout. The OpenRouter account `used`/`left` is AUTHORITATIVE
   // (fetched with the user's key) — that's the real spend. The local figure is only
