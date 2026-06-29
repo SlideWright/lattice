@@ -27,6 +27,20 @@ in patch versions.
 
 ### Added
 
+- **Studio — layered spend & budget, with real cost control (#610).** A live-key red-team
+  found the Spend tab surfaced one weak field of a four-layer budget system — it never
+  fetched the account wallet and the gauge ignored the real balance, so "$0.00 used ·
+  balance unavailable" read as *free*. The Spend tab now shows four labeled layers —
+  **Wallet** (real balance via `/api/v1/credits`), **This key** (the per-key server-enforced
+  cap, with a deep-link to set one in the OpenRouter dashboard), **This session** (live
+  tally), **Your cap** (client guardrail) — with a gauge that tracks the *binding*
+  constraint. New cost control: a **pre-send `≈ $X` estimate** with **hard-stop-on-estimate**
+  (a single request can't overshoot the cap), a Studio-scoped **`max_tokens` ceiling** on
+  cloud calls (the Drawing Board stays uncapped), and a **cheaper default model** (Claude 3.5
+  Haiku, the Studio's first-connect default — model selection itself is shared across
+  surfaces) with the active price shown. See
+  `engineering/decisions/2026-06-29-studio-spend-budget.md`.
+
 - **Studio — AI model backbone & live spend in the Workspace (G6, #610).** The Workspace
   "AI model" tab gains the curated OpenRouter **model picker** the Studio had been missing —
   the collapsed summary (model name + ctx · price), search, and **Featured / Value / Free / All**

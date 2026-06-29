@@ -31,6 +31,8 @@ const TRANSFORMERS_URL = 'https://esm.run/@huggingface/transformers';
 const OPENROUTER_AUTH_URL = 'https://openrouter.ai/auth';
 const OPENROUTER_KEYS_URL = 'https://openrouter.ai/api/v1/auth/keys';
 const OPENROUTER_KEY_URL = 'https://openrouter.ai/api/v1/auth/key'; // GET: this key's usage + limit
+const OPENROUTER_CREDITS_URL = 'https://openrouter.ai/api/v1/credits'; // GET: account wallet (total_credits/total_usage)
+const OPENROUTER_KEYS_SETTINGS_URL = 'https://openrouter.ai/settings/keys'; // where a user sets a per-key spend limit
 const OPENROUTER_MODELS_URL = 'https://openrouter.ai/api/v1/models';
 const OPENROUTER_CHAT_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const DEFAULT_OR_MODEL = 'anthropic/claude-sonnet-4';
@@ -202,14 +204,18 @@ export function orSupportsCache(id) {
 // per-million pricing) the settings picker reads. OpenAI-compatible streaming. The
 // deck text leaves the device → gated behind explicit consent in the UI before
 // connect() is ever offered.
-function openRouterBackend() {
+function openRouterBackend(defaultModel = DEFAULT_OR_MODEL, defaultMaxTokens = 0) {
   const referer = () => (typeof location !== 'undefined' ? location.origin : 'https://lattice.dev');
   let catalogCache = null; // id→{name,…} catalog from listModels, for friendly-name lookup
   return {
     name: 'openrouter',
     ready() { return !!readLS(OR_KEY_LS); },
     hasPendingAuth() { return !!readLS(OR_VERIFIER_LS); },
-    getModel() { return readLS(OR_MODEL_LS) || DEFAULT_OR_MODEL; },
+    getModel() { return readLS(OR_MODEL_LS) || defaultModel; },
+    // Where the user sets a HARD, server-enforced per-key spend limit. We can't set
+    // it from the browser PKCE flow (the redirect can't carry a limit, and the
+    // code-creation endpoint is session-bound), so we deep-link them to it.
+    keySettingsUrl() { return OPENROUTER_KEYS_SETTINGS_URL; },
     setModel(id) { writeLS(OR_MODEL_LS, id || null); },
     keySnapshot() { return readLS(OR_KEY_LS); }, // for the Disconnect Undo (restore without re-OAuth)
     restore(key) { writeLS(OR_KEY_LS, key || null); },
@@ -223,14 +229,44 @@ function openRouterBackend() {
         const res = await fetch(OPENROUTER_KEY_URL, { headers: { Authorization: 'Bearer ' + key } });
         if (!res.ok) return null;
         const d = (await res.json()).data || {};
-        return { usage: d.usage ?? null, limit: d.limit ?? null, remaining: d.limit_remaining ?? null };
+        return {
+          usage: d.usage ?? null,
+          limit: d.limit ?? null,
+          remaining: d.limit_remaining ?? null,
+          usageMonthly: d.usage_monthly ?? null,
+          limitReset: d.limit_reset ?? null, // e.g. 'monthly'
+          isFreeTier: d.is_free_tier ?? null,
+        };
+      } catch { return null; }
+    },
+    // The ACCOUNT wallet — total credits purchased + total usage → real balance.
+    // Best-effort: the docs note a management key, but a normal user key reads it in
+    // practice; null on any failure so the UI just falls back to the per-key figures.
+    async creditsInfo() {
+      const key = readLS(OR_KEY_LS);
+      if (!key) return null;
+      try {
+        const res = await fetch(OPENROUTER_CREDITS_URL, { headers: { Authorization: 'Bearer ' + key } });
+        if (!res.ok) return null;
+        const d = (await res.json()).data || {};
+        if (d.total_credits == null && d.total_usage == null) return null;
+        const credits = Number(d.total_credits) || 0;
+        const usage = Number(d.total_usage) || 0;
+        return { credits, usage, balance: credits - usage };
       } catch { return null; }
     },
     // The current model's display name (catalog `name`, e.g. "DeepSeek: R1"), for the
     // reply attribution heading. Falls back to the raw id before the catalog loads.
     modelName() {
-      const id = readLS(OR_MODEL_LS) || DEFAULT_OR_MODEL;
+      const id = readLS(OR_MODEL_LS) || defaultModel;
       return catalogCache?.find((m) => m.id === id)?.name || id;
+    },
+    // The active model's per-MILLION price pair, for the pre-send estimate + display.
+    // Null until the catalog has loaded (listModels) — callers degrade gracefully.
+    modelPrice() {
+      const id = readLS(OR_MODEL_LS) || defaultModel;
+      const m = catalogCache?.find((x) => x.id === id);
+      return m ? { promptPerM: m.promptPerM, completionPerM: m.completionPerM } : null;
     },
     disconnect() { writeLS(OR_KEY_LS, null); writeLS(OR_VERIFIER_LS, null); },
     // OAuth step 1: stash a PKCE verifier and return the URL to redirect to. The
@@ -278,12 +314,17 @@ function openRouterBackend() {
       }));
       return catalogCache;
     },
-    async complete({ messages, json, onToken, signal, onUsage }) {
+    async complete({ messages, json, onToken, signal, onUsage, maxTokens }) {
       const key = readLS(OR_KEY_LS);
       if (!key) throw new Error('OpenRouter not connected');
       // usage:{include:true} guarantees the authoritative per-request `usage.cost`
       // (USD) rides back in the response — the source of the per-Lattice spend tally.
       const body = { model: this.getModel(), messages, stream: !!onToken, usage: { include: true } };
+      // max_tokens bounds worst-case completion cost (a runaway reply can't blow the
+      // budget). Opt-in per instance: only the Studio sets a ceiling; the Drawing Board
+      // (defaultMaxTokens 0) stays uncapped, so its long deck rewrites aren't truncated.
+      const cap = maxTokens || defaultMaxTokens;
+      if (cap > 0) body.max_tokens = cap;
       if (json) body.response_format = { type: 'json_object' };
       const res = await fetch(OPENROUTER_CHAT_URL, {
         method: 'POST',
@@ -482,8 +523,8 @@ export function extractJson(text) {
 
 // ── The adapter ───────────────────────────────────────────────────────────────
 
-/** @param {{ getSettings?: () => Record<string, unknown>, explicitTierWins?: boolean }} [opts] */
-export function createArchitectModel({ getSettings, explicitTierWins = false } = {}) {
+/** @param {{ getSettings?: () => Record<string, unknown>, explicitTierWins?: boolean, defaultModel?: string, defaultMaxTokens?: number }} [opts] */
+export function createArchitectModel({ getSettings, explicitTierWins = false, defaultModel = DEFAULT_OR_MODEL, defaultMaxTokens = 0 } = {}) {
   const settings = () => (getSettings ? getSettings() : {}) || {};
   const modelOn = () => settings().modelEnabled !== false; // default on; one switch off
   // Tier-precedence policy. Default (false): the connected cloud always wins over a
@@ -497,7 +538,7 @@ export function createArchitectModel({ getSettings, explicitTierWins = false } =
   let injected = null; // test hook — a MockBackend
   const prompt = promptApiBackend();
   const webllm = webllmBackend();
-  let openrouter = openRouterBackend();
+  let openrouter = openRouterBackend(defaultModel, defaultMaxTokens);
   let universal = transformersGenBackend();
   let promptAvail = 'unknown';
   let embedder = null; // lazy Transformers.js pipeline
@@ -616,6 +657,9 @@ export function createArchitectModel({ getSettings, explicitTierWins = false } =
     setOpenRouterModel(id) { openrouter.setModel(id); emitChange(); },
     openRouterModelName() { return openrouter.modelName(); },
     openRouterAccount() { return openrouter.accountInfo(); },
+    openRouterCredits() { return openrouter.creditsInfo(); }, // the account wallet (balance)
+    openRouterKeySettingsUrl() { return openrouter.keySettingsUrl(); }, // where to set a hard per-key cap
+    openRouterModelPrice() { return openrouter.modelPrice(); }, // active model's per-M price (for estimates)
     // Snapshot/restore the stored key so the settings UI can offer an Undo on
     // Disconnect (mirroring the deck-deletion guardrail) without re-running OAuth.
     openRouterKeySnapshot() { return openrouter.keySnapshot(); },

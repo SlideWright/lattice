@@ -2,7 +2,7 @@ import * as React from 'react';
 import { applyEdit, diffLines, EDIT_PROTOCOL, numberSlides, parseEdits } from '@/playground/architect-edits.js';
 import { requestSlideFix } from '@/playground/architect-fix.js';
 import { buildRefinePrompt, cleanRewrite, REFINE_ACTIONS } from '@/playground/drawing-board-refine.js';
-import { budgetStatus, readBudgetCap, readBudgetMode, readSpend, recordSpend } from '@/playground/drawing-board-settings.js';
+import { budgetStatus, readBudgetCap, readBudgetFloor, readBudgetMode, readSpend, recordSpend } from '@/playground/drawing-board-settings.js';
 
 // Re-export the canonical refine action list (Polish / Formalize / Elaborate /
 // Shorten) so the Studio's UI menu and the Drawing Board read from one source.
@@ -38,8 +38,21 @@ export type ORModel = {
 	vision: boolean;
 };
 
-/** The OpenRouter account readout — authoritative spend (usage) + remaining credit. */
-export type ORAccount = { usage?: number | null; limit?: number | null; remaining?: number | null };
+/** This key's readout from /auth/key — usage + (optional) per-key spend limit. */
+export type ORAccount = {
+	usage?: number | null;
+	limit?: number | null;
+	remaining?: number | null;
+	usageMonthly?: number | null;
+	limitReset?: string | null;
+	isFreeTier?: boolean | null;
+};
+
+/** The account WALLET from /credits — real money: credits purchased, used, balance. */
+export type ORCredits = { credits: number; usage: number; balance: number };
+
+/** A per-million price pair for the active model (for the pre-send estimate). */
+export type ORPrice = { promptPerM: number | null; completionPerM: number | null };
 
 /** The generation-ladder availability flags `architect-model.js` reports. */
 export type ModelAvailability = {
@@ -56,7 +69,7 @@ export type ModelAvailability = {
 export type TierProgress = { progress: number; text?: string; status?: string };
 
 type ArchitectModel = {
-	complete: (o: { messages: { role: string; content: string }[]; json?: boolean; fallback?: string; onUsage?: (u: Usage) => void }) => Promise<string>;
+	complete: (o: { messages: { role: string; content: string }[]; json?: boolean; fallback?: string; onUsage?: (u: Usage) => void; maxTokens?: number }) => Promise<string>;
 	availability: () => ModelAvailability;
 	refreshAvailability?: () => Promise<unknown>;
 	beginOpenRouterAuth: (cb: string) => Promise<string | null>;
@@ -64,6 +77,9 @@ type ArchitectModel = {
 	hasPendingOpenRouterAuth: () => boolean;
 	disconnectOpenRouter: () => void;
 	openRouterAccount: () => Promise<ORAccount | null> | ORAccount | null;
+	openRouterCredits: () => Promise<ORCredits | null> | ORCredits | null;
+	openRouterKeySettingsUrl: () => string;
+	openRouterModelPrice: () => ORPrice | null;
 	openRouterModelName: () => string | null;
 	// The catalog + selection the Workspace model picker drives.
 	listOpenRouterModels: () => Promise<ORModel[]>;
@@ -82,7 +98,11 @@ export function architectModel(): Promise<ArchitectModel | null> {
 		modelPromise = import('@/playground/architect-model.js')
 			// explicitTierWins: a deliberate on-device pick outranks the connected cloud
 			// (Studio Policy B — connection ≠ active; one tap resumes the cloud).
-			.then((m) => m.createArchitectModel({ getSettings: () => ({}), explicitTierWins: true }) as ArchitectModel)
+			// defaultModel: a cheap, capable Haiku for iteration — the user upgrades to a
+			// stronger (pricier) model deliberately. defaultMaxTokens: a 4096-token output
+			// ceiling so a runaway reply can't blow the budget. Both Studio-scoped (the
+			// Drawing Board keeps its own default + stays uncapped), so no shared blast radius.
+			.then((m) => m.createArchitectModel({ getSettings: () => ({}), explicitTierWins: true, defaultModel: 'anthropic/claude-3.5-haiku', defaultMaxTokens: 4096 }) as ArchitectModel)
 			.catch(() => null);
 	}
 	return modelPromise;
@@ -106,10 +126,11 @@ export async function runArchitect(source: string, instruction: string): Promise
 	if (!model) return { status: 'offline' };
 	const generation = model.availability().generation;
 	if (generation === 'floor') return { status: 'offline' };
-	// Respect the user's hard budget cap on the paid cloud tier — the same gate the
-	// production chat enforces (drawing-board-chat.js). Local tiers are free.
-	if (generation === 'openrouter' && architectSpend().status.blocked) {
-		return { status: 'blocked', note: 'Budget cap reached — raise it in Workspace → Spend, or switch tier.' };
+	// Respect the budget on the paid cloud tier — blocks when over, and (hard-stop mode)
+	// refuses a call whose estimate would breach the cap. Local tiers are free.
+	if (generation === 'openrouter') {
+		const blk = cloudBudgetBlock(model, `${instruction}\n${source}`);
+		if (blk) return { status: 'blocked', note: blk };
 	}
 	const messages = [
 		{ role: 'system', content: SYSTEM },
@@ -154,8 +175,9 @@ export async function refineSelection(action: RefineActionId, text: string): Pro
 	if (!model) return { status: 'offline' };
 	const generation = model.availability().generation;
 	if (generation === 'floor') return { status: 'offline' };
-	if (generation === 'openrouter' && architectSpend().status.blocked) {
-		return { status: 'blocked', note: 'Budget cap reached — raise it in Workspace → Spend, or switch tier.' };
+	if (generation === 'openrouter') {
+		const blk = cloudBudgetBlock(model, text);
+		if (blk) return { status: 'blocked', note: blk };
 	}
 	let out = '';
 	try {
@@ -196,8 +218,9 @@ export async function requestFindingFix(source: string, finding: Finding, catalo
 	if (!model) return { status: 'offline' };
 	const generation = model.availability().generation;
 	if (generation === 'floor') return { status: 'offline' };
-	if (generation === 'openrouter' && architectSpend().status.blocked) {
-		return { status: 'blocked', note: 'Budget cap reached — raise it in Workspace → Spend, or switch tier.' };
+	if (generation === 'openrouter') {
+		const blk = cloudBudgetBlock(model, source);
+		if (blk) return { status: 'blocked', note: blk };
 	}
 	try {
 		const res = await requestSlideFix({
@@ -237,10 +260,11 @@ export async function chatComplete(history: ChatTurn[], source: string): Promise
 	if (!model) return { status: 'offline' };
 	const generation = model.availability().generation;
 	if (generation === 'floor') return { status: 'offline' };
-	if (generation === 'openrouter' && architectSpend().status.blocked) {
-		return { status: 'blocked', reply: 'Budget cap reached — raise it in Workspace → Spend, or switch tier.' };
-	}
 	const last = history[history.length - 1];
+	if (generation === 'openrouter') {
+		const blk = cloudBudgetBlock(model, `${last?.content ?? ''}\n${source}`);
+		if (blk) return { status: 'blocked', reply: blk };
+	}
 	const messages = [
 		{ role: 'system', content: `${SYSTEM}\n\nConverse with the author. Answer questions directly. Only emit edit blocks when they actually want a change to the deck.` },
 		...history.slice(0, -1),
@@ -263,16 +287,71 @@ export async function chatComplete(history: ChatTurn[], source: string): Promise
 	return { status: 'ok', reply: text || `Proposed ${edits.length} edit${edits.length > 1 ? 's' : ''} — review and apply below.`, proposed: { source: next, count: edits.length, diff: diffLines(source, next) as DiffRow[] } };
 }
 
-/** Real session/all-time spend + the budget gauge, read from the shared store. */
+// The latest fetched spend context (wallet + key acct), cached from useArchitectStatus
+// so the SYNC architectSpend()/gate can watch the REAL balance, not just the self-cap.
+let _wallet: ORCredits | null = null;
+let _keyAcct: ORAccount | null = null;
+function rememberSpendContext(wallet: ORCredits | null, keyAcct: ORAccount | null): void {
+	_wallet = wallet;
+	_keyAcct = keyAcct;
+}
+
+// The binding remaining-balance the gauge should watch: the tightest of the account
+// wallet balance and (if set) this key's remaining limit. null when neither is known.
+function bindingAccount(): { remaining: number; limit: number | null } | null {
+	const c: { remaining: number; limit: number | null }[] = [];
+	if (_wallet && Number.isFinite(_wallet.balance)) c.push({ remaining: _wallet.balance, limit: _wallet.credits ?? null });
+	if (_keyAcct && _keyAcct.remaining != null) c.push({ remaining: _keyAcct.remaining, limit: _keyAcct.limit ?? null });
+	return c.length ? c.reduce((a, b) => (b.remaining < a.remaining ? b : a)) : null;
+}
+
+/** Real session spend + the budget gauge — now watching the binding real balance, not just the self-cap. */
 export function architectSpend() {
 	try {
 		const s = readSpend();
 		const cap = readBudgetCap();
 		const mode = readBudgetMode();
-		return { ...s, cap, mode, status: budgetStatus({ sessionSpend: s.session, cap, mode }) };
+		const floor = readBudgetFloor();
+		const account = bindingAccount();
+		return { ...s, cap, mode, floor, wallet: _wallet, account, status: budgetStatus({ sessionSpend: s.session, cap, mode, account, floor }) };
 	} catch {
-		return { total: 0, session: 0, totalTokens: 0, sessionTokens: 0, cap: 0, mode: 'alert' as const, status: { level: 'ok', blocked: false, message: null } };
+		return { total: 0, session: 0, totalTokens: 0, sessionTokens: 0, cap: 0, mode: 'alert' as const, floor: 0, wallet: null, account: null, status: { level: 'ok', blocked: false, message: null } };
 	}
+}
+
+/** The account wallet (credits / usage / balance), fetched live. */
+export async function architectCredits(): Promise<ORCredits | null> {
+	const m = await architectModel();
+	if (!m) return null;
+	try {
+		return (await m.openRouterCredits()) ?? null;
+	} catch {
+		return null;
+	}
+}
+
+// A cheap token estimate: ~4 chars/token. Enough for a pre-send "≈ $X".
+const estTokens = (text: string) => Math.ceil((text || '').length / 4);
+
+/** Estimate a cloud call's USD cost: prompt tokens × in-price + an output ceiling × out-price. */
+export function estimateUsd(promptText: string, price: ORPrice | null, maxOut = 4096): number | null {
+	if (!price || price.promptPerM == null || price.completionPerM == null) return null;
+	return (estTokens(promptText) / 1e6) * price.promptPerM + (maxOut / 1e6) * price.completionPerM;
+}
+
+// The cloud budget gate, shared by every architect action: blocks when already over
+// the cap/balance, AND — in hard-stop mode — refuses a call whose ESTIMATE would
+// breach the self-cap, so a single large request can't overshoot. Returns a note, or null.
+function cloudBudgetBlock(model: ArchitectModel, promptText: string): string | null {
+	const s = architectSpend();
+	if (s.status.blocked) return 'Budget cap reached — raise it in Workspace → Spend, or switch tier.';
+	if (s.mode === 'stop' && s.cap > 0) {
+		const est = estimateUsd(promptText, model.openRouterModelPrice?.() ?? null);
+		if (est != null && s.session + est > s.cap) {
+			return `Estimated ~$${est.toFixed(2)} — that would exceed your $${s.cap.toFixed(2)} cap. Raise it in Workspace → Spend, pick a cheaper model, or switch to On-device (free).`;
+		}
+	}
+	return null;
 }
 
 // The shared budget keys (lattice-db-*) the spend gauge + the architect gate read.
@@ -294,9 +373,18 @@ export type ArchitectStatus = {
 	generation: string;
 	modelName: string | null;
 	modelId: string | null;
+	// This key (/auth/key): usage + optional per-key limit + monthly breakdown.
 	remaining: number | null;
 	usage: number | null;
 	limit: number | null;
+	usageMonthly: number | null;
+	limitReset: string | null;
+	// The account WALLET (/credits): the real money. null when unavailable.
+	wallet: ORCredits | null;
+	// The active model's per-million price (for the estimate + display); null pre-catalog.
+	price: ORPrice | null;
+	// Where the user sets a hard server-enforced per-key cap (we deep-link to it).
+	keySettingsUrl: string | null;
 	// The on-device ladder readiness, so the AI-model tab can reflect each rung.
 	promptApi: string;
 	webgpu: boolean;
@@ -307,6 +395,7 @@ export type ArchitectStatus = {
 
 const FLOOR_STATUS: ArchitectStatus = {
 	ready: false, generation: 'floor', modelName: null, modelId: null, remaining: null, usage: null, limit: null,
+	usageMonthly: null, limitReset: null, wallet: null, price: null, keySettingsUrl: null,
 	promptApi: 'unknown', webgpu: false, webllmReady: false, universalReady: false, openRouterReady: false,
 };
 
@@ -353,20 +442,39 @@ export function useArchitectStatus(pulse = 0): ArchitectStatus {
 				remaining: null,
 				usage: null,
 				limit: null,
+				usageMonthly: null,
+				limitReset: null,
+				wallet: null,
+				price: m.openRouterModelPrice?.() ?? null,
+				keySettingsUrl: m.openRouterKeySettingsUrl?.() ?? null,
 				promptApi: a.promptApi,
 				webgpu: a.webgpu,
 				webllmReady: a.webllmReady,
 				universalReady: a.universalReady,
 				openRouterReady: a.openRouterReady,
 			});
-			// Then fold in the authoritative account spend when it arrives (best-effort).
+			// Then fold in the authoritative spend when it arrives (best-effort): the
+			// per-key figures (/auth/key) and the account WALLET (/credits) in parallel.
 			try {
-				const acct = (await m.openRouterAccount()) ?? null;
-				if (!canceled && acct) {
-					setState((s) => ({ ...s, remaining: acct.remaining ?? null, usage: acct.usage ?? null, limit: acct.limit ?? null }));
+				const [acct, wallet] = await Promise.all([
+					Promise.resolve(m.openRouterAccount()).catch(() => null),
+					Promise.resolve(m.openRouterCredits()).catch(() => null),
+				]);
+				rememberSpendContext(wallet ?? null, acct ?? null); // feed the sync gauge
+				if (!canceled && (acct || wallet)) {
+					setState((s) => ({
+						...s,
+						remaining: acct?.remaining ?? null,
+						usage: acct?.usage ?? null,
+						limit: acct?.limit ?? null,
+						usageMonthly: acct?.usageMonthly ?? null,
+						limitReset: acct?.limitReset ?? null,
+						wallet: wallet ?? null,
+						price: m.openRouterModelPrice?.() ?? s.price,
+					}));
 				}
 			} catch {
-				/* account unavailable — the strip just stays hidden */
+				/* spend unavailable — the panel falls back gracefully */
 			}
 		};
 		refresh();

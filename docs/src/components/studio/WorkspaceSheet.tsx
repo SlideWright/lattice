@@ -1,11 +1,13 @@
-import { Cloud, Cpu, FolderTree, MessageSquareText, Plug, Sparkles, Wallet, Zap } from 'lucide-react';
+import { Cloud, Cpu, Download, ExternalLink, FolderTree, KeyRound, MessageSquareText, Plug, Sparkles, Wallet, Zap } from 'lucide-react';
 import * as React from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import { fmtTokens, fmtUSD } from '@/playground/or-catalog.js';
+import { fmtPrice, fmtTokens, fmtUSD } from '@/playground/or-catalog.js';
 import { architectSpend, connectOpenRouter, disconnectOpenRouter, setBudget, setStudioTier, useArchitectStatus } from './architect';
 import { ModelPicker } from './ModelPicker';
 import { OnDeviceTier } from './OnDeviceTier';
+
+const pct = (used: number, total: number) => (total > 0 ? Math.min(100, Math.max(0, (used / total) * 100)) : 0);
 
 // Workspace Settings — "your setup", distinct from the deck Inspector's "this deck".
 // The AI-model tab is a single GENERATION switch (Cloud / On-device) that picks the
@@ -83,13 +85,6 @@ export function WorkspaceSheet({ open, onOpenChange, notify }: { open: boolean; 
 		setGenView('ondevice');
 	};
 
-	// The authoritative account line (used/left), only when connected + reported.
-	const accountParts = [
-		ai.remaining != null ? `${fmtUSD(ai.remaining)} left` : null,
-		ai.usage != null ? `${fmtUSD(ai.usage)} used` : null,
-	].filter(Boolean);
-	const accountLine = ai.openRouterReady && accountParts.length ? `OpenRouter: ${accountParts.join(' · ')}` : null;
-	const lowBalance = ai.remaining != null && ai.limit != null && ai.limit > 0 && ai.remaining <= 0.2 * ai.limit;
 
 	return (
 		<Sheet open={open} onOpenChange={onOpenChange}>
@@ -154,41 +149,63 @@ export function WorkspaceSheet({ open, onOpenChange, notify }: { open: boolean; 
 					{tab === 'Spend' && (
 						<div>
 							<GroupLabel icon={<Wallet className="size-3.5" />}>Spend</GroupLabel>
-							{/* The OpenRouter account total is AUTHORITATIVE (fetched with your key).
-							    The session figure is an honest live tally from each reply's usage.cost.
-							    No local "all-time" — it would start at $0 here and contradict the account. */}
-							<div className="rounded-xl border border-border bg-card p-3">
-								{accountLine && <p className={cn('text-[15px] font-extrabold', lowBalance ? 'text-[var(--fail,#b3261e)]' : 'text-[var(--text-heading)]')}>{accountLine}</p>}
-								<p className={cn('font-mono text-[12px] text-muted-foreground', accountLine && 'mt-1')}>This session: {fmtUSD(spend.session)}{spend.sessionTokens ? ` (${fmtTokens(spend.sessionTokens)} tokens)` : ''}</p>
-								{!accountLine && <p className="mt-1 text-[11px] text-muted-foreground">{ai.openRouterReady ? 'Account balance unavailable for this key.' : 'Connect OpenRouter to see your authoritative account balance.'}</p>}
-							</div>
-							{spend.cap > 0 && (
-								<div className="my-2 h-[7px] overflow-hidden rounded-full bg-border"><span className={cn('block h-full rounded-full', spend.status.level === 'over' ? 'bg-[var(--fail,#b3261e)]' : 'bg-primary')} style={{ width: `${Math.min(100, (spend.session / spend.cap) * 100)}%` }} /></div>
+
+							{/* 1 · WALLET — the real account money (/credits). Authoritative. */}
+							{ai.wallet ? (
+								<div className="rounded-2xl border border-border bg-[var(--accent-soft)] p-3.5">
+									<div className="flex items-baseline justify-between"><span className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Wallet · OpenRouter</span><span className="text-[24px] font-extrabold text-[var(--text-heading)]">{fmtUSD(ai.wallet.balance)}</span></div>
+									<div className="flex items-baseline justify-between"><span className="text-[11px] text-muted-foreground">your real balance</span><span className="text-[11px] text-muted-foreground">left of {fmtUSD(ai.wallet.credits)}</span></div>
+									<div className="mt-2 h-[6px] overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--accent)_18%,transparent)]"><span className="block h-full rounded-full bg-[var(--accent)]" style={{ width: `${pct(ai.wallet.usage, ai.wallet.credits)}%` }} /></div>
+									<div className="mt-1.5 font-mono text-[11px] text-muted-foreground">{fmtUSD(ai.wallet.usage)} used all-time</div>
+								</div>
+							) : (
+								<div className="rounded-2xl border border-border bg-card p-3.5">
+									<p className="text-[13px] font-semibold text-[var(--text-heading)]">{ai.openRouterReady ? 'Wallet balance unavailable' : 'No model connected'}</p>
+									<p className="mt-1 text-[11px] text-muted-foreground">{ai.openRouterReady ? "This key can't read your account balance." : 'Connect OpenRouter (AI model tab) to see your real balance — or run On-device, free.'}</p>
+								</div>
 							)}
-							<div className="mt-3 flex items-center gap-2">
-								<label htmlFor="ws-cap" className="text-[12.5px] text-[var(--text-heading)]">Session cap</label>
-								<span className="text-[12.5px] text-muted-foreground">$</span>
-								<input
-									id="ws-cap"
-									type="number"
-									min={0}
-									step={0.5}
-									defaultValue={spend.cap || ''}
-									placeholder="none"
-									onBlur={(e) => { setBudget(Number(e.target.value) || null, spend.mode as 'alert' | 'stop'); setSpend(architectSpend()); }}
-									className="w-[72px] rounded-md border border-border bg-background px-2 py-1 text-[12.5px] text-foreground outline-none focus:border-[var(--accent)]"
-								/>
-								<select
-									aria-label="Budget enforcement mode"
-									value={spend.mode}
-									onChange={(e) => { setBudget(spend.cap || null, e.target.value as 'alert' | 'stop'); setSpend(architectSpend()); }}
-									className="ml-auto rounded-md border border-border bg-background px-2 py-1 text-[12.5px] font-semibold text-[var(--text-heading)] outline-none focus:border-[var(--accent)]"
-								>
-									<option value="alert">Warn at 80%</option>
-									<option value="stop">Hard stop</option>
-								</select>
+
+							{/* 2 · THIS KEY — the per-key server-enforced cap (set in the OR dashboard). */}
+							{ai.openRouterReady && (
+								<div className="mt-2 flex items-start gap-2.5 border-t border-border pt-2.5">
+									<span className="grid size-[26px] shrink-0 place-items-center rounded-lg bg-[var(--accent-soft)] text-[var(--accent)]"><KeyRound className="size-3.5" /></span>
+									<span className="min-w-0 flex-1"><span className="block text-[12.5px] font-semibold text-[var(--text-heading)]">This key · Lattice Studio</span>{ai.limit != null ? <span className="block text-[11px] text-muted-foreground">server-enforced{ai.limitReset ? ` · resets ${ai.limitReset}` : ''}</span> : <a href={ai.keySettingsUrl ?? '#'} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--accent)]">Set a hard cap <ExternalLink className="size-3" /></a>}</span>
+									{ai.limit != null && <span className="text-right"><span className="block font-mono text-[12.5px] text-muted-foreground">{ai.remaining != null ? `${fmtUSD(ai.remaining)} left` : '—'}</span><span className="block text-[11px] text-muted-foreground">of {fmtUSD(ai.limit)}</span></span>}
+								</div>
+							)}
+
+							{/* 3 · THIS SESSION — live local tally from each reply's usage.cost. */}
+							<div className="mt-1 flex items-start gap-2.5 border-t border-border pt-2.5">
+								<span className="grid size-[26px] shrink-0 place-items-center rounded-lg bg-[var(--accent-soft)] text-[var(--accent)]"><Download className="size-3.5" /></span>
+								<span className="min-w-0 flex-1"><span className="block text-[12.5px] font-semibold text-[var(--text-heading)]">This session</span><span className="block font-mono text-[11px] text-muted-foreground">{spend.sessionTokens ? `${fmtTokens(spend.sessionTokens)} tokens` : 'no spend yet'}</span></span>
+								<span className="font-mono text-[12.5px] text-muted-foreground">{fmtUSD(spend.session)}</span>
 							</div>
-							<p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">{spend.cap > 0 ? `Cap ${fmtUSD(spend.cap)} · ${spend.mode === 'stop' ? 'AI edits blocked once reached' : 'warns past 80%'}.` : 'No cap — spend is metered per real OpenRouter request. On-device tiers are always free.'}{spend.status.message ? ` ${spend.status.message}.` : ''}</p>
+
+							{/* 4 · YOUR CAP — client defense-in-depth + the binding-constraint gauge. */}
+							<div className="mt-2 rounded-xl border border-border p-3">
+								<div className="flex items-center gap-2">
+									<label htmlFor="ws-cap" className="text-[12.5px] font-semibold text-[var(--text-heading)]">Your cap</label>
+									<span className="text-[12.5px] text-muted-foreground">$</span>
+									<input id="ws-cap" type="number" min={0} step={0.5} defaultValue={spend.cap || ''} placeholder="none" onBlur={(e) => { setBudget(Number(e.target.value) || null, spend.mode as 'alert' | 'stop'); setSpend(architectSpend()); }} className="w-[64px] rounded-md border border-border bg-background px-2 py-1 text-[12.5px] text-foreground outline-none focus:border-[var(--accent)]" />
+									<select aria-label="Budget enforcement mode" value={spend.mode} onChange={(e) => { setBudget(spend.cap || null, e.target.value as 'alert' | 'stop'); setSpend(architectSpend()); }} className="ml-auto rounded-md border border-border bg-background px-2 py-1 text-[12.5px] font-semibold text-[var(--text-heading)] outline-none focus:border-[var(--accent)]">
+										<option value="alert">Warn 80%</option>
+										<option value="stop">Hard stop</option>
+									</select>
+								</div>
+								{spend.cap > 0 && (
+									<div className="mt-2.5 h-[6px] overflow-hidden rounded-full bg-border"><span className={cn('block h-full rounded-full', spend.status.level === 'over' ? 'bg-[var(--fail,#b3261e)]' : spend.status.level === 'warn' ? 'bg-[var(--warn,#9a6a00)]' : 'bg-primary')} style={{ width: `${Math.min(100, pct(spend.session, spend.cap))}%` }} /></div>
+								)}
+								<p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">{spend.cap > 0 ? `${spend.mode === 'stop' ? 'AI edits stop' : 'Warns'} at your $${spend.cap.toFixed(2)} cap — the tightest of wallet / key / cap binds. Hard stop refuses a send whose estimate would breach it.` : 'No cap — metered per request. On-device tiers are always free.'}{spend.status.message ? ` ${spend.status.message}.` : ''}</p>
+							</div>
+
+							{/* Active model price + cost levers. */}
+							{ai.openRouterReady && (
+								<div className="mt-2 flex items-start gap-2.5 border-t border-border pt-2.5">
+									<span className="grid size-[26px] shrink-0 place-items-center rounded-lg bg-[var(--accent-soft)] text-[var(--accent)]"><Sparkles className="size-3.5" /></span>
+									<span className="min-w-0 flex-1"><span className="block text-[12.5px] font-semibold text-[var(--text-heading)]">Active model{ai.modelName ? ` · ${ai.modelName}` : ''}</span><span className="block font-mono text-[11px] text-muted-foreground">{ai.price && ai.price.promptPerM != null ? `${fmtPrice(ai.price.promptPerM)}/M in · ${fmtPrice(ai.price.completionPerM)}/M out` : 'price loads with the catalog'}</span></span>
+								</div>
+							)}
+							<p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">Iterating a draft? <button type="button" onClick={() => { setTab('AI model'); pickOnDevice(); }} className="font-semibold text-[var(--accent)] underline-offset-2 hover:underline">Switch to On-device</button> — free &amp; private.</p>
 						</div>
 					)}
 
