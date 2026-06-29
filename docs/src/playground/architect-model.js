@@ -35,10 +35,20 @@ const OPENROUTER_CREDITS_URL = 'https://openrouter.ai/api/v1/credits'; // GET: a
 const OPENROUTER_KEYS_SETTINGS_URL = 'https://openrouter.ai/settings/keys'; // where a user sets a per-key spend limit
 const OPENROUTER_MODELS_URL = 'https://openrouter.ai/api/v1/models';
 const OPENROUTER_CHAT_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const DEFAULT_OR_MODEL = 'anthropic/claude-sonnet-4';
+// The connect-time default is OpenRouter's server-resolved "latest" ALIAS (the
+// `~vendor/family-latest` ids), not a pinned version — so it can never rot when a
+// model is retired/renamed (a pinned id 404s "No endpoints found"; the alias keeps
+// resolving to the current latest). Verified callable; resolves e.g. to
+// anthropic/claude-4.5-haiku-*. See engineering/decisions/2026-06-29-studio-model-liveness.md.
+const DEFAULT_OR_MODEL = '~anthropic/claude-sonnet-latest';
 const OR_KEY_LS = 'lattice-db-or-key'; // the user's OpenRouter API key (persists)
 const OR_MODEL_LS = 'lattice-db-or-model'; // chosen model id
 const OR_VERIFIER_LS = 'lattice-db-or-verifier'; // transient PKCE verifier (deleted after exchange)
+const OR_CATALOG_LS = 'lattice-db-or-catalog'; // {fetchedAt, models} — TTL-cached /models catalog
+const CATALOG_TTL_MS = 24 * 60 * 60 * 1000; // refetch the catalog at most once a day
+// A retired/renamed model id fails with this signature — the trigger to self-heal
+// to the rot-proof latest alias (a pinned id the user stored can die under them).
+const isDeadModelError = (status, body) => (status === 400 || status === 404) && /not a valid model|no endpoints found|no allowed providers/i.test(String(body || ''));
 const EMBED_MODEL = 'Xenova/bge-small-en-v1.5';
 const WEBLLM_MODEL = 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
 // The universal generation tier: a small instruct model that runs in WASM via
@@ -163,6 +173,21 @@ function webllmBackend() {
 function readLS(k) { try { return localStorage.getItem(k); } catch { return null; } }
 function writeLS(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} }
 
+// The model catalog is TTL-cached in localStorage so the picker doesn't refetch on
+// every open and so price/name survive a reload — and it can be served stale if a
+// later fetch fails. A fresh entry (< CATALOG_TTL_MS) is returned as-is; anything
+// older/garbled reads as a miss so the next listModels() refetches.
+function readCachedCatalog() {
+  try {
+    const raw = readLS(OR_CATALOG_LS);
+    if (!raw) return null;
+    const { fetchedAt, models } = JSON.parse(raw);
+    if (!Array.isArray(models) || !models.length || Date.now() - fetchedAt > CATALOG_TTL_MS) return null;
+    return models;
+  } catch { return null; }
+}
+function writeCachedCatalog(models) { try { writeLS(OR_CATALOG_LS, JSON.stringify({ fetchedAt: Date.now(), models })); } catch {} }
+
 function base64url(bytes) {
   let s = '';
   for (const b of bytes) s += String.fromCharCode(b);
@@ -206,7 +231,7 @@ export function orSupportsCache(id) {
 // connect() is ever offered.
 function openRouterBackend(defaultModel = DEFAULT_OR_MODEL, defaultMaxTokens = 0) {
   const referer = () => (typeof location !== 'undefined' ? location.origin : 'https://lattice.dev');
-  let catalogCache = null; // id→{name,…} catalog from listModels, for friendly-name lookup
+  let catalogCache = readCachedCatalog(); // id→{name,…} catalog; seeded from the TTL localStorage cache so price/name survive a reload
   return {
     name: 'openrouter',
     ready() { return !!readLS(OR_KEY_LS); },
@@ -300,8 +325,18 @@ function openRouterBackend(defaultModel = DEFAULT_OR_MODEL, defaultMaxTokens = 0
     // The model catalog with pricing normalized to per-MILLION tokens (the API
     // gives per-token USD strings). Public endpoint; the key is not required.
     async listModels() {
-      const res = await fetch(OPENROUTER_MODELS_URL);
-      if (!res.ok) throw new Error('OpenRouter models failed (' + res.status + ')');
+      // Serve the cache (session memo → fresh localStorage) before any network. A
+      // self-heal clears catalogCache + the LS entry, so the next call refetches.
+      if (catalogCache) return catalogCache;
+      const cached = readCachedCatalog();
+      if (cached) { catalogCache = cached; return cached; }
+      let res;
+      try { res = await fetch(OPENROUTER_MODELS_URL); }
+      catch (e) { if (catalogCache) return catalogCache; throw e; } // serve stale rather than break the picker
+      if (!res.ok) {
+        if (catalogCache) return catalogCache;
+        throw new Error('OpenRouter models failed (' + res.status + ')');
+      }
       const j = await res.json();
       catalogCache = (j.data || []).map((m) => ({
         id: m.id,
@@ -312,6 +347,7 @@ function openRouterBackend(defaultModel = DEFAULT_OR_MODEL, defaultMaxTokens = 0
         maxOutput: m.top_provider?.max_completion_tokens || null,
         vision: Array.isArray(m.architecture?.input_modalities) && m.architecture.input_modalities.includes('image'),
       }));
+      writeCachedCatalog(catalogCache);
       return catalogCache;
     },
     async complete({ messages, json, onToken, signal, onUsage, maxTokens }) {
@@ -326,18 +362,29 @@ function openRouterBackend(defaultModel = DEFAULT_OR_MODEL, defaultMaxTokens = 0
       const cap = maxTokens || defaultMaxTokens;
       if (cap > 0) body.max_tokens = cap;
       if (json) body.response_format = { type: 'json_object' };
-      const res = await fetch(OPENROUTER_CHAT_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + key,
-          'HTTP-Referer': referer(), // OpenRouter app-ranking headers (optional, polite)
-          'X-Title': 'Lattice Drawing Board',
-        },
-        body: JSON.stringify(body),
-        signal,
-      });
-      if (!res.ok) throw new Error('OpenRouter error ' + res.status);
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + key,
+        'HTTP-Referer': referer(), // OpenRouter app-ranking headers (optional, polite)
+        'X-Title': 'Lattice Drawing Board',
+      };
+      const send = (modelId) => fetch(OPENROUTER_CHAT_URL, { method: 'POST', headers, body: JSON.stringify({ ...body, model: modelId }), signal });
+      let res = await send(body.model);
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        // Self-heal: a retired/renamed model id (a stale stored pick can die under
+        // the user) → retry ONCE with the rot-proof latest alias, and drop the
+        // cached catalog so the picker refetches fresh next open.
+        if (isDeadModelError(res.status, errText) && body.model !== defaultModel) {
+          catalogCache = null;
+          writeLS(OR_CATALOG_LS, null);
+          res = await send(defaultModel);
+        }
+        if (!res.ok) {
+          const detail = res.bodyUsed ? errText : await res.text().catch(() => '');
+          throw new Error('OpenRouter error ' + res.status + (detail ? ': ' + detail.slice(0, 160) : ''));
+        }
+      }
       if (!onToken || !res.body) {
         const data = await res.json();
         if (onUsage && data.usage) { try { onUsage(data.usage); } catch {} }

@@ -11,21 +11,25 @@
 //   { id, name, promptPerM, completionPerM, contextLength, maxOutput, vision }
 // where the per-million prices are already normalized (null = "pricing varies").
 
-// The short list worth defaulting to (matched by id or id-prefix). Claude Sonnet
-// 4 leads — it's the connect-time default in architect-model.js.
+// Curated by FAMILY PREFIX, not a pinned id, so a version bump (claude-sonnet-4
+// → 4.6 → 5) stays featured without an edit AND a retired id can't strand the
+// list (the old pinned `claude-3.5-sonnet`/`claude-3.5-haiku` 404'd — #614).
+// `inSet` prefix-matches these against the LIVE catalog; the connect-time default
+// in architect-model.js is the `~*-latest` alias of the Sonnet family.
 export const OR_FEATURED = [
-	'anthropic/claude-sonnet-4', 'anthropic/claude-opus-4', 'anthropic/claude-3.5-sonnet',
-	'openai/gpt-5', 'openai/gpt-5-mini', 'openai/gpt-4o',
+	'anthropic/claude-sonnet', 'anthropic/claude-opus',
+	'openai/gpt-5', 'openai/gpt-4o',
 	'google/gemini-2.5-pro', 'google/gemini-2.5-flash',
 ];
 
-// Strong performers that punch above their price (the "Value" lens).
+// Strong performers that punch above their price (the "Value" lens) — family
+// prefixes for the same rot-proofing.
 export const OR_VALUE = [
+	'anthropic/claude-haiku',
 	'deepseek/deepseek-r1', 'deepseek/deepseek-chat',
 	'meta-llama/llama-3.3-70b-instruct',
 	'qwen/qwen-2.5-72b-instruct', 'qwen/qwq',
 	'google/gemini-2.5-flash', 'openai/gpt-5-mini', 'openai/gpt-4o-mini',
-	'anthropic/claude-3.5-haiku',
 ];
 
 // The picker's four lenses, in display order. [key, label] — the label is the tab.
