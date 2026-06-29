@@ -3,6 +3,11 @@ import { applyEdit, diffLines, EDIT_PROTOCOL, numberSlides, parseEdits } from '@
 import { requestSlideFix } from '@/playground/architect-fix.js';
 import { buildRefinePrompt, cleanRewrite, REFINE_ACTIONS } from '@/playground/drawing-board-refine.js';
 import { budgetStatus, readBudgetCap, readBudgetFloor, readBudgetMode, readSpend, recordSpend } from '@/playground/drawing-board-settings.js';
+// Theme Studio kernel (lib/theme/*, bundled): the model PROPOSES an essential set
+// + a ramp strategy via askMessages; deriveTheme fans it into the full ~80-token
+// contract (AA-repaired both modes); auditBoth confirms. The model never authors
+// the derived tokens — so the delivered palette is always AA-clean.
+import { askMessages, auditBoth, coerceEssentials, deriveTheme, STARTERS } from '@/playground/theme-core.generated.js';
 
 // Re-export the canonical refine action list (Polish / Formalize / Elaborate /
 // Shorten) so the Studio's UI menu and the Drawing Board read from one source.
@@ -102,7 +107,7 @@ export function architectModel(): Promise<ArchitectModel | null> {
 			// stronger (pricier) model deliberately. defaultMaxTokens: a 4096-token output
 			// ceiling so a runaway reply can't blow the budget. Both Studio-scoped (the
 			// Drawing Board keeps its own default + stays uncapped), so no shared blast radius.
-			.then((m) => m.createArchitectModel({ getSettings: () => ({}), explicitTierWins: true, defaultModel: 'anthropic/claude-3.5-haiku', defaultMaxTokens: 4096 }) as ArchitectModel)
+			.then((m) => m.createArchitectModel({ getSettings: () => ({}), explicitTierWins: true, defaultModel: 'anthropic/claude-haiku-4.5', defaultMaxTokens: 4096 }) as ArchitectModel)
 			.catch(() => null);
 	}
 	return modelPromise;
@@ -192,6 +197,72 @@ export async function refineSelection(action: RefineActionId, text: string): Pro
 	const next = cleanRewrite(out, text);
 	if (!next || next === text) return { status: 'nochange' };
 	return { status: 'ok', text: next };
+}
+
+// ── Theme Studio: "Describe a look" ────────────────────────────────────────
+// The shape auditBoth returns (lib/theme/contrast.js): an overall verdict plus a
+// per-canvas breakdown the inspector renders.
+export type ThemeAudit = {
+	ok: boolean;
+	light: { ok: boolean; failures: unknown[]; missing: unknown[] };
+	dark: { ok: boolean; failures: unknown[]; missing: unknown[] };
+};
+
+export type ThemeEssentials = Record<string, string>;
+
+export type ThemeGenOutcome =
+	| {
+			status: 'ok';
+			essentials: ThemeEssentials;
+			rampStrategy: string;
+			tokens: Record<string, string>;
+			audit: ThemeAudit;
+			applied: string[];
+	  }
+	| { status: 'offline' }
+	| { status: 'blocked'; note: string }
+	| { status: 'nochange'; note: string };
+
+/**
+ * Generate (or refine) a full theme from a "describe a look" prompt. The model
+ * PROPOSES the 10 essentials + a ramp strategy; the deterministic kernel derives
+ * the full ~80-token contract and AA-repairs it in both canvas modes — so the
+ * returned palette is finished and accessible, never a draft the user must fix.
+ * `current` is threaded as context so a relative tweak ("cooler", "more navy")
+ * has a baseline. Honest like the deck bridges: `offline` with no model,
+ * `blocked` at the budget cap, `nochange` for an empty prompt or an unusable
+ * reply — never a fabricated palette. The model never authors the derived tokens,
+ * so a connected model that returns nonsense degrades to the fallback essentials,
+ * still AA-clean.
+ */
+export async function generateTheme(current: ThemeEssentials, prompt: string): Promise<ThemeGenOutcome> {
+	if (!prompt.trim()) return { status: 'nochange', note: 'Describe a look to generate a theme.' };
+	const model = await architectModel();
+	if (!model) return { status: 'offline' };
+	const generation = model.availability().generation;
+	if (generation === 'floor') return { status: 'offline' };
+	if (generation === 'openrouter') {
+		const blk = cloudBudgetBlock(model, prompt);
+		if (blk) return { status: 'blocked', note: blk };
+	}
+	const fallback: ThemeEssentials = current && Object.keys(current).length ? current : (STARTERS[0].essentials as ThemeEssentials);
+	let reply = '';
+	try {
+		reply = await model.complete({
+			messages: askMessages(fallback, prompt),
+			fallback: '',
+			onUsage: (u) => recordSpend(u?.cost ?? 0, u?.total_tokens ?? (u?.prompt_tokens || 0) + (u?.completion_tokens || 0)),
+		});
+	} catch {
+		return { status: 'offline' };
+	}
+	const { essentials, rampStrategy, applied, ok } = coerceEssentials(reply, fallback);
+	// A connected model that proposed nothing usable (e.g. the json:true floor
+	// echoing the fallback) → no-op, never a fabricated change.
+	if (!ok && applied.length === 0) return { status: 'nochange', note: 'The model returned no usable palette.' };
+	const tokens = deriveTheme(essentials, { rampStrategy }) as Record<string, string>;
+	const audit = auditBoth(tokens) as ThemeAudit;
+	return { status: 'ok', essentials, rampStrategy, tokens, audit, applied };
 }
 
 // A deterministic lint finding (the shape lint-core's `lintTextWith` returns) — a

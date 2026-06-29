@@ -247,6 +247,40 @@ var require_derive = __commonJS({
     var DEEP_L2 = 0.45;
     var PALE_C = 0.04;
     var DEEP_C = 0.13;
+    var RAMP_STRATEGIES = Object.freeze(["spectrum", "analogous", "triad", "complementary", "brand-mono"]);
+    var DEFAULT_STRATEGY = "spectrum";
+    var norm360 = (d) => (d % 360 + 360) % 360;
+    function rampHue(strategy, baseH, i, count) {
+      switch (strategy) {
+        case "analogous": {
+          const band = 100;
+          return baseH + (count <= 1 ? 0 : (i / (count - 1) - 0.5) * band);
+        }
+        case "triad": {
+          return baseH + i % 3 * 120 + Math.floor(i / 3) * 14;
+        }
+        case "complementary": {
+          return baseH + i % 2 * 180 + Math.floor(i / 2) * 16;
+        }
+        case "brand-mono": {
+          return baseH + (i % 2 ? 8 : -8);
+        }
+        default:
+          return baseH + i * (360 / count);
+      }
+    }
+    function rampChromaMul(strategy, i, count) {
+      if (strategy !== "brand-mono" || count <= 1) return 1;
+      return 0.45 + i / (count - 1) * 0.7;
+    }
+    function rampLightnessDelta(strategy, i, count) {
+      if (strategy !== "brand-mono" || count <= 1) return 0;
+      return (i / (count - 1) - 0.5) * 0.14;
+    }
+    function normalizeStrategy(s) {
+      const v = String(s || "").toLowerCase().trim();
+      return RAMP_STRATEGIES.includes(v) ? v : DEFAULT_STRATEGY;
+    }
     var REQUIRED_TOKENS2 = Object.freeze({
       surfaces: ["bg", "bg-alt", "surface-inverse", "border"],
       ink: ["text-display", "text-heading", "text-body", "text-secondary", "text-label", "text-muted"],
@@ -318,8 +352,9 @@ var require_derive = __commonJS({
     }
     var ld = (light, dark) => `light-dark(${light}, ${dark})`;
     var tint = (color2, pct) => `color-mix(in srgb, var(--${color2}) ${pct}%, transparent)`;
-    function deriveTheme2(essentials) {
+    function deriveTheme2(essentials, options = {}) {
       const e = validateEssentials2(essentials);
+      const strategy = normalizeStrategy(options.rampStrategy);
       const t = {};
       const accentHue = hexToOklch2(e.accent).h;
       const darkBg = oklchToHex2({ L: 0.16, C: 0.012, h: accentHue });
@@ -384,9 +419,11 @@ var require_derive = __commonJS({
       t["cat-on-fill"] = inkLight;
       t["cat-on-mark"] = inkDark;
       for (let i = 0; i < 12; i++) {
-        const h = ((accentHue + i * 30) % 360 + 360) % 360;
-        const paleRaw = oklchToHex2({ L: PALE_L2, C: PALE_C, h });
-        const deepRaw = oklchToHex2({ L: DEEP_L2, C: DEEP_C, h });
+        const h = norm360(rampHue(strategy, accentHue, i, 12));
+        const cMul = rampChromaMul(strategy, i, 12);
+        const dL = rampLightnessDelta(strategy, i, 12);
+        const paleRaw = oklchToHex2({ L: PALE_L2 + dL, C: PALE_C * cMul, h });
+        const deepRaw = oklchToHex2({ L: DEEP_L2 + dL, C: DEEP_C * cMul, h });
         t[`cat-${i + 1}-fill`] = ensureContrast2(paleRaw, inkLight, AA2, "lighten");
         t[`cat-${i + 1}-mark`] = ensureContrast2(deepRaw, inkDark, AA2, "darken");
       }
@@ -407,8 +444,8 @@ var require_derive = __commonJS({
       t["hljs-variable"] = synth(120);
       t["hljs-punctuation"] = synth(0, 0.78, 0.04);
       for (let i = 0; i < 8; i++) {
-        const h = ((accentHue + i * 45) % 360 + 360) % 360;
-        const lightPigment = oklchToHex2({ L: 0.5, C: 0.12, h });
+        const h = norm360(rampHue(strategy, accentHue, i, 8));
+        const lightPigment = oklchToHex2({ L: 0.5 + rampLightnessDelta(strategy, i, 8), C: 0.12 * rampChromaMul(strategy, i, 8), h });
         t[`chart-cat${i + 1}`] = ld(lightPigment, mix2(lightPigment, "#ffffff", 0.3));
       }
       t["chart-state-pass"] = "var(--pass)";
@@ -424,6 +461,9 @@ var require_derive = __commonJS({
       requiredTokenList: requiredTokenList2,
       validateEssentials: validateEssentials2,
       deriveTheme: deriveTheme2,
+      RAMP_STRATEGIES,
+      DEFAULT_STRATEGY,
+      normalizeStrategy,
       PALE_L: PALE_L2,
       DEEP_L: DEEP_L2
     };
@@ -708,7 +748,7 @@ var require_starters = __commonJS({
 // lib/theme/ai.js
 var require_ai = __commonJS({
   "lib/theme/ai.js"(exports, module) {
-    var { ESSENTIAL_KEYS: ESSENTIAL_KEYS2 } = require_derive();
+    var { ESSENTIAL_KEYS: ESSENTIAL_KEYS2, RAMP_STRATEGIES, normalizeStrategy } = require_derive();
     var { normalizeHex: normalizeHex2 } = require_color();
     var KEY_DESCRIPTIONS = {
       bg: "light page canvas, near-white",
@@ -722,7 +762,10 @@ var require_ai = __commonJS({
       warn: "warning amber",
       fail: "error red"
     };
-    var ASK_SYSTEM2 = 'You are a palette designer for the Lattice slide engine. You will be given the CURRENT palette (as JSON) and a request. If the request describes a new look, return a complete new palette; if it asks for a change (e.g. "cooler", "more contrast", "navy accent"), adjust the current palette accordingly. Either way, output ONLY a compact JSON object \u2014 no prose, no markdown \u2014 with EXACTLY these keys, each a 6-digit hex colour (e.g. "#1a2b3c"):\n' + ESSENTIAL_KEYS2.map((k) => `  "${k}": ${KEY_DESCRIPTIONS[k]}`).join("\n") + "\nRules: bg and bgAlt must be light (a slide canvas); textHeading and textBody must be dark enough to read on them; accent is saturated; accentSoft is a pale tint of the accent. Output the full JSON object with all keys.";
+    var THEME_CANON = "HOW LATTICE THEMES WORK (so you choose well):\n\u2022 Your 10 colours are ESSENTIALS. The engine derives ~70 more from them in OKLCH and repairs every pair to WCAG AA in BOTH light and dark canvases \u2014 you never hand-author the rest. Pick essentials that derive cleanly.\n\u2022 Categorical data-viz fills come in two lightness tiers: 12 PALE fills (L\u22480.9, gentle tint) and 12 DEEP marks (L\u22480.45, saturated), both keyed off the accent HUE. So the accent should be saturated and distinctly hued.\n\u2022 A dark canvas band is derived from the accent hue at low lightness; ink is lifted to stay readable. Choose a textBody that lightens gracefully.\n\u2022 Worked example (indaco): bg #f7f8fb, bgAlt #eef1f6, textHeading #0f1b2d, textBody #243244, textMuted #6b7787, accent #1f5fb0, accentSoft #e6eefb, pass #1f7a4d, warn #b26a00, fail #c0392b.\n";
+    var ASK_SYSTEM2 = 'You are a palette designer for the Lattice slide engine. You will be given the CURRENT palette (as JSON) and a request. If the request describes a new look, return a complete new palette; if it asks for a change (e.g. "cooler", "more contrast", "navy accent"), adjust the current palette accordingly.\n\n' + THEME_CANON + '\nOutput ONLY a compact JSON object \u2014 no prose, no markdown \u2014 with EXACTLY these keys. The first ten are 6-digit hex colours (e.g. "#1a2b3c"):\n' + ESSENTIAL_KEYS2.map((k) => `  "${k}": ${KEY_DESCRIPTIONS[k]}`).join("\n") + `
+  "rampStrategy": the categorical/chart hue layout \u2014 one of ${RAMP_STRATEGIES.map((s) => `"${s}"`).join(", ")}. Pick the one that fits the brief: "spectrum" broad & distinct, "analogous" calm & cohesive, "triad" balanced & lively, "complementary" high-contrast pairs, "brand-mono" restrained single-hue.
+Rules: bg and bgAlt must be light (a slide canvas); textHeading and textBody must be dark enough to read on them; accent is saturated; accentSoft is a pale tint of the accent. Output the full JSON object with all keys.`;
     function askMessages2(current, prompt) {
       return [
         { role: "system", content: ASK_SYSTEM2 },
@@ -776,6 +819,9 @@ var require_ai = __commonJS({
     }
     function coerceEssentials2(raw, fallback) {
       const obj = (typeof raw === "string" ? safeParse(raw) : raw) || {};
+      const rampStrategy = normalizeStrategy(
+        obj.rampStrategy ?? obj.ramp_strategy ?? obj.ramp ?? obj.strategy
+      );
       const remapped = {};
       for (const [k, v] of Object.entries(obj)) {
         const canonical = KEY_BY_NORM[norm(k)];
@@ -796,9 +842,9 @@ var require_ai = __commonJS({
         essentials[key] = fallback[key];
         filled.push(key);
       }
-      return { essentials, filled, applied, ok: filled.length === 0 && applied.length > 0 };
+      return { essentials, rampStrategy, filled, applied, ok: filled.length === 0 && applied.length > 0 };
     }
-    module.exports = { ASK_SYSTEM: ASK_SYSTEM2, askMessages: askMessages2, coerceEssentials: coerceEssentials2 };
+    module.exports = { ASK_SYSTEM: ASK_SYSTEM2, THEME_CANON, askMessages: askMessages2, coerceEssentials: coerceEssentials2 };
   }
 });
 

@@ -130,7 +130,7 @@ describe('Studio — every top-bar control responds', () => {
 		await user.keyboard('{Meta>}k{/Meta}');
 		const dialog = await screen.findByRole('dialog', { name: /Studio commands/i });
 		await user.click(within(dialog).getByText(/Fabricate/));
-		expect(await screen.findByText('Theme Studio')).toBeInTheDocument();
+		expect(await screen.findByPlaceholderText(/Describe a look/i)).toBeInTheDocument();
 		// Re-open and pick a theme command.
 		await user.keyboard('{Meta>}k{/Meta}');
 		const d2 = await screen.findByRole('dialog', { name: /Studio commands/i });
@@ -187,7 +187,7 @@ describe('Studio — Fabricate + Present dock respond', () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
 		await user.click(await screen.findByText('Fabricate'));
-		expect(await screen.findByText('Theme Studio')).toBeInTheDocument();
+		expect(await screen.findByPlaceholderText(/Describe a look/i)).toBeInTheDocument();
 		// Export theme (theme tab) confirms via toast.
 		await user.click(screen.getByRole('button', { name: /Export theme/ }));
 		expect(await screen.findByText(/Exported/)).toBeInTheDocument();
@@ -195,28 +195,30 @@ describe('Studio — Fabricate + Present dock respond', () => {
 		// gate), the theme studio leaves.
 		await user.click(screen.getByRole('button', { name: /Component/ }));
 		expect(await screen.findByLabelText('Component name')).toBeInTheDocument();
-		expect(screen.queryByText('Theme Studio')).not.toBeInTheDocument();
+		expect(screen.queryByPlaceholderText(/Describe a look/i)).not.toBeInTheDocument();
 	});
 
 	it('Fabricate derives a REAL token contract + WCAG audit from the engine', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
 		await user.click(await screen.findByText('Fabricate'));
-		// The editable contract renders the real derived roles (light + dark wells) —
+		// The token tree lists the real derived contract (12 roles) + the ten
+		// essentials (the three ink roles are unique to the essentials group) —
 		// proof the theme engine ran, not a mock.
-		expect(await screen.findByText(/Engine contract — light & dark/)).toBeInTheDocument();
-		expect(screen.getByLabelText('Accent light')).toBeInTheDocument();
+		expect(await screen.findByText(/Contract · 12 roles/)).toBeInTheDocument();
+		for (const ink of ['Heading ink', 'Body ink', 'Muted ink']) expect(screen.getByRole('button', { name: ink })).toBeInTheDocument();
+		// Selecting the Accent contract role opens its light + dark wells in the inspector.
+		const accentRows = screen.getAllByRole('button', { name: 'Accent' });
+		await user.click(accentRows[accentRows.length - 1]);
+		expect(await screen.findByLabelText('Accent light')).toBeInTheDocument();
 		expect(screen.getByLabelText('Accent dark')).toBeInTheDocument();
 		// The WCAG audit renders real computed rows: a role with an `N.N : 1` ratio
 		// and a tier badge (AAA/AA/FAIL) — auditBoth output, not a static list.
-		expect(screen.getByText(/WCAG audit —/)).toBeInTheDocument();
+		expect(screen.getByText(/WCAG audit/)).toBeInTheDocument();
 		expect(screen.getAllByText(/\d+\.\d+ : 1/).length).toBeGreaterThan(0);
-		// All TEN essentials are editable (the engine's full ESSENTIAL_KEYS set) — the
-		// `… color` aria-label is the essentials picker (contract wells are `… light/dark`).
-		expect(screen.getAllByLabelText(/ color$/).length).toBe(10);
 		// Picking a curated starter reseeds the core colors and re-derives.
 		await user.click(screen.getByRole('button', { name: /Start from Ember/ }));
-		expect(await screen.findByText(/Engine contract — light & dark/)).toBeInTheDocument();
+		expect(await screen.findByText(/Contract · 12 roles/)).toBeInTheDocument();
 	});
 
 	it('Present read-aloud Play/Pause toggles and shows the live teleprompter', async () => {

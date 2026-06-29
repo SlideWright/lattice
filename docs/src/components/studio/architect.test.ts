@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { applyDeckEdit, architectSpend, estimateUsd, normalizeGeneration, refineSelection, requestFindingFix, runArchitect, setBudget } from './architect';
+import { applyDeckEdit, architectSpend, estimateUsd, generateTheme, normalizeGeneration, refineSelection, requestFindingFix, runArchitect, setBudget } from './architect';
 import { suggestFor } from './Editor';
 
 afterEach(() => {
@@ -93,6 +93,19 @@ describe('requestFindingFix — honest per-finding fix', () => {
 		expect(next).toContain('# Rewritten');
 		expect(next).toContain('# One'); // slide 1 untouched
 		expect(next).not.toContain('# Two');
+	});
+});
+
+describe('generateTheme — honest "describe a look"', () => {
+	it('returns `nochange` for an empty prompt without touching the model', async () => {
+		expect((await generateTheme({}, '')).status).toBe('nochange');
+		expect((await generateTheme({}, '   ')).status).toBe('nochange');
+	});
+	it('returns `offline` with no model connected — never a fabricated palette', async () => {
+		// Same honesty contract as the deck bridges: no model → no theme, just a
+		// signal the UI can act on (point at Workspace), not a faked palette.
+		const out = await generateTheme({}, 'warm editorial, deep navy accent');
+		expect(out.status).toBe('offline');
 	});
 });
 

@@ -27,6 +27,20 @@ in patch versions.
 
 ### Added
 
+- **Theme Studio — AI delivers a full, AA-verified palette (#610).** The Theme Studio's
+  "Describe a look" front door now returns a *finished, accessible* theme: the model
+  proposes the 10 author-facing essentials **plus a named categorical-ramp strategy**
+  (`spectrum` / `analogous` / `triad` / `complementary` / `brand-mono`), and the
+  deterministic kernel (`lib/theme/derive.js`) fans those into the full ~80-token
+  contract in OKLCH, **repairing every gate-checked pair to WCAG AA in both canvas
+  modes** — so a user never has to tweak a color by hand. The model is fed distilled
+  canon (the `themes/README.md` lightness contract + `indaco` as a worked example) so
+  its essentials anticipate the derivation. `spectrum` reproduces the prior fixed-spread
+  output exactly (no regression); the engine already works in OKLCH internally, so themes
+  still serialize as hex + `light-dark()`. The honesty contract ("a failing pair is shown,
+  never bypassed") now governs the optional manual-override path. See
+  `engineering/decisions/2026-06-29-studio-theme-ai.md`.
+
 - **Studio — layered spend & budget, with real cost control (#610).** A live-key red-team
   found the Spend tab surfaced one weak field of a four-layer budget system — it never
   fetched the account wallet and the gauge ignored the real balance, so "$0.00 used ·
@@ -697,6 +711,13 @@ in patch versions.
   was already uniform). See `engineering/decisions/2026-06-27-stage-flow-no-margins.md`.
 
 ### Fixed
+
+- **Studio AI's default model no longer 404s (#610).** The Studio's connect-time default was
+  `anthropic/claude-3.5-haiku`, a slug OpenRouter no longer serves (`No endpoints found`) — so a
+  fresh user's first AI action failed. It now defaults to `anthropic/claude-haiku-4.5` (current
+  cheap Claude). Verified end-to-end against the live API: a "Describe a look" prompt returns a
+  full essentials + ramp-strategy set that derives AA-clean in both canvas modes. (Two further
+  dead ids in the curated model picker are tracked separately in #614.)
 
 - **The overflow ring no longer false-fires on a clean slide whose cell holds an
   absolutely-positioned footer (the #198 4K case).** The cell-aware probe measures how far a
@@ -3181,7 +3202,7 @@ in patch versions.
   and watch it derived, contrast-audited, and rendered live on a specimen deck,
   then copy or download a droppable `themes/<name>.css`. Backed by a new pure,
   dependency-free engine module **`lib/theme/`** (`color`, `derive`, `contrast`,
-  `serialize`, `starters`, `ai`): an essential set → the full ~100-token Lattice
+  `serialize`, `starters`, `ai`): an essential set → the full ~80-token Lattice
   contract, repaired contrast-aware to clear WCAG AA in both canvas modes. The
   derivation + contrast maths are the SAME the Node tooling and the palette
   contrast gate use (the gate now shares `lib/theme/color.js`).

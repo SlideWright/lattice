@@ -1,20 +1,23 @@
-import { Check, Download, LayoutGrid, Moon, Palette, RotateCcw, Sparkles, Sun, TriangleAlert, X } from 'lucide-react';
+import { ArrowUp, Check, ChevronDown, ChevronRight, Cloud, Download, LayoutGrid, Loader2, Moon, Palette, RotateCcw, Search, Sparkles, Sun, TriangleAlert, X } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
 // The REAL theme engine — same maths as the Node tooling + the WCAG gate
-// (lib/theme/*, bundled browser-safe). deriveTheme → ~100 tokens (contrast-
+// (lib/theme/*, bundled browser-safe). deriveTheme → ~80 tokens (contrast-
 // repaired), auditBoth → live WCAG report, serializeTheme → a real themes/*.css.
-import { auditBoth, deriveTheme, STARTERS, serializeTheme, validateEssentials } from '@/playground/theme-core.generated.js';
+import { auditBoth, contrastRatio, deriveTheme, STARTERS, serializeTheme, validateEssentials } from '@/playground/theme-core.generated.js';
+import { connectOpenRouter, generateTheme, useArchitectStatus } from './architect';
 import { downloadText } from './download';
 import { LayoutStudio } from './LayoutStudio';
 import { saveStudioTheme, slugify } from './theme-library';
+import { useBreakpoint } from './use-breakpoint';
 
 // You pick ALL TEN essentials — the same set the engine derivation + the
 // Workbench Theme Studio take (theme-core ESSENTIAL_KEYS). The derivation
-// contrast-repairs everything else (~100 tokens) from these. Grouped for the
+// contrast-repairs everything else (~80 tokens) from these. Grouped for the
 // eye: light surfaces, the ink trio, brand, then the semantic signals.
 type EssKey = 'bg' | 'bgAlt' | 'textHeading' | 'textBody' | 'textMuted' | 'accent' | 'accentSoft' | 'pass' | 'warn' | 'fail';
 const ESSENTIALS: { key: EssKey; label: string; group: string }[] = [
@@ -29,7 +32,6 @@ const ESSENTIALS: { key: EssKey; label: string; group: string }[] = [
 	{ key: 'warn', label: 'Warning', group: 'Signals' },
 	{ key: 'fail', label: 'Error', group: 'Signals' },
 ];
-const GROUPS = ['Surfaces', 'Ink', 'Brand', 'Signals'];
 const SPECIMEN = '<!-- _class: kpi -->\n\n`Theme · live specimen`\n\n## Your theme, derived & audited\n\n1. 100\n   - Tokens derived\n2. AA\n   - Contrast floor\n3. 10\n   - Colors you picked';
 
 const hash = (s: string) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
@@ -37,8 +39,7 @@ const hash = (s: string) => { let h = 0; for (let i = 0; i < s.length; i++) h = 
 // The human-facing contract: the derived roles a theme author actually curates,
 // each a light-dark() pair. Editing a side PINS an override on top of the engine
 // derivation (the audit re-runs against the override, so a contrast-breaking edit
-// surfaces immediately). This is where light vs dark is curated — two columns,
-// both editable. (#48 editable contract / #49 light-dark curation.)
+// surfaces immediately). This is where light vs dark is curated. (#48 / #49.)
 const CONTRACT: { token: string; label: string }[] = [
 	{ token: 'bg', label: 'Background' },
 	{ token: 'bg-alt', label: 'Surface' },
@@ -90,8 +91,8 @@ function isSingle(v: unknown): boolean {
 }
 
 // THE DATA-VIZ BAND — the categorical colours charts + Mermaid cycle through,
-// hue-rotated off the accent and AA-repaired. Surfaced + editable via the live
-// canvas (Iteration 2): three previews + a docked tray. (#G3b)
+// hue-rotated off the accent and AA-repaired. Surfaced as click-to-select strips
+// in the token tree; edited in the inspector. (#G3b)
 const SERIES_TOKENS = Array.from({ length: 8 }, (_, i) => `chart-cat${i + 1}`);
 const CAT_TOKENS = Array.from({ length: 12 }, (_, i) => i + 1); // → cat-N-fill / cat-N-mark
 const DIAGRAM_TOKENS: { token: string; label: string }[] = [
@@ -101,7 +102,7 @@ const DIAGRAM_TOKENS: { token: string; label: string }[] = [
 	{ token: 'chart-state-info', label: 'Chart · info' },
 	{ token: 'chart-state-mute', label: 'Chart · muted' },
 ];
-// Friendly label for any band token (the tray's selection caption).
+// Friendly label for any band token (the inspector's caption).
 function bandLabel(token: string): string {
 	const s = token.match(/^chart-cat(\d+)$/);
 	if (s) return `Series ${s[1]}`;
@@ -120,7 +121,32 @@ const DIAGRAM_SPECIMEN = '<!-- _class: diagram -->\n\n`Diagrams · live band`\n\
 // real value (which is always 6-digit hex for a CONTRACT token).
 const normalizeHex = (v: string) => (/^#[0-9a-fA-F]{6}$/.test(v) ? v : '#000000');
 
-export function Fabricate({ options, onClose, notify, onSaved }: { options: SingleSlideOptions; onClose: () => void; notify: (msg: string) => void; onSaved?: () => void }) {
+// Pro Inspector selection — ONE selected token drives the right-hand inspector.
+// An ESSENTIAL edits the picked input (core); a DERIVED token edits an override.
+type Selected = { scope: 'essential'; id: EssKey } | { scope: 'derived'; id: string };
+// Each essential feeds one derived contract token — the inspector reports that
+// token's live contrast, so selecting an essential still shows its WCAG.
+const ESS_TOKEN: Record<EssKey, string> = { bg: 'bg', bgAlt: 'bg-alt', textHeading: 'text-heading', textBody: 'text-body', textMuted: 'text-muted', accent: 'accent', accentSoft: 'accent-soft', pass: 'pass', warn: 'warn', fail: 'fail' };
+const isHex = (v: string) => /^#[0-9a-fA-F]{6}$/.test(v);
+// Only FOREGROUND roles (ink / brand / signals) have an on-background AA target;
+// surfaces (bg, bg-alt, border, accent wash) and the decorative muted ink are
+// WCAG-exempt — so we never stamp them pass/FAIL against the canvas (it would be
+// a meaningless, alarming "fail" for a colour that is itself a background).
+const INK_TOKENS = new Set(['text-heading', 'text-body', 'text-secondary', 'accent', 'pass', 'warn', 'fail']);
+const readsOnBg = (tokenId: string) => INK_TOKENS.has(tokenId);
+// Contrast of a token's resolved side vs the page background, per mode — null when
+// either resolves to a non-hex (a var()/color-mix reference we don't expand here).
+function ratioVsBg(map: Record<string, unknown>, tokenId: string, mode: 'light' | 'dark'): number | null {
+	const tv = sides(map[tokenId])[mode];
+	const bv = sides(map.bg)[mode];
+	return isHex(tv) && isHex(bv) ? contrastRatio(tv, bv) : null;
+}
+const contractLabelOf = (id: string) => CONTRACT.find((c) => c.token === id)?.label;
+// Friendly label for any token id (contract role → band token → raw).
+const tokenLabel = (id: string) => contractLabelOf(id) ?? bandLabel(id);
+const tierOf = (ratio: number | null, ok: boolean) => ((ratio ?? 0) >= 7 ? 'AAA' : ok ? 'AA' : 'FAIL');
+
+export function Fabricate({ options, onClose, notify, onSaved, onOpenWorkspace }: { options: SingleSlideOptions; onClose: () => void; notify: (msg: string) => void; onSaved?: () => void; onOpenWorkspace?: () => void }) {
 	const [tab, setTab] = React.useState<'theme' | 'layout'>('theme');
 	// All ten essentials in state, seeded from the first curated starter.
 	const [core, setCore] = React.useState<Record<EssKey, string>>(() => ({ ...(STARTERS[0].essentials as Record<EssKey, string>) }));
@@ -130,8 +156,25 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 	const [saving, setSaving] = React.useState(false);
 	// Per-side overrides pinned on top of the derivation (#48/#49).
 	const [overrides, setOverrides] = React.useState<Record<string, Override>>({});
-	// The band token the live-canvas tray is editing (#G3b).
-	const [selToken, setSelToken] = React.useState('chart-cat1');
+	// Pro Inspector: the one selected token (left tree → right inspector), a tree
+	// search filter, and which tree groups are collapsed.
+	const [selected, setSelected] = React.useState<Selected>({ scope: 'essential', id: 'accent' });
+	const [query, setQuery] = React.useState('');
+	const [collapsed, setCollapsed] = React.useState<Set<string>>(() => new Set());
+	const toggleGroup = (g: string) => setCollapsed((s) => { const n = new Set(s); if (n.has(g)) n.delete(g); else n.add(g); return n; });
+	// AI "Describe a look": the model proposes essentials + a ramp strategy; the
+	// engine derives the full AA-clean palette. The strategy steers the
+	// categorical/chart hue layout (theme-core RAMP_STRATEGIES).
+	const [rampStrategy, setRampStrategy] = React.useState('spectrum');
+	const [prompt, setPrompt] = React.useState('');
+	const [gen, setGen] = React.useState<'idle' | 'working'>('idle');
+	// Is a model connected (cloud or on-device)? When not, the AI bar grays out and
+	// offers a Connect affordance instead of a dead send button (floor = none).
+	const modelReady = useArchitectStatus().ready;
+	// Desktop shows the inspector as the right column; below desktop it renders
+	// inline under the selected row (so editing isn't a far-below scroll). Gated in
+	// JS (not CSS) so only ONE inspector is ever in the DOM.
+	const isDesktop = useBreakpoint() === 'desktop';
 	const accent = core.accent;
 	const setHex = (key: EssKey, hex: string) => setCore((c) => ({ ...c, [key]: hex }));
 	const setOverride = (token: string, side: 'light' | 'dark', hex: string) => setOverrides((o) => ({ ...o, [token]: { ...o[token], [side]: hex } }));
@@ -143,15 +186,15 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 		const essentials = { ...core };
 		try {
 			validateEssentials(essentials);
-			const map = applyOverrides(deriveTheme(essentials), overrides);
+			const map = applyOverrides(deriveTheme(essentials, { rampStrategy }), overrides);
 			const audit = auditBoth(map, { level: 'full' });
-			const name = `fab-${hash(JSON.stringify({ essentials, overrides }))}`;
+			const name = `fab-${hash(JSON.stringify({ essentials, overrides, rampStrategy }))}`;
 			const css = serializeTheme(map, { name, label });
 			return { map, audit, name, css, error: null as string | null };
 		} catch (e) {
 			return { map: {} as Record<string, unknown>, audit: { light: { results: [] }, dark: { results: [] }, ok: false }, name: 'indaco', css: '', error: String((e as Error)?.message || e) };
 		}
-	}, [core, overrides, label]);
+	}, [core, overrides, label, rampStrategy]);
 
 	// Curated WCAG rows: one per role, worst ratio across modes.
 	const auditRows = React.useMemo(() => {
@@ -162,8 +205,38 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 				if (!prev || (r.ratio ?? 99) < (prev.ratio ?? 99)) byRole.set(r.role, { role: r.role, ratio: r.ratio, status: r.status });
 			}
 		}
-		return [...byRole.values()].filter((r) => r.status === 'pass' || r.status === 'fail').slice(0, 5);
+		return [...byRole.values()].filter((r) => r.status === 'pass' || r.status === 'fail').slice(0, 6);
 	}, [derived.audit]);
+
+	// "Describe a look" → the model proposes essentials + a ramp strategy, the
+	// engine derives the full AA-clean palette, and the studio adopts it (clearing
+	// manual overrides so the AI's set shows cleanly). Honest degradation: a clear
+	// note for no-model / budget-blocked / no-usable-reply — never a faked palette.
+	async function runDescribe(text: string) {
+		const p = text.trim();
+		if (!p || gen === 'working') return;
+		setGen('working');
+		try {
+			const out = await generateTheme(core, p);
+			if (out.status === 'ok') {
+				setCore(out.essentials as Record<EssKey, string>);
+				setRampStrategy(out.rampStrategy);
+				setOverrides({});
+				setPrompt('');
+				notify(out.audit.ok ? 'Generated a full palette — every pair passes AA. Tweaking is optional.' : 'Generated a palette — a couple of pairs need review (flagged in the audit).');
+			} else if (out.status === 'offline') {
+				notify('No model connected — open Workspace to connect OpenRouter or load an on-device model.');
+			} else if (out.status === 'blocked') {
+				notify(out.note);
+			} else {
+				notify(out.note || 'No change proposed.');
+			}
+		} catch {
+			notify('Theme generation failed — please try again.');
+		} finally {
+			setGen('idle');
+		}
+	}
 
 	const fileSlug = slugify(label) || derived.name;
 	async function saveToLibrary() {
@@ -171,10 +244,8 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 		setSaving(true);
 		try {
 			// Re-serialize under the FINAL library slug so the CSS's `@theme <name>`
-			// matches the stored record name. The live specimen uses a stable content-
-			// hash name (no churn while you type); the SAVED theme must instead carry
-			// the slug the library keys on, or the engine registers it under the css's
-			// name and `render(md, <recordName>)` finds no theme (a blank render).
+			// matches the stored record name (the live specimen uses a stable content-
+			// hash name to avoid churn while you type).
 			const finalLabel = label.trim() || 'Untitled theme';
 			const name = slugify(finalLabel) || derived.name;
 			const css = serializeTheme(derived.map, { name, label: finalLabel });
@@ -187,6 +258,18 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 			setSaving(false);
 		}
 	}
+
+	const q = query.trim().toLowerCase();
+	const startTheme = (e: Record<string, string>) => { setCore({ ...(e as Record<EssKey, string>) }); setOverrides({}); setRampStrategy('spectrum'); };
+	// On mobile the right inspector column is far below the tree, so we ALSO render
+	// the inspector inline directly under the selected row (lg:hidden) — the editor
+	// appears where you tapped. The desktop column is hidden on mobile (lg:block).
+	const inlineInspector = !isDesktop && (
+		<div className="border-y border-border bg-card">
+			<Inspector selected={selected} core={core} map={derived.map} overrides={overrides} mode={specimenMode} onHex={setHex} onOverride={setOverride} onReset={clearOverride} />
+		</div>
+	);
+	const isContractToken = (id: string) => CONTRACT.some((c) => c.token === id);
 
 	return (
 		<div className="flex min-h-0 flex-1 flex-col">
@@ -215,109 +298,159 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 			</div>
 
 			{tab === 'theme' ? (
-			<div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:grid md:overflow-hidden md:[grid-template-columns:340px_1fr]">
-				<aside className="shrink-0 border-b border-border md:overflow-y-auto md:border-r md:border-b-0">
-					<div className="border-b border-border px-4 py-3.5 font-mono text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Theme Studio</div>
-							<Section icon={<Sparkles className="size-3.5" />} label="Start from a curated palette">
-								<div className="flex flex-wrap gap-2">
+			<div className="flex min-h-0 flex-1 flex-col">
+				{/* AI front door — "Describe a look". The model proposes the 10 essentials
+				    + a ramp strategy; the engine derives the full, AA-verified palette
+				    shown live below. You never have to tweak a color — the wells are optional. */}
+				<div className="flex shrink-0 flex-col gap-2 border-b border-border bg-card px-4 py-2.5">
+					<div className={cn('flex items-center gap-2.5 rounded-[10px] border bg-background px-3 py-2', modelReady ? 'border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]' : 'border-dashed border-border')}>
+						<Sparkles className={cn('size-4 shrink-0', modelReady ? 'text-[var(--accent)]' : 'text-muted-foreground')} />
+						<input
+							value={prompt}
+							onChange={(e) => setPrompt(e.target.value)}
+							onKeyDown={(e) => { if (e.key === 'Enter') runDescribe(prompt); }}
+							disabled={gen === 'working' || !modelReady}
+							placeholder="Describe a look — e.g. “warm editorial, deep navy accent, confident”"
+							aria-label="Describe a look"
+							className="min-w-0 flex-1 bg-transparent text-[13px] text-[var(--text-heading)] outline-none placeholder:text-muted-foreground disabled:opacity-60"
+						/>
+						{modelReady ? (
+							<button type="button" onClick={() => runDescribe(prompt)} disabled={gen === 'working' || !prompt.trim()} aria-label="Generate theme" className="grid size-7 shrink-0 place-items-center rounded-md bg-[var(--accent)] text-[var(--on-accent,#fff)] disabled:opacity-40">
+								{gen === 'working' ? <Loader2 className="size-4 animate-spin" /> : <ArrowUp className="size-4" />}
+							</button>
+						) : (
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<button type="button" aria-label="Connect a model" className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--accent)] px-2.5 py-1 text-[12px] font-semibold text-[var(--on-accent,#fff)]"><Cloud className="size-3.5" />Connect<ChevronDown className="size-3" /></button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end" className="w-60">
+									<DropdownMenuItem onSelect={() => { connectOpenRouter().catch(() => notify('Could not start the OpenRouter connect flow — try Workspace.')); }}><Cloud className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Connect cloud</div><div className="text-[11px] text-muted-foreground">OpenRouter — best quality</div></div></DropdownMenuItem>
+									<DropdownMenuItem onSelect={() => onOpenWorkspace?.()}><Sparkles className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Use on-device</div><div className="text-[11px] text-muted-foreground">Runs locally, free — via Workspace</div></div></DropdownMenuItem>
+									<DropdownMenuSeparator />
+									<DropdownMenuItem onSelect={() => onOpenWorkspace?.()}>Open Workspace…</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						)}
+					</div>
+					{modelReady ? (
+						<div className="flex flex-wrap items-center gap-1.5">
+							<span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">Refine</span>
+							{['Warmer', 'More corporate', 'Higher contrast', 'Calmer accent'].map((c) => (
+								<button key={c} type="button" onClick={() => runDescribe(c)} disabled={gen === 'working'} className="rounded-full border border-border px-2.5 py-0.5 text-[11px] text-muted-foreground hover:border-[var(--accent)] hover:text-[var(--text-heading)] disabled:opacity-40">{c}</button>
+							))}
+							<span className="ml-auto font-mono text-[10px] text-muted-foreground/70" title="Categorical hue layout the AI chose">ramp: {rampStrategy}</span>
+						</div>
+					) : (
+						<p className="text-[11px] leading-snug text-muted-foreground">Connect a model to generate a full, AA-verified palette — or edit any token by hand below.</p>
+					)}
+				</div>
+
+				{/* The Pro Inspector — left token tree · center live canvas · right per-token
+				    inspector. Stacks below lg; a real 3-column workbench at desktop. */}
+				<div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:grid lg:overflow-hidden lg:[grid-template-columns:296px_1fr_330px]">
+
+					{/* LEFT — searchable token tree */}
+					<aside className="shrink-0 border-b border-border bg-card lg:overflow-y-auto lg:border-r lg:border-b-0">
+						<div className="sticky top-0 z-[1] border-b border-border bg-card px-3 py-2.5">
+							<div className="flex items-center gap-2 rounded-lg border border-border bg-background px-2.5 py-1.5">
+								<Search className="size-3.5 shrink-0 text-muted-foreground" />
+								<input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search tokens…" aria-label="Search tokens" className="min-w-0 flex-1 bg-transparent text-[12.5px] text-[var(--text-heading)] outline-none placeholder:text-muted-foreground" />
+							</div>
+						</div>
+						<div className="px-2 py-2">
+							{/* Essentials */}
+							<TreeGroup name="Essentials" count={10} collapsed={collapsed.has('Essentials')} onToggle={() => toggleGroup('Essentials')}>
+								{ESSENTIALS.filter((c) => !q || c.label.toLowerCase().includes(q) || c.key.toLowerCase().includes(q)).map((c) => {
+									const t = ESS_TOKEN[c.key];
+									const ratio = readsOnBg(t) ? ratioVsBg(derived.map, t, specimenMode) : null;
+									const tag = ratio == null ? undefined : tierOf(ratio, ratio >= 4.5);
+									const sel = selected.scope === 'essential' && selected.id === c.key;
+									return (
+										<React.Fragment key={c.key}>
+											<TreeRow label={c.label} swatch={core[c.key]} tag={tag} selected={sel} onClick={() => setSelected({ scope: 'essential', id: c.key })} />
+											{sel && inlineInspector}
+										</React.Fragment>
+									);
+								})}
+							</TreeGroup>
+							{/* Contract */}
+							<TreeGroup name="Contract · 12 roles" count={12} collapsed={collapsed.has('Contract')} onToggle={() => toggleGroup('Contract')}>
+								{CONTRACT.filter((c) => !q || c.label.toLowerCase().includes(q) || c.token.toLowerCase().includes(q)).map((c) => {
+									const s = sides(derived.map[c.token]);
+									const ratio = readsOnBg(c.token) ? ratioVsBg(derived.map, c.token, specimenMode) : null;
+									const tag = ratio == null ? undefined : tierOf(ratio, ratio >= 4.5);
+									const sel = selected.scope === 'derived' && selected.id === c.token;
+									return (
+										<React.Fragment key={c.token}>
+											<TreeRow label={c.label} dual={s} tag={tag} overridden={overrides[c.token] != null} selected={sel} onClick={() => setSelected({ scope: 'derived', id: c.token })} />
+											{sel && inlineInspector}
+										</React.Fragment>
+									);
+								})}
+							</TreeGroup>
+							{/* Data-viz band — click-to-select strips */}
+							<TreeGroup name="Data-viz band" count={37} collapsed={collapsed.has('Band')} onToggle={() => toggleGroup('Band')}>
+								<BandStrips map={derived.map} overrides={overrides} mode={specimenMode} selId={selected.scope === 'derived' ? selected.id : ''} onPick={(t) => setSelected({ scope: 'derived', id: t })} />
+								{selected.scope === 'derived' && !isContractToken(selected.id) && inlineInspector}
+							</TreeGroup>
+							{/* Starters */}
+							<TreeGroup name="Starter palettes" count={STARTERS.length} collapsed={collapsed.has('Starters')} onToggle={() => toggleGroup('Starters')}>
+								<div className="flex flex-col gap-1 px-1 pb-1">
 									{STARTERS.map((s) => {
 										const e = s.essentials as Record<string, string>;
 										const active = core.bg === e.bg && core.accent === e.accent;
 										return (
-											<button type="button" key={s.name} onClick={() => { setCore({ ...(e as Record<EssKey, string>) }); setOverrides({}); }} title={s.description} aria-label={`Start from ${s.label}`} className={cn('flex items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left', active ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-border hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]')}>
-												<span className="flex -space-x-1">
-													<span className="size-4 rounded-full border border-border" style={{ background: e.bg }} />
-													<span className="size-4 rounded-full border border-border" style={{ background: e.accent }} />
-													<span className="size-4 rounded-full border border-border" style={{ background: e.textHeading }} />
+											<button type="button" key={s.name} onClick={() => startTheme(e)} title={s.description} aria-label={`Start from ${s.label}`} className={cn('flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-left', active ? 'bg-[var(--accent-soft)]' : 'hover:bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]')}>
+												<span className="flex overflow-hidden rounded border border-border">
+													<span className="size-3.5" style={{ background: e.accent }} />
+													<span className="size-3.5" style={{ background: e.textHeading }} />
+													<span className="size-3.5" style={{ background: e.bg }} />
 												</span>
 												<span className="text-[12px] font-semibold text-[var(--text-heading)]">{s.label}</span>
 											</button>
 										);
 									})}
 								</div>
-							</Section>
-							<Section icon={<Palette className="size-3.5" />} label="Core colors — you pick all 10">
-								{GROUPS.map((g) => (
-									<div key={g} className="mb-2.5 last:mb-0">
-										<div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">{g}</div>
-										{ESSENTIALS.filter((c) => c.group === g).map((c) => (
-											<div key={c.key} className="my-1.5 flex items-center gap-3">
-												<label className="relative size-[28px] cursor-pointer rounded-lg border border-border" style={{ background: core[c.key] }} aria-label={`${c.label} color`}>
-													<input type="color" value={core[c.key]} onChange={(e) => setHex(c.key, e.target.value)} className="absolute inset-0 size-full cursor-pointer opacity-0" />
-												</label>
-												<span className="flex-1 text-[12.5px] font-semibold text-[var(--text-heading)]">{c.label}</span>
-												<span className="rounded-md border border-border px-2 py-0.5 font-mono text-[12px] uppercase text-muted-foreground">{core[c.key]}</span>
-											</div>
-										))}
-									</div>
-								))}
-							</Section>
-							<Section icon={<Sparkles className="size-3.5" />} label="Engine contract — light & dark">
-								<p className="mb-2.5 text-[11.5px] leading-snug text-muted-foreground">You curate the light side; the engine derives an AA-safe dark variant. Click any well to override either side — the audit re-checks your edit.</p>
-									<div className="mb-1.5 grid grid-cols-[1fr_auto_auto] items-center gap-x-2.5 font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">
-										<span>Role</span>
-										<span className="flex items-center gap-1 justify-self-center"><Sun className="size-3" />Light</span>
-										<span className="flex items-center gap-1 justify-self-center"><Moon className="size-3" />Dark</span>
-									</div>
-									{CONTRACT.map((c) => {
-										const s = sides(derived.map[c.token]);
-										const ov = overrides[c.token];
-										const overridden = ov?.light != null || ov?.dark != null;
-										return (
-											<div key={c.token} className="my-1 grid grid-cols-[1fr_auto_auto] items-center gap-x-2.5">
-												<span className="flex min-w-0 items-center gap-1.5 text-[12.5px] font-semibold text-[var(--text-heading)]">
-													<span className="truncate">{c.label}</span>
-													{overridden && <button type="button" onClick={() => clearOverride(c.token)} aria-label={`Reset ${c.label}`} title="Reset to engine-derived" className="shrink-0 text-muted-foreground hover:text-[var(--accent)]"><RotateCcw className="size-3" /></button>}
-												</span>
-												<Well label={`${c.label} light`} value={s.light} overridden={ov?.light != null} live={specimenMode === 'light'} onChange={(hex) => setOverride(c.token, 'light', hex)} />
-												<Well label={`${c.label} dark`} value={s.dark} overridden={ov?.dark != null} live={specimenMode === 'dark'} onChange={(hex) => setOverride(c.token, 'dark', hex)} />
-											</div>
-										);
-									})}
-							</Section>
-							<Section icon={derived.audit.ok ? <Check className="size-3.5" /> : <TriangleAlert className="size-3.5" />} label={derived.audit.ok ? 'WCAG audit — all pass' : 'WCAG audit — review'} last>
-								{auditRows.map((r) => {
-									const ok = r.status === 'pass';
-									const tier = (r.ratio ?? 0) >= 7 ? 'AAA' : ok ? 'AA' : 'FAIL';
-									const colour = ok ? 'var(--chart-3,#2e6f00)' : 'var(--chart-2,#9c3f00)';
-									return (
-										<div key={r.role} className="my-2 flex items-center gap-2.5 text-[12.5px] text-foreground">
-											<span className="grid size-[18px] place-items-center rounded-md" style={{ background: `color-mix(in srgb, ${colour} 18%, transparent)`, color: colour }}>{ok ? <Check className="size-3" /> : <TriangleAlert className="size-3" />}</span>
-											<span className="capitalize">{r.role}</span><span className="ml-auto font-mono text-[11px] text-muted-foreground">{r.ratio ? `${r.ratio.toFixed(1)} : 1` : '—'}</span>
-											<span className="rounded-full border px-1.5 py-px font-mono text-[10px] font-bold" style={{ borderColor: `color-mix(in srgb, ${colour} 35%, transparent)`, color: colour }}>{tier}</span>
-										</div>
-									);
-								})}
-							</Section>
-				</aside>
-				<div className="flex min-w-0 flex-col gap-4 bg-card p-4 md:overflow-y-auto md:p-6">
-					<div className="flex items-center justify-between gap-3">
-						<span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Live specimen — slide · chart · diagram</span>
-						{/* Audition the SAME derived theme in light or dark — the derivation
-						    emits light-dark() pairs, so flipping the canvas color-scheme
-						    (modeOverride) resolves the chosen side. */}
-						<div className="inline-flex shrink-0 rounded-lg border border-border bg-background p-[3px]">
-							<button type="button" onClick={() => setSpecimenMode('light')} aria-pressed={specimenMode === 'light'} aria-label="Light specimen" className={cn('inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11.5px] font-semibold', specimenMode === 'light' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Sun className="size-3.5" />Light</button>
-							<button type="button" onClick={() => setSpecimenMode('dark')} aria-pressed={specimenMode === 'dark'} aria-label="Dark specimen" className={cn('inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11.5px] font-semibold', specimenMode === 'dark' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Moon className="size-3.5" />Dark</button>
+							</TreeGroup>
+						</div>
+					</aside>
+
+					{/* CENTER — live canvas */}
+					<div className="flex min-w-0 flex-col gap-4 bg-[color-mix(in_srgb,var(--bg)_55%,var(--bg-alt))] p-4 lg:overflow-y-auto lg:p-6">
+						<div className="flex items-center justify-between gap-3">
+							<span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Live canvas — slide · chart · diagram</span>
+							{/* Audition the SAME derived theme in light or dark — the derivation
+							    emits light-dark() pairs, so flipping modeOverride resolves the side. */}
+							<div className="inline-flex shrink-0 rounded-lg border border-border bg-background p-[3px]">
+								<button type="button" onClick={() => setSpecimenMode('light')} aria-pressed={specimenMode === 'light'} aria-label="Light specimen" className={cn('inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11.5px] font-semibold', specimenMode === 'light' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Sun className="size-3.5" />Light</button>
+								<button type="button" onClick={() => setSpecimenMode('dark')} aria-pressed={specimenMode === 'dark'} aria-label="Dark specimen" className={cn('inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11.5px] font-semibold', specimenMode === 'dark' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Moon className="size-3.5" />Dark</button>
+							</div>
+						</div>
+						{/* The three live previews — every edit re-renders all three. */}
+						<div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+							<div className="flex min-w-0 flex-col gap-1.5 xl:col-span-2">
+								<span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/80">Slide</span>
+								<DeckPreview options={options} sample={SPECIMEN} mermaid={false} paletteOverride={derived.name} extraTheme={derived.css ? { name: derived.name, css: derived.css } : undefined} modeOverride={specimenMode} debounceMs={140} className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-background shadow-[0_6px_18px_rgba(10,22,40,.10)]" aria-label="Theme specimen" />
+							</div>
+							{[
+								{ label: 'Chart', sample: CHART_SPECIMEN, mermaid: false, aria: 'Chart specimen' },
+								{ label: 'Diagram', sample: DIAGRAM_SPECIMEN, mermaid: true, aria: 'Diagram specimen' },
+							].map((p) => (
+								<div key={p.label} className="flex min-w-0 flex-col gap-1.5">
+									<span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/80">{p.label}</span>
+									<DeckPreview options={options} sample={p.sample} mermaid={p.mermaid} paletteOverride={derived.name} extraTheme={derived.css ? { name: derived.name, css: derived.css } : undefined} modeOverride={specimenMode} debounceMs={140} className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-background shadow-[0_6px_18px_rgba(10,22,40,.10)]" aria-label={p.aria} />
+								</div>
+							))}
 						</div>
 					</div>
-					{/* The three live previews — every override re-renders all three so you
-					    see a band colour take effect on the slide, the chart and Mermaid. */}
-					<div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
-						{[
-							{ label: 'Slide', sample: SPECIMEN, mermaid: false, aria: 'Theme specimen' },
-							{ label: 'Chart', sample: CHART_SPECIMEN, mermaid: false, aria: 'Chart specimen' },
-							{ label: 'Diagram', sample: DIAGRAM_SPECIMEN, mermaid: true, aria: 'Diagram specimen' },
-						].map((p) => (
-							<div key={p.label} className="flex min-w-0 flex-col gap-1.5">
-								<span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/80">{p.label}</span>
-								<DeckPreview options={options} sample={p.sample} mermaid={p.mermaid} paletteOverride={derived.name} extraTheme={derived.css ? { name: derived.name, css: derived.css } : undefined} modeOverride={specimenMode} debounceMs={140} className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-background shadow-[0_6px_18px_rgba(10,22,40,.10)]" aria-label={p.aria} />
-							</div>
-						))}
-					</div>
-					{/* The docked band tray — select a token from the strip, edit its
-					    light/dark here; the audit re-checks and the previews re-render. */}
-					<BandTray map={derived.map} overrides={overrides} mode={specimenMode} selToken={selToken} onSelect={setSelToken} onOverride={setOverride} onReset={clearOverride} />
+
+					{/* RIGHT — per-token inspector + the WCAG audit */}
+					<aside className="shrink-0 border-t border-border bg-card lg:overflow-y-auto lg:border-l lg:border-t-0">
+						{/* Desktop-only column inspector; below desktop it renders inline under the
+						    selected row (above), so the column hides to avoid a far-below scroll. */}
+						{isDesktop && <Inspector selected={selected} core={core} map={derived.map} overrides={overrides} mode={specimenMode} onHex={setHex} onOverride={setOverride} onReset={clearOverride} />}
+						<AuditPanel rows={auditRows} ok={derived.audit.ok} />
+					</aside>
 				</div>
 			</div>
 			) : (
@@ -337,8 +470,67 @@ function Well({ label, value, overridden, live, onChange }: { label: string; val
 	);
 }
 
-// One jump-target chip in the band strip — its colour is the live-mode value;
-// selecting it loads the token into the tray editor.
+// A split light/dark swatch for a contract row in the tree.
+function DualSwatch({ light, dark }: { light: string; dark: string }) {
+	return (
+		<span className="flex size-[18px] shrink-0 overflow-hidden rounded border border-border">
+			<span className="h-full w-1/2" style={{ background: light }} />
+			<span className="h-full w-1/2" style={{ background: dark }} />
+		</span>
+	);
+}
+
+// A collapsible group in the token tree.
+function TreeGroup({ name, count, collapsed, onToggle, children }: { name: string; count: number; collapsed: boolean; onToggle: () => void; children: React.ReactNode }) {
+	return (
+		<div className="mb-1">
+			<button type="button" onClick={onToggle} aria-expanded={!collapsed} className="flex w-full items-center gap-2 rounded-md px-2 py-2 hover:bg-[color-mix(in_srgb,var(--accent)_7%,transparent)]">
+				<ChevronRight className={cn('size-3 text-muted-foreground transition-transform', !collapsed && 'rotate-90')} />
+				<span className="flex-1 text-left font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{name}</span>
+				<span className="rounded-full bg-[color-mix(in_srgb,var(--text-heading)_8%,transparent)] px-1.5 py-px font-mono text-[10px] text-muted-foreground">{count}</span>
+			</button>
+			{!collapsed && <div className="pb-1">{children}</div>}
+		</div>
+	);
+}
+
+// One selectable row in the token tree — a single swatch (essential) or a split
+// light/dark swatch (contract), with an optional contrast tag.
+function TreeRow({ label, swatch, dual, tag, overridden, selected, onClick }: { label: string; swatch?: string; dual?: { light: string; dark: string }; tag?: string; overridden?: boolean; selected: boolean; onClick: () => void }) {
+	const fail = tag === 'FAIL';
+	return (
+		<button type="button" onClick={onClick} aria-pressed={selected} className={cn('flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left', selected ? 'bg-[var(--accent-soft)] shadow-[inset_2px_0_0_var(--accent)]' : 'hover:bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]')}>
+			{dual ? <DualSwatch light={dual.light} dark={dual.dark} /> : <span className="size-[18px] shrink-0 rounded border border-border" style={{ background: swatch }} />}
+			<span className="flex-1 truncate text-[12.5px] font-semibold text-[var(--text-heading)]">{label}</span>
+			{overridden && <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-[var(--accent)]" title="overridden" />}
+			{tag && <span aria-hidden className={cn('rounded border px-1 py-px font-mono text-[9px] font-bold', fail ? 'border-[color-mix(in_srgb,var(--fail)_40%,transparent)] text-[var(--fail)]' : 'border-[color-mix(in_srgb,var(--pass)_35%,transparent)] text-[var(--pass)]')}>{tag}</span>}
+		</button>
+	);
+}
+
+// The data-viz band as click-to-select strips (Series / Cat fill / Cat mark /
+// Diagram). The chip colour tracks the live specimen mode so it mirrors the canvas.
+function BandStrips({ map, overrides, mode, selId, onPick }: { map: Record<string, unknown>; overrides: Record<string, Override>; mode: 'light' | 'dark'; selId: string; onPick: (t: string) => void }) {
+	const repr = (token: string) => sides(map[token])[mode];
+	return (
+		<div className="space-y-1.5 px-1.5 pb-1.5">
+			<StripRow label="Series">
+				{SERIES_TOKENS.map((t) => <BandChip key={t} token={t} color={repr(t)} selected={selId === t} overridden={overrides[t] != null} onPick={onPick} />)}
+			</StripRow>
+			<StripRow label="Cat · fill">
+				{CAT_TOKENS.map((i) => { const t = `cat-${i}-fill`; return <BandChip key={t} token={t} color={repr(t)} selected={selId === t} overridden={overrides[t] != null} onPick={onPick} />; })}
+			</StripRow>
+			<StripRow label="Cat · mark">
+				{CAT_TOKENS.map((i) => { const t = `cat-${i}-mark`; return <BandChip key={t} token={t} color={repr(t)} selected={selId === t} overridden={overrides[t] != null} onPick={onPick} />; })}
+			</StripRow>
+			<StripRow label="Diagram">
+				{DIAGRAM_TOKENS.map((d) => <BandChip key={d.token} token={d.token} color={repr(d.token)} selected={selId === d.token} overridden={overrides[d.token] != null} onPick={onPick} />)}
+			</StripRow>
+		</div>
+	);
+}
+
+// One jump-target chip in a band strip — its colour is the live-mode value.
 function BandChip({ token, color, selected, overridden, onPick }: { token: string; color: string; selected: boolean; overridden: boolean; onPick: (t: string) => void }) {
 	return (
 		<button
@@ -356,74 +548,135 @@ function BandChip({ token, color, selected, overridden, onPick }: { token: strin
 function StripRow({ label, children }: { label: string; children: React.ReactNode }) {
 	return (
 		<div className="flex items-center gap-2">
-			<span className="w-[68px] shrink-0 font-mono text-[9px] font-bold uppercase tracking-wider text-muted-foreground/80">{label}</span>
+			<span className="w-[64px] shrink-0 font-mono text-[9px] font-bold uppercase tracking-wider text-muted-foreground/80">{label}</span>
 			<div className="flex min-w-0 flex-1 gap-1">{children}</div>
 		</div>
 	);
 }
 
-// The docked editor for the data-viz band (Iteration 2): the selected token's
-// light/dark wells up top, then the whole band as click-to-select strips. The
-// chip colours track the live specimen mode so the strip mirrors the canvas.
-function BandTray({ map, overrides, mode, selToken, onSelect, onOverride, onReset }: {
+// The per-token inspector (right column): the selected token's editable wells,
+// the engine-derived note, and that token's live contrast vs the background in
+// both canvas modes. An essential edits the picked input; a derived token pins an
+// override (and shows a Reset). This is the V4 leap — per-token light/dark + WCAG.
+function Inspector({ selected, core, map, overrides, mode, onHex, onOverride, onReset }: {
+	selected: Selected;
+	core: Record<EssKey, string>;
 	map: Record<string, unknown>;
 	overrides: Record<string, Override>;
 	mode: 'light' | 'dark';
-	selToken: string;
-	onSelect: (t: string) => void;
+	onHex: (key: EssKey, hex: string) => void;
 	onOverride: (token: string, side: 'light' | 'dark', hex: string) => void;
 	onReset: (token: string) => void;
 }) {
-	const selSides = sides(map[selToken]);
-	const single = isSingle(map[selToken]);
-	const ov = overrides[selToken];
-	const overridden = ov?.light != null || ov?.dark != null;
-	const repr = (token: string) => sides(map[token])[mode];
+	const isEss = selected.scope === 'essential';
+	// The token whose contrast we report (an essential maps to its contract token).
+	const tokenId = isEss ? ESS_TOKEN[selected.id as EssKey] : selected.id;
+	const name = isEss ? (ESSENTIALS.find((e) => e.key === selected.id)?.label ?? selected.id) : tokenLabel(selected.id);
+	const single = isEss ? true : isSingle(map[selected.id]);
+	const s = isEss ? { light: core[selected.id as EssKey], dark: core[selected.id as EssKey] } : sides(map[selected.id]);
+	const ov = isEss ? undefined : overrides[selected.id];
+	const overridden = !isEss && (ov?.light != null || ov?.dark != null);
+	const rl = ratioVsBg(map, tokenId, 'light');
+	const rd = ratioVsBg(map, tokenId, 'dark');
+	const headSw = isEss ? core[selected.id as EssKey] : s[mode];
 	return (
-		<div className="rounded-xl border border-border bg-background p-3">
-			{/* selected token + its editable sides */}
-			<div className="flex items-center gap-3">
-				<span className="size-10 shrink-0 rounded-lg border border-border" style={{ background: single ? selSides.light : selSides[mode] }} />
+		<div className="border-b border-border">
+			<div className="flex items-start gap-3 px-4 py-4">
+				<span className="mt-0.5 size-7 shrink-0 rounded-lg border border-border" style={{ background: headSw }} />
 				<div className="min-w-0 flex-1">
-					<div className="truncate text-[13px] font-semibold text-[var(--text-heading)]">{bandLabel(selToken)}</div>
-					<div className="font-mono text-[10px] text-muted-foreground">--{selToken}{single ? ' · both modes' : ''}</div>
-				</div>
-				<div className="flex items-center gap-2.5">
-					{single ? (
-						<div className="flex flex-col items-center gap-1"><Well label={`${bandLabel(selToken)} value`} value={selSides.light} overridden={ov?.light != null} live onChange={(hex) => onOverride(selToken, 'light', hex)} /><span className="font-mono text-[9px] uppercase text-muted-foreground/80">Value</span></div>
-					) : (
-						<>
-							<div className="flex flex-col items-center gap-1"><Well label={`${bandLabel(selToken)} light`} value={selSides.light} overridden={ov?.light != null} live={mode === 'light'} onChange={(hex) => onOverride(selToken, 'light', hex)} /><span className="font-mono text-[9px] uppercase text-muted-foreground/80">Light</span></div>
-							<div className="flex flex-col items-center gap-1"><Well label={`${bandLabel(selToken)} dark`} value={selSides.dark} overridden={ov?.dark != null} live={mode === 'dark'} onChange={(hex) => onOverride(selToken, 'dark', hex)} /><span className="font-mono text-[9px] uppercase text-muted-foreground/80">Dark</span></div>
-						</>
-					)}
-					<button type="button" onClick={() => onReset(selToken)} disabled={!overridden} aria-label={`Reset ${bandLabel(selToken)}`} title="Reset to engine-derived" className={cn('shrink-0 self-start p-1', overridden ? 'text-muted-foreground hover:text-[var(--accent)]' : 'cursor-not-allowed text-muted-foreground/30')}><RotateCcw className="size-3.5" /></button>
+					<div className="flex items-center gap-2">
+						<span className="truncate text-[14px] font-bold text-[var(--text-heading)]">{name}</span>
+						<span className="rounded border border-border px-1.5 py-px font-mono text-[9px] uppercase text-muted-foreground">{isEss ? 'essential' : single ? 'band' : 'contract'}</span>
+					</div>
+					<code className="font-mono text-[11px] text-muted-foreground">--{tokenId}</code>
 				</div>
 			</div>
-			{/* the whole band as click-to-select strips */}
-			<div className="mt-3 space-y-1.5 border-t border-border pt-3">
-				<StripRow label="Series">
-					{SERIES_TOKENS.map((t) => <BandChip key={t} token={t} color={repr(t)} selected={selToken === t} overridden={overrides[t] != null} onPick={onSelect} />)}
-				</StripRow>
-				<StripRow label="Cat · fill">
-					{CAT_TOKENS.map((i) => { const t = `cat-${i}-fill`; return <BandChip key={t} token={t} color={repr(t)} selected={selToken === t} overridden={overrides[t] != null} onPick={onSelect} />; })}
-				</StripRow>
-				<StripRow label="Cat · mark">
-					{CAT_TOKENS.map((i) => { const t = `cat-${i}-mark`; return <BandChip key={t} token={t} color={repr(t)} selected={selToken === t} overridden={overrides[t] != null} onPick={onSelect} />; })}
-				</StripRow>
-				<StripRow label="Diagram">
-					{DIAGRAM_TOKENS.map((d) => <BandChip key={d.token} token={d.token} color={repr(d.token)} selected={selToken === d.token} overridden={overrides[d.token] != null} onPick={onSelect} />)}
-				</StripRow>
+
+			<div className="border-t border-border px-4 py-3.5">
+				<div className="mb-2.5 flex items-center justify-between font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+					<span>{isEss ? 'Picked color' : single ? 'Value' : 'Light & dark'}</span>
+					{overridden && <button type="button" onClick={() => onReset(selected.id)} className="flex items-center gap-1 text-[10px] normal-case tracking-normal text-[var(--accent)]"><RotateCcw className="size-3" />Reset role</button>}
+				</div>
+				{isEss ? (
+					<div className="flex items-center gap-2.5">
+						<Well label={`${name}`} value={core[selected.id as EssKey]} overridden={false} live onChange={(hex) => onHex(selected.id as EssKey, hex)} />
+						<code className="font-mono text-[12px] uppercase text-[var(--text-heading)]">{core[selected.id as EssKey]}</code>
+						<span className="ml-auto font-mono text-[10px] text-muted-foreground">feeds --{tokenId}</span>
+					</div>
+				) : single ? (
+					<div className="flex items-center gap-2.5">
+						<Well label={`${name} value`} value={s.light} overridden={ov?.light != null} live onChange={(hex) => onOverride(selected.id, 'light', hex)} />
+						<code className="font-mono text-[12px] uppercase text-[var(--text-heading)]">{s.light}</code>
+						<span className="ml-auto font-mono text-[10px] text-muted-foreground">both modes</span>
+					</div>
+				) : (
+					<div className="flex gap-5">
+						<div className="flex flex-col items-center gap-1.5">
+							<Well label={`${name} light`} value={s.light} overridden={ov?.light != null} live={mode === 'light'} onChange={(hex) => onOverride(selected.id, 'light', hex)} />
+							<span className="flex items-center gap-1 font-mono text-[9px] uppercase text-muted-foreground"><Sun className="size-2.5" />Light</span>
+						</div>
+						<div className="flex flex-col items-center gap-1.5">
+							<Well label={`${name} dark`} value={s.dark} overridden={ov?.dark != null} live={mode === 'dark'} onChange={(hex) => onOverride(selected.id, 'dark', hex)} />
+							<span className="flex items-center gap-1 font-mono text-[9px] uppercase text-muted-foreground"><Moon className="size-2.5" />Dark</span>
+						</div>
+					</div>
+				)}
+			</div>
+
+			{/* This token's live contrast vs the background, both modes — only for
+			    foreground roles; surfaces/decorative tokens have no AA target. */}
+			<div className="border-t border-border px-4 py-3.5">
+				<div className="mb-2 font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Contrast vs background</div>
+				{readsOnBg(tokenId) ? (
+					<>
+						<PairRow icon={<Sun className="size-3" />} label="Light mode" ratio={rl} />
+						<PairRow icon={<Moon className="size-3" />} label="Dark mode" ratio={rd} />
+					</>
+				) : (
+					<p className="text-[11.5px] leading-snug text-muted-foreground">A surface / decorative token — it isn’t text on the canvas, so it has no AA contrast target. The audit checks the foreground roles that sit on it.</p>
+				)}
 			</div>
 		</div>
 	);
 }
 
-function Section({ icon, label, last, children }: { icon: React.ReactNode; label: string; last?: boolean; children: React.ReactNode }) {
+function PairRow({ icon, label, ratio }: { icon: React.ReactNode; label: string; ratio: number | null }) {
+	const ok = (ratio ?? 0) >= 4.5;
+	const tier = ratio == null ? '—' : tierOf(ratio, ok);
+	const colour = ratio == null ? 'var(--text-muted)' : ok ? 'var(--pass)' : 'var(--fail)';
 	return (
-		<div className={`px-4 py-3.5 ${!last ? 'border-b border-border' : ''}`}>
-			<div className="mb-3 flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{icon}{label}</div>
-			{children}
+		<div className="my-1.5 flex items-center gap-2.5 text-[12px]">
+			<span className="text-muted-foreground">{icon}</span>
+			<span className="text-[var(--text-body)]">{label}</span>
+			<span className="ml-auto font-mono text-[11px] text-muted-foreground">{ratio == null ? '—' : `${ratio.toFixed(1)} : 1`}</span>
+			<span className="rounded-full border px-1.5 py-px font-mono text-[10px] font-bold" style={{ borderColor: `color-mix(in srgb, ${colour} 35%, transparent)`, color: colour }}>{tier}</span>
+		</div>
+	);
+}
+
+// The overall WCAG audit (right column, under the inspector) — the AI's delivered
+// palette reads all-pass; a manual override that breaks a pair turns it red here.
+function AuditPanel({ rows, ok }: { rows: { role: string; ratio: number | null; status: string }[]; ok: boolean }) {
+	return (
+		<div className="px-4 py-4">
+			<div className="mb-2.5 flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+				{ok ? <Check className="size-3.5 text-[var(--pass)]" /> : <TriangleAlert className="size-3.5 text-[var(--fail)]" />}
+				<span>WCAG audit</span>
+				<span className={cn('ml-auto normal-case tracking-normal', ok ? 'text-[var(--pass)]' : 'text-[var(--fail)]')}>{ok ? 'AA verified' : 'review'}</span>
+			</div>
+			{rows.map((r) => {
+				const good = r.status === 'pass';
+				const tier = tierOf(r.ratio, good);
+				const colour = good ? 'var(--pass)' : 'var(--fail)';
+				return (
+					<div key={r.role} className="my-1.5 flex items-center gap-2.5 text-[12px] text-foreground">
+						<span className="grid size-[18px] place-items-center rounded-md" style={{ background: `color-mix(in srgb, ${colour} 16%, transparent)`, color: colour }}>{good ? <Check className="size-3" /> : <TriangleAlert className="size-3" />}</span>
+						<span className="capitalize text-[var(--text-body)]">{r.role}</span>
+						<span className="ml-auto font-mono text-[11px] text-muted-foreground">{r.ratio ? `${r.ratio.toFixed(1)} : 1` : '—'}</span>
+						<span className="rounded-full border px-1.5 py-px font-mono text-[10px] font-bold" style={{ borderColor: `color-mix(in srgb, ${colour} 35%, transparent)`, color: colour }}>{tier}</span>
+					</div>
+				);
+			})}
 		</div>
 	);
 }
