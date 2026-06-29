@@ -4,6 +4,7 @@ import {
 	type SingleSlideOptions,
 	type SingleSlideRenderer,
 } from '@/lib/single-slide-render';
+import { cn } from '@/lib/utils';
 
 // The React single-slide wrapper over single-slide-render.ts — the plain
 // single-stage bridge HeroPreview renders through for its Preview face: a figure
@@ -116,7 +117,10 @@ export function DeckPreview({
 		if (active) requestAnimationFrame(render);
 	}, [active, render]);
 
-	return <figure ref={stageRef} className={className} role={role} {...aria} />;
+	// `m-0` neutralizes the `<figure>` UA default margin (`0 40px`) — Tailwind
+	// preflight doesn't reach inside the studio island, and that 40px inline margin
+	// shoves a `w-full` preview off its track and overflows narrow viewports.
+	return <figure ref={stageRef} className={cn('m-0', className)} role={role} {...aria} />;
 }
 
 export default DeckPreview;
