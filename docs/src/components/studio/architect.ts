@@ -107,7 +107,7 @@ export function architectModel(): Promise<ArchitectModel | null> {
 			// stronger (pricier) model deliberately. defaultMaxTokens: a 4096-token output
 			// ceiling so a runaway reply can't blow the budget. Both Studio-scoped (the
 			// Drawing Board keeps its own default + stays uncapped), so no shared blast radius.
-			.then((m) => m.createArchitectModel({ getSettings: () => ({}), explicitTierWins: true, defaultModel: 'anthropic/claude-3.5-haiku', defaultMaxTokens: 4096 }) as ArchitectModel)
+			.then((m) => m.createArchitectModel({ getSettings: () => ({}), explicitTierWins: true, defaultModel: 'anthropic/claude-haiku-4.5', defaultMaxTokens: 4096 }) as ArchitectModel)
 			.catch(() => null);
 	}
 	return modelPromise;

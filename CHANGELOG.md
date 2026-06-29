@@ -712,6 +712,13 @@ in patch versions.
 
 ### Fixed
 
+- **Studio AI's default model no longer 404s (#610).** The Studio's connect-time default was
+  `anthropic/claude-3.5-haiku`, a slug OpenRouter no longer serves (`No endpoints found`) — so a
+  fresh user's first AI action failed. It now defaults to `anthropic/claude-haiku-4.5` (current
+  cheap Claude). Verified end-to-end against the live API: a "Describe a look" prompt returns a
+  full essentials + ramp-strategy set that derives AA-clean in both canvas modes. (Two further
+  dead ids in the curated model picker are tracked separately in #614.)
+
 - **The overflow ring no longer false-fires on a clean slide whose cell holds an
   absolutely-positioned footer (the #198 4K case).** The cell-aware probe measures how far a
   clip cell's children spill past the cell box (to catch centred content clipped off an edge),
