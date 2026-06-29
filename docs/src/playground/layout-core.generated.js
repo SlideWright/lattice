@@ -64,6 +64,15 @@ var require_gate = __commonJS({
       { rule: "css-scheme", re: /\b(?:javascript|vbscript)\s*:/gi, message: "a javascript:/vbscript: URL is a script vector \u2014 not allowed." }
     ]);
     var URL_RE = /url\(\s*("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[^)]*?)\s*\)/gi;
+    var IMAGESET_RE = /(?:-webkit-)?image-set\(([\s\S]*?)\)/gi;
+    var QUOTED_RE = /(['"])((?:\\.|(?!\1).)*)\1/g;
+    function decodeCssEscapes(css) {
+      return String(css).replace(/\\([0-9a-fA-F]{1,6})[ \t]?|\\([^\n])/g, (_, hex, ch) => {
+        if (ch != null) return ch;
+        const cp = parseInt(hex, 16);
+        return cp > 0 && cp <= 1114111 ? String.fromCodePoint(cp) : "\uFFFD";
+      });
+    }
     function urlIsLocal(raw) {
       let s = String(raw).trim();
       if (s[0] === '"' && s.endsWith('"') || s[0] === "'" && s.endsWith("'")) s = s.slice(1, -1);
@@ -79,18 +88,22 @@ var require_gate = __commonJS({
       return n;
     }
     function findCssExfil(css) {
-      const src = stripComments(css);
+      const src = decodeCssEscapes(stripComments(css));
       const out = [];
       for (const { rule, re, message } of CSS_EXFIL_RULES) {
         for (const m of src.matchAll(re)) out.push({ rule, message, line: lineAt(src, m.index) });
       }
+      const remoteUrl = (target, index) => out.push({
+        rule: "css-url-remote",
+        line: lineAt(src, index),
+        message: `url(${target}) fetches a remote resource \u2014 only inline data: URIs and #fragment refs are allowed (a remote url() can beacon deck content out).`
+      });
       for (const m of src.matchAll(URL_RE)) {
-        if (!urlIsLocal(m[1])) {
-          out.push({
-            rule: "css-url-remote",
-            line: lineAt(src, m.index),
-            message: `url(${m[1]}) fetches a remote resource \u2014 only inline data: URIs and #fragment refs are allowed (a remote url() can beacon deck content out).`
-          });
+        if (!urlIsLocal(m[1])) remoteUrl(m[1], m.index);
+      }
+      for (const m of src.matchAll(IMAGESET_RE)) {
+        for (const sm of m[1].matchAll(QUOTED_RE)) {
+          if (!urlIsLocal(sm[2])) remoteUrl(sm[2], m.index);
         }
       }
       return out;

