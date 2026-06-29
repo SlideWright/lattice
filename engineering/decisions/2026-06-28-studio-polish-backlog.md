@@ -79,10 +79,17 @@ thing). A group may split into two PRs if a sub-item balloons.
   gated by `gateCss`/`skeletonInvokes`. *(#52 — deferred, needs OpenRouter key)*
 
 ## G5 · Asset library & sharing  *(no key)*
-- **Unify** the save/share model across themes + components.
-- **Zip-share contract** — define what a *theme* zip contains; reconcile with the
-  existing zip design doc.
-- A **unified Library** view to browse/manage all saved themes + components.
+- ✅ **Unify** the save/share model across themes + components — one Library with a
+  consistent apply/insert · share · delete flow. *(#54 — shipped)*
+- ✅ **Zip-share contract** — the `lattice-asset/1` envelope (manifest + css +
+  theme `showcase.pdf` + README; bundle = `themes/`/`components/`), reconciled with
+  the `.lattice` deck format. `engineering/decisions/2026-06-29-lattice-asset-share.md`.
+  *(#55 — shipped)*
+- ✅ A **unified Library** drawer to browse/search/filter/apply/insert/share/delete
+  all saved themes + components, with zip import/export. *(#56 — shipped)*
+- ⏭️ Follow-up (engine, off-path): `serializeTheme` should emit `--chart-cat-N-hue`
+  so a derived theme renders piechart/quadrant/progress coloured standalone (the
+  showcase uses `journey` to sidestep it for now).
 
 ## G6 · AI models & spend  *(verify w/ live key)*
 - **Model picker + curated grouping** in Workspace; default to **Claude Sonnet**.

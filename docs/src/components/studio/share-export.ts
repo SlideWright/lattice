@@ -27,6 +27,9 @@ export type DeckRender = {
 	geom: { w: number; h: number };
 	runtimeUrl: string;
 	fontCss: string;
+	/** Local Mermaid URL (studio), so an exported deck's diagrams render from our
+	 *  own origin instead of the jsdelivr CDN. Absent → the exporter's CDN default. */
+	mermaidUrl?: string;
 };
 
 function pg(): PG | undefined {
@@ -82,12 +85,25 @@ export async function buildDeckRender(options: SingleSlideOptions, source: strin
 		geom: { w: out.width || 1280, h: out.height || 720 },
 		runtimeUrl: options.runtimeUrl,
 		fontCss: previewFontFaceCss(),
+		mermaidUrl: options.mermaidUrl,
 	};
 }
 
 type ExportMod = typeof import('@/playground/drawing-board-export.js');
 function exporters(): Promise<ExportMod> {
 	return import('@/playground/drawing-board-export.js');
+}
+
+/**
+ * Render the theme's showcase deck → PDF bytes (a Blob), for the Library's
+ * theme-share zip. Reuses the same render + PDF path as Share→PDF, so the zip
+ * SHOWS the theme on a representative deck rather than just shipping tokens.
+ */
+export async function renderThemeShowcase(options: SingleSlideOptions, theme: { name: string; label?: string; css: string }): Promise<Blob> {
+	const { showcaseDeck } = await import('./asset-bundle');
+	const render = await buildDeckRender(options, showcaseDeck(theme.label || theme.name), theme.name, 'light', { name: theme.name, css: theme.css });
+	const ex = await exporters();
+	return ex.renderPdfBlob(render, `${theme.name}-showcase`, undefined, { deck: `${theme.name} showcase`, engine: 'lattice' });
 }
 
 /** Markdown source with the current theme + referenced components embedded. */
