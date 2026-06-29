@@ -69,11 +69,14 @@ thing). A group may split into two PRs if a sub-item balloons.
   the Studio uses local engine assets, not third-party CDNs.
 
 ## G4 · Component Studio depth  *(AI part needs key)*
-- Rename **"Layout" → "Component"** (user-facing labels).
-- **CodeMirror** w/ syntax highlighting for the CSS + skeleton fields (reuse the
-  deck `Editor`).
-- **AI "describe a component"** → generate scoped, palette-blind CSS + skeleton,
-  gated by `gateCss`/`skeletonInvokes`.
+- ✅ Rename **"Layout" → "Component"** everywhere user-facing (tab, headers, launcher,
+  command palette). *(#50 — shipped)*
+- ✅ **CodeMirror** w/ syntax highlighting for the CSS + skeleton fields — a shared
+  `CodeField` (css + markdown) reusing the deck editor's theme (`editor-theme`), with a
+  palette-cohesive `HighlightStyle` (light + dark) and a `<textarea>` fallback for jsdom.
+  *(#51 — shipped)*
+- ⏸️ **AI "describe a component"** → generate scoped, palette-blind CSS + skeleton,
+  gated by `gateCss`/`skeletonInvokes`. *(#52 — deferred, needs OpenRouter key)*
 
 ## G5 · Asset library & sharing  *(no key)*
 - **Unify** the save/share model across themes + components.

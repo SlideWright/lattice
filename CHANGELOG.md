@@ -186,6 +186,13 @@ in patch versions.
     presenter) at the committed `mermaid-v11.min.js` the Export-to-Marp bundle
     already ships — so Studio diagrams render offline and under a strict CSP,
     never depending on jsdelivr. Other surfaces keep the CDN default unchanged.
+  - **Component Studio** (renamed from "Layout Studio" everywhere user-facing —
+    tab, headers, launcher, command palette). Its **CSS + skeleton inputs are now
+    CodeMirror** editors (shared `CodeField`): syntax highlighting via a
+    palette-cohesive `HighlightStyle` (every colour a token, so it tracks light +
+    dark), line numbers, and undo — sharing the deck editor's theme (`editor-theme`,
+    extracted to reuse). Degrades to an accessible `<textarea>` where CodeMirror
+    can't lay out (jsdom). The live palette-blind + scoped gate is unchanged.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /

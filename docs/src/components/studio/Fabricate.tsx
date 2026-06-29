@@ -199,11 +199,11 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 						<span className="hidden font-mono text-[11px] text-muted-foreground sm:inline">draft theme</span>
 					</>
 				) : (
-					<span className="truncate text-sm font-semibold text-[var(--text-heading)]">Layout Studio</span>
+					<span className="truncate text-sm font-semibold text-[var(--text-heading)]">Component Studio</span>
 				)}
 				<div className="ml-1 inline-flex shrink-0 rounded-[10px] border border-border bg-background p-[3px] sm:ml-3">
 					<button type="button" onClick={() => setTab('theme')} aria-pressed={tab === 'theme'} className={cn('inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[13px] font-semibold sm:px-3', tab === 'theme' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Palette className="size-3.5" />Theme</button>
-					<button type="button" onClick={() => setTab('layout')} aria-pressed={tab === 'layout'} className={cn('inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[13px] font-semibold sm:px-3', tab === 'layout' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><LayoutGrid className="size-3.5" />Layout</button>
+					<button type="button" onClick={() => setTab('layout')} aria-pressed={tab === 'layout'} className={cn('inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[13px] font-semibold sm:px-3', tab === 'layout' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><LayoutGrid className="size-3.5" />Component</button>
 				</div>
 				<div className="flex-1" />
 				{tab === 'theme' && (

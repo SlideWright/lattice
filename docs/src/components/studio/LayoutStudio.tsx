@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 // tokens) and scoped (every selector under `.name`, so it can't leak onto other
 // slides). skeletonInvokes checks the sample actually uses the component.
 import { gateCss, NAME_RE, skeletonInvokes } from '@/playground/layout-core.generated.js';
+import { CodeField } from './CodeField';
 import { saveStudioComponent } from './component-library';
 
 // A starter that PASSES the gate out of the box — palette-blind (every colour a
@@ -82,7 +83,7 @@ export function LayoutStudio({ options, notify, onSaved }: { options: SingleSlid
 		<div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:grid md:overflow-hidden md:[grid-template-columns:360px_1fr]">
 			<aside className="flex shrink-0 flex-col border-b border-border md:overflow-y-auto md:border-r md:border-b-0">
 				<div className="flex items-center gap-2 border-b border-border px-4 py-3 font-mono text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-					<SquareDashedBottomCode className="size-3.5" />Layout Studio
+					<SquareDashedBottomCode className="size-3.5" />Component Studio
 				</div>
 				<div className="border-b border-border px-4 py-3.5">
 					<label htmlFor="ls-name" className="mb-1.5 block font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Component name</label>
@@ -92,12 +93,12 @@ export function LayoutStudio({ options, notify, onSaved }: { options: SingleSlid
 					</div>
 				</div>
 				<div className="flex min-h-[120px] flex-col border-b border-border px-4 py-3.5">
-					<label htmlFor="ls-css" className="mb-1.5 flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground"><FileCode2 className="size-3.5" />Styles — <span className="normal-case text-muted-foreground/80">.{name || '…'}-scoped, palette-blind</span></label>
-					<textarea id="ls-css" value={css} onChange={(e) => setCss(e.target.value)} spellCheck={false} aria-label="Component CSS" rows={10} className="w-full flex-1 resize-none rounded-lg border border-border bg-background p-2.5 font-mono text-[12px] leading-relaxed text-foreground outline-none focus:border-[var(--accent)]" />
+					<span className="mb-1.5 flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground"><FileCode2 className="size-3.5" />Styles — <span className="normal-case text-muted-foreground/80">.{name || '…'}-scoped, palette-blind</span></span>
+					<CodeField language="css" ariaLabel="Component CSS" value={css} onChange={setCss} className="w-full flex-1 rounded-lg border border-border bg-[var(--bg)] focus-within:border-[var(--accent)]" />
 				</div>
 				<div className="flex min-h-[100px] flex-col border-b border-border px-4 py-3.5">
-					<label htmlFor="ls-skel" className="mb-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Skeleton — the slide that uses it</label>
-					<textarea id="ls-skel" value={skeleton} onChange={(e) => setSkeleton(e.target.value)} spellCheck={false} aria-label="Component skeleton" rows={5} className="w-full flex-1 resize-none rounded-lg border border-border bg-background p-2.5 font-mono text-[12px] leading-relaxed text-foreground outline-none focus:border-[var(--accent)]" />
+					<span className="mb-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Skeleton — the slide that uses it</span>
+					<CodeField language="markdown" ariaLabel="Component skeleton" value={skeleton} onChange={setSkeleton} className="w-full flex-1 rounded-lg border border-border bg-[var(--bg)] focus-within:border-[var(--accent)]" />
 				</div>
 				<div className="px-4 py-3.5">
 					<div className="mb-2 flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
