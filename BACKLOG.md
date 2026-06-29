@@ -7,11 +7,11 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **44 open** items.
+only *status*. **46 open** items.
 
-> ⚠️ **6 cards need triage** (missing `area:`/`type:`/`priority:`): [#554](https://github.com/SlideWright/lattice/issues/554), [#581](https://github.com/SlideWright/lattice/issues/581), [#582](https://github.com/SlideWright/lattice/issues/582), [#587](https://github.com/SlideWright/lattice/issues/587), [#588](https://github.com/SlideWright/lattice/issues/588), [#610](https://github.com/SlideWright/lattice/issues/610).
+> ⚠️ **7 cards need triage** (missing `area:`/`type:`/`priority:`): [#554](https://github.com/SlideWright/lattice/issues/554), [#581](https://github.com/SlideWright/lattice/issues/581), [#582](https://github.com/SlideWright/lattice/issues/582), [#587](https://github.com/SlideWright/lattice/issues/587), [#588](https://github.com/SlideWright/lattice/issues/588), [#610](https://github.com/SlideWright/lattice/issues/610), [#616](https://github.com/SlideWright/lattice/issues/616).
 
-## Backlog (40)
+## Backlog (41)
 
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
 - [#506](https://github.com/SlideWright/lattice/issues/506) feat(runtime): runtime auto-split (Option B) via eventual consistency — high · engine
@@ -53,6 +53,7 @@ only *status*. **44 open** items.
 - [#587](https://github.com/SlideWright/lattice/issues/587) redline: migrate into the .cell-stage cell-tree (the one standard component left on direct-child bodies) — comparison
 - [#588](https://github.com/SlideWright/lattice/issues/588) check-ownership: extend the hex-literal gate (HARD RULE #3) to shipped component CSS — infra
 - [#610](https://github.com/SlideWright/lattice/issues/610) Studio AI track (G6 → G7): model backbone, theme/component chat, voice — key-gated, budget-guarded
+- [#616](https://github.com/SlideWright/lattice/issues/616) Untrusted-content XSS: shared/AI deck + component skeleton raw HTML executes in the same-origin, un-sandboxed preview
 
 ## Ready (4)
 
@@ -69,6 +70,6 @@ _none_
 
 _none_
 
-## Inbox (no status) (0)
+## Inbox (no status) (1)
 
-_none_
+- [#617](https://github.com/SlideWright/lattice/issues/617) Harden .lattice-*.zip import against zip-slip / path traversal on filesystem-backed (desktop/CLI) imports
