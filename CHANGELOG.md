@@ -712,6 +712,17 @@ in patch versions.
 
 ### Fixed
 
+- **Studio AI models can't rot anymore — defaults use OpenRouter's `~*-latest` alias (#610, closes #614).**
+  Pinned model ids die when OpenRouter retires/renames a model (a `404 "No endpoints found"`), which bit
+  us three times. Now: the connect-time/Studio **defaults are the server-resolved `~vendor/family-latest`
+  aliases** (`~anthropic/claude-sonnet-latest` / `~anthropic/claude-haiku-latest`), so they always track the
+  current version and never 404. The curated model picker lists are **family prefixes** (`anthropic/claude-sonnet`)
+  matched against the live catalog, not pinned ids — a version bump stays featured and a retired id can't strand
+  a lens. The `/models` catalog is **TTL-cached in localStorage** (24h, served stale on fetch failure), and a
+  chat call that fails with the dead-model signature **self-heals** — retries once with the alias and refreshes
+  the catalog. A unit test guards that every curated family still resolves. See
+  `engineering/decisions/2026-06-29-studio-model-liveness.md`.
+
 - **Studio AI's default model no longer 404s (#610).** The Studio's connect-time default was
   `anthropic/claude-3.5-haiku`, a slug OpenRouter no longer serves (`No endpoints found`) — so a
   fresh user's first AI action failed. It now defaults to `anthropic/claude-haiku-4.5` (current

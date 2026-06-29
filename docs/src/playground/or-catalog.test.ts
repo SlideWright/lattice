@@ -11,6 +11,7 @@ import {
 	isFreeModel,
 	metaLabel,
 	OR_FEATURED,
+	OR_VALUE,
 	OR_VIEWS,
 	priceLabel,
 	rowTitle,
@@ -118,5 +119,32 @@ describe('or-catalog — filter + group', () => {
 		expect(emptyMessage('all')).toBe('No models match.');
 		expect(emptyMessage('free')).toContain('No free models');
 		expect(emptyMessage('value')).toContain('try All');
+	});
+});
+
+// A snapshot of live OpenRouter ids — the curated FAMILIES must each still match at
+// least one. Guards against a curated prefix rotting to zero matches when a model is
+// retired/renamed (the failure mode behind #614: dead pinned `claude-3.5-*` ids).
+const LIVE_IDS = [
+	'anthropic/claude-sonnet-4', 'anthropic/claude-sonnet-4.5', 'anthropic/claude-sonnet-4.6',
+	'anthropic/claude-opus-4', 'anthropic/claude-haiku-4.5', 'anthropic/claude-3-haiku',
+	'openai/gpt-5', 'openai/gpt-5-mini', 'openai/gpt-4o', 'openai/gpt-4o-mini',
+	'google/gemini-2.5-pro', 'google/gemini-2.5-flash',
+	'deepseek/deepseek-r1', 'deepseek/deepseek-chat',
+	'meta-llama/llama-3.3-70b-instruct', 'qwen/qwen-2.5-72b-instruct', 'qwen/qwq',
+];
+
+describe('or-catalog — curated families resolve (rot guard, #614)', () => {
+	it('every curated prefix matches at least one live model id', () => {
+		for (const prefix of [...OR_FEATURED, ...OR_VALUE]) {
+			const hit = LIVE_IDS.some((id) => inSet([prefix], id));
+			expect(hit, `curated "${prefix}" matched no live model — did a family get retired/renamed?`).toBe(true);
+		}
+	});
+
+	it('the curated lists carry no dead pinned 3.5 ids (the #614 regression)', () => {
+		for (const id of [...OR_FEATURED, ...OR_VALUE]) {
+			expect(id).not.toMatch(/claude-3\.5-/);
+		}
 	});
 });

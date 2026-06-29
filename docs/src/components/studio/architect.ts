@@ -103,11 +103,13 @@ export function architectModel(): Promise<ArchitectModel | null> {
 		modelPromise = import('@/playground/architect-model.js')
 			// explicitTierWins: a deliberate on-device pick outranks the connected cloud
 			// (Studio Policy B — connection ≠ active; one tap resumes the cloud).
-			// defaultModel: a cheap, capable Haiku for iteration — the user upgrades to a
-			// stronger (pricier) model deliberately. defaultMaxTokens: a 4096-token output
-			// ceiling so a runaway reply can't blow the budget. Both Studio-scoped (the
-			// Drawing Board keeps its own default + stays uncapped), so no shared blast radius.
-			.then((m) => m.createArchitectModel({ getSettings: () => ({}), explicitTierWins: true, defaultModel: 'anthropic/claude-haiku-4.5', defaultMaxTokens: 4096 }) as ArchitectModel)
+			// defaultModel: the cheap Haiku family's `~*-latest` ALIAS — OpenRouter resolves
+			// it to the current version server-side, so it can't rot when a model is retired
+			// (a pinned id 404s "No endpoints found"). The user upgrades deliberately.
+			// defaultMaxTokens: a 4096-token output ceiling so a runaway reply can't blow the
+			// budget. Both Studio-scoped (the Drawing Board keeps its own default + stays
+			// uncapped), so no shared blast radius.
+			.then((m) => m.createArchitectModel({ getSettings: () => ({}), explicitTierWins: true, defaultModel: '~anthropic/claude-haiku-latest', defaultMaxTokens: 4096 }) as ArchitectModel)
 			.catch(() => null);
 	}
 	return modelPromise;
