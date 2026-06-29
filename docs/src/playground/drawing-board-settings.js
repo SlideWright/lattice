@@ -90,6 +90,7 @@ export const readBudgetMode = () => { try { return localStorage.getItem(BUDGET_M
 // returns the worst severity: the optional self-cap (this session's app spend) and
 // the OpenRouter credit ceiling (low when ≤20% of a known limit, or ≤ the floor).
 // `level`: 'ok' | 'warn' | 'over'; `blocked` is true only when over AND mode==='stop'.
+/** @param {{ sessionSpend?: number, cap?: number, mode?: string, account?: ({ remaining?: number|null, limit?: number|null }|null), floor?: number }} [o] */
 export function budgetStatus({ sessionSpend = 0, cap = 0, mode = 'alert', account = null, floor = 0 } = {}) {
   let level = 'ok';
   const reasons = [];

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { applyDeckEdit, architectSpend, normalizeGeneration, refineSelection, requestFindingFix, runArchitect, setBudget } from './architect';
+import { applyDeckEdit, architectSpend, estimateUsd, normalizeGeneration, refineSelection, requestFindingFix, runArchitect, setBudget } from './architect';
 import { suggestFor } from './Editor';
 
 afterEach(() => {
@@ -21,6 +21,26 @@ describe('normalizeGeneration — the transformers→universal bridge', () => {
 		for (const g of ['floor', 'openrouter', 'webllm', 'prompt-api', 'universal']) {
 			expect(normalizeGeneration(g)).toBe(g);
 		}
+	});
+});
+
+// The pre-send cost estimate: prompt tokens (~4 chars/token) × in-price + a fixed
+// output ceiling × out-price. Powers the "≈ $X" hint + the hard-stop-on-estimate gate.
+describe('estimateUsd — pre-send cost estimate', () => {
+	const price = { promptPerM: 3, completionPerM: 15 }; // Claude Sonnet 4, $/M
+	it('estimates input + a bounded output cost from per-million pricing', () => {
+		// 400 chars ≈ 100 prompt tokens → 100/1e6*3 = $0.0003; output 1000 tok → 1000/1e6*15 = $0.015.
+		const est = estimateUsd('x'.repeat(400), price, 1000);
+		expect(est).toBeCloseTo(0.0003 + 0.015, 6);
+	});
+	it('returns null when the price is unknown (catalog not loaded) — the gate then skips', () => {
+		expect(estimateUsd('hello', null)).toBeNull();
+		expect(estimateUsd('hello', { promptPerM: null, completionPerM: null })).toBeNull();
+	});
+	it('scales with prompt length and the output ceiling', () => {
+		const small = estimateUsd('x'.repeat(40), price, 500) ?? 0;
+		const big = estimateUsd('x'.repeat(4000), price, 4096) ?? 0;
+		expect(big).toBeGreaterThan(small);
 	});
 });
 

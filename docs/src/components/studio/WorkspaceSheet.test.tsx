@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { ArchitectStatus } from './architect';
 import { WorkspaceSheet } from './WorkspaceSheet';
 
 // G6 — the Workspace AI-model + Spend tabs against a CONNECTED (mocked) OpenRouter
@@ -14,7 +15,7 @@ const CATALOG = [
 	{ id: 'google/gemma-free', name: 'Google: Gemma (free)', promptPerM: 0, completionPerM: 0, contextLength: 262_000, maxOutput: null, vision: true },
 ];
 
-const connectedStatus = {
+const connectedStatus: ArchitectStatus = {
 	ready: true,
 	generation: 'openrouter',
 	modelName: 'Claude Sonnet 4',
@@ -22,6 +23,11 @@ const connectedStatus = {
 	remaining: 3.5,
 	usage: 0.5,
 	limit: 4,
+	usageMonthly: 0.5,
+	limitReset: 'monthly',
+	wallet: { credits: 10, usage: 1.93, balance: 8.07 },
+	price: { promptPerM: 3, completionPerM: 15 },
+	keySettingsUrl: 'https://openrouter.ai/settings/keys',
 	promptApi: 'unavailable',
 	webgpu: false,
 	webllmReady: false,
@@ -146,16 +152,33 @@ describe('WorkspaceSheet — G6 on-device tier', () => {
 	});
 });
 
-describe('WorkspaceSheet — G6 authoritative spend', () => {
-	it('shows the real account total + live session tally, no fake all-time', async () => {
+describe('WorkspaceSheet — spend (layered budget)', () => {
+	it('shows the four labeled layers: wallet balance, this key, this session, your cap', async () => {
 		const { user, sheet } = openSheet();
 		await user.click(sheet.getByRole('tab', { name: 'Spend' }));
-		// Authoritative account line from openRouterAccount(): $3.50 left · $0.500
-		// used (sub-dollar amounts render at 3dp).
-		expect(await sheet.findByText(/OpenRouter: \$3\.50 left · \$0\.500 used/)).toBeInTheDocument();
-		// The honest live session tally (with tokens), not a $0 local all-time.
-		const session = sheet.getByText(/This session:/);
-		expect(session).toHaveTextContent('$0.032');
-		expect(session).toHaveTextContent('9.8K tokens');
+		// 1 · Wallet — the real /credits balance as the hero (8.07 = 10 − 1.93).
+		expect(await sheet.findByText('Wallet · OpenRouter')).toBeInTheDocument();
+		expect(sheet.getByText('$8.07')).toBeInTheDocument();
+		expect(sheet.getByText(/left of \$10\.00/)).toBeInTheDocument();
+		// 2 · This key — the per-key limit (server-enforced) with remaining.
+		expect(sheet.getByText('This key · Lattice Studio')).toBeInTheDocument();
+		expect(sheet.getByText(/\$3\.50 left/)).toBeInTheDocument();
+		expect(sheet.getByText(/resets monthly/)).toBeInTheDocument();
+		// 3 · This session — the live local tally + tokens.
+		expect(sheet.getByText('This session')).toBeInTheDocument();
+		expect(sheet.getByText('$0.032')).toBeInTheDocument();
+		expect(sheet.getByText(/9\.8K tokens/)).toBeInTheDocument();
+		// 4 · Your cap — the client defense-in-depth control.
+		expect(sheet.getByText('Your cap')).toBeInTheDocument();
+		// Active model price is shown (no silent billing).
+		expect(sheet.getByText(/\$3\.00\/M in · \$15\.00\/M out/)).toBeInTheDocument();
+	});
+
+	it('with no per-key limit, links to the OpenRouter dashboard to set a hard cap', async () => {
+		statusSpy.mockReturnValue({ ...connectedStatus, limit: null, remaining: null });
+		const { user, sheet } = openSheet();
+		await user.click(sheet.getByRole('tab', { name: 'Spend' }));
+		const link = await sheet.findByRole('link', { name: /Set a hard cap/ });
+		expect(link).toHaveAttribute('href', 'https://openrouter.ai/settings/keys');
 	});
 });

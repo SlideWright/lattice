@@ -164,9 +164,9 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		// session tally ($0.00) plus a prompt to connect for the balance. (The old broken
 		// local "all-time $0.00" card is gone — that was the bug G6 fixed.)
 		await user.click(sheet.getByRole('tab', { name: 'Spend' }));
-		const sessionLine = await sheet.findByText(/This session:/);
-		expect(sessionLine).toHaveTextContent('$0.00');
-		expect(sheet.getByText(/Connect OpenRouter to see your authoritative account balance/)).toBeInTheDocument();
+		expect(await sheet.findByText(/No model connected/)).toBeInTheDocument();
+		expect(sheet.getByText('This session')).toBeInTheDocument();
+		expect(sheet.getByText(/Connect OpenRouter .* to see your real balance/)).toBeInTheDocument();
 		// Instructions tab — the textarea persists to localStorage.
 		await user.click(sheet.getByRole('tab', { name: 'Instructions' }));
 		const ta = await sheet.findByRole('textbox', { name: 'Standing instructions' });
