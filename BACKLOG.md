@@ -7,11 +7,11 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **44 open** items.
+only *status*. **45 open** items.
 
-> ⚠️ **6 cards need triage** (missing `area:`/`type:`/`priority:`): [#554](https://github.com/SlideWright/lattice/issues/554), [#581](https://github.com/SlideWright/lattice/issues/581), [#582](https://github.com/SlideWright/lattice/issues/582), [#587](https://github.com/SlideWright/lattice/issues/587), [#588](https://github.com/SlideWright/lattice/issues/588), [#610](https://github.com/SlideWright/lattice/issues/610).
+> ⚠️ **7 cards need triage** (missing `area:`/`type:`/`priority:`): [#554](https://github.com/SlideWright/lattice/issues/554), [#581](https://github.com/SlideWright/lattice/issues/581), [#582](https://github.com/SlideWright/lattice/issues/582), [#587](https://github.com/SlideWright/lattice/issues/587), [#588](https://github.com/SlideWright/lattice/issues/588), [#610](https://github.com/SlideWright/lattice/issues/610), [#614](https://github.com/SlideWright/lattice/issues/614).
 
-## Backlog (40)
+## Backlog (41)
 
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
 - [#506](https://github.com/SlideWright/lattice/issues/506) feat(runtime): runtime auto-split (Option B) via eventual consistency — high · engine
@@ -53,6 +53,7 @@ only *status*. **44 open** items.
 - [#587](https://github.com/SlideWright/lattice/issues/587) redline: migrate into the .cell-stage cell-tree (the one standard component left on direct-child bodies) — comparison
 - [#588](https://github.com/SlideWright/lattice/issues/588) check-ownership: extend the hex-literal gate (HARD RULE #3) to shipped component CSS — infra
 - [#610](https://github.com/SlideWright/lattice/issues/610) Studio AI track (G6 → G7): model backbone, theme/component chat, voice — key-gated, budget-guarded
+- [#614](https://github.com/SlideWright/lattice/issues/614) Studio model catalog has dead OpenRouter ids (claude-3.5-sonnet, claude-3.5-haiku)
 
 ## Ready (4)
 
