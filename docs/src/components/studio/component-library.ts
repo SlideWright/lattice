@@ -29,8 +29,10 @@ function toStudioComponent(a: ComponentAssetRecord): StudioComponent {
  * in place (asset-store keys on kind+name). Throws if the name isn't a valid slug
  * (componentAsset enforces it) or the store is unavailable.
  */
-export async function saveStudioComponent(input: { name: string; css: string; skeleton: string; bucket?: string }): Promise<StudioComponent> {
-	const manifest = input.bucket ? { name: input.name, bucket: input.bucket } : { name: input.name };
+export async function saveStudioComponent(input: { name: string; css: string; skeleton: string; bucket?: string; description?: string }): Promise<StudioComponent> {
+	const manifest: { name: string; bucket?: string; description?: string } = { name: input.name };
+	if (input.bucket) manifest.bucket = input.bucket;
+	if (input.description?.trim()) manifest.description = input.description.trim();
 	const asset = componentAsset({ name: input.name, css: input.css, skeleton: input.skeleton, manifest });
 	const stored = (await putAsset(asset)) as ComponentAssetRecord;
 	return toStudioComponent(stored);

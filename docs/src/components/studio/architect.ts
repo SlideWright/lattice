@@ -220,6 +220,8 @@ export type ThemeGenOutcome =
 			tokens: Record<string, string>;
 			audit: ThemeAudit;
 			applied: string[];
+			name: string; // model-suggested slug (editable; '' when none)
+			description: string; // model-suggested caption (editable; '' when none)
 	  }
 	| { status: 'offline' }
 	| { status: 'blocked'; note: string }
@@ -258,13 +260,13 @@ export async function generateTheme(current: ThemeEssentials, prompt: string): P
 	} catch {
 		return { status: 'offline' };
 	}
-	const { essentials, rampStrategy, applied, ok } = coerceEssentials(reply, fallback);
+	const { essentials, rampStrategy, name, description, applied, ok } = coerceEssentials(reply, fallback);
 	// A connected model that proposed nothing usable (e.g. the json:true floor
 	// echoing the fallback) → no-op, never a fabricated change.
 	if (!ok && applied.length === 0) return { status: 'nochange', note: 'The model returned no usable palette.' };
 	const tokens = deriveTheme(essentials, { rampStrategy }) as Record<string, string>;
 	const audit = auditBoth(tokens) as ThemeAudit;
-	return { status: 'ok', essentials, rampStrategy, tokens, audit, applied };
+	return { status: 'ok', essentials, rampStrategy, tokens, audit, applied, name, description };
 }
 
 // A deterministic lint finding (the shape lint-core's `lintTextWith` returns) — a

@@ -70,6 +70,20 @@ in patch versions.
 
 ### Added
 
+- **Studio — one unified Theme + Component designer, with first-class names (#610).** The
+  Fabricate Theme and Component tabs now share ONE header and ONE Save/Export UX, so moving
+  between them is seamless instead of two private layouts. Naming is unified and made
+  first-class: a theme is named by a single author-owned **slug** in the header — exactly
+  like a component — retiring the old buried free-text label + hidden `slugify` "magic" the
+  author had to reason about (the human display title is just a titleized view of the slug).
+  A new **Description** disclosure (collapsed by default, on both tabs) captures a one-line
+  caption. When the AI generates a palette it now also **proposes an editable `name` +
+  `description`** (`lib/theme/ai.js` → `coerceEssentials`), seeded into those fields and
+  **stamped into the export** — the theme CSS header / README and the component manifest
+  `description`. Both tabs Export real drop-in files (a theme `<slug>.css`; a component's
+  manifest + styles + skeleton) and Save to the shared library. The model proposes; the
+  deterministic kernel still disposes (the slug is gate-validated, the palette AA-repaired).
+
 - **Theme Studio — AI delivers a full, AA-verified palette (#610).** The Theme Studio's
   "Describe a look" front door now returns a *finished, accessible* theme: the model
   proposes the 10 author-facing essentials **plus a named categorical-ramp strategy**

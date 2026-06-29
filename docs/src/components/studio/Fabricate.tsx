@@ -1,18 +1,23 @@
-import { ArrowUp, Check, ChevronDown, ChevronRight, Cloud, Download, LayoutGrid, Loader2, Moon, Palette, RotateCcw, Search, Sparkles, Sun, TriangleAlert, X } from 'lucide-react';
+import { ArrowUp, Check, ChevronDown, ChevronRight, Cloud, Download, LayoutGrid, Loader2, Moon, Palette, RotateCcw, Search, Sparkles, Sun, Text, TriangleAlert, X } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
+// The REAL layout gate — the deterministic core the engine uses for components
+// (lib/layout/*, bundled). The Component tab's Name/Save/Export now live in this
+// shared header, so Fabricate owns the gate run that the body renders.
+import { gateCss, NAME_RE, scaffoldFiles, skeletonInvokes } from '@/playground/layout-core.generated.js';
 // The REAL theme engine — same maths as the Node tooling + the WCAG gate
 // (lib/theme/*, bundled browser-safe). deriveTheme → ~80 tokens (contrast-
 // repaired), auditBoth → live WCAG report, serializeTheme → a real themes/*.css.
 import { auditBoth, contrastRatio, deriveTheme, STARTERS, serializeTheme, validateEssentials } from '@/playground/theme-core.generated.js';
 import { connectOpenRouter, generateTheme, useArchitectStatus } from './architect';
+import { saveStudioComponent } from './component-library';
 import { downloadText } from './download';
-import { LayoutStudio } from './LayoutStudio';
-import { saveStudioTheme, slugify } from './theme-library';
+import { type Finding, LayoutStudio, STARTER_CSS, STARTER_DESCRIPTION, STARTER_NAME, STARTER_SKELETON } from './LayoutStudio';
+import { saveStudioTheme } from './theme-library';
 import { useBreakpoint } from './use-breakpoint';
 
 // You pick ALL TEN essentials — the same set the engine derivation + the
@@ -35,6 +40,10 @@ const ESSENTIALS: { key: EssKey; label: string; group: string }[] = [
 const SPECIMEN = '<!-- _class: kpi -->\n\n`Theme · live specimen`\n\n## Your theme, derived & audited\n\n1. 100\n   - Tokens derived\n2. AA\n   - Contrast floor\n3. 10\n   - Colors you picked';
 
 const hash = (s: string) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
+// A slug → a human display title for the export header / README ("harbor-slate"
+// → "Harbor Slate"). Display only — the editable field is always the slug, so
+// there is no buried "magic" label the author has to reconcile (#57).
+const titleize = (slug: string) => slug.split('-').filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
 
 // The human-facing contract: the derived roles a theme author actually curates,
 // each a light-dark() pair. Editing a side PINS an override on top of the engine
@@ -150,8 +159,22 @@ export function Fabricate({ options, onClose, notify, onSaved, onOpenWorkspace }
 	const [tab, setTab] = React.useState<'theme' | 'layout'>('theme');
 	// All ten essentials in state, seeded from the first curated starter.
 	const [core, setCore] = React.useState<Record<EssKey, string>>(() => ({ ...(STARTERS[0].essentials as Record<EssKey, string>) }));
-	// No magic name up front — you name the theme, like the Component studio (#57).
-	const [label, setLabel] = React.useState('');
+	// First-class naming, IDENTICAL on both tabs (#57): the name IS a lowercase
+	// slug the author owns (the AI seeds it, you can edit it) — no buried label +
+	// slugify magic. `*Desc` is the one-line caption shown in the disclosure under
+	// the name; it is captured in the saved model and stamped into the export
+	// (theme CSS header / README, component manifest `description`).
+	const [themeName, setThemeName] = React.useState('');
+	const [themeDesc, setThemeDesc] = React.useState('');
+	// The Component tab is a CONTROLLED body now — its name / description / css /
+	// skeleton live here so the shared header drives the same Save + Export UX.
+	const [compName, setCompName] = React.useState(STARTER_NAME);
+	const [compDesc, setCompDesc] = React.useState(STARTER_DESCRIPTION);
+	const [compCss, setCompCss] = React.useState(STARTER_CSS);
+	const [compSkeleton, setCompSkeleton] = React.useState(STARTER_SKELETON);
+	// The description disclosure (chevron under the name) — collapsed by default on
+	// both tabs; opening reveals the one-line caption editor.
+	const [descOpen, setDescOpen] = React.useState(false);
 	const [specimenMode, setSpecimenMode] = React.useState<'light' | 'dark'>('light');
 	const [saving, setSaving] = React.useState(false);
 	// Per-side overrides pinned on top of the derivation (#48/#49).
@@ -181,7 +204,9 @@ export function Fabricate({ options, onClose, notify, onSaved, onOpenWorkspace }
 	const clearOverride = (token: string) => setOverrides((o) => { const n = { ...o }; delete n[token]; return n; });
 
 	// Derive the full token map from the ten picked essentials, then layer any
-	// per-side contract overrides — REAL, every render.
+	// per-side contract overrides — REAL, every render. The live specimen uses a
+	// STABLE content-hash name (so it doesn't churn while you type a name); export
+	// + save re-serialize under the final slug.
 	const derived = React.useMemo(() => {
 		const essentials = { ...core };
 		try {
@@ -189,12 +214,25 @@ export function Fabricate({ options, onClose, notify, onSaved, onOpenWorkspace }
 			const map = applyOverrides(deriveTheme(essentials, { rampStrategy }), overrides);
 			const audit = auditBoth(map, { level: 'full' });
 			const name = `fab-${hash(JSON.stringify({ essentials, overrides, rampStrategy }))}`;
-			const css = serializeTheme(map, { name, label });
+			const css = serializeTheme(map, { name, label: themeName ? titleize(themeName) : 'Untitled theme', description: themeDesc });
 			return { map, audit, name, css, error: null as string | null };
 		} catch (e) {
 			return { map: {} as Record<string, unknown>, audit: { light: { results: [] }, dark: { results: [] }, ok: false }, name: 'indaco', css: '', error: String((e as Error)?.message || e) };
 		}
-	}, [core, overrides, label, rampStrategy]);
+	}, [core, overrides, themeName, themeDesc, rampStrategy]);
+
+	// The Component tab's live gate — the SAME bundled gate the body used to run
+	// internally, lifted here so the shared header's Save button and the body's
+	// findings panel agree. Name → CSS (no-hex + scope) → skeleton-invokes.
+	const compNameOk = NAME_RE.test(compName);
+	const compFindings = React.useMemo<Finding[]>(() => {
+		if (!compNameOk) return [{ level: 'error', rule: 'name', message: 'Component name must be a lowercase slug — a–z, 0–9, hyphen, starting with a letter.' }];
+		const out: Finding[] = [];
+		for (const f of gateCss(compCss, compName).findings as Finding[]) out.push(f);
+		if (!skeletonInvokes(compSkeleton, compName)) out.push({ level: 'error', rule: 'skeleton', message: `Skeleton must invoke <!-- _class: ${compName} --> so the preview applies your styles.` });
+		return out;
+	}, [compName, compCss, compSkeleton, compNameOk]);
+	const compOk = compFindings.every((f) => f.level !== 'error');
 
 	// Curated WCAG rows: one per role, worst ratio across modes.
 	const auditRows = React.useMemo(() => {
@@ -223,6 +261,11 @@ export function Fabricate({ options, onClose, notify, onSaved, onOpenWorkspace }
 				setRampStrategy(out.rampStrategy);
 				setOverrides({});
 				setPrompt('');
+				// The AI suggests a name + caption — seed them so export/README have a
+				// real title, but only when the author hasn't typed their own (a refine
+				// like "warmer" keeps the palette's identity). Always editable.
+				if (out.name && !themeName.trim()) setThemeName(out.name);
+				if (out.description && !themeDesc.trim()) setThemeDesc(out.description);
 				notify(out.audit.ok ? 'Generated a full palette — every pair passes AA. Tweaking is optional.' : 'Generated a palette — a couple of pairs need review (flagged in the audit).');
 			} else if (out.status === 'offline') {
 				notify('No model connected — open Workspace to connect OpenRouter or load an on-device model.');
@@ -238,19 +281,56 @@ export function Fabricate({ options, onClose, notify, onSaved, onOpenWorkspace }
 		}
 	}
 
-	const fileSlug = slugify(label) || derived.name;
+	// ── Shared, tab-agnostic Name / Description / Export / Save ────────────────
+	const themeNameOk = NAME_RE.test(themeName);
+	// The slug a theme export/save lands under — the named slug when valid, else
+	// the stable content-hash (so an unnamed Export still produces a real file).
+	const themeSlug = themeNameOk ? themeName : derived.name;
+
+	// Whichever tab is active drives the one Name field + Description disclosure.
+	const name = tab === 'theme' ? themeName : compName;
+	const setName = tab === 'theme' ? setThemeName : setCompName;
+	const nameOk = tab === 'theme' ? themeNameOk : compNameOk;
+	const desc = tab === 'theme' ? themeDesc : compDesc;
+	const setDesc = tab === 'theme' ? setThemeDesc : setCompDesc;
+	const namePlaceholder = tab === 'theme' ? 'name-your-theme' : 'name-your-component';
+	const descPlaceholder = tab === 'theme'
+		? 'Describe this theme — one line, stamped into the export header & README.'
+		: 'Describe this component — one line, saved to its manifest.';
+
+	// Export: a theme → one real `themes/<slug>.css`; a component → the three
+	// engine files a graduation PR drops into `lib/components/…` (same shape the
+	// engine uses), so both tabs "hand off real, drop-in files".
+	const canExport = tab === 'theme' ? !!derived.css : compNameOk;
+	function exportArtifact() {
+		if (tab === 'theme') {
+			const css = serializeTheme(derived.map, { name: themeSlug, label: titleize(themeSlug), description: themeDesc });
+			downloadText(`${themeSlug}.css`, css || '/* theme */', 'text/css');
+			notify(`Exported ${themeSlug}.css — a real theme token set.`);
+			return;
+		}
+		const manifest = { name: compName, ...(compDesc.trim() ? { description: compDesc.trim() } : {}) };
+		const files = scaffoldFiles({ name: compName, css: compCss, skeleton: compSkeleton, manifest }) as Record<string, string>;
+		for (const [fname, text] of Object.entries(files)) downloadText(fname, text, fname.endsWith('.json') ? 'application/json' : fname.endsWith('.css') ? 'text/css' : 'text/markdown');
+		notify(`Exported ${compName} — manifest, styles & skeleton (drop into lib/components/).`);
+	}
+
+	const canSave = !saving && (tab === 'theme' ? themeNameOk && !!derived.css : compOk && compNameOk);
 	async function saveToLibrary() {
-		if (saving || !derived.css) return;
+		if (!canSave) return;
 		setSaving(true);
 		try {
-			// Re-serialize under the FINAL library slug so the CSS's `@theme <name>`
-			// matches the stored record name (the live specimen uses a stable content-
-			// hash name to avoid churn while you type).
-			const finalLabel = label.trim() || 'Untitled theme';
-			const name = slugify(finalLabel) || derived.name;
-			const css = serializeTheme(derived.map, { name, label: finalLabel });
-			const t = await saveStudioTheme({ name, label: finalLabel, essentials: core, css });
-			notify(`Saved “${t.label}” to your theme library — pick it from Look.`);
+			if (tab === 'theme') {
+				// Re-serialize under the FINAL slug so the CSS's `@theme <name>` matches
+				// the stored record name (the live specimen uses a stable content-hash
+				// name to avoid churn while you type).
+				const css = serializeTheme(derived.map, { name: themeName, label: titleize(themeName), description: themeDesc });
+				const t = await saveStudioTheme({ name: themeName, label: titleize(themeName), essentials: core, css });
+				notify(`Saved “${t.label}” to your theme library — pick it from Look.`);
+			} else {
+				const c = await saveStudioComponent({ name: compName, css: compCss, skeleton: compSkeleton, description: compDesc });
+				notify(`Saved “.${c.name}” to your component library.`);
+			}
 			onSaved?.();
 		} catch {
 			notify('Could not save — your browser may block storage (private mode?).');
@@ -273,29 +353,35 @@ export function Fabricate({ options, onClose, notify, onSaved, onOpenWorkspace }
 
 	return (
 		<div className="flex min-h-0 flex-1 flex-col">
+			{/* ONE header, IDENTICAL on both tabs (#57): back · accent dot · first-class
+			    Name (a slug the AI seeds, you own) · Description disclosure · the
+			    Theme|Component toggle · the SAME Export + Save UX. */}
 			<div className="flex h-[50px] shrink-0 items-center gap-2 border-b border-border bg-card px-3 sm:gap-3 sm:px-4">
 				<button type="button" onClick={onClose} className="shrink-0 rounded-md p-1 text-muted-foreground hover:text-foreground" aria-label="Back to Compose"><X className="size-4" /></button>
 				<span className="size-2 shrink-0 rounded-full" style={{ background: accent }} />
-				{tab === 'theme' ? (
-					<>
-						<input value={label} onChange={(e) => setLabel(e.target.value)} aria-label="Theme name" placeholder="Name your theme" spellCheck={false} className="min-w-0 max-w-[180px] flex-shrink rounded-md border border-transparent bg-transparent px-1 py-0.5 text-sm font-semibold text-[var(--text-heading)] outline-none placeholder:font-normal placeholder:text-muted-foreground hover:border-border focus:border-[var(--accent)]" />
-						<span className="hidden font-mono text-[11px] text-muted-foreground sm:inline">draft theme</span>
-					</>
-				) : (
-					<span className="truncate text-sm font-semibold text-[var(--text-heading)]">Component Studio</span>
-				)}
-				<div className="ml-1 inline-flex shrink-0 rounded-[10px] border border-border bg-background p-[3px] sm:ml-3">
-					<button type="button" onClick={() => setTab('theme')} aria-pressed={tab === 'theme'} className={cn('inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[13px] font-semibold sm:px-3', tab === 'theme' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Palette className="size-3.5" />Theme</button>
-					<button type="button" onClick={() => setTab('layout')} aria-pressed={tab === 'layout'} className={cn('inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[13px] font-semibold sm:px-3', tab === 'layout' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><LayoutGrid className="size-3.5" />Component</button>
+				<div className={cn('flex min-w-0 max-w-[200px] flex-shrink items-center rounded-md border bg-transparent px-1.5 py-0.5 focus-within:border-[var(--accent)]', name && !nameOk ? 'border-[color-mix(in_srgb,var(--fail)_55%,var(--border))]' : 'border-transparent hover:border-border')}>
+					{tab === 'layout' && <span className="shrink-0 font-mono text-[13px] text-muted-foreground">.</span>}
+					<input value={name} onChange={(e) => setName(e.target.value)} aria-label={tab === 'theme' ? 'Theme name' : 'Component name'} placeholder={namePlaceholder} spellCheck={false} className={cn('min-w-0 flex-1 bg-transparent text-sm font-semibold text-[var(--text-heading)] outline-none placeholder:font-normal placeholder:text-muted-foreground', tab === 'layout' && 'font-mono text-[13px]')} />
+				</div>
+				<button type="button" onClick={() => setDescOpen((v) => !v)} aria-expanded={descOpen} aria-label="Description" title="Description — used in the export header / README" className={cn('inline-flex shrink-0 items-center gap-0.5 rounded-md px-1 py-1 hover:text-foreground', desc.trim() ? 'text-[var(--accent)]' : 'text-muted-foreground')}>
+					<Text className="size-3.5" /><ChevronDown className={cn('size-3 transition-transform', descOpen && 'rotate-180')} />
+				</button>
+				<div className="ml-1 inline-flex shrink-0 rounded-[10px] border border-border bg-background p-[3px] sm:ml-2">
+					<button type="button" onClick={() => setTab('theme')} aria-pressed={tab === 'theme'} aria-label="Theme" className={cn('inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] font-semibold sm:px-3', tab === 'theme' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Palette className="size-3.5" /><span className="hidden sm:inline">Theme</span></button>
+					<button type="button" onClick={() => setTab('layout')} aria-pressed={tab === 'layout'} aria-label="Component" className={cn('inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] font-semibold sm:px-3', tab === 'layout' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><LayoutGrid className="size-3.5" /><span className="hidden sm:inline">Component</span></button>
 				</div>
 				<div className="flex-1" />
-				{tab === 'theme' && (
-					<>
-						<Button variant="outline" size="sm" className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={() => { downloadText(`${fileSlug}.css`, derived.css || '/* theme */', 'text/css'); notify(`Exported ${fileSlug}.css — a real theme token set.`); }}><Download className="size-4" /><span className="hidden sm:inline">Export theme</span></Button>
-						<Button size="sm" disabled={saving || !derived.css || !label.trim()} className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={saveToLibrary}><Check className="size-4" /><span className="hidden sm:inline">{saving ? 'Saving…' : 'Save to library'}</span></Button>
-					</>
-				)}
+				<Button variant="outline" size="sm" disabled={!canExport} className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={exportArtifact}><Download className="size-4" /><span className="hidden sm:inline">Export</span></Button>
+				<Button size="sm" disabled={!canSave} className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={saveToLibrary}><Check className="size-4" /><span className="hidden sm:inline">{saving ? 'Saving…' : 'Save'}</span></Button>
 			</div>
+			{/* Description disclosure — collapsed by default on both tabs. AI-seeded for
+			    themes; captured in the saved model + stamped into the export. */}
+			{descOpen && (
+				<div className="flex shrink-0 items-center gap-2 border-b border-border bg-card px-4 py-2">
+					<Text className="size-3.5 shrink-0 text-muted-foreground" />
+					<input value={desc} onChange={(e) => setDesc(e.target.value)} aria-label={tab === 'theme' ? 'Theme description' : 'Component description'} placeholder={descPlaceholder} spellCheck className="min-w-0 flex-1 bg-transparent text-[13px] text-[var(--text-heading)] outline-none placeholder:text-muted-foreground" />
+				</div>
+			)}
 
 			{tab === 'theme' ? (
 			<div className="flex min-h-0 flex-1 flex-col">
@@ -454,7 +540,7 @@ export function Fabricate({ options, onClose, notify, onSaved, onOpenWorkspace }
 				</div>
 			</div>
 			) : (
-				<LayoutStudio options={options} notify={notify} onSaved={onSaved} />
+				<LayoutStudio options={options} name={compName} css={compCss} skeleton={compSkeleton} onCss={setCompCss} onSkeleton={setCompSkeleton} findings={compFindings} nameOk={compNameOk} />
 			)}
 		</div>
 	);

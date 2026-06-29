@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import StudioShell from './StudioShell';
@@ -188,14 +188,28 @@ describe('Studio — Fabricate + Present dock respond', () => {
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
 		await user.click(await screen.findByText('Fabricate'));
 		expect(await screen.findByPlaceholderText(/Describe a look/i)).toBeInTheDocument();
-		// Export theme (theme tab) confirms via toast.
-		await user.click(screen.getByRole('button', { name: /Export theme/ }));
+		// The shared header Export (theme tab) confirms via toast.
+		await user.click(screen.getByRole('button', { name: /Export/ }));
 		expect(await screen.findByText(/Exported/)).toBeInTheDocument();
-		// Switch to the Component tab — the REAL component studio appears (name + live
-		// gate), the theme studio leaves.
+		// Switch to the Component tab — the REAL component studio appears (the shared
+		// header now reads the component Name + the live gate), the theme studio leaves.
 		await user.click(screen.getByRole('button', { name: /Component/ }));
 		expect(await screen.findByLabelText('Component name')).toBeInTheDocument();
 		expect(screen.queryByPlaceholderText(/Describe a look/i)).not.toBeInTheDocument();
+	});
+
+	it('Component tab: the shared header Save + Export ride the real gate', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
+		await user.click(await screen.findByText('Fabricate'));
+		await user.click(screen.getByRole('button', { name: /Component/ }));
+		// The starter is gate-clean → the SAME header Save the theme tab uses is enabled.
+		expect(await screen.findByText(/Gate — all clear/)).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+		// A hex literal trips the real layout gate → finding shows + Save disables.
+		fireEvent.change(screen.getByLabelText('Component CSS'), { target: { value: 'section.callout { color: #ff0000; }' } });
+		expect(await screen.findByText(/use a palette token/i)).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
 	});
 
 	it('Fabricate derives a REAL token contract + WCAG audit from the engine', async () => {

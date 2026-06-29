@@ -95,6 +95,31 @@ describe('theme-ai', () => {
     for (const s of RAMP_STRATEGIES) assert.match(sys, new RegExp(`"${s}"`));
   });
 
+  test('askMessages requests an editable name + description for the export header', () => {
+    const sys = askMessages(FALLBACK, 'warm editorial').at(0).content;
+    assert.match(sys, /"name"/, 'output contract should request a name');
+    assert.match(sys, /"description"/, 'output contract should request a description');
+  });
+
+  test('coerceEssentials slugifies the name + cleans the description (advisory metadata)', () => {
+    const r = coerceEssentials({ ...STARTERS[1].essentials, name: 'Harbor Slate!', description: '  A calm, cool palette\nfor finance decks.  ' }, FALLBACK);
+    assert.equal(r.name, 'harbor-slate', 'name is a valid engine slug');
+    assert.equal(r.description, 'A calm, cool palette for finance decks.', 'description collapses whitespace');
+    assert.ok(r.ok, 'name/description never block ok');
+  });
+
+  test('coerceEssentials accepts aliased name/description keys and degrades to empty', () => {
+    const aliased = coerceEssentials({ ...STARTERS[1].essentials, title: 'Ember Dusk', caption: 'Warm and editorial.' }, FALLBACK);
+    assert.equal(aliased.name, 'ember-dusk');
+    assert.equal(aliased.description, 'Warm and editorial.');
+    // absent → empty strings (the UI falls back to its own derived name)
+    const bare = coerceEssentials(STARTERS[1].essentials, FALLBACK);
+    assert.equal(bare.name, '');
+    assert.equal(bare.description, '');
+    // an unusable name (all punctuation / leading digits) slugs to ''
+    assert.equal(coerceEssentials({ ...STARTERS[1].essentials, name: '123 !!!' }, FALLBACK).name, '');
+  });
+
   test('coerceEssentials surfaces a normalized rampStrategy (advisory, never blocks ok)', () => {
     const clean = coerceEssentials({ ...STARTERS[1].essentials, rampStrategy: 'triad' }, FALLBACK);
     assert.equal(clean.rampStrategy, 'triad');

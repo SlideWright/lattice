@@ -130,12 +130,13 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 		const user = userEvent.setup();
 		render(<StudioShell options={options} />);
 		await openFabricate(user);
-		// No pre-filled name, and Save is disabled until you name it (#57).
+		// No pre-filled name, and Save is disabled until you name it — the name is a
+		// first-class slug, IDENTICAL to the component tab (#57).
 		const nameInput = screen.getByLabelText('Theme name') as HTMLInputElement;
 		expect(nameInput.value).toBe('');
-		expect(screen.getByRole('button', { name: /Save to library/ })).toBeDisabled();
-		await user.type(nameInput, 'Harbor');
-		expect(screen.getByRole('button', { name: /Save to library/ })).toBeEnabled();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+		await user.type(nameInput, 'harbor');
+		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
 	});
 
 	it('saves a named theme to the library, then lets you pick it for the deck', async () => {
@@ -147,11 +148,12 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 		// set + a serialized CSS (proof it's the engine derivation, not a stub).
 		const nameInput = screen.getByLabelText('Theme name') as HTMLInputElement;
 		await user.clear(nameInput);
-		await user.type(nameInput, 'Ocean');
-		await user.click(screen.getByRole('button', { name: /Save to library/ }));
+		await user.type(nameInput, 'ocean');
+		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		await waitFor(() => expect(saveStudioTheme).toHaveBeenCalled());
 		const arg = (saveStudioTheme as unknown as { mock: { calls: unknown[][] } }).mock.calls[0][0] as { name: string; label: string; essentials: Record<string, string>; css: string };
+		// The slug IS the name; the human display label is a titleized view of it.
 		expect(arg.label).toBe('Ocean');
 		expect(arg.name).toBe('ocean');
 		expect(Object.keys(arg.essentials).sort()).toEqual(['accent', 'accentSoft', 'bg', 'bgAlt', 'fail', 'pass', 'textBody', 'textHeading', 'textMuted', 'warn']);
@@ -179,8 +181,8 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 		await openFabricate(user);
 		const nameInput = screen.getByLabelText('Theme name') as HTMLInputElement;
 		await user.clear(nameInput);
-		await user.type(nameInput, 'Ocean');
-		await user.click(screen.getByRole('button', { name: /Save to library/ }));
+		await user.type(nameInput, 'ocean');
+		await user.click(screen.getByRole('button', { name: 'Save' }));
 		await waitFor(() => expect(saveStudioTheme).toHaveBeenCalled());
 
 		await user.click(screen.getByRole('button', { name: 'Back to Compose' }));

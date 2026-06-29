@@ -765,6 +765,8 @@ var require_ai = __commonJS({
     var THEME_CANON = "HOW LATTICE THEMES WORK (so you choose well):\n\u2022 Your 10 colours are ESSENTIALS. The engine derives ~70 more from them in OKLCH and repairs every pair to WCAG AA in BOTH light and dark canvases \u2014 you never hand-author the rest. Pick essentials that derive cleanly.\n\u2022 Categorical data-viz fills come in two lightness tiers: 12 PALE fills (L\u22480.9, gentle tint) and 12 DEEP marks (L\u22480.45, saturated), both keyed off the accent HUE. So the accent should be saturated and distinctly hued.\n\u2022 A dark canvas band is derived from the accent hue at low lightness; ink is lifted to stay readable. Choose a textBody that lightens gracefully.\n\u2022 Worked example (indaco): bg #f7f8fb, bgAlt #eef1f6, textHeading #0f1b2d, textBody #243244, textMuted #6b7787, accent #1f5fb0, accentSoft #e6eefb, pass #1f7a4d, warn #b26a00, fail #c0392b.\n";
     var ASK_SYSTEM2 = 'You are a palette designer for the Lattice slide engine. You will be given the CURRENT palette (as JSON) and a request. If the request describes a new look, return a complete new palette; if it asks for a change (e.g. "cooler", "more contrast", "navy accent"), adjust the current palette accordingly.\n\n' + THEME_CANON + '\nOutput ONLY a compact JSON object \u2014 no prose, no markdown \u2014 with EXACTLY these keys. The first ten are 6-digit hex colours (e.g. "#1a2b3c"):\n' + ESSENTIAL_KEYS2.map((k) => `  "${k}": ${KEY_DESCRIPTIONS[k]}`).join("\n") + `
   "rampStrategy": the categorical/chart hue layout \u2014 one of ${RAMP_STRATEGIES.map((s) => `"${s}"`).join(", ")}. Pick the one that fits the brief: "spectrum" broad & distinct, "analogous" calm & cohesive, "triad" balanced & lively, "complementary" high-contrast pairs, "brand-mono" restrained single-hue.
+  "name": a short lowercase slug naming THIS palette (a\u2013z, 0\u20139, hyphens; start with a letter), evocative of the look \u2014 e.g. "harbor-slate", "terracotta-warm". Not a generic word like "theme" or "palette".
+  "description": ONE plain sentence describing the palette's character and best use \u2014 it becomes the theme's caption in the export header and README.
 Rules: bg and bgAlt must be light (a slide canvas); textHeading and textBody must be dark enough to read on them; accent is saturated; accentSoft is a pale tint of the accent. Output the full JSON object with all keys.`;
     function askMessages2(current, prompt) {
       return [
@@ -772,6 +774,14 @@ Rules: bg and bgAlt must be light (a slide canvas); textHeading and textBody mus
         { role: "assistant", content: JSON.stringify(current || {}) },
         { role: "user", content: String(prompt || "").trim() || "a clean, professional palette" }
       ];
+    }
+    function slugifyName(text) {
+      const s = String(text || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").replace(/^[^a-z]+/, "");
+      return s.slice(0, 40).replace(/-+$/, "");
+    }
+    function cleanDescription(text) {
+      const s = String(text || "").replace(/\s+/g, " ").trim();
+      return s.slice(0, 160);
     }
     var norm = (k) => String(k).toLowerCase().replace(/[^a-z0-9]/g, "");
     var KEY_BY_NORM = (() => {
@@ -822,6 +832,8 @@ Rules: bg and bgAlt must be light (a slide canvas); textHeading and textBody mus
       const rampStrategy = normalizeStrategy(
         obj.rampStrategy ?? obj.ramp_strategy ?? obj.ramp ?? obj.strategy
       );
+      const name = slugifyName(obj.name ?? obj.slug ?? obj.title);
+      const description = cleanDescription(obj.description ?? obj.desc ?? obj.caption ?? obj.summary);
       const remapped = {};
       for (const [k, v] of Object.entries(obj)) {
         const canonical = KEY_BY_NORM[norm(k)];
@@ -842,7 +854,7 @@ Rules: bg and bgAlt must be light (a slide canvas); textHeading and textBody mus
         essentials[key] = fallback[key];
         filled.push(key);
       }
-      return { essentials, rampStrategy, filled, applied, ok: filled.length === 0 && applied.length > 0 };
+      return { essentials, rampStrategy, name, description, filled, applied, ok: filled.length === 0 && applied.length > 0 };
     }
     module.exports = { ASK_SYSTEM: ASK_SYSTEM2, THEME_CANON, askMessages: askMessages2, coerceEssentials: coerceEssentials2 };
   }
