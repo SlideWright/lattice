@@ -59,6 +59,14 @@ thing). A group may split into two PRs if a sub-item balloons.
   disabled until you do. *(#57 — shipped)*
 - ✅ Save/Export as **icon buttons on the Studio header row** (theme tab). *(#58 — shipped;
   the Component-tab header equivalent rides with G4.)*
+- ✅ **Editable data-viz band on a live canvas** (G3b — emerged from review: "what about the
+  cat/band colours charts + Mermaid use?"). The 8 chart series + 12 categorical fill/mark
+  pairs + diagram/chart-state tokens are edited on a slide·pie·Mermaid live canvas with a
+  docked select-and-edit tray (light/dark wells for paired tokens, one for single), per-token
+  reset, WCAG re-audit. Iteration 2 of 5 mocked directions; responsive 3-up/stacked.
+- ✅ **Studio Mermaid goes local** — `single-slide-render` gains `mermaidUrl`; the Studio +
+  presenter use the committed `mermaid-v11.min.js` (Export bundle), no jsdelivr CDN. Principle:
+  the Studio uses local engine assets, not third-party CDNs.
 
 ## G4 · Component Studio depth  *(AI part needs key)*
 - Rename **"Layout" → "Component"** (user-facing labels).

@@ -62,17 +62,60 @@ function sides(v: unknown): { light: string; dark: string } {
 	const s = String(v ?? '');
 	return { light: s, dark: s };
 }
-// Layer the per-side overrides back onto a freshly-derived map (only ever called
-// on CONTRACT tokens, which are all light-dark() pairs).
+// Layer the per-side overrides back onto a freshly-derived map, PRESERVING each
+// token's shape: a light-dark() pair stays a pair (per-side override); a single
+// value stays single (the viz band has mode-independent tokens like cat-N-fill,
+// which must not silently become light-dark()).
 function applyOverrides(map: Record<string, unknown>, overrides: Record<string, Override>): Record<string, unknown> {
 	const out = { ...map };
 	for (const [token, ov] of Object.entries(overrides)) {
 		if (ov.light == null && ov.dark == null) continue;
-		const cur = sides(out[token]);
-		out[token] = `light-dark(${ov.light ?? cur.light}, ${ov.dark ?? cur.dark})`;
+		const raw = String(out[token] ?? '');
+		if (LD_RE.test(raw)) {
+			const cur = sides(raw);
+			out[token] = `light-dark(${ov.light ?? cur.light}, ${ov.dark ?? cur.dark})`;
+		} else {
+			// Single-value token — only the light override is meaningful.
+			out[token] = ov.light ?? raw;
+		}
 	}
 	return out;
 }
+
+// Is a token mode-independent (single value, edited with one well)? The viz band
+// mixes light-dark() pairs (chart series, diagram line, chart states) with single
+// values (categorical fills/marks, diagram stroke/critical).
+function isSingle(v: unknown): boolean {
+	return !LD_RE.test(String(v ?? ''));
+}
+
+// THE DATA-VIZ BAND — the categorical colours charts + Mermaid cycle through,
+// hue-rotated off the accent and AA-repaired. Surfaced + editable via the live
+// canvas (Iteration 2): three previews + a docked tray. (#G3b)
+const SERIES_TOKENS = Array.from({ length: 8 }, (_, i) => `chart-cat${i + 1}`);
+const CAT_TOKENS = Array.from({ length: 12 }, (_, i) => i + 1); // → cat-N-fill / cat-N-mark
+const DIAGRAM_TOKENS: { token: string; label: string }[] = [
+	{ token: 'diagram-stroke', label: 'Diagram fill' },
+	{ token: 'diagram-line', label: 'Diagram line' },
+	{ token: 'diagram-critical', label: 'Critical edge' },
+	{ token: 'chart-state-info', label: 'Chart · info' },
+	{ token: 'chart-state-mute', label: 'Chart · muted' },
+];
+// Friendly label for any band token (the tray's selection caption).
+function bandLabel(token: string): string {
+	const s = token.match(/^chart-cat(\d+)$/);
+	if (s) return `Series ${s[1]}`;
+	const cf = token.match(/^cat-(\d+)-fill$/);
+	if (cf) return `Categorical ${cf[1]} · fill`;
+	const cm = token.match(/^cat-(\d+)-mark$/);
+	if (cm) return `Categorical ${cm[1]} · mark`;
+	return DIAGRAM_TOKENS.find((d) => d.token === token)?.label ?? token;
+}
+
+// Live specimens for the canvas — a slide (contract roles), a pie chart (the
+// chart series band) and a Mermaid flow (categorical + diagram band).
+const CHART_SPECIMEN = '<!-- _class: piechart -->\n\n`Charts · live band`\n\n## Revenue by segment\n\n- Segment A `20%`\n- Segment B `16%`\n- Segment C `14%`\n- Segment D `12%`\n- Segment E `11%`\n- Segment F `10%`\n- Segment G `9%`\n- Segment H `8%`';
+const DIAGRAM_SPECIMEN = '<!-- _class: diagram -->\n\n`Diagrams · live band`\n\n## Flow\n\n```mermaid\nflowchart LR\n  A[Plan] --> B[Build] --> C[Review] --> D[Ship]\n  D -.risk.-> B\n```';
 // The native color input needs a #rrggbb seed; the swatch background shows the
 // real value (which is always 6-digit hex for a CONTRACT token).
 const normalizeHex = (v: string) => (/^#[0-9a-fA-F]{6}$/.test(v) ? v : '#000000');
@@ -87,6 +130,8 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 	const [saving, setSaving] = React.useState(false);
 	// Per-side overrides pinned on top of the derivation (#48/#49).
 	const [overrides, setOverrides] = React.useState<Record<string, Override>>({});
+	// The band token the live-canvas tray is editing (#G3b).
+	const [selToken, setSelToken] = React.useState('chart-cat1');
 	const accent = core.accent;
 	const setHex = (key: EssKey, hex: string) => setCore((c) => ({ ...c, [key]: hex }));
 	const setOverride = (token: string, side: 'light' | 'dark', hex: string) => setOverrides((o) => ({ ...o, [token]: { ...o[token], [side]: hex } }));
@@ -245,9 +290,9 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 								})}
 							</Section>
 				</aside>
-				<div className="flex flex-col items-center gap-4 bg-card p-4 md:overflow-y-auto md:p-7">
-					<div className="flex w-full max-w-[620px] items-center justify-between gap-3">
-						<span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Live specimen — your theme, rendered</span>
+				<div className="flex min-w-0 flex-col gap-4 bg-card p-4 md:overflow-y-auto md:p-6">
+					<div className="flex items-center justify-between gap-3">
+						<span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Live specimen — slide · chart · diagram</span>
 						{/* Audition the SAME derived theme in light or dark — the derivation
 						    emits light-dark() pairs, so flipping the canvas color-scheme
 						    (modeOverride) resolves the chosen side. */}
@@ -256,7 +301,23 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 							<button type="button" onClick={() => setSpecimenMode('dark')} aria-pressed={specimenMode === 'dark'} aria-label="Dark specimen" className={cn('inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11.5px] font-semibold', specimenMode === 'dark' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Moon className="size-3.5" />Dark</button>
 						</div>
 					</div>
-					<DeckPreview options={options} sample={SPECIMEN} mermaid={false} paletteOverride={derived.name} extraTheme={derived.css ? { name: derived.name, css: derived.css } : undefined} modeOverride={specimenMode} className="relative aspect-video w-full max-w-[620px] overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]" aria-label="Theme specimen" />
+					{/* The three live previews — every override re-renders all three so you
+					    see a band colour take effect on the slide, the chart and Mermaid. */}
+					<div className="grid gap-3 xl:grid-cols-3">
+						{[
+							{ label: 'Slide', sample: SPECIMEN, mermaid: false, aria: 'Theme specimen' },
+							{ label: 'Chart', sample: CHART_SPECIMEN, mermaid: false, aria: 'Chart specimen' },
+							{ label: 'Diagram', sample: DIAGRAM_SPECIMEN, mermaid: true, aria: 'Diagram specimen' },
+						].map((p) => (
+							<div key={p.label} className="flex min-w-0 flex-col gap-1.5">
+								<span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/80">{p.label}</span>
+								<DeckPreview options={options} sample={p.sample} mermaid={p.mermaid} paletteOverride={derived.name} extraTheme={derived.css ? { name: derived.name, css: derived.css } : undefined} modeOverride={specimenMode} className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-background shadow-[0_6px_18px_rgba(10,22,40,.10)]" aria-label={p.aria} />
+							</div>
+						))}
+					</div>
+					{/* The docked band tray — select a token from the strip, edit its
+					    light/dark here; the audit re-checks and the previews re-render. */}
+					<BandTray map={derived.map} overrides={overrides} mode={specimenMode} selToken={selToken} onSelect={setSelToken} onOverride={setOverride} onReset={clearOverride} />
 				</div>
 			</div>
 			) : (
@@ -273,6 +334,88 @@ function Well({ label, value, overridden, live, onChange }: { label: string; val
 		<label className={cn('relative block size-[26px] cursor-pointer justify-self-center rounded-md border', overridden ? 'border-[var(--accent)] ring-1 ring-[var(--accent)]' : live ? 'border-[color-mix(in_srgb,var(--accent)_45%,var(--border))]' : 'border-border')} style={{ background: value }} title={`${label}: ${value}`}>
 			<input type="color" value={normalizeHex(value)} onChange={(e) => onChange(e.target.value)} aria-label={label} className="absolute inset-0 size-full cursor-pointer opacity-0" />
 		</label>
+	);
+}
+
+// One jump-target chip in the band strip — its colour is the live-mode value;
+// selecting it loads the token into the tray editor.
+function BandChip({ token, color, selected, overridden, onPick }: { token: string; color: string; selected: boolean; overridden: boolean; onPick: (t: string) => void }) {
+	return (
+		<button
+			type="button"
+			onClick={() => onPick(token)}
+			aria-label={bandLabel(token)}
+			aria-pressed={selected}
+			title={`${bandLabel(token)} — --${token}`}
+			className={cn('h-5 min-w-0 flex-1 rounded border', selected ? 'border-transparent ring-2 ring-[var(--accent)] ring-offset-1 ring-offset-[var(--bg)]' : overridden ? 'border-[var(--accent)]' : 'border-[color-mix(in_srgb,var(--text-heading)_12%,transparent)]')}
+			style={{ background: color }}
+		/>
+	);
+}
+
+function StripRow({ label, children }: { label: string; children: React.ReactNode }) {
+	return (
+		<div className="flex items-center gap-2">
+			<span className="w-[68px] shrink-0 font-mono text-[9px] font-bold uppercase tracking-wider text-muted-foreground/80">{label}</span>
+			<div className="flex min-w-0 flex-1 gap-1">{children}</div>
+		</div>
+	);
+}
+
+// The docked editor for the data-viz band (Iteration 2): the selected token's
+// light/dark wells up top, then the whole band as click-to-select strips. The
+// chip colours track the live specimen mode so the strip mirrors the canvas.
+function BandTray({ map, overrides, mode, selToken, onSelect, onOverride, onReset }: {
+	map: Record<string, unknown>;
+	overrides: Record<string, Override>;
+	mode: 'light' | 'dark';
+	selToken: string;
+	onSelect: (t: string) => void;
+	onOverride: (token: string, side: 'light' | 'dark', hex: string) => void;
+	onReset: (token: string) => void;
+}) {
+	const selSides = sides(map[selToken]);
+	const single = isSingle(map[selToken]);
+	const ov = overrides[selToken];
+	const overridden = ov?.light != null || ov?.dark != null;
+	const repr = (token: string) => sides(map[token])[mode];
+	return (
+		<div className="rounded-xl border border-border bg-background p-3">
+			{/* selected token + its editable sides */}
+			<div className="flex items-center gap-3">
+				<span className="size-10 shrink-0 rounded-lg border border-border" style={{ background: single ? selSides.light : selSides[mode] }} />
+				<div className="min-w-0 flex-1">
+					<div className="truncate text-[13px] font-semibold text-[var(--text-heading)]">{bandLabel(selToken)}</div>
+					<div className="font-mono text-[10px] text-muted-foreground">--{selToken}{single ? ' · both modes' : ''}</div>
+				</div>
+				<div className="flex items-center gap-2.5">
+					{single ? (
+						<div className="flex flex-col items-center gap-1"><Well label={`${bandLabel(selToken)} value`} value={selSides.light} overridden={ov?.light != null} live onChange={(hex) => onOverride(selToken, 'light', hex)} /><span className="font-mono text-[9px] uppercase text-muted-foreground/80">Value</span></div>
+					) : (
+						<>
+							<div className="flex flex-col items-center gap-1"><Well label={`${bandLabel(selToken)} light`} value={selSides.light} overridden={ov?.light != null} live={mode === 'light'} onChange={(hex) => onOverride(selToken, 'light', hex)} /><span className="font-mono text-[9px] uppercase text-muted-foreground/80">Light</span></div>
+							<div className="flex flex-col items-center gap-1"><Well label={`${bandLabel(selToken)} dark`} value={selSides.dark} overridden={ov?.dark != null} live={mode === 'dark'} onChange={(hex) => onOverride(selToken, 'dark', hex)} /><span className="font-mono text-[9px] uppercase text-muted-foreground/80">Dark</span></div>
+						</>
+					)}
+					<button type="button" onClick={() => onReset(selToken)} disabled={!overridden} aria-label={`Reset ${bandLabel(selToken)}`} title="Reset to engine-derived" className={cn('shrink-0 self-start p-1', overridden ? 'text-muted-foreground hover:text-[var(--accent)]' : 'cursor-not-allowed text-muted-foreground/30')}><RotateCcw className="size-3.5" /></button>
+				</div>
+			</div>
+			{/* the whole band as click-to-select strips */}
+			<div className="mt-3 space-y-1.5 border-t border-border pt-3">
+				<StripRow label="Series">
+					{SERIES_TOKENS.map((t) => <BandChip key={t} token={t} color={repr(t)} selected={selToken === t} overridden={overrides[t] != null} onPick={onSelect} />)}
+				</StripRow>
+				<StripRow label="Cat · fill">
+					{CAT_TOKENS.map((i) => { const t = `cat-${i}-fill`; return <BandChip key={t} token={t} color={repr(t)} selected={selToken === t} overridden={overrides[t] != null} onPick={onSelect} />; })}
+				</StripRow>
+				<StripRow label="Cat · mark">
+					{CAT_TOKENS.map((i) => { const t = `cat-${i}-mark`; return <BandChip key={t} token={t} color={repr(t)} selected={selToken === t} overridden={overrides[t] != null} onPick={onSelect} />; })}
+				</StripRow>
+				<StripRow label="Diagram">
+					{DIAGRAM_TOKENS.map((d) => <BandChip key={d.token} token={d.token} color={repr(d.token)} selected={selToken === d.token} overridden={overrides[d.token] != null} onPick={onSelect} />)}
+				</StripRow>
+			</div>
+		</div>
 	);
 }
 

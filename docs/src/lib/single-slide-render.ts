@@ -55,6 +55,14 @@ export type SingleSlideOptions = {
 	 * (tests, or a legacy eager tag already on the page).
 	 */
 	engineUrl?: string;
+	/**
+	 * URL of the UMD Mermaid bundle injected into a `mermaid` slide's iframe.
+	 * Absent → the jsdelivr CDN (back-compat). A docs surface that wants Mermaid
+	 * to render offline / under a strict CSP / from its own origin passes the
+	 * locally-vendored copy (`<assetBase>mermaid.min.js`, staged by
+	 * sync-playground-assets) so previews never depend on a third-party CDN.
+	 */
+	mermaidUrl?: string;
 };
 
 /** Resolve `<html data-palette/-mode>` → the palette + mode to render with. */
@@ -80,6 +88,8 @@ type LiveHost = HTMLElement & { __latticeGeom?: Geom };
  */
 export function createSingleSlideRenderer(opts: SingleSlideOptions) {
 	const { themeBase, runtimeUrl, engineUrl } = opts;
+	// Prefer a locally-vendored Mermaid (no CDN); fall back to jsdelivr.
+	const mermaidUrl = opts.mermaidUrl || MERMAID;
 	const themes = createThemeFetcher(themeBase);
 
 	// Self-hosted preview fonts. Lazy-imported + cached: font-embed.js pulls
@@ -130,7 +140,7 @@ export function createSingleSlideRenderer(opts: SingleSlideOptions) {
 			(extraCss ? '\n/* studio-extra-css */\n' + extraCss : '') +
 			'</style></head><body>' +
 			html;
-		if (mermaid) s += '<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt>';
+		if (mermaid) s += '<scr' + 'ipt src="' + mermaidUrl + '"></scr' + 'ipt>';
 		s += '<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt></body></html>';
 		return s;
 	}

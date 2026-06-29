@@ -172,6 +172,20 @@ in patch versions.
     the Component studio — **no magic default**; you name the theme (Save is
     disabled until you do), and Export/Save sit as icon buttons on the studio
     header row.
+  - **Theme Studio depth — editable data-viz band on a live canvas.** The Theme
+    studio now surfaces the engine's full **chart + diagram band** (the categorical
+    colours charts and Mermaid cycle through): the 8 chart series, the 12
+    categorical fill/mark pairs, and the diagram / chart-state tokens. They're
+    edited on a **live canvas** — a slide, a pie chart and a Mermaid flow render
+    side by side and re-render on every edit, with a docked tray to select a band
+    token (light/dark wells for mode-varying tokens, one well for mode-independent
+    ones) and a per-token reset. Overrides re-run the WCAG audit, same as the
+    contract. Responsive: 3-up on desktop, stacked on tablet/mobile.
+  - **Studio renders Mermaid from a local copy, not a CDN.** `single-slide-render`
+    gained an optional `mermaidUrl`; the Studio points it (and the dual-screen
+    presenter) at the committed `mermaid-v11.min.js` the Export-to-Marp bundle
+    already ships — so Studio diagrams render offline and under a strict CSP,
+    never depending on jsdelivr. Other surfaces keep the CDN default unchanged.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /

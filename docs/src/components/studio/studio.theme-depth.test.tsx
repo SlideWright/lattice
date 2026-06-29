@@ -98,6 +98,32 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 		await waitFor(() => expect(specimen.getAttribute('data-extra-theme')).toBe(before));
 	});
 
+	it('edits the data-viz band on the live canvas — slide·chart·diagram previews + selectable strip', async () => {
+		const user = userEvent.setup();
+		render(<StudioShell options={options} />);
+		await openFabricate(user);
+
+		// The canvas shows all three live previews so a band edit shows everywhere.
+		expect(document.querySelector('[data-label="Theme specimen"]')).toBeTruthy();
+		expect(document.querySelector('[data-label="Chart specimen"]')).toBeTruthy();
+		expect(document.querySelector('[data-label="Diagram specimen"]')).toBeTruthy();
+
+		const slide = document.querySelector('[data-label="Theme specimen"]') as HTMLElement;
+		const before = slide.getAttribute('data-extra-theme');
+		// Pick a chart series from the band strip → it loads into the tray editor,
+		// which exposes light + dark wells for a mode-varying token.
+		await user.click(screen.getByRole('button', { name: 'Series 3' }));
+		const darkWell = screen.getByLabelText('Series 3 dark') as HTMLInputElement;
+		fireEvent.input(darkWell, { target: { value: '#0a0a0a' } });
+		// The override re-derives — every preview re-renders against the new theme.
+		await waitFor(() => expect(slide.getAttribute('data-extra-theme')).not.toBe(before));
+
+		// A categorical fill is mode-independent — one "value" well, no light/dark split.
+		await user.click(screen.getByRole('button', { name: 'Categorical 1 · fill' }));
+		expect(screen.getByLabelText('Categorical 1 · fill value')).toBeTruthy();
+		expect(screen.queryByLabelText('Categorical 1 · fill dark')).toBeNull();
+	});
+
 	it('requires a name before saving — no magic default (consistent with components)', async () => {
 		const user = userEvent.setup();
 		render(<StudioShell options={options} />);

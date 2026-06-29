@@ -25,6 +25,11 @@ const options = {
 	themeBase: url(pg + 'themes/'),
 	runtimeUrl: url(pg + 'lattice-runtime.js'),
 	engineUrl: url(pg + 'lattice-playground.js'),
+	// Locally-vendored Mermaid — the SAME committed `mermaid-v11.min.js` the
+	// Export-to-Marp bundle ships (staged under export/), which sets the
+	// `globalThis.mermaid` the runtime orchestrates. The Studio renders diagrams
+	// from our own origin, never the jsdelivr CDN (offline / strict-CSP safe).
+	mermaidUrl: url(pg + 'export/mermaid-v11.min.js'),
 };
 
 // The component catalog, read from the committed machine manifest at build time
