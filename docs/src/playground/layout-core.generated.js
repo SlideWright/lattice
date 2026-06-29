@@ -57,6 +57,28 @@ var require_gate = __commonJS({
     var CSS_ONLY_SUBSTANCES2 = Object.freeze(["prose", "structure"]);
     var NAME_RE2 = /^[a-z][a-z0-9-]*$/;
     var HEX_RE = /#[0-9a-fA-F]{3,8}\b/g;
+    var CSS_EXFIL_RULES = Object.freeze([
+      { rule: "css-import", re: /@import\b/gi, message: "@import fetches a remote stylesheet \u2014 not allowed (it can beacon out or load attacker CSS)." },
+      { rule: "css-expression", re: /\bexpression\s*\(/gi, message: "CSS expression() executes script \u2014 not allowed." },
+      { rule: "css-binding", re: /-moz-binding\b/gi, message: "-moz-binding binds script to an element \u2014 not allowed." },
+      { rule: "css-scheme", re: /\b(?:javascript|vbscript)\s*:/gi, message: "a javascript:/vbscript: URL is a script vector \u2014 not allowed." }
+    ]);
+    var URL_RE = /url\(\s*("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[^)]*?)\s*\)/gi;
+    var IMAGESET_RE = /(?:-webkit-)?image-set\(([\s\S]*?)\)/gi;
+    var QUOTED_RE = /(['"])((?:\\.|(?!\1).)*)\1/g;
+    function decodeCssEscapes(css) {
+      return String(css).replace(/\\([0-9a-fA-F]{1,6})[ \t]?|\\([^\n])/g, (_, hex, ch) => {
+        if (ch != null) return ch;
+        const cp = parseInt(hex, 16);
+        return cp > 0 && cp <= 1114111 ? String.fromCodePoint(cp) : "\uFFFD";
+      });
+    }
+    function urlIsLocal(raw) {
+      let s = String(raw).trim();
+      if (s[0] === '"' && s.endsWith('"') || s[0] === "'" && s.endsWith("'")) s = s.slice(1, -1);
+      s = s.trim().toLowerCase();
+      return s.startsWith("#") || s.startsWith("data:");
+    }
     function stripComments(css) {
       return String(css || "").replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " "));
     }
@@ -64,6 +86,27 @@ var require_gate = __commonJS({
       let n = 1;
       for (let i = 0; i < index && i < text.length; i++) if (text[i] === "\n") n++;
       return n;
+    }
+    function findCssExfil(css) {
+      const src = decodeCssEscapes(stripComments(css));
+      const out = [];
+      for (const { rule, re, message } of CSS_EXFIL_RULES) {
+        for (const m of src.matchAll(re)) out.push({ rule, message, line: lineAt(src, m.index) });
+      }
+      const remoteUrl = (target, index) => out.push({
+        rule: "css-url-remote",
+        line: lineAt(src, index),
+        message: `url(${target}) fetches a remote resource \u2014 only inline data: URIs and #fragment refs are allowed (a remote url() can beacon deck content out).`
+      });
+      for (const m of src.matchAll(URL_RE)) {
+        if (!urlIsLocal(m[1])) remoteUrl(m[1], m.index);
+      }
+      for (const m of src.matchAll(IMAGESET_RE)) {
+        for (const sm of m[1].matchAll(QUOTED_RE)) {
+          if (!urlIsLocal(sm[2])) remoteUrl(sm[2], m.index);
+        }
+      }
+      return out;
     }
     function findHexLiterals2(css) {
       const src = stripComments(css);
@@ -182,6 +225,9 @@ var require_gate = __commonJS({
           message: `selector "${u.selector}" is not scoped to .${name} \u2014 it would leak onto other slides.`
         });
       }
+      for (const e of findCssExfil(css)) {
+        findings.push({ rule: e.rule, level: "error", line: e.line, message: e.message });
+      }
       return { ok: findings.every((f) => f.level !== "error"), findings };
     }
     function gateComponent2({ name, css, manifest, skeleton } = {}, opts = {}) {
@@ -214,6 +260,7 @@ var require_gate = __commonJS({
       CSS_ONLY_SUBSTANCES: CSS_ONLY_SUBSTANCES2,
       NAME_RE: NAME_RE2,
       findHexLiterals: findHexLiterals2,
+      findCssExfil,
       findUnscopedSelectors: findUnscopedSelectors2,
       validateManifest: validateManifest2,
       skeletonInvokes: skeletonInvokes2,

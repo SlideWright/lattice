@@ -25,6 +25,7 @@
 
 import { DEFAULT_H, DEFAULT_W, singleSlideFrame } from '../playground/frame-css.js';
 import { ensureEngine } from './load-engine';
+import { sanitizeSlideHtml } from './sanitize-slide-html.js';
 import { createThemeFetcher } from './theme-fetch';
 
 const MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
@@ -116,6 +117,10 @@ export function createSingleSlideRenderer(opts: SingleSlideOptions) {
 	// bug (see frame-css.js + index.astro srcdoc note). `geom` is the render's
 	// reported { width, height } (px).
 	function srcdoc(html: string, css: string, mode: 'light' | 'dark', mermaid: boolean, geom: Geom, extraCss = ''): string {
+		// Strip script-bearing content before it enters this same-origin,
+		// un-sandboxed frame (#616 T-CONTENT) — the runtime/Mermaid scripts are
+		// appended separately below, so they're untouched.
+		html = sanitizeSlideHtml(html);
 		const bg = mode === 'dark' ? '#0c0c0c' : '#e7e7ea';
 		// Register the vendored faces first (@font-face is position-independent,
 		// but keeping it up top documents intent). Without this the iframe has no

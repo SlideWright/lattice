@@ -43,6 +43,7 @@
 // SYNC scroll math (window.scrollY) and content-visibility virtualization both
 // keep measuring against the document viewport.
 
+import { sanitizeSlideHtml } from '../lib/sanitize-slide-html.js';
 import { texturePatternDefs } from './a11y-textures.generated.js';
 import { slideBox } from './frame-css.js';
 import { splitSections } from './preview-virtual.js';
@@ -185,6 +186,11 @@ export function buildSrcdoc({
 	// on every render so `fill: url(#latt-a11y-tex-N)` resolves in this browsing
 	// context under an a11y theme (inert otherwise). Owned here, not per-caller.
 }) {
+	// Strip script-bearing content before it reaches this same-origin srcdoc
+	// frame (#616 T-CONTENT). Covers buildSrcdoc's external caller too
+	// (drawing-board-export.js); the in-repo renderDeck path also pre-sanitizes
+	// for its innerHTML patch, so this is a no-op there.
+	html = sanitizeSlideHtml(html);
 	const gw = (geom && geom.w) || 1280;
 	const gh = (geom && geom.h) || 720;
 	const bg = background ? background(mode) : (mode === 'dark' ? DARK_BG : LIGHT_BG);
@@ -282,6 +288,10 @@ export function patchSections(frame, next, prev) {
 // forces a full write (deck swap → reset runtime/Mermaid state).
 export function renderDeck({ frame, html, css, mode, geom, sig, state, fresh = false, ...opts }) {
 	const st = state || { frameSig: '', lastSections: null };
+	// Sanitize ONCE here so BOTH paths below see safe HTML: the innerHTML section
+	// patch (patchSections) and the full srcdoc write (buildSrcdoc, which
+	// re-sanitizes harmlessly). #616 T-CONTENT.
+	html = sanitizeSlideHtml(html);
 	const sections = splitSections(html);
 	const canPatch =
 		!fresh &&

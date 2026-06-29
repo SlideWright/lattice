@@ -22,6 +22,7 @@
 //     second screen. Framework-agnostic — the Drawing Board (vanilla) and the
 //     Studio (React, via a thin wrapper) both pass closures into their state.
 
+import { sanitizeSlideHtml } from '../lib/sanitize-slide-html.js';
 import { slideBox } from './frame-css.js';
 
 /**
@@ -32,6 +33,7 @@ import { slideBox } from './frame-css.js';
  * viewport + touch-action kill the iOS double-tap jolt.
  */
 export function buildStageDoc({ html, width, height, bg, css, runtimeUrl, katexUrl, mermaidUrl, a11yDefs = '' }) {
+	html = sanitizeSlideHtml(html); // #616 T-CONTENT — strip script before the same-origin stage srcdoc
 	const sw = width;
 	const sh = height;
 	// Resolve the runtime URL to ABSOLUTE. The stage doc is set as an iframe

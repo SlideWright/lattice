@@ -1112,6 +1112,74 @@ function checkSolverIntentDeclared(manifests, errors) {
   }
 }
 
+// HARD RULE #22 — untrusted slide HTML reaches a preview frame ONLY through
+// `sanitizeSlideHtml`. The docs-site Studio renders untrusted markdown (shared /
+// AI-generated decks + component skeletons) into a SAME-ORIGIN, un-sandboxed
+// `srcdoc` iframe; un-sanitized engine HTML there is XSS → OpenRouter-key theft
+// (#616). A frame BUILDER is any docs/src module that assembles a live preview
+// document — recognised by the split runtime-`<script>` injection idiom
+// (`'<scr' + 'ipt`) every builder uses — and each MUST call `sanitizeSlideHtml`
+// on the slide HTML before it goes in. (Files that only ASSIGN a builder's output
+// to `.srcdoc` — e.g. drawing-board-present/export — carry no marker and need no
+// entry; the sanitize happened in the builder they call.) Allowlist + anti-rot,
+// same shape as #3/#20: a NEW builder not listed fails (forces the sanitize call),
+// a listed builder that drops the call fails, and a stale entry fails.
+const PREVIEW_BUILDER_MARKER = /['"]<scr['"]\s*\+\s*['"]ipt/;
+const SANITIZE_CALL = /sanitizeSlideHtml\s*\(/;
+const SANCTIONED_PREVIEW_BUILDERS = [
+  { file: 'docs/src/playground/deck-preview.js', why: 'buildSrcdoc + renderDeck (the latter also sanitizes the patchSections innerHTML path).' },
+  { file: 'docs/src/lib/single-slide-render.ts', why: 'srcdoc() — landing islands / specimens / workbench single-slide preview.' },
+  { file: 'docs/src/playground/presenter-window.js', why: 'buildStageDoc — the shared dual-screen presenter stage.' },
+  { file: 'docs/src/playground/drawing-board-practice.js', why: 'frameDoc — the rehearsal stage.' },
+  { file: 'docs/src/playground/drawing-board-focus.js', why: 'frame — the focus-edit fragment preview.' },
+];
+
+function listSourceFiles(dir, out = []) {
+  if (!fs.existsSync(dir)) return out;
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (e.name === 'node_modules' || e.name === 'dist' || e.name === '.astro') continue;
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) listSourceFiles(p, out);
+    else if (/\.(?:js|ts|tsx|mjs|cjs)$/.test(e.name)) out.push(p);
+  }
+  return out;
+}
+
+function checkPreviewHtmlSinks(errors) {
+  const DOCS_SRC = path.join(ROOT, 'docs', 'src');
+  const sanctioned = new Map(SANCTIONED_PREVIEW_BUILDERS.map((s) => [s.file, s]));
+  const seen = new Set();
+  for (const file of listSourceFiles(DOCS_SRC)) {
+    const rel = path.relative(ROOT, file);
+    if (rel.endsWith('.test.ts') || rel.endsWith('.test.js')) continue; // tests assert payloads, not preview frames
+    const src = fs.readFileSync(file, 'utf8');
+    if (!PREVIEW_BUILDER_MARKER.test(src)) continue;
+    seen.add(rel);
+    if (!sanctioned.has(rel)) {
+      errors.push(
+        `${rel} builds a live preview frame (injects the runtime <script>) but is not a sanctioned ` +
+        `preview builder (HARD RULE #22). Untrusted engine HTML in a same-origin srcdoc is XSS / ` +
+        `OpenRouter-key theft (#616) — sanitize the slide HTML via sanitizeSlideHtml ` +
+        `(docs/src/lib/sanitize-slide-html.js) before it enters the frame, then add this file to ` +
+        `SANCTIONED_PREVIEW_BUILDERS in tools/check-ownership.js with a justification.`,
+      );
+    } else if (!SANITIZE_CALL.test(src)) {
+      errors.push(
+        `${rel} is a sanctioned preview builder but no longer calls sanitizeSlideHtml (HARD RULE #22) — ` +
+        `restore the call or its srcdoc reopens the #616 XSS hole.`,
+      );
+    }
+  }
+  for (const s of SANCTIONED_PREVIEW_BUILDERS) {
+    if (!seen.has(s.file)) {
+      errors.push(
+        `stale preview-builder sanction in tools/check-ownership.js — ${s.file} no longer builds a ` +
+        `preview frame (HARD RULE #22). Remove the SANCTIONED_PREVIEW_BUILDERS entry so the allowlist stays honest.`,
+      );
+    }
+  }
+}
+
 // ── Runner ────────────────────────────────────────────────────────────────
 
 function run() {
@@ -1132,6 +1200,7 @@ function run() {
   checkThemeHasSelectors(errors);
   checkAdaptDeclarations(manifests, errors);
   checkSolverIntentDeclared(manifests, errors);
+  checkPreviewHtmlSinks(errors);
   return {
     errors,
     counts: {
@@ -1186,6 +1255,11 @@ module.exports = {
   checkMarginDiscipline,
   LAYOUT_MARGIN_BUDGET,
   SANCTIONED_MARGINS,
+  checkPreviewHtmlSinks,
+  listSourceFiles,
+  SANCTIONED_PREVIEW_BUILDERS,
+  PREVIEW_BUILDER_MARKER,
+  SANITIZE_CALL,
   checkHexLiterals,
   LAYOUT_HEX_BUDGET,
   SANCTIONED_HEX,

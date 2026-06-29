@@ -42,8 +42,15 @@ const {
   UK_ENGLISH_FORMS,
   CANONICAL_FS_TOKENS,
   SINGLETON_TAGS,
+  checkPreviewHtmlSinks,
+  listSourceFiles,
+  SANCTIONED_PREVIEW_BUILDERS,
+  PREVIEW_BUILDER_MARKER,
+  SANITIZE_CALL,
   run,
 } = require('../../../tools/check-ownership');
+const fs = require('node:fs');
+const path = require('node:path');
 
 describe('check-ownership', () => {
   describe('selector parser', () => {
@@ -316,6 +323,46 @@ describe('check-ownership', () => {
       assert.ok(counts.transformers > 0);
       assert.ok(counts.components > 0);
       assert.ok(counts.palettes > 0);
+    });
+  });
+
+  // HARD RULE #22 — every docs-site preview-frame builder sanitizes its slide HTML.
+  describe('preview-frame sanitization gate (HARD RULE #22, #616)', () => {
+    const ROOT = path.join(__dirname, '..', '..', '..');
+
+    test('the live tree raises no #22 violations', () => {
+      const errors = [];
+      checkPreviewHtmlSinks(errors);
+      assert.deepEqual(errors, [], errors.join('\n'));
+    });
+
+    test('the allowlist is truthful: every sanctioned builder exists, builds a frame, and sanitizes', () => {
+      for (const s of SANCTIONED_PREVIEW_BUILDERS) {
+        const src = fs.readFileSync(path.join(ROOT, s.file), 'utf8');
+        assert.ok(PREVIEW_BUILDER_MARKER.test(src), `${s.file} should carry the runtime-script marker`);
+        assert.ok(SANITIZE_CALL.test(src), `${s.file} must call sanitizeSlideHtml`);
+      }
+    });
+
+    test('no preview-frame builder in docs/src is missing from the allowlist', () => {
+      const listed = new Set(SANCTIONED_PREVIEW_BUILDERS.map((s) => s.file));
+      const builders = listSourceFiles(path.join(ROOT, 'docs', 'src'))
+        .filter((f) => !/\.test\.[tj]s$/.test(f))
+        .filter((f) => PREVIEW_BUILDER_MARKER.test(fs.readFileSync(f, 'utf8')))
+        .map((f) => path.relative(ROOT, f));
+      for (const b of builders) {
+        assert.ok(listed.has(b), `${b} builds a preview frame but is not in SANCTIONED_PREVIEW_BUILDERS`);
+      }
+    });
+
+    test('the gate bites: a builder that drops sanitizeSlideHtml is flagged', () => {
+      // Simulate the regression in-memory by re-deriving the gate's verdict for a
+      // builder whose source no longer calls the sanitizer (no FS mutation).
+      const builder = SANCTIONED_PREVIEW_BUILDERS[0];
+      const src = fs.readFileSync(path.join(ROOT, builder.file), 'utf8');
+      const stripped = src.replace(new RegExp(SANITIZE_CALL.source, 'g'), 'noop(');
+      assert.ok(PREVIEW_BUILDER_MARKER.test(stripped), 'still a builder');
+      assert.ok(!SANITIZE_CALL.test(stripped), 'sanitize call gone → gate would flag it');
     });
   });
 });
