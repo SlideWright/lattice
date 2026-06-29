@@ -108,6 +108,28 @@ var require_gate = __commonJS({
       }
       return out;
     }
+    var MARGIN_RE = /(?<![\w-])margin(?:-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?)?\s*:\s*([^;{}]+)/gi;
+    var isAllZeroMargin = (v) => String(v).replace(/!important/gi, "").trim().split(/\s+/).every((t) => /^-?0(?:\.0+)?(?:[a-z%]+)?$/i.test(t));
+    function findMargins(css) {
+      const src = stripComments(css);
+      const out = [];
+      for (const m of src.matchAll(MARGIN_RE)) {
+        if (!isAllZeroMargin(m[1])) out.push({ value: m[1].trim(), line: lineAt(src, m.index) });
+      }
+      return out;
+    }
+    var FONTSIZE_RE = /(?<![\w-])font-size\s*:\s*([^;{}]+)/gi;
+    var RAW_FONT_LEN_RE = /\d(?:\.\d+)?\s*(px|pt|pc|in|cm|mm|rem|cqi|cqh|cqw|cqb|cqmin|cqmax|vh|vw|vmin|vmax)\b/i;
+    function findRawFontSize(css) {
+      const src = stripComments(css);
+      const out = [];
+      for (const m of src.matchAll(FONTSIZE_RE)) {
+        const v = m[1];
+        if (/var\(\s*--fs-/.test(v)) continue;
+        if (RAW_FONT_LEN_RE.test(v)) out.push({ value: v.trim(), line: lineAt(src, m.index) });
+      }
+      return out;
+    }
     function findHexLiterals2(css) {
       const src = stripComments(css);
       const out = [];
@@ -228,6 +250,22 @@ var require_gate = __commonJS({
       for (const e of findCssExfil(css)) {
         findings.push({ rule: e.rule, level: "error", line: e.line, message: e.message });
       }
+      for (const m of findMargins(css)) {
+        findings.push({
+          rule: "no-margin",
+          level: "error",
+          line: m.line,
+          message: `margin "${m.value}" \u2014 space with \`gap\`/\`padding\` instead (HARD RULE #20: margin is invisible to the height math a measuring layout depends on).`
+        });
+      }
+      for (const f of findRawFontSize(css)) {
+        findings.push({
+          rule: "fs-token",
+          level: "error",
+          line: f.line,
+          message: `font-size "${f.value}" \u2014 use a \`--fs-*\` role token (HARD RULE #4: typography is the 12-token --fs-* system), e.g. var(--fs-body).`
+        });
+      }
       return { ok: findings.every((f) => f.level !== "error"), findings };
     }
     function gateComponent2({ name, css, manifest, skeleton } = {}, opts = {}) {
@@ -261,6 +299,8 @@ var require_gate = __commonJS({
       NAME_RE: NAME_RE2,
       findHexLiterals: findHexLiterals2,
       findCssExfil,
+      findMargins,
+      findRawFontSize,
       findUnscopedSelectors: findUnscopedSelectors2,
       validateManifest: validateManifest2,
       skeletonInvokes: skeletonInvokes2,
@@ -390,17 +430,16 @@ var require_starters = __commonJS({
           "  text-align: center; gap: var(--sp-md);",
           "}",
           "section.feature-band h2 {",
-          "  font-size: var(--fs-h1); color: var(--text-heading);",
-          "  max-width: 22ch; margin: 0;",
+          "  display: flex; flex-direction: column; align-items: center;",
+          "  gap: var(--sp-sm);",
+          "  font-size: var(--fs-h1); color: var(--text-heading); max-width: 22ch;",
           "}",
           "section.feature-band h2::after {",
-          '  content: ""; display: block;',
-          "  width: 3rem; height: 3px; margin: var(--sp-sm) auto 0;",
+          '  content: ""; width: 3rem; height: 3px;',
           "  background: var(--accent);",
           "}",
           "section.feature-band p {",
-          "  font-size: var(--fs-message); color: var(--text-body);",
-          "  max-width: 42ch; margin: 0;",
+          "  font-size: var(--fs-message); color: var(--text-body); max-width: 42ch;",
           "}"
         ].join("\n"),
         skeleton: [
@@ -419,14 +458,14 @@ var require_starters = __commonJS({
         form: "grid",
         substance: "structure",
         tags: ["inventory", "list", "two-column"],
-        description: "A flat list flowed into two balanced columns of bordered cards.",
+        description: "A flat list flowed into a two-column grid of bordered cards.",
         css: [
           "section.two-col-list ul {",
-          "  columns: 2; column-gap: var(--sp-lg);",
+          "  display: grid; grid-template-columns: 1fr 1fr;",
+          "  gap: var(--sp-sm) var(--sp-lg);",
           "  list-style: none; padding: 0; margin: 0;",
           "}",
           "section.two-col-list li {",
-          "  break-inside: avoid; margin: 0 0 var(--sp-sm);",
           "  background: var(--bg-alt); border: 1px solid var(--border);",
           "  border-radius: var(--radius-md);",
           "  padding: var(--sp-sm) var(--sp-md);",

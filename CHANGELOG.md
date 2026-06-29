@@ -25,6 +25,23 @@ in patch versions.
 
 ## Unreleased
 
+### Changed
+
+- **Studio component gate now enforces margin discipline (#20) and token typography
+  (#4) — the design-audit (#610).** The local/AI component authoring gate
+  (`lib/layout/gate.js` `gateCss`) previously checked only hex/scope/exfil, so a draft
+  with a non-zero `margin` or a raw-length `font-size` (`18px`, `2cqi`) rendered anyway —
+  exactly the "non-native" tells the component-generation design
+  (`engineering/decisions/2026-06-29-ai-component-generation.md`) calls out. Two new
+  deterministic checks (`findMargins`, `findRawFontSize`) flag them as blocking errors,
+  steering authors to `gap`/`padding` and the `--fs-*` role tokens every shipped
+  component uses (`em`/`%`/`inherit` and `var(--fs-*)` stay allowed). The two Studio
+  starters that themselves violated #20 (`feature-band`'s centered divider, `two-col-list`'s
+  `columns` layout) are rebuilt margin-free (flex / grid with `gap`) so the templates model
+  the rule. The `> .cell-stage` root and `adapt`/`capacity` checks from the design are
+  deliberately deferred — the former is a *shipped*-component trait (local components scope
+  to `section.<name>` directly), the latter a graduation-path advisory.
+
 ### Security
 
 - **Untrusted-content XSS + CSS exfil hardened in the Studio preview (#616, #610).** Two
