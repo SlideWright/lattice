@@ -1,4 +1,4 @@
-import { Check, Download, LayoutGrid, Moon, Palette, RotateCcw, Sparkles, Sun, TriangleAlert, X } from 'lucide-react';
+import { ArrowUp, Check, Download, LayoutGrid, Loader2, Moon, Palette, RotateCcw, Sparkles, Sun, TriangleAlert, X } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 // (lib/theme/*, bundled browser-safe). deriveTheme → ~100 tokens (contrast-
 // repaired), auditBoth → live WCAG report, serializeTheme → a real themes/*.css.
 import { auditBoth, deriveTheme, STARTERS, serializeTheme, validateEssentials } from '@/playground/theme-core.generated.js';
+import { generateTheme } from './architect';
 import { downloadText } from './download';
 import { LayoutStudio } from './LayoutStudio';
 import { saveStudioTheme, slugify } from './theme-library';
@@ -132,6 +133,12 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 	const [overrides, setOverrides] = React.useState<Record<string, Override>>({});
 	// The band token the live-canvas tray is editing (#G3b).
 	const [selToken, setSelToken] = React.useState('chart-cat1');
+	// AI "Describe a look": the model proposes essentials + a ramp strategy; the
+	// engine derives the full AA-clean palette from them. The strategy steers the
+	// categorical/chart hue layout (theme-core RAMP_STRATEGIES).
+	const [rampStrategy, setRampStrategy] = React.useState('spectrum');
+	const [prompt, setPrompt] = React.useState('');
+	const [gen, setGen] = React.useState<'idle' | 'working'>('idle');
 	const accent = core.accent;
 	const setHex = (key: EssKey, hex: string) => setCore((c) => ({ ...c, [key]: hex }));
 	const setOverride = (token: string, side: 'light' | 'dark', hex: string) => setOverrides((o) => ({ ...o, [token]: { ...o[token], [side]: hex } }));
@@ -143,15 +150,45 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 		const essentials = { ...core };
 		try {
 			validateEssentials(essentials);
-			const map = applyOverrides(deriveTheme(essentials), overrides);
+			const map = applyOverrides(deriveTheme(essentials, { rampStrategy }), overrides);
 			const audit = auditBoth(map, { level: 'full' });
-			const name = `fab-${hash(JSON.stringify({ essentials, overrides }))}`;
+			const name = `fab-${hash(JSON.stringify({ essentials, overrides, rampStrategy }))}`;
 			const css = serializeTheme(map, { name, label });
 			return { map, audit, name, css, error: null as string | null };
 		} catch (e) {
 			return { map: {} as Record<string, unknown>, audit: { light: { results: [] }, dark: { results: [] }, ok: false }, name: 'indaco', css: '', error: String((e as Error)?.message || e) };
 		}
-	}, [core, overrides, label]);
+	}, [core, overrides, label, rampStrategy]);
+
+	// "Describe a look" → the model proposes essentials + a ramp strategy, the
+	// engine derives the full AA-clean palette, and the studio adopts it (clearing
+	// manual overrides so the AI's set shows cleanly). Honest degradation: a clear
+	// note for no-model / budget-blocked / no-usable-reply — never a faked palette.
+	async function runDescribe(text: string) {
+		const p = text.trim();
+		if (!p || gen === 'working') return;
+		setGen('working');
+		try {
+			const out = await generateTheme(core, p);
+			if (out.status === 'ok') {
+				setCore(out.essentials as Record<EssKey, string>);
+				setRampStrategy(out.rampStrategy);
+				setOverrides({});
+				setPrompt('');
+				notify(out.audit.ok ? 'Generated a full palette — every pair passes AA. Tweaking is optional.' : 'Generated a palette — a couple of pairs need review (flagged in the audit).');
+			} else if (out.status === 'offline') {
+				notify('No model connected — open Workspace to connect OpenRouter or load an on-device model.');
+			} else if (out.status === 'blocked') {
+				notify(out.note);
+			} else {
+				notify(out.note || 'No change proposed.');
+			}
+		} catch {
+			notify('Theme generation failed — please try again.');
+		} finally {
+			setGen('idle');
+		}
+	}
 
 	// Curated WCAG rows: one per role, worst ratio across modes.
 	const auditRows = React.useMemo(() => {
@@ -215,7 +252,35 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 			</div>
 
 			{tab === 'theme' ? (
-			<div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:grid md:overflow-hidden md:[grid-template-columns:340px_1fr]">
+			<div className="flex min-h-0 flex-1 flex-col">
+				{/* AI front door — "Describe a look". The model proposes the 10 essentials
+				    + a ramp strategy; the engine derives the full, AA-verified palette
+				    shown live below. You never have to tweak a color — the wells are optional. */}
+				<div className="flex shrink-0 flex-col gap-2 border-b border-border bg-card px-4 py-2.5">
+					<div className="flex items-center gap-2.5 rounded-[10px] border border-[color-mix(in_srgb,var(--accent)_40%,var(--border))] bg-background px-3 py-2">
+						<Sparkles className="size-4 shrink-0 text-[var(--accent)]" />
+						<input
+							value={prompt}
+							onChange={(e) => setPrompt(e.target.value)}
+							onKeyDown={(e) => { if (e.key === 'Enter') runDescribe(prompt); }}
+							disabled={gen === 'working'}
+							placeholder="Describe a look — e.g. “warm editorial, deep navy accent, confident”"
+							aria-label="Describe a look"
+							className="min-w-0 flex-1 bg-transparent text-[13px] text-[var(--text-heading)] outline-none placeholder:text-muted-foreground disabled:opacity-60"
+						/>
+						<button type="button" onClick={() => runDescribe(prompt)} disabled={gen === 'working' || !prompt.trim()} aria-label="Generate theme" className="grid size-7 shrink-0 place-items-center rounded-md bg-[var(--accent)] text-[var(--on-accent,#fff)] disabled:opacity-40">
+							{gen === 'working' ? <Loader2 className="size-4 animate-spin" /> : <ArrowUp className="size-4" />}
+						</button>
+					</div>
+					<div className="flex flex-wrap items-center gap-1.5">
+						<span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">Refine</span>
+						{['Warmer', 'More corporate', 'Higher contrast', 'Calmer accent'].map((c) => (
+							<button key={c} type="button" onClick={() => runDescribe(c)} disabled={gen === 'working'} className="rounded-full border border-border px-2.5 py-0.5 text-[11px] text-muted-foreground hover:border-[var(--accent)] hover:text-[var(--text-heading)] disabled:opacity-40">{c}</button>
+						))}
+						<span className="ml-auto font-mono text-[10px] text-muted-foreground/70" title="Categorical hue layout the AI chose">ramp: {rampStrategy}</span>
+					</div>
+				</div>
+				<div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:grid md:overflow-hidden md:[grid-template-columns:340px_1fr]">
 				<aside className="shrink-0 border-b border-border md:overflow-y-auto md:border-r md:border-b-0">
 					<div className="border-b border-border px-4 py-3.5 font-mono text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Theme Studio</div>
 							<Section icon={<Sparkles className="size-3.5" />} label="Start from a curated palette">
@@ -224,7 +289,7 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 										const e = s.essentials as Record<string, string>;
 										const active = core.bg === e.bg && core.accent === e.accent;
 										return (
-											<button type="button" key={s.name} onClick={() => { setCore({ ...(e as Record<EssKey, string>) }); setOverrides({}); }} title={s.description} aria-label={`Start from ${s.label}`} className={cn('flex items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left', active ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-border hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]')}>
+											<button type="button" key={s.name} onClick={() => { setCore({ ...(e as Record<EssKey, string>) }); setOverrides({}); setRampStrategy('spectrum'); }} title={s.description} aria-label={`Start from ${s.label}`} className={cn('flex items-center gap-2 rounded-xl border px-2.5 py-1.5 text-left', active ? 'border-[var(--accent)] bg-[var(--accent-soft)]' : 'border-border hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]')}>
 												<span className="flex -space-x-1">
 													<span className="size-4 rounded-full border border-border" style={{ background: e.bg }} />
 													<span className="size-4 rounded-full border border-border" style={{ background: e.accent }} />
@@ -318,6 +383,7 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 					{/* The docked band tray — select a token from the strip, edit its
 					    light/dark here; the audit re-checks and the previews re-render. */}
 					<BandTray map={derived.map} overrides={overrides} mode={specimenMode} selToken={selToken} onSelect={setSelToken} onOverride={setOverride} onReset={clearOverride} />
+				</div>
 				</div>
 			</div>
 			) : (
