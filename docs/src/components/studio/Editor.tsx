@@ -7,6 +7,7 @@ import { EditorView, keymap, lineNumbers } from '@codemirror/view';
 import * as React from 'react';
 import { buildVocabSets, findingsToDiagnostics } from '@/playground/editor-diagnostics.js';
 import { type CompletionComponent, makeStudioCompletion } from './editor-complete';
+import { editorTheme } from './editor-theme';
 import { slideIndexAt, slideStartOffset } from './lint';
 
 // The shared authoring linter (lib/authoring/lint-core via the browser bundle),
@@ -29,20 +30,6 @@ function loadLintCore() {
 // token-themed, with an inline "unknown component" linter that mirrors the shipped
 // #562 inline validation (underline + Quick fix). Degrades to a <textarea> if
 // CodeMirror can't construct (e.g. jsdom), so it never breaks tests.
-
-const editorTheme = EditorView.theme({
-	'&': { backgroundColor: 'var(--bg)', color: 'var(--text-body)', height: '100%', fontSize: '13px' },
-	'.cm-content': { fontFamily: 'var(--font-mono, ui-monospace, monospace)', padding: '14px 4px', lineHeight: '1.85' },
-	'.cm-gutters': { backgroundColor: 'var(--bg)', color: 'var(--text-muted)', border: 'none', fontFamily: 'var(--font-mono)' },
-	'.cm-activeLine': { backgroundColor: 'color-mix(in srgb, var(--accent) 5%, transparent)' },
-	'.cm-activeLineGutter': { backgroundColor: 'transparent', color: 'var(--accent)' },
-	'.cm-cursor': { borderLeftColor: 'var(--accent)', borderLeftWidth: '2px' },
-	'&.cm-focused': { outline: 'none' },
-	'.cm-selectionBackground, &.cm-focused .cm-selectionBackground': {
-		backgroundColor: 'color-mix(in srgb, var(--accent) 18%, transparent)',
-	},
-	'.cm-lintRange-error': { textDecorationColor: '#b42318' },
-});
 
 const CLASS_RE = /<!--\s*_class:\s*([A-Za-z0-9-]+)\s*-->/g;
 
@@ -112,7 +99,7 @@ export const Editor = React.forwardRef<EditorHandle, {
 	 *  unknown-component-only fallback. */
 	// biome-ignore lint/suspicious/noExplicitAny: serialized vocab handoff from the page (Sets-as-arrays).
 	lintVocab?: any;
-	/** Saved local-component names (Layout Studio). Folded into the real lint-core
+	/** Saved local-component names (Component Studio). Folded into the real lint-core
 	 *  vocabulary so a `.<name>` you authored isn't flagged "unknown component". */
 	extraComponentNames?: string[];
 	/** Fired when the cursor crosses into a different slide — drives the preview. */

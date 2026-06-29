@@ -32,7 +32,7 @@ export function CommandPalette({
 					<CommandItem onSelect={run(onShare)}><Share2 />Share…</CommandItem>
 					<CommandItem onSelect={run(onReshape)}><Sparkles />Reshape for a reader</CommandItem>
 					{onInsert && <CommandItem onSelect={run(onInsert)}><Plus />Insert a component…</CommandItem>}
-					<CommandItem onSelect={run(onFabricate)}><PencilRuler />Fabricate — Theme &amp; Layout Studio</CommandItem>
+					<CommandItem onSelect={run(onFabricate)}><PencilRuler />Fabricate — Theme &amp; Component Studio</CommandItem>
 				</CommandGroup>
 				<CommandSeparator />
 				<CommandGroup heading="Switch deck">

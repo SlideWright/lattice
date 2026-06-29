@@ -183,7 +183,7 @@ describe('Studio — Architect + editor controls respond', () => {
 });
 
 describe('Studio — Fabricate + Present dock respond', () => {
-	it('Fabricate switches Theme/Layout tabs and exports', async () => {
+	it('Fabricate switches Theme/Component tabs and exports', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
 		await user.click(await screen.findByText('Fabricate'));
@@ -191,9 +191,9 @@ describe('Studio — Fabricate + Present dock respond', () => {
 		// Export theme (theme tab) confirms via toast.
 		await user.click(screen.getByRole('button', { name: /Export theme/ }));
 		expect(await screen.findByText(/Exported/)).toBeInTheDocument();
-		// Switch to the Layout tab — the REAL component studio appears (name + live
+		// Switch to the Component tab — the REAL component studio appears (name + live
 		// gate), the theme studio leaves.
-		await user.click(screen.getByRole('button', { name: /Layout/ }));
+		await user.click(screen.getByRole('button', { name: /Component/ }));
 		expect(await screen.findByLabelText('Component name')).toBeInTheDocument();
 		expect(screen.queryByText('Theme Studio')).not.toBeInTheDocument();
 	});

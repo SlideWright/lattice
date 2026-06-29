@@ -142,7 +142,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	}, []);
 	React.useEffect(() => { refreshThemes(); }, [refreshThemes]);
 	// Saved LOCAL components from the same shared library (kind:'component') —
-	// authored + saved in the Fabricate Layout Studio. They become insertable AND
+	// authored + saved in the Fabricate Component Studio. They become insertable AND
 	// render styled (their CSS is injected where the deck uses them).
 	const [localComponents, setLocalComponents] = React.useState<StudioComponent[]>([]);
 	const refreshComponents = React.useCallback(() => {
@@ -197,7 +197,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	// When inline validation is off, nothing is "unknown" — the editor, the issue
 	// count, and the Architect's component check all stand down together.
 	// Your saved local components are first-class names too — fold them into the
-	// known set so validation never flags a `.<name>` you authored in Layout Studio.
+	// known set so validation never flags a `.<name>` you authored in Component Studio.
 	// One memo, used both for deck scoring and the editor's inline lint (its stable
 	// identity also gates the CodeMirror re-init — it only changes when KNOWN or your
 	// saved components do).
@@ -888,7 +888,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 					<DropdownMenuContent align="start" className="w-60">
 						<DropdownMenuLabel className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Workspace</DropdownMenuLabel>
 						<DropdownMenuItem onSelect={() => setView('compose')}><Layers className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Decks</div><div className="text-[11px] text-muted-foreground">Your saved decks</div></div></DropdownMenuItem>
-						<DropdownMenuItem onSelect={() => setView('fabricate')}><PencilRuler className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Fabricate</div><div className="text-[11px] text-muted-foreground">Theme &amp; Layout Studio</div></div></DropdownMenuItem>
+						<DropdownMenuItem onSelect={() => setView('fabricate')}><PencilRuler className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Fabricate</div><div className="text-[11px] text-muted-foreground">Theme &amp; Component Studio</div></div></DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem onSelect={() => newDeck()}><Plus className="size-4" />New deck</DropdownMenuItem>
 						<DropdownMenuItem onSelect={() => importInputRef.current?.click()}><Upload className="size-4" />Import deck…</DropdownMenuItem>
