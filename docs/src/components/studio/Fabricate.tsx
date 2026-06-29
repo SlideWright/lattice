@@ -1,17 +1,19 @@
-import { ArrowUp, Check, ChevronRight, Download, LayoutGrid, Loader2, Moon, Palette, RotateCcw, Search, Sparkles, Sun, TriangleAlert, X } from 'lucide-react';
+import { ArrowUp, Check, ChevronDown, ChevronRight, Cloud, Download, LayoutGrid, Loader2, Moon, Palette, RotateCcw, Search, Sparkles, Sun, TriangleAlert, X } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
 // The REAL theme engine — same maths as the Node tooling + the WCAG gate
 // (lib/theme/*, bundled browser-safe). deriveTheme → ~80 tokens (contrast-
 // repaired), auditBoth → live WCAG report, serializeTheme → a real themes/*.css.
 import { auditBoth, contrastRatio, deriveTheme, STARTERS, serializeTheme, validateEssentials } from '@/playground/theme-core.generated.js';
-import { generateTheme } from './architect';
+import { connectOpenRouter, generateTheme, useArchitectStatus } from './architect';
 import { downloadText } from './download';
 import { LayoutStudio } from './LayoutStudio';
 import { saveStudioTheme, slugify } from './theme-library';
+import { useBreakpoint } from './use-breakpoint';
 
 // You pick ALL TEN essentials — the same set the engine derivation + the
 // Workbench Theme Studio take (theme-core ESSENTIAL_KEYS). The derivation
@@ -144,7 +146,7 @@ const contractLabelOf = (id: string) => CONTRACT.find((c) => c.token === id)?.la
 const tokenLabel = (id: string) => contractLabelOf(id) ?? bandLabel(id);
 const tierOf = (ratio: number | null, ok: boolean) => ((ratio ?? 0) >= 7 ? 'AAA' : ok ? 'AA' : 'FAIL');
 
-export function Fabricate({ options, onClose, notify, onSaved }: { options: SingleSlideOptions; onClose: () => void; notify: (msg: string) => void; onSaved?: () => void }) {
+export function Fabricate({ options, onClose, notify, onSaved, onOpenWorkspace }: { options: SingleSlideOptions; onClose: () => void; notify: (msg: string) => void; onSaved?: () => void; onOpenWorkspace?: () => void }) {
 	const [tab, setTab] = React.useState<'theme' | 'layout'>('theme');
 	// All ten essentials in state, seeded from the first curated starter.
 	const [core, setCore] = React.useState<Record<EssKey, string>>(() => ({ ...(STARTERS[0].essentials as Record<EssKey, string>) }));
@@ -166,6 +168,13 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 	const [rampStrategy, setRampStrategy] = React.useState('spectrum');
 	const [prompt, setPrompt] = React.useState('');
 	const [gen, setGen] = React.useState<'idle' | 'working'>('idle');
+	// Is a model connected (cloud or on-device)? When not, the AI bar grays out and
+	// offers a Connect affordance instead of a dead send button (floor = none).
+	const modelReady = useArchitectStatus().ready;
+	// Desktop shows the inspector as the right column; below desktop it renders
+	// inline under the selected row (so editing isn't a far-below scroll). Gated in
+	// JS (not CSS) so only ONE inspector is ever in the DOM.
+	const isDesktop = useBreakpoint() === 'desktop';
 	const accent = core.accent;
 	const setHex = (key: EssKey, hex: string) => setCore((c) => ({ ...c, [key]: hex }));
 	const setOverride = (token: string, side: 'light' | 'dark', hex: string) => setOverrides((o) => ({ ...o, [token]: { ...o[token], [side]: hex } }));
@@ -252,6 +261,15 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 
 	const q = query.trim().toLowerCase();
 	const startTheme = (e: Record<string, string>) => { setCore({ ...(e as Record<EssKey, string>) }); setOverrides({}); setRampStrategy('spectrum'); };
+	// On mobile the right inspector column is far below the tree, so we ALSO render
+	// the inspector inline directly under the selected row (lg:hidden) — the editor
+	// appears where you tapped. The desktop column is hidden on mobile (lg:block).
+	const inlineInspector = !isDesktop && (
+		<div className="border-y border-border bg-card">
+			<Inspector selected={selected} core={core} map={derived.map} overrides={overrides} mode={specimenMode} onHex={setHex} onOverride={setOverride} onReset={clearOverride} />
+		</div>
+	);
+	const isContractToken = (id: string) => CONTRACT.some((c) => c.token === id);
 
 	return (
 		<div className="flex min-h-0 flex-1 flex-col">
@@ -285,28 +303,46 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 				    + a ramp strategy; the engine derives the full, AA-verified palette
 				    shown live below. You never have to tweak a color — the wells are optional. */}
 				<div className="flex shrink-0 flex-col gap-2 border-b border-border bg-card px-4 py-2.5">
-					<div className="flex items-center gap-2.5 rounded-[10px] border border-[color-mix(in_srgb,var(--accent)_40%,var(--border))] bg-background px-3 py-2">
-						<Sparkles className="size-4 shrink-0 text-[var(--accent)]" />
+					<div className={cn('flex items-center gap-2.5 rounded-[10px] border bg-background px-3 py-2', modelReady ? 'border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]' : 'border-dashed border-border')}>
+						<Sparkles className={cn('size-4 shrink-0', modelReady ? 'text-[var(--accent)]' : 'text-muted-foreground')} />
 						<input
 							value={prompt}
 							onChange={(e) => setPrompt(e.target.value)}
 							onKeyDown={(e) => { if (e.key === 'Enter') runDescribe(prompt); }}
-							disabled={gen === 'working'}
+							disabled={gen === 'working' || !modelReady}
 							placeholder="Describe a look — e.g. “warm editorial, deep navy accent, confident”"
 							aria-label="Describe a look"
 							className="min-w-0 flex-1 bg-transparent text-[13px] text-[var(--text-heading)] outline-none placeholder:text-muted-foreground disabled:opacity-60"
 						/>
-						<button type="button" onClick={() => runDescribe(prompt)} disabled={gen === 'working' || !prompt.trim()} aria-label="Generate theme" className="grid size-7 shrink-0 place-items-center rounded-md bg-[var(--accent)] text-[var(--on-accent,#fff)] disabled:opacity-40">
-							{gen === 'working' ? <Loader2 className="size-4 animate-spin" /> : <ArrowUp className="size-4" />}
-						</button>
+						{modelReady ? (
+							<button type="button" onClick={() => runDescribe(prompt)} disabled={gen === 'working' || !prompt.trim()} aria-label="Generate theme" className="grid size-7 shrink-0 place-items-center rounded-md bg-[var(--accent)] text-[var(--on-accent,#fff)] disabled:opacity-40">
+								{gen === 'working' ? <Loader2 className="size-4 animate-spin" /> : <ArrowUp className="size-4" />}
+							</button>
+						) : (
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<button type="button" aria-label="Connect a model" className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--accent)] px-2.5 py-1 text-[12px] font-semibold text-[var(--on-accent,#fff)]"><Cloud className="size-3.5" />Connect<ChevronDown className="size-3" /></button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end" className="w-60">
+									<DropdownMenuItem onSelect={() => { connectOpenRouter().catch(() => notify('Could not start the OpenRouter connect flow — try Workspace.')); }}><Cloud className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Connect cloud</div><div className="text-[11px] text-muted-foreground">OpenRouter — best quality</div></div></DropdownMenuItem>
+									<DropdownMenuItem onSelect={() => onOpenWorkspace?.()}><Sparkles className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Use on-device</div><div className="text-[11px] text-muted-foreground">Runs locally, free — via Workspace</div></div></DropdownMenuItem>
+									<DropdownMenuSeparator />
+									<DropdownMenuItem onSelect={() => onOpenWorkspace?.()}>Open Workspace…</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						)}
 					</div>
-					<div className="flex flex-wrap items-center gap-1.5">
-						<span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">Refine</span>
-						{['Warmer', 'More corporate', 'Higher contrast', 'Calmer accent'].map((c) => (
-							<button key={c} type="button" onClick={() => runDescribe(c)} disabled={gen === 'working'} className="rounded-full border border-border px-2.5 py-0.5 text-[11px] text-muted-foreground hover:border-[var(--accent)] hover:text-[var(--text-heading)] disabled:opacity-40">{c}</button>
-						))}
-						<span className="ml-auto font-mono text-[10px] text-muted-foreground/70" title="Categorical hue layout the AI chose">ramp: {rampStrategy}</span>
-					</div>
+					{modelReady ? (
+						<div className="flex flex-wrap items-center gap-1.5">
+							<span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">Refine</span>
+							{['Warmer', 'More corporate', 'Higher contrast', 'Calmer accent'].map((c) => (
+								<button key={c} type="button" onClick={() => runDescribe(c)} disabled={gen === 'working'} className="rounded-full border border-border px-2.5 py-0.5 text-[11px] text-muted-foreground hover:border-[var(--accent)] hover:text-[var(--text-heading)] disabled:opacity-40">{c}</button>
+							))}
+							<span className="ml-auto font-mono text-[10px] text-muted-foreground/70" title="Categorical hue layout the AI chose">ramp: {rampStrategy}</span>
+						</div>
+					) : (
+						<p className="text-[11px] leading-snug text-muted-foreground">Connect a model to generate a full, AA-verified palette — or edit any token by hand below.</p>
+					)}
 				</div>
 
 				{/* The Pro Inspector — left token tree · center live canvas · right per-token
@@ -328,7 +364,13 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 									const t = ESS_TOKEN[c.key];
 									const ratio = readsOnBg(t) ? ratioVsBg(derived.map, t, specimenMode) : null;
 									const tag = ratio == null ? undefined : tierOf(ratio, ratio >= 4.5);
-									return <TreeRow key={c.key} label={c.label} swatch={core[c.key]} tag={tag} selected={selected.scope === 'essential' && selected.id === c.key} onClick={() => setSelected({ scope: 'essential', id: c.key })} />;
+									const sel = selected.scope === 'essential' && selected.id === c.key;
+									return (
+										<React.Fragment key={c.key}>
+											<TreeRow label={c.label} swatch={core[c.key]} tag={tag} selected={sel} onClick={() => setSelected({ scope: 'essential', id: c.key })} />
+											{sel && inlineInspector}
+										</React.Fragment>
+									);
 								})}
 							</TreeGroup>
 							{/* Contract */}
@@ -337,12 +379,19 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 									const s = sides(derived.map[c.token]);
 									const ratio = readsOnBg(c.token) ? ratioVsBg(derived.map, c.token, specimenMode) : null;
 									const tag = ratio == null ? undefined : tierOf(ratio, ratio >= 4.5);
-									return <TreeRow key={c.token} label={c.label} dual={s} tag={tag} overridden={overrides[c.token] != null} selected={selected.scope === 'derived' && selected.id === c.token} onClick={() => setSelected({ scope: 'derived', id: c.token })} />;
+									const sel = selected.scope === 'derived' && selected.id === c.token;
+									return (
+										<React.Fragment key={c.token}>
+											<TreeRow label={c.label} dual={s} tag={tag} overridden={overrides[c.token] != null} selected={sel} onClick={() => setSelected({ scope: 'derived', id: c.token })} />
+											{sel && inlineInspector}
+										</React.Fragment>
+									);
 								})}
 							</TreeGroup>
 							{/* Data-viz band — click-to-select strips */}
 							<TreeGroup name="Data-viz band" count={37} collapsed={collapsed.has('Band')} onToggle={() => toggleGroup('Band')}>
 								<BandStrips map={derived.map} overrides={overrides} mode={specimenMode} selId={selected.scope === 'derived' ? selected.id : ''} onPick={(t) => setSelected({ scope: 'derived', id: t })} />
+								{selected.scope === 'derived' && !isContractToken(selected.id) && inlineInspector}
 							</TreeGroup>
 							{/* Starters */}
 							<TreeGroup name="Starter palettes" count={STARTERS.length} collapsed={collapsed.has('Starters')} onToggle={() => toggleGroup('Starters')}>
@@ -397,7 +446,9 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 
 					{/* RIGHT — per-token inspector + the WCAG audit */}
 					<aside className="shrink-0 border-t border-border bg-card lg:overflow-y-auto lg:border-l lg:border-t-0">
-						<Inspector selected={selected} core={core} map={derived.map} overrides={overrides} mode={specimenMode} onHex={setHex} onOverride={setOverride} onReset={clearOverride} />
+						{/* Desktop-only column inspector; below desktop it renders inline under the
+						    selected row (above), so the column hides to avoid a far-below scroll. */}
+						{isDesktop && <Inspector selected={selected} core={core} map={derived.map} overrides={overrides} mode={specimenMode} onHex={setHex} onOverride={setOverride} onReset={clearOverride} />}
 						<AuditPanel rows={auditRows} ok={derived.audit.ok} />
 					</aside>
 				</div>

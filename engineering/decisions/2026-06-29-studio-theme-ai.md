@@ -103,6 +103,26 @@ separate chat column. The canvas selected-token highlight is descoped to a
 flagged fast-follow (the inspector already shows the swatch + per-pair contrast,
 so the glow is reinforcement, not mechanism).
 
+## Mobile + no-model refinements (post-preview review)
+
+Reviewing the live Cloudflare preview on a phone surfaced two gaps, both folded
+into the same PR:
+
+- **No model connected → the AI bar grays out + a Connect affordance.** Showing a
+  live-looking "Describe a look" bar with no model behind it wasted intent (a tap
+  just earned a toast). The bar now reads the architect status: when no model is
+  connected the input grays out and the send button becomes a **Connect** dropdown
+  — one tap to **Connect cloud** (OpenRouter OAuth), **Use on-device**, or **Open
+  Workspace** (where the on-device tier + spend controls live). A line reminds the
+  author they can still edit every token by hand. Honest: a dead control never
+  looks live.
+- **Master–detail breaks on mobile → inline-expand.** With the inspector as the
+  right column, selecting a token on a stacked mobile layout meant scrolling past
+  the whole tree to edit it. Below desktop, the inspector now renders **inline
+  directly under the selected row** (the editor appears where you tapped); the
+  desktop column is unchanged. Gated by `useBreakpoint()` in JS (not CSS) so only
+  one inspector instance is ever in the DOM.
+
 ## Scope boundaries
 
 - Hex + `light-dark()` output only; no `oklch()` serialization (later spike).
