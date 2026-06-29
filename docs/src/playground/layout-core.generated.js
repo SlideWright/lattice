@@ -57,6 +57,19 @@ var require_gate = __commonJS({
     var CSS_ONLY_SUBSTANCES2 = Object.freeze(["prose", "structure"]);
     var NAME_RE2 = /^[a-z][a-z0-9-]*$/;
     var HEX_RE = /#[0-9a-fA-F]{3,8}\b/g;
+    var CSS_EXFIL_RULES = Object.freeze([
+      { rule: "css-import", re: /@import\b/gi, message: "@import fetches a remote stylesheet \u2014 not allowed (it can beacon out or load attacker CSS)." },
+      { rule: "css-expression", re: /\bexpression\s*\(/gi, message: "CSS expression() executes script \u2014 not allowed." },
+      { rule: "css-binding", re: /-moz-binding\b/gi, message: "-moz-binding binds script to an element \u2014 not allowed." },
+      { rule: "css-scheme", re: /\b(?:javascript|vbscript)\s*:/gi, message: "a javascript:/vbscript: URL is a script vector \u2014 not allowed." }
+    ]);
+    var URL_RE = /url\(\s*("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[^)]*?)\s*\)/gi;
+    function urlIsLocal(raw) {
+      let s = String(raw).trim();
+      if (s[0] === '"' && s.endsWith('"') || s[0] === "'" && s.endsWith("'")) s = s.slice(1, -1);
+      s = s.trim().toLowerCase();
+      return s.startsWith("#") || s.startsWith("data:");
+    }
     function stripComments(css) {
       return String(css || "").replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " "));
     }
@@ -64,6 +77,23 @@ var require_gate = __commonJS({
       let n = 1;
       for (let i = 0; i < index && i < text.length; i++) if (text[i] === "\n") n++;
       return n;
+    }
+    function findCssExfil(css) {
+      const src = stripComments(css);
+      const out = [];
+      for (const { rule, re, message } of CSS_EXFIL_RULES) {
+        for (const m of src.matchAll(re)) out.push({ rule, message, line: lineAt(src, m.index) });
+      }
+      for (const m of src.matchAll(URL_RE)) {
+        if (!urlIsLocal(m[1])) {
+          out.push({
+            rule: "css-url-remote",
+            line: lineAt(src, m.index),
+            message: `url(${m[1]}) fetches a remote resource \u2014 only inline data: URIs and #fragment refs are allowed (a remote url() can beacon deck content out).`
+          });
+        }
+      }
+      return out;
     }
     function findHexLiterals2(css) {
       const src = stripComments(css);
@@ -182,6 +212,9 @@ var require_gate = __commonJS({
           message: `selector "${u.selector}" is not scoped to .${name} \u2014 it would leak onto other slides.`
         });
       }
+      for (const e of findCssExfil(css)) {
+        findings.push({ rule: e.rule, level: "error", line: e.line, message: e.message });
+      }
       return { ok: findings.every((f) => f.level !== "error"), findings };
     }
     function gateComponent2({ name, css, manifest, skeleton } = {}, opts = {}) {
@@ -214,6 +247,7 @@ var require_gate = __commonJS({
       CSS_ONLY_SUBSTANCES: CSS_ONLY_SUBSTANCES2,
       NAME_RE: NAME_RE2,
       findHexLiterals: findHexLiterals2,
+      findCssExfil,
       findUnscopedSelectors: findUnscopedSelectors2,
       validateManifest: validateManifest2,
       skeletonInvokes: skeletonInvokes2,

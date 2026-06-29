@@ -7,6 +7,7 @@
 // re-linted); cancel/Esc discards. No model — this is pure tooling, fully
 // verified headless.
 
+import { sanitizeSlideHtml } from '../lib/sanitize-slide-html.js';
 import { createEditor } from './editor.js';
 // The pure caret→block detection lives in its own import-free module so the Node
 // suite can test it without dragging in CodeMirror (a docs-only dep, absent from
@@ -62,7 +63,7 @@ export function createFocus({ host, editor, themeBase, runtimeUrl }) {
     return '<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="' + KATEX + '">'
       + '<style>html,body{margin:0;height:100vh;overflow:hidden;background:' + bg + ';}' + box
       + '.lattice>section{box-shadow:0 10px 40px rgba(0,0,0,.3);border-radius:8px;}' + out.css + '</style></head><body>'
-      + out.html + '<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt><scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>'
+      + sanitizeSlideHtml(out.html) + '<scr' + 'ipt src="' + MERMAID + '"></scr' + 'ipt><scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>'
       + '<scr' + 'ipt>' + FIT + '</scr' + 'ipt></body></html>';
   }
 

