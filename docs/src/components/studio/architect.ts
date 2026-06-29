@@ -80,7 +80,9 @@ let modelPromise: Promise<ArchitectModel | null> | null = null;
 export function architectModel(): Promise<ArchitectModel | null> {
 	if (!modelPromise) {
 		modelPromise = import('@/playground/architect-model.js')
-			.then((m) => m.createArchitectModel({ getSettings: () => ({}) }) as ArchitectModel)
+			// explicitTierWins: a deliberate on-device pick outranks the connected cloud
+			// (Studio Policy B — connection ≠ active; one tap resumes the cloud).
+			.then((m) => m.createArchitectModel({ getSettings: () => ({}), explicitTierWins: true }) as ArchitectModel)
 			.catch(() => null);
 	}
 	return modelPromise;

@@ -31,9 +31,14 @@ in patch versions.
   "AI model" tab gains the curated OpenRouter **model picker** the Studio had been missing —
   the collapsed summary (model name + ctx · price), search, and **Featured / Value / Free / All**
   lenses with vendor-grouped, priced rows (`vision` badge on image models), defaulting to Claude
-  Sonnet 4. The dropped **on-device tier** is restored as a Cloud / On-device control exposing the
-  full free, private ladder (browser built-in · WebLLM ~1GB · universal Transformers.js ~350MB,
-  with download progress). The **Spend** tab now shows the *authoritative* OpenRouter account
+  Sonnet 4. The dropped **on-device tier** is restored as a **Generation switch** (Cloud / On-device)
+  that picks the *active* tier — exposing the full free, private ladder (browser built-in · WebLLM
+  ~1GB · universal Transformers.js ~350MB, with confirm-before-download + cancel). A red-team
+  hardened this: *connected ≠ active* — a deliberate on-device pick now outranks the connected cloud
+  (opt-in `explicitTierWins`, so the Drawing Board's cloud-first order is untouched), the "active"
+  badge reflects the true active tier, and one tap resumes the cloud (no disconnect). The vestigial
+  **Cloud tab is folded in** (5 tabs → 4). See
+  `engineering/decisions/2026-06-29-studio-tier-precedence.md`. The **Spend** tab now shows the *authoritative* OpenRouter account
   balance (`$X left · $Y used` via `openRouterAccount()`) beside the live per-session tally,
   dropping the old local "all-time" figure that always read `$0.00`. The curated lists + pricing/
   grouping helpers are extracted to a shared `or-catalog.js` so the Studio and the Drawing Board

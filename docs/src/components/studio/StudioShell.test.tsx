@@ -152,10 +152,12 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace settings' }));
 		const sheet = within(await screen.findByRole('dialog', { name: /Workspace/ }));
-		// Default tab = AI model: the ACTIVE tier is reported honestly (floor in the
-		// test env, no model connected) with a one-click Connect affordance.
-		expect(sheet.getByText('Active generation tier')).toBeInTheDocument();
-		expect(sheet.getByText(/Floor/)).toBeInTheDocument();
+		// Default tab = AI model: a Generation switch (Cloud / On-device) that picks the
+		// active tier. With no model in the test env, nothing is active yet, and the
+		// Cloud pane offers a one-click Connect affordance.
+		expect(sheet.getByText('Generation')).toBeInTheDocument();
+		expect(sheet.getByRole('tab', { name: 'On-device' })).toBeInTheDocument();
+		expect(sheet.getByText(/No tier active yet/)).toBeInTheDocument();
 		expect(sheet.getByRole('button', { name: /Connect OpenRouter/ })).toBeInTheDocument();
 		// Spend tab shows real (zero) session spend, not a fabricated figure. With no
 		// model connected there's no authoritative account line — only the honest live

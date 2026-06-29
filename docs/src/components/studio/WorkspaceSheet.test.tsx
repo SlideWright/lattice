@@ -110,15 +110,27 @@ describe('WorkspaceSheet — G6 model picker', () => {
 });
 
 describe('WorkspaceSheet — G6 on-device tier', () => {
-	it('switches to the on-device ladder and can load the universal tier', async () => {
+	it('switches to the on-device ladder; loading the universal tier confirms then activates it', async () => {
 		const { user, sheet } = openSheet();
 		await user.click(sheet.getByRole('tab', { name: 'On-device' }));
 		expect(await sheet.findByText('Browser built-in')).toBeInTheDocument();
 		expect(sheet.getByText('WebLLM')).toBeInTheDocument();
 		expect(sheet.getByText(/Universal/)).toBeInTheDocument();
-		// WebLLM is disabled without WebGPU; the universal tier loads.
-		await user.click(sheet.getByRole('button', { name: /Load ~350MB/ }));
+		// The cloud stays connected-but-dormant while the on-device pane is shown.
+		expect(sheet.getByText(/connected, dormant/)).toBeInTheDocument();
+		// A large download asks to confirm first (no silent ~350MB fetch), then loads
+		// AND activates the tier (Policy B — a pick truly switches the active tier).
+		await user.click(sheet.getByRole('button', { name: /Get ~350MB/ }));
+		await user.click(await sheet.findByRole('button', { name: /Download ~350MB/ }));
 		expect(loadUniversalSpy).toHaveBeenCalled();
+		expect(setTierSpy).toHaveBeenCalledWith('universal');
+	});
+
+	it('the On-device button does not silently switch; "Use Cloud" resumes the cloud tier', async () => {
+		const { user, sheet } = openSheet();
+		await user.click(sheet.getByRole('tab', { name: 'On-device' }));
+		await user.click(await sheet.findByRole('button', { name: 'Use Cloud' }));
+		expect(setTierSpy).toHaveBeenCalledWith('auto');
 	});
 });
 

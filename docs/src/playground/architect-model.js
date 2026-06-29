@@ -482,9 +482,17 @@ export function extractJson(text) {
 
 // ── The adapter ───────────────────────────────────────────────────────────────
 
-export function createArchitectModel({ getSettings } = {}) {
+/** @param {{ getSettings?: () => Record<string, unknown>, explicitTierWins?: boolean }} [opts] */
+export function createArchitectModel({ getSettings, explicitTierWins = false } = {}) {
   const settings = () => (getSettings ? getSettings() : {}) || {};
   const modelOn = () => settings().modelEnabled !== false; // default on; one switch off
+  // Tier-precedence policy. Default (false): the connected cloud always wins over a
+  // local tier — the Drawing Board relies on this (it has no "back to cloud" control,
+  // so a loaded local model must stay dormant under a connection). When true (the
+  // Studio): a DELIBERATE on-device pick (tierPref set by the user) outranks the
+  // cloud, so "connected" and "active" are decoupled — the user runs on-device while
+  // staying connected, and one tap (tierPref→'auto') resumes the cloud. See
+  // engineering/decisions/2026-06-29-studio-tier-precedence.md.
 
   let injected = null; // test hook — a MockBackend
   const prompt = promptApiBackend();
@@ -507,16 +515,23 @@ export function createArchitectModel({ getSettings } = {}) {
   function pickBackend() {
     if (!modelOn() || tierPref === 'floor') return floorBackend;
     if (injected) return injected;
-    // The connected OpenRouter cloud (Converse) is the best generation backend and
-    // wins over every local tier.
+    // A deliberate on-device selection that is actually ready (the user picked this
+    // tier — not the 'auto' default).
+    const explicit =
+      (tierPref === 'webllm' && webllm.ready() && webllm) ||
+      (tierPref === 'universal' && universal.ready() && universal) ||
+      (tierPref === 'prompt-api' && promptAvail === 'available' && prompt) ||
+      null;
+    // Studio policy (explicitTierWins): an explicit on-device pick outranks the
+    // connected cloud — the user chose to run local while staying connected.
+    if (explicitTierWins && explicit) return explicit;
+    // The connected OpenRouter cloud (Converse) is otherwise the best backend and is
+    // the default active tier whenever connected.
     if (openrouter.ready()) return openrouter;
-    // Explicit preference wins when that tier is ready.
-    if (tierPref === 'webllm' && webllm.ready()) return webllm;
-    if (tierPref === 'universal' && universal.ready()) return universal;
-    if (tierPref === 'prompt-api' && promptAvail === 'available') return prompt;
-    // auto ladder: WebLLM (advanced, explicitly summoned) → built-in Prompt API
-    // (free, instant, no download) → Transformers.js universal (loaded WASM) →
-    // floor. Matches the plan's Prompt-API-first, Transformers.js-fallback intent.
+    // No cloud: an explicit pick applies, then the auto ladder — WebLLM (advanced,
+    // explicitly summoned) → built-in Prompt API (free, instant) → Transformers.js
+    // universal (loaded WASM) → floor.
+    if (explicit) return explicit;
     if (webllm.ready()) return webllm;
     if (promptAvail === 'available') return prompt;
     if (universal.ready()) return universal;
