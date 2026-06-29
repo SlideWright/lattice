@@ -303,7 +303,7 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 					</div>
 					{/* The three live previews — every override re-renders all three so you
 					    see a band colour take effect on the slide, the chart and Mermaid. */}
-					<div className="grid gap-3 xl:grid-cols-3">
+					<div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
 						{[
 							{ label: 'Slide', sample: SPECIMEN, mermaid: false, aria: 'Theme specimen' },
 							{ label: 'Chart', sample: CHART_SPECIMEN, mermaid: false, aria: 'Chart specimen' },
