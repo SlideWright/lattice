@@ -50,3 +50,32 @@ describe('DeckPreview — theme threading', () => {
 		expect(renderInto.mock.calls.at(-1)?.[5]).toBe('dark');
 	});
 });
+
+describe('DeckPreview — debounced render (per-keystroke coalescing)', () => {
+	it('paints the first sample immediately, then COALESCES a rapid burst into one trailing render', async () => {
+		const { rerender } = render(<DeckPreview options={opts} sample="# A" mermaid={false} debounceMs={120} aria-label="p" />);
+		// First paint is always immediate — a fresh host must show something at once.
+		await waitFor(() => expect(renderInto).toHaveBeenCalledTimes(1));
+		expect(renderInto.mock.calls.at(-1)?.[1]).toBe('# A');
+
+		// A burst of edits with no pause — like typing. Each resets the trailing timer.
+		rerender(<DeckPreview options={opts} sample="# AB" mermaid={false} debounceMs={120} aria-label="p" />);
+		rerender(<DeckPreview options={opts} sample="# ABC" mermaid={false} debounceMs={120} aria-label="p" />);
+		rerender(<DeckPreview options={opts} sample="# ABCD" mermaid={false} debounceMs={120} aria-label="p" />);
+		// Still mid-burst (< debounceMs): the engine has NOT re-rendered for each keystroke.
+		await new Promise((r) => setTimeout(r, 40));
+		expect(renderInto).toHaveBeenCalledTimes(1);
+
+		// After the pause, exactly ONE more render fires — carrying only the latest text.
+		await waitFor(() => expect(renderInto).toHaveBeenCalledTimes(2), { timeout: 600 });
+		expect(renderInto.mock.calls.at(-1)?.[1]).toBe('# ABCD');
+	});
+
+	it('with debounceMs=0 (default) every change renders eagerly — static hosts keep their behavior', async () => {
+		const { rerender } = render(<DeckPreview options={opts} sample="# A" mermaid={false} aria-label="p" />);
+		await waitFor(() => expect(renderInto).toHaveBeenCalledTimes(1));
+		rerender(<DeckPreview options={opts} sample="# B" mermaid={false} aria-label="p" />);
+		await waitFor(() => expect(renderInto).toHaveBeenCalledTimes(2));
+		expect(renderInto.mock.calls.at(-1)?.[1]).toBe('# B');
+	});
+});

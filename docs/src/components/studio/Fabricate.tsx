@@ -311,7 +311,7 @@ export function Fabricate({ options, onClose, notify, onSaved }: { options: Sing
 						].map((p) => (
 							<div key={p.label} className="flex min-w-0 flex-col gap-1.5">
 								<span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/80">{p.label}</span>
-								<DeckPreview options={options} sample={p.sample} mermaid={p.mermaid} paletteOverride={derived.name} extraTheme={derived.css ? { name: derived.name, css: derived.css } : undefined} modeOverride={specimenMode} className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-background shadow-[0_6px_18px_rgba(10,22,40,.10)]" aria-label={p.aria} />
+								<DeckPreview options={options} sample={p.sample} mermaid={p.mermaid} paletteOverride={derived.name} extraTheme={derived.css ? { name: derived.name, css: derived.css } : undefined} modeOverride={specimenMode} debounceMs={140} className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-background shadow-[0_6px_18px_rgba(10,22,40,.10)]" aria-label={p.aria} />
 							</div>
 						))}
 					</div>

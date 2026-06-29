@@ -206,6 +206,17 @@ in patch versions.
     now threads through the export capture), so exported decks' diagrams no longer
     depend on the jsdelivr CDN. `renderPdfBlob` extracts the PDF-to-bytes core of
     `exportPdf` for embedding (the Library's showcase).
+  - **Performance — typing no longer re-renders the engine on every keystroke,
+    and exports show live progress instead of freezing.** The live preview now
+    coalesces rapid edits to one trailing render (the editor stays at 60 fps;
+    production main-thread blocking per typing burst drops from ~53 ms to ~0 ms,
+    and the worst-case spikes are gone), and a leaked per-keystroke render in the
+    preview's active-edge effect is closed. The PDF/PPTX export now reports
+    per-slide progress ("Rendering slide 3 of 6…") and yields between slides so
+    the tab paints and stays responsive through a multi-second render — the
+    exported bytes are unchanged. Profiling showed the two paths once slated for
+    web workers (theme derivation, lint) are sub-millisecond, so no worker was
+    added. See `engineering/decisions/2026-06-29-studio-render-debounce.md`.
 - **`--present`: PDFs that open straight into full-screen presentation mode.**
   A new opt-in CLI flag marks the exported PDF's document catalog so Adobe
   Acrobat/Reader and most desktop viewers open it directly in full-screen /

@@ -463,6 +463,11 @@ async function buildPdfDoc(render, name, onStatus, meta) {
 			const png = await rasterizeSection(sections[i], fontEmbedCSS);
 			if (i > 0) pdf.addPage([pageW, pageH], 'landscape');
 			pdf.addImage(png, 'PNG', 0, 0, pageW, pageH);
+			// Yield a macrotask between slides so the browser can PAINT the progress
+			// line and service input — the per-slide rasterize + PNG-deflate are
+			// synchronous, and without this break a multi-slide export blocks the main
+			// thread in one long freeze. The bytes are identical; only the pacing changes.
+			await new Promise((r) => setTimeout(r));
 		}
 		return pdf;
 	} finally {
@@ -514,6 +519,9 @@ export async function exportPptx(render, name, onStatus, meta) {
 		if (onStatus) onStatus('Rendering slide ' + (i + 1) + ' of ' + sections.length + '…', { current: i, total: sections.length });
 		const png = await rasterizeSection(sections[i], fontEmbedCSS);
 		pptx.addSlide().addImage({ data: png, x: 0, y: 0, w: '100%', h: '100%' });
+		// Yield between slides so the progress paints and input stays live (see the
+		// matching note in buildPdfDoc) — the per-slide rasterize is synchronous.
+		await new Promise((r) => setTimeout(r));
 	}
 	if (onStatus) onStatus('Building .pptx…', { current: sections.length, total: sections.length });
 	await pptx.writeFile({ fileName: safeName(name) + '.pptx' });

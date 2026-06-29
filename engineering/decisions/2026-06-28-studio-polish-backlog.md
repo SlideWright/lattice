@@ -103,10 +103,19 @@ thing). A group may split into two PRs if a sub-item balloons.
 - Wire **OpenRouter TTS** (never got working) per
   <https://openrouter.ai/docs/guides/overview/multimodal/tts>.
 
-## G8 · Performance  *(no key)*
-- **UI can hang** — profile main-thread blocking (engine render, per-keystroke
-  lint, export rasterization, theme derivation); offload to web workers where it
-  pays. Some work is already workered (Kokoro voice).
+## G8 · Performance  *(no key)*  ✅ shipped — #43
+- ✅ **Profiled first; the premise didn't hold.** The "3-second hang" was largely a
+  Vite **dev-server** artifact (`jsxDEV` + unbundled modules, ~50× inflated); in
+  production per-keystroke blocking was ~53 ms. The two paths slated for **web
+  workers** — theme derivation (0.5 ms) and lint (0.006 ms) — are sub-millisecond,
+  so **no worker pays**; the engine preview render's heavy slice is DOM-bound and
+  can't leave the main thread.
+- ✅ **Typing → preview** no longer re-renders the engine every keystroke: an opt-in
+  trailing **debounce** on the shared `DeckPreview` (prod 53 ms → 0 ms median
+  blocking), plus closing an active-edge effect that leaked an un-debounced render.
+- ✅ **Export rasterization** (the real freeze): per-slide **progress** (the Studio
+  passed `onStatus: undefined`) + a **yield between slides** so the tab paints and
+  stays responsive — bytes unchanged. `2026-06-29-studio-render-debounce.md`.
 
 ## Deferred · Security decision (no build yet)
 - **Transformer-JS authoring** in the Component Studio is a real RCE/XSS surface

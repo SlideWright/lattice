@@ -833,7 +833,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				{/* pointer-events-none so a swipe over the slide (an engine iframe, which
 				    would otherwise swallow the touch) reaches the swipe container. */}
 				<div className={cn('pointer-events-none relative overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]', previewPortrait ? 'h-full w-auto' : 'h-auto w-full max-w-[760px]')} style={{ aspectRatio: `${previewRatio[0]} / ${previewRatio[1]}` }}>
-					<DeckPreview options={options} sample={fm ? fm + slide : slide} mermaid={false} paletteOverride={activeTheme?.name} extraTheme={extraTheme} extraCss={usedLocalCss} className="size-full" aria-label="Live deck preview" />
+					<DeckPreview options={options} sample={fm ? fm + slide : slide} mermaid={false} paletteOverride={activeTheme?.name} extraTheme={extraTheme} extraCss={usedLocalCss} debounceMs={140} className="size-full" aria-label="Live deck preview" />
 				</div>
 			</div>
 			{/* Slide navigator — jump to any slide, see its component type */}

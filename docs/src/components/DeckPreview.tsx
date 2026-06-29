@@ -41,6 +41,14 @@ export type DeckPreviewProps = {
 	 * the render until it is shown — re-renders on the rising edge.
 	 */
 	active?: boolean;
+	/**
+	 * Coalesce rapid re-renders (e.g. per-keystroke source edits) to a TRAILING
+	 * debounce, so a typing burst triggers ONE engine render after the user
+	 * pauses instead of one per keystroke. The first paint is always immediate;
+	 * only subsequent changes are debounced. 0 (default) renders eagerly — the
+	 * right choice for a static-`sample` host (landing, showcases).
+	 */
+	debounceMs?: number;
 	className?: string;
 	'aria-label'?: string;
 	role?: React.AriaRole;
@@ -60,6 +68,7 @@ export function DeckPreview({
 	modeOverride,
 	extraCss,
 	active = true,
+	debounceMs = 0,
 	className,
 	role,
 	...aria
@@ -86,16 +95,31 @@ export function DeckPreview({
 		if (host && activeRef.current) engineRef.current?.renderInto(host, sample, mermaid, paletteOverride, extraTheme, modeOverride, extraCss);
 	}, [sample, mermaid, paletteOverride, extraTheme?.name, extraTheme?.css, modeOverride, extraCss]);
 
-	// First render once the engine bundle has loaded.
+	// Always hold the LATEST render closure in a ref, so the active rising-edge
+	// effect can reach the current render WITHOUT listing it as a dependency —
+	// otherwise that effect re-fires on every content change and renders eagerly,
+	// silently defeating the debounce below.
+	const renderRef = React.useRef(render);
+	renderRef.current = render;
+
+	// Render once the engine bundle has loaded, then again whenever the source
+	// (or theme) changes. The FIRST paint runs immediately; with `debounceMs` set
+	// each subsequent change is coalesced to a trailing timer, so a typing burst
+	// fires ONE engine render after the pause instead of one (~38ms) per keystroke
+	// — the per-keystroke render is what blocks the main thread (see
+	// `engineering/decisions/2026-06-29-studio-render-debounce.md`).
+	const paintedRef = React.useRef(false);
 	React.useEffect(() => {
 		let cancelled = false;
-		engineRef.current?.whenReady().then(() => {
-			if (!cancelled) render();
-		});
-		return () => {
-			cancelled = true;
-		};
-	}, [render]);
+		const paint = () => engineRef.current?.whenReady().then(() => { if (!cancelled) render(); });
+		if (!paintedRef.current || debounceMs <= 0) {
+			paintedRef.current = true;
+			paint();
+			return () => { cancelled = true; };
+		}
+		const id = setTimeout(paint, debounceMs);
+		return () => { cancelled = true; clearTimeout(id); };
+	}, [render, debounceMs]);
 
 	// Re-render on palette / mode change (the shared topbar writes <html> attrs).
 	React.useEffect(() => {
@@ -112,10 +136,16 @@ export function DeckPreview({
 		};
 	}, [render]);
 
-	// Render on the rising edge of `active` (e.g. switching back to a tab).
+	// Render ONLY on the rising edge of `active` (e.g. switching back to a tab) —
+	// reading the latest render via the ref so this effect does NOT re-fire (and
+	// eagerly render) on every content change. Depending on `render` here is what
+	// leaked a per-keystroke render past the debounce.
+	const wasActiveRef = React.useRef(active);
 	React.useEffect(() => {
-		if (active) requestAnimationFrame(render);
-	}, [active, render]);
+		const rising = active && !wasActiveRef.current;
+		wasActiveRef.current = active;
+		if (rising) requestAnimationFrame(() => renderRef.current());
+	}, [active]);
 
 	// `m-0` neutralizes the `<figure>` UA default margin (`0 40px`) — Tailwind
 	// preflight doesn't reach inside the studio island, and that 40px inline margin
