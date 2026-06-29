@@ -9,11 +9,11 @@ import { shareMarkdown, shareMarp, sharePdf, sharePptx, sharePrintDeck, sharePri
 // the rendered ARTIFACT vs hand off the SOURCE. Every row is REAL now: the source
 // paths download/print the Markdown; the artifact paths run the engine export
 // pipeline (image PDF/PPTX, vector Print, the Marp ZIP) — see share-export.ts.
-function Row({ icon, title, desc, dev, busy, onClick }: { icon: React.ReactNode; title: string; desc: string; dev?: boolean; busy?: boolean; onClick?: () => void }) {
+function Row({ icon, title, desc, dev, busy, status, onClick }: { icon: React.ReactNode; title: string; desc: string; dev?: boolean; busy?: boolean; status?: string | null; onClick?: () => void }) {
 	return (
 		<button type="button" disabled={busy} onClick={onClick} className="flex w-full items-center gap-3 rounded-xl border border-border bg-background px-3 py-3 text-left hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))] hover:bg-[var(--accent-soft)] disabled:opacity-60">
 			<span className={`grid size-9 place-items-center rounded-lg ${dev ? 'bg-card text-muted-foreground' : 'bg-[var(--accent-soft)] text-[var(--accent)]'}`}>{icon}</span>
-			<span className="min-w-0"><span className="block text-[13.5px] font-semibold text-[var(--text-heading)]">{title}</span><span className="block text-[11.5px] text-muted-foreground">{desc}</span></span>
+			<span className="min-w-0"><span className="block text-[13.5px] font-semibold text-[var(--text-heading)]">{title}</span><span className={`block truncate text-[11.5px] ${busy && status ? 'text-[var(--accent)]' : 'text-muted-foreground'}`}>{busy && status ? status : desc}</span></span>
 			{busy ? <Loader2 className="ml-auto size-4 animate-spin text-[var(--accent)]" /> : <ChevronRight className="ml-auto size-4 text-muted-foreground" />}
 		</button>
 	);
@@ -22,20 +22,26 @@ function Row({ icon, title, desc, dev, busy, onClick }: { icon: React.ReactNode;
 export function ShareSheet({ open, onOpenChange, deckTitle, source, options, palette, mode, extraTheme, extraCss, onPresent, notify }: { open: boolean; onOpenChange: (v: boolean) => void; deckTitle: string; source: string; options: SingleSlideOptions; palette: string; mode: 'light' | 'dark'; extraTheme?: { name: string; css: string }; extraCss?: string; onPresent: () => void; notify: (msg: string) => void }) {
 	const close = () => onOpenChange(false);
 	const [busy, setBusy] = React.useState<string | null>(null);
+	// Live per-slide status for the heavy exports (PDF/PPTX), shown in the busy row.
+	const [progress, setProgress] = React.useState<string | null>(null);
 
 	// Run an async export with a busy spinner + honest success / failure toast. The
-	// heavy artifact exports (PDF/PPTX) can take seconds — the row spins meanwhile.
+	// heavy artifact exports (PDF/PPTX) can take seconds, so `fn` is handed an
+	// `onStatus` it can call to report progress ("Rendering slide 3 of 6…"), which
+	// the row surfaces live instead of leaving the user staring at a bare spinner.
 	const run = React.useCallback(
-		async (key: string, label: string, fn: () => Promise<void> | void) => {
+		async (key: string, label: string, fn: (onStatus: (m: string) => void) => Promise<void> | void) => {
 			if (busy) return;
 			setBusy(key);
+			setProgress(null);
 			try {
-				await fn();
+				await fn(setProgress);
 				notify(`${label} ready.`);
 			} catch (e) {
 				notify(`${label} failed: ${(e as Error)?.message || 'unexpected error'}`);
 			} finally {
 				setBusy(null);
+				setProgress(null);
 			}
 		},
 		[busy, notify],
@@ -55,8 +61,8 @@ export function ShareSheet({ open, onOpenChange, deckTitle, source, options, pal
 						<h3 className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Hand off the deck</h3>
 						<p className="text-xs text-muted-foreground">The rendered, paginated deck — for your audience.</p>
 						<Row icon={<Link2 className="size-4" />} title="Present link" desc="A live, themed link that opens in Present" onClick={() => { close(); onPresent(); }} />
-						<Row busy={busy === 'pdf'} icon={<Download className="size-4" />} title="PDF" desc="One slide per page, high-resolution" onClick={() => run('pdf', 'PDF', () => sharePdf(options, source, name, palette, mode, extraTheme, undefined, extraCss))} />
-						<Row busy={busy === 'pptx'} icon={<Monitor className="size-4" />} title="PowerPoint" desc="PPTX, one slide per page" onClick={() => run('pptx', 'PowerPoint', () => sharePptx(options, source, name, palette, mode, extraTheme, undefined, extraCss))} />
+						<Row busy={busy === 'pdf'} status={progress} icon={<Download className="size-4" />} title="PDF" desc="One slide per page, high-resolution" onClick={() => run('pdf', 'PDF', (onStatus) => sharePdf(options, source, name, palette, mode, extraTheme, onStatus, extraCss))} />
+						<Row busy={busy === 'pptx'} status={progress} icon={<Monitor className="size-4" />} title="PowerPoint" desc="PPTX, one slide per page" onClick={() => run('pptx', 'PowerPoint', (onStatus) => sharePptx(options, source, name, palette, mode, extraTheme, onStatus, extraCss))} />
 						<Row busy={busy === 'print'} icon={<Printer className="size-4" />} title="Print deck" desc="The rendered slides, vector — default print" onClick={() => run('print', 'Print', () => sharePrintDeck(options, source, name, palette, mode, extraTheme, extraCss))} />
 					</section>
 					<section className="space-y-2">
