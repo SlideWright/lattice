@@ -11,7 +11,7 @@ const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 
 const { askMessages, coerceEssentials } = require('../../../lib/theme/ai.js');
-const { deriveTheme, ESSENTIAL_KEYS } = require('../../../lib/theme/derive.js');
+const { deriveTheme, ESSENTIAL_KEYS, RAMP_STRATEGIES } = require('../../../lib/theme/derive.js');
 const { auditBoth } = require('../../../lib/theme/contrast.js');
 const { STARTERS } = require('../../../lib/theme/starters.js');
 
@@ -85,5 +85,23 @@ describe('theme-ai', () => {
     const r = coerceEssentials({}, FALLBACK); // empty reply ≈ floor
     assert.ok(!r.ok);
     assert.equal(r.applied.length, 0);
+  });
+
+  test('askMessages carries the token canon + the rampStrategy contract', () => {
+    const sys = askMessages(FALLBACK, 'warm editorial').at(0).content;
+    assert.match(sys, /OKLCH/, 'canon should explain the derivation space');
+    assert.match(sys, /indaco/i, 'canon should include the worked example');
+    assert.match(sys, /rampStrategy/, 'output contract should request a strategy');
+    for (const s of RAMP_STRATEGIES) assert.match(sys, new RegExp(`"${s}"`));
+  });
+
+  test('coerceEssentials surfaces a normalized rampStrategy (advisory, never blocks ok)', () => {
+    const clean = coerceEssentials({ ...STARTERS[1].essentials, rampStrategy: 'triad' }, FALLBACK);
+    assert.equal(clean.rampStrategy, 'triad');
+    assert.ok(clean.ok, 'a valid strategy must not change ok');
+    // snake_case alias + unknown value both normalize, never throw.
+    assert.equal(coerceEssentials({ ...STARTERS[1].essentials, ramp_strategy: 'analogous' }, FALLBACK).rampStrategy, 'analogous');
+    assert.equal(coerceEssentials({ ...STARTERS[1].essentials, rampStrategy: 'bogus' }, FALLBACK).rampStrategy, 'spectrum');
+    assert.equal(coerceEssentials(STARTERS[1].essentials, FALLBACK).rampStrategy, 'spectrum'); // absent → default
   });
 });

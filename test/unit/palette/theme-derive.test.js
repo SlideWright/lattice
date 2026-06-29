@@ -11,7 +11,7 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 
-const { deriveTheme, validateEssentials, requiredTokenList, ESSENTIAL_KEYS } = require('../../../lib/theme/derive.js');
+const { deriveTheme, validateEssentials, requiredTokenList, ESSENTIAL_KEYS, RAMP_STRATEGIES, normalizeStrategy } = require('../../../lib/theme/derive.js');
 const { auditBoth } = require('../../../lib/theme/contrast.js');
 const { contrastRatio } = require('../../../lib/theme/color.js');
 const { STARTERS } = require('../../../lib/theme/starters.js');
@@ -63,5 +63,40 @@ describe('theme-derive', () => {
     assert.ok(contrastRatio(headingLight, bgLight) >= 4.5);
     assert.ok(contrastRatio(t['cat-1-mark'], t['cat-on-mark']) >= 4.5);
     assert.ok(contrastRatio(t['cat-1-fill'], t['cat-on-fill']) >= 4.5);
+  });
+
+  describe('ramp strategy', () => {
+    const ESS = STARTERS[0].essentials;
+
+    test('spectrum is the no-regression default — explicit === implicit', () => {
+      assert.deepEqual(deriveTheme(ESS), deriveTheme(ESS, { rampStrategy: 'spectrum' }));
+    });
+
+    test('an unknown / absent strategy normalizes to spectrum', () => {
+      assert.equal(normalizeStrategy('rainbow-sparkle'), 'spectrum');
+      assert.equal(normalizeStrategy(undefined), 'spectrum');
+      assert.deepEqual(deriveTheme(ESS, { rampStrategy: 'nonsense' }), deriveTheme(ESS));
+    });
+
+    // The load-bearing guarantee: the AA promise holds for EVERY strategy the
+    // AI might pick — so a user never has to repair a color by hand.
+    for (const strategy of RAMP_STRATEGIES) {
+      test(`derive(${strategy}) is complete AND contrast-clean in both modes`, () => {
+        const t = deriveTheme(ESS, { rampStrategy: strategy });
+        const missing = requiredTokenList().filter(k => t[k] == null);
+        assert.deepEqual(missing, [], `missing: ${missing.join(', ')}`);
+        const audit = auditBoth(t, { level: 'gate' });
+        assert.ok(audit.light.ok && audit.dark.ok, `${strategy} not AA-clean`);
+      });
+    }
+
+    test('the strategy actually changes the categorical hue layout', () => {
+      // triad must differ from spectrum somewhere in the cycle (param has effect).
+      const spectrum = deriveTheme(ESS, { rampStrategy: 'spectrum' });
+      const triad = deriveTheme(ESS, { rampStrategy: 'triad' });
+      const differs = Array.from({ length: 12 }, (_, i) => `cat-${i + 1}-mark`)
+        .some(k => spectrum[k] !== triad[k]);
+      assert.ok(differs, 'triad produced an identical cycle to spectrum');
+    });
   });
 });
