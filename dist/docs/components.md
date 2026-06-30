@@ -557,7 +557,7 @@ See [quote.gallery.light.pdf](../../lib/components/statement/quote/quote.gallery
 
 **Tags** `summary` · `board-deck` · `hero-number` · `pull-quote` · `takeaway`
 
-**Density** up to ~16 words per item (overflows past 24) — one finding per row, a sentence.
+**Density** aim ~16 words per item; past ~24 it reads as a wall of text — one finding per row, a sentence.
 
 Use when one prominent element (a heading, a hero number, a pull-quote, a phase) deserves a dedicated panel and the right side carries the supporting points. The default anchors a heading; variants reshape what the panel features: `metric` (hero number, light-left), `pullquote` (pull-quote), `steps` (numbered step-timeline), `watermark` (accent panel + letterform + meta footer). For a binary decision with a verdict, reach for `split-compare`.
 
@@ -742,7 +742,7 @@ See [split-panel.gallery.light.pdf](../../lib/components/statement/split-panel/s
 
 **Capacity** ~4 items (crowds past 6, overflows past 7) — past that, list-tabular / split across slides.
 
-**Density** up to ~12 words per item (overflows past 18) — one short responsibility per row, not a job description.
+**Density** aim ~12 words per item; past ~18 it reads as a wall of text — one short responsibility per row, not a job description.
 
 Use to show 'who owns what' across a process, scoring policy, or org chart. Two-column layout: actor on left, responsibilities on right.
 
@@ -821,7 +821,7 @@ See [actors.gallery.light.pdf](../../lib/components/inventory/actors/actors.gall
 
 **Capacity** ~4 items (crowds past 6, overflows past 7) — past that, split across slides.
 
-**Density** up to ~10 words per item (overflows past 16) — a short agenda line, not a description.
+**Density** aim ~10 words per item; past ~16 it reads as a wall of text — a short agenda line, not a description.
 
 Use as the second slide of any multi-section deck. Numbers are generated; authors just write the section titles. Five interchangeable styles — the default `ledger` (a contents page with optional page references), plus `circles`, `rail`, `cards`, and `checks` — all compose with the `progress-N` 'you are here' modifier.
 
@@ -1062,7 +1062,7 @@ See [agenda.gallery.light.pdf](../../lib/components/inventory/agenda/agenda.gall
 
 **Capacity** ~3 items (crowds past 4, overflows past 4) — past that, list-tabular / split across slides.
 
-**Density** up to ~15 words per item (overflows past 24) — a card body is one short clause, not a paragraph.
+**Density** aim ~15 words per item; past ~24 it reads as a wall of text — a card body is one short clause, not a paragraph.
 
 Use when the audience needs to compare or scan a small set of options at a glance. Avoid for more than 4 items — split into multiple slides. For ordered/numbered steps, use list-steps instead.
 
@@ -1205,7 +1205,7 @@ See [cards-grid.gallery.light.pdf](../../lib/components/inventory/cards-grid/car
 
 **Capacity** ~3 items (crowds past 4, overflows past 4) — past that, list-tabular / split across slides.
 
-**Density** up to ~16 words per item (overflows past 26) — a stacked card is a short paragraph at most.
+**Density** aim ~16 words per item; past ~26 it reads as a wall of text — a stacked card is a short paragraph at most.
 
 Use when the items want vertical reading order — sequential exploration rather than a-glance comparison. 2–4 items work best (a fourth fits with the `compact` modifier).
 
@@ -1321,7 +1321,7 @@ See [cards-stack.gallery.light.pdf](../../lib/components/inventory/cards-stack/c
 
 **Capacity** ~6 items (crowds past 8, overflows past 9) — past that, split across slides.
 
-**Density** up to ~10 words per item (overflows past 16) — a short readiness line.
+**Density** aim ~10 words per item; past ~16 it reads as a wall of text — a short readiness line.
 
 Use for completion reports, readiness audits, or pre-flight checks. State markers [x]/[-]/[ ]/[/] produce status-colored circles carrying a distinct mark — check / dash / ring / slash — so the shape reads independently of color (colour-blind-safe).
 
@@ -1395,7 +1395,7 @@ See [checklist.gallery.light.pdf](../../lib/components/inventory/checklist/check
 
 **Tags** `definition` · `reference` · `onboarding`
 
-**Density** up to ~16 words per item (overflows past 24) — a term and a one-sentence definition.
+**Density** aim ~16 words per item; past ~24 it reads as a wall of text — a term and a one-sentence definition.
 
 Use for jargon-heavy decks where the audience needs a reference page. The runtime auto-adds a range pill (e.g. 'A – G') to the heading.
 
@@ -1475,7 +1475,7 @@ See [glossary.gallery.light.pdf](../../lib/components/inventory/glossary/glossar
 
 **Capacity** ~4 items (crowds past 5, overflows past 6) — past that, list-tabular / split across slides.
 
-**Density** up to ~14 words per item (overflows past 22) — one clause of body per part.
+**Density** aim ~14 words per item; past ~22 it reads as a wall of text — one clause of body per part.
 
 Use for a small register of related items where each carries similar weight. Author the content once (a bold lead + detail per item, optional trailing insight) and pick the look with a variant: the default numbered ledger, a cards grid, a horizontal timeline, or a magazine-style editorial split — no re-authoring. For more than six items, escalate to list-tabular or split across slides.
 
@@ -1621,7 +1621,7 @@ See [inventory.gallery.light.pdf](../../lib/components/inventory/inventory/inven
 
 **Tags** `overview` · `summary` · `takeaway` · `walkthrough`
 
-**Density** up to ~14 words per item (overflows past 20) — one statement per line, not a paragraph.
+**Density** aim ~14 words per item; past ~20 it reads as a wall of text — one statement per line, not a paragraph.
 
 Use when the items are genuinely a flat list of one-line points. The default renders accent-bordered pills; the `takeaway` variant renders hairline-ruled single-line takeaways (former tldr); the `principles` variant renders display-weight numbered statements with a large counter (former principles). For richer per-item structure, prefer cards-grid, cards-stack, or list-tabular.
 
@@ -1788,7 +1788,7 @@ See [list.gallery.light.pdf](../../lib/components/inventory/list/list.gallery.li
 
 **Tags** `reference` · `overview` · `status`
 
-**Density** up to ~12 words per item (overflows past 16) — a short row label plus a clause.
+**Density** aim ~12 words per item; past ~16 it reads as a wall of text — a short row label plus a clause.
 
 Use for compact reference tables: glossary-style entries, key/value pairs, specs. Four primary variants (def, metric, spec, register) tune the visual treatment; secondary modifiers (rule, solid, stacked, outline) refine each.
 
@@ -2136,7 +2136,7 @@ See [logo-wall.gallery.light.pdf](../../lib/components/inventory/logo-wall/logo-
 
 **Capacity** ~4 items (crowds past 5, overflows past 6) — past that, split across slides (auto with autosplit: on).
 
-**Density** up to ~12 words per item (overflows past 16) — a one-line question and a short answer.
+**Density** aim ~12 words per item; past ~16 it reads as a wall of text — a one-line question and a short answer.
 
 Use to pre-empt the room: line up the three or four hardest questions the audience will raise and answer each one before it is asked. The question reads as a prompt; the prepared answer carries the substance. Distinct from a reference FAQ (many terse look-up pairs) — this is a few weighty defenses of a recommendation.
 
@@ -2306,7 +2306,7 @@ See [q-and-a.gallery.light.pdf](../../lib/components/inventory/q-and-a/q-and-a.g
 
 **Tags** `tradeoff` · `contrast` · `recommendation` · `transformation` · `retrospective`
 
-**Density** up to ~20 words per item (overflows past 32) — each side's case in a sentence or two.
+**Density** aim ~20 words per item; past ~32 it reads as a wall of text — each side's case in a sentence or two.
 
 Use to weigh two approaches against each other in body text. Add the `chosen` or `decision` modifier to mark the verdict; add `vertical` to stack top/bottom instead of side-by-side.
 
@@ -2494,7 +2494,7 @@ See [compare-prose.gallery.light.pdf](../../lib/components/comparison/compare-pr
 
 **Capacity** ~4 rows (crowds past 6, overflows past 8) — past that, split across slides.
 
-**Density** up to ~12 words per row (overflows past 18) — a few words per cell.
+**Density** aim ~12 words per row; past ~18 it reads as a wall of text — a few words per cell.
 
 Use when you have 3+ options or 4+ rows of criteria. Wider data than compare-prose can hold legibly.
 
@@ -2575,7 +2575,7 @@ See [compare-table.gallery.light.pdf](../../lib/components/comparison/compare-ta
 
 **Tags** `recommendation` · `tradeoff` · `strategy`
 
-**Density** up to ~20 words per item (overflows past 32) — each option's tradeoff in a sentence or two.
+**Density** aim ~20 words per item; past ~32 it reads as a wall of text — each option's tradeoff in a sentence or two.
 
 Use after a comparison slide to land the decision. The justifications render as one unified categorical strip — co-equal cards that together signal a single resolved verdict; the heading carries the decision, not a focal/subordinated split.
 
@@ -2669,7 +2669,7 @@ See [decision.gallery.light.pdf](../../lib/components/comparison/decision/decisi
 
 **Tags** `two-by-two` · `prioritize` · `strategy` · `risk`
 
-**Density** up to ~10 words per item (overflows past 16) — a short label per quadrant cell.
+**Density** aim ~10 words per item; past ~16 it reads as a wall of text — a short label per quadrant cell.
 
 Use for categorical 2×2 reasoning when the items are fixed and you control which cell each lands in. For data-plotted scatter on continuous axes, use quadrant instead.
 
@@ -3040,7 +3040,7 @@ See [redline.gallery.light.pdf](../../lib/components/comparison/redline/redline.
 
 **Tags** `tradeoff` · `recommendation` · `contrast`
 
-**Density** up to ~14 words per item (overflows past 22) — a terse point per line.
+**Density** aim ~14 words per item; past ~22 it reads as a wall of text — a terse point per line.
 
 Use when a decision frames a binary choice and the recommendation must be unambiguous. Second top-level list item is always the preferred option (gets the accent badge). The verdict blockquote becomes a recommendation card with a corner tag, pinned across the bottom.
 
@@ -3127,7 +3127,7 @@ See [split-compare.gallery.light.pdf](../../lib/components/comparison/split-comp
 
 **Capacity** ~3 items (crowds past 4, overflows past 5) — past that, compare-table / split across slides.
 
-**Density** up to ~12 words per item (overflows past 18) — a verdict card is a label plus its criteria, not prose.
+**Density** aim ~12 words per item; past ~18 it reads as a wall of text — a verdict card is a label plus its criteria, not prose.
 
 Use to evaluate 2–4 options against the same set of criteria, with pass/partial/fail badges. Each card represents one option; badges per criterion.
 
@@ -3223,7 +3223,7 @@ See [verdict-grid.gallery.light.pdf](../../lib/components/comparison/verdict-gri
 
 **Tags** `requirements` · `assessment` · `okr`
 
-**Density** up to ~14 words per item (overflows past 22) — one criterion with a short proof, not a spec.
+**Density** aim ~14 words per item; past ~22 it reads as a wall of text — one criterion with a short proof, not a spec.
 
 Use to enumerate the criteria a decision must meet, in priority order. Numbering signals weight; each row reads as a complete requirement.
 
@@ -3305,7 +3305,7 @@ See [list-criteria.gallery.light.pdf](../../lib/components/progression/list-crit
 
 **Capacity** ~4 items (crowds past 5, overflows past 6) — past that, timeline-list / split across slides.
 
-**Density** up to ~14 words per item (overflows past 22) — one sentence per step, not a paragraph.
+**Density** aim ~14 words per item; past ~22 it reads as a wall of text — one sentence per step, not a paragraph.
 
 Use for richer sequential processes where each step needs a paragraph rather than a label. More verbose than timeline; more structured than a plain ordered list.
 
@@ -3543,7 +3543,7 @@ See [list-steps.gallery.light.pdf](../../lib/components/progression/list-steps/l
 
 **Tags** `dashboard` · `scorecard` · `metric` · `okr`
 
-**Density** up to ~8 words per item (overflows past 14) — a metric label, not a sentence.
+**Density** aim ~8 words per item; past ~14 it reads as a wall of text — a metric label, not a sentence.
 
 Use for KPI dashboards with status framing — current value, target, trend, attention-needed. Bare `kpi` resolves to the briefing layout; the five modifiers tune the visual emphasis for different audiences (ops, compliance, investor, headline).
 
@@ -3757,7 +3757,7 @@ See [kpi.gallery.light.pdf](../../lib/components/evidence/kpi/kpi.gallery.light.
 
 **Capacity** ~4 items (crowds past 5, overflows past 6) — past that, kpi / split across slides.
 
-**Density** up to ~8 words per item (overflows past 14) — a metric label, not a sentence.
+**Density** aim ~8 words per item; past ~14 it reads as a wall of text — a metric label, not a sentence.
 
 Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile reads as Big Number + caption.
 
@@ -4322,7 +4322,7 @@ See [journey.gallery.light.pdf](../../lib/components/chart/journey/journey.galle
 
 **Capacity** ~3 items (crowds past 5, overflows past 6) — past that, split across slides.
 
-**Density** up to ~8 words per item (overflows past 14) — a terse card title.
+**Density** aim ~8 words per item; past ~14 it reads as a wall of text — a terse card title.
 
 Use for status snapshots: what's in each lane (todo/doing/done or similar). Each column is a stage; each card is a work item. By default the board is a calm grid of neutral cards and spends colour only on STATUS, so a flagged card is the focal point; opt into `keyline` (colour-code cards by category) or `tinted` (colour-code columns by stage) when colour coding earns its keep.
 
@@ -5650,7 +5650,7 @@ See [state-chart.gallery.light.pdf](../../lib/components/chart/state-chart/state
 
 **Tags** `changelog` · `milestones` · `status` · `retrospective`
 
-**Density** up to ~16 words per item (overflows past 24) — one stage in a sentence.
+**Density** aim ~16 words per item; past ~24 it reads as a wall of text — one stage in a sentence.
 
 Use for milestone history or annotated timelines. Each event sits on a left-to-right spine: a dot with its date pill above it, then the title, an optional status pill, and a short body stacked beneath.
 
@@ -6382,7 +6382,7 @@ See [compare-code.gallery.light.pdf](../../lib/components/code/compare-code/comp
 
 **Capacity** ~4 items (crowds past 5, overflows past 6) — past that, split across slides (auto with autosplit: on) / statute-stack.
 
-**Density** up to ~14 words per item (overflows past 22) — one clause per tier.
+**Density** aim ~14 words per item; past ~22 it reads as a wall of text — one clause per tier.
 
 Use when the audience needs to see how a rule descends: what the statute says, how the agency implemented it, what guidance interpreted it, and what cases have applied it. Ordered list because the order is the argument.
 
@@ -6867,7 +6867,7 @@ See [obligation-matrix.gallery.light.pdf](../../lib/components/legal/obligation-
 
 **Capacity** ~4 items (crowds past 5, overflows past 6) — past that, split across slides (auto with autosplit: on) / list-tabular.
 
-**Density** up to ~14 words per item (overflows past 22) — one clause per item.
+**Density** aim ~14 words per item; past ~22 it reads as a wall of text — one clause per item.
 
 Use when a quarter's regulatory motion needs a single-slide digest. Each row carries the change name, the citation (inline code), the summary, and the effective-date marker (inline code).
 
@@ -7073,7 +7073,7 @@ See [regulatory-update.gallery.light.pdf](../../lib/components/legal/regulatory-
 
 **Capacity** ~3 items (crowds past 4, overflows past 5) — past that, split across slides (auto with autosplit: on) / list-tabular.
 
-**Density** up to ~16 words per item (overflows past 24) — one obligation line per statute.
+**Density** aim ~16 words per item; past ~24 it reads as a wall of text — one obligation line per statute.
 
 Use when three or four parallel jurisdictions need to read at a glance: each row carries the jurisdiction label, the citation, the obligation summary, and an effective-date marker.
 

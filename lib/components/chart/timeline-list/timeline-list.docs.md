@@ -6,7 +6,7 @@
 
 **Tags** `changelog` · `milestones` · `status` · `retrospective`
 
-**Density** up to ~16 words per item (overflows past 24) — one stage in a sentence.
+**Density** aim ~16 words per item; past ~24 it reads as a wall of text — one stage in a sentence.
 
 Use for milestone history or annotated timelines. Each event sits on a left-to-right spine: a dot with its date pill above it, then the title, an optional status pill, and a short body stacked beneath.
 

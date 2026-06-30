@@ -6,7 +6,7 @@
 
 **Tags** `recommendation` · `tradeoff` · `strategy`
 
-**Density** up to ~20 words per item (overflows past 32) — each option's tradeoff in a sentence or two.
+**Density** aim ~20 words per item; past ~32 it reads as a wall of text — each option's tradeoff in a sentence or two.
 
 Use after a comparison slide to land the decision. The justifications render as one unified categorical strip — co-equal cards that together signal a single resolved verdict; the heading carries the decision, not a focal/subordinated split.
 

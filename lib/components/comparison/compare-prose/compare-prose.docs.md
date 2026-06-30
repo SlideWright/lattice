@@ -6,7 +6,7 @@
 
 **Tags** `tradeoff` · `contrast` · `recommendation` · `transformation` · `retrospective`
 
-**Density** up to ~20 words per item (overflows past 32) — each side's case in a sentence or two.
+**Density** aim ~20 words per item; past ~32 it reads as a wall of text — each side's case in a sentence or two.
 
 Use to weigh two approaches against each other in body text. Add the `chosen` or `decision` modifier to mark the verdict; add `vertical` to stack top/bottom instead of side-by-side.
 

@@ -6,7 +6,7 @@
 
 **Tags** `tradeoff` · `recommendation` · `contrast`
 
-**Density** up to ~14 words per item (overflows past 22) — a terse point per line.
+**Density** aim ~14 words per item; past ~22 it reads as a wall of text — a terse point per line.
 
 Use when a decision frames a binary choice and the recommendation must be unambiguous. Second top-level list item is always the preferred option (gets the accent badge). The verdict blockquote becomes a recommendation card with a corner tag, pinned across the bottom.
 

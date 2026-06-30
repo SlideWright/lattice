@@ -6,7 +6,7 @@
 
 **Tags** `dashboard` · `scorecard` · `metric` · `okr`
 
-**Density** up to ~8 words per item (overflows past 14) — a metric label, not a sentence.
+**Density** aim ~8 words per item; past ~14 it reads as a wall of text — a metric label, not a sentence.
 
 Use for KPI dashboards with status framing — current value, target, trend, attention-needed. Bare `kpi` resolves to the briefing layout; the five modifiers tune the visual emphasis for different audiences (ops, compliance, investor, headline).
 

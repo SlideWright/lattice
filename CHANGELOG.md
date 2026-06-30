@@ -39,7 +39,16 @@ in patch versions.
   `engineering/decisions/2026-06-30-prose-density-budget.md` §6). Also: `density.axis`
   is no longer tied to `focusAxes` (focus highlighting ≠ markdown word-counting),
   so a ledger that highlights as rows but is authored as items — `glossary` — can
-  be budgeted on its real `item` axis.
+  be budgeted on its real `item` axis. **A Munger-inversion red team then found
+  the budget was reaching no consumer** (the Drawing Board catalog never carried
+  `density`, so it fired in neither the LLM prompt nor the review panel) and its
+  `hard` message falsely claimed *"it will overflow"* — so this release also wires
+  it for real: each layout's budget now rides into the LLM authoring primer as a
+  `Budget:` line, the CLI (`lint:deck`) surfaces density suggestions alongside lint,
+  the message is reworded to the honest *"reads as a wall of text"* (an editorial
+  threshold, not a physical-overflow claim — the Fit Spine owns overflow), and a new
+  `checkDensityCoverage` gate (`build:check`) keeps every prose layout budgeted-or-
+  exempt so coverage can't rot. See the decision doc §9.
 - **Studio Focus mode — a transient "quiet the noise" view.** The Studio's
   four-column desktop layout (Architect · Editor · Preview · Inspector) can now
   collapse to just **Editor + Preview + slide nav**, with most of the topbar

@@ -47,8 +47,11 @@ const {
   SANCTIONED_PREVIEW_BUILDERS,
   PREVIEW_BUILDER_MARKER,
   SANITIZE_CALL,
+  checkDensityCoverage,
+  SANCTIONED_DENSITY_EXEMPT,
   run,
 } = require('../../../tools/check-ownership');
+const { loadAll } = require('../../../lib/components');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -363,6 +366,39 @@ describe('check-ownership', () => {
       const stripped = src.replace(new RegExp(SANITIZE_CALL.source, 'g'), 'noop(');
       assert.ok(PREVIEW_BUILDER_MARKER.test(stripped), 'still a builder');
       assert.ok(!SANITIZE_CALL.test(stripped), 'sanitize call gone → gate would flag it');
+    });
+  });
+
+  describe('density coverage (2026-06-30 — every prose layout budgeted or exempt)', () => {
+    const manifests = loadAll();
+
+    test('the live tree is clean — every component has density or an exempt entry', () => {
+      const errors = [];
+      checkDensityCoverage(manifests, errors);
+      assert.deepEqual(errors, [], errors.join('\n'));
+    });
+
+    test('the allowlist is truthful: every exempt name exists and lacks a density block', () => {
+      const byName = new Map(manifests.map((m) => [m.name, m]));
+      for (const name of Object.keys(SANCTIONED_DENSITY_EXEMPT)) {
+        const m = byName.get(name);
+        assert.ok(m, `exempt '${name}' is not a real component`);
+        assert.ok(!m.density, `exempt '${name}' now has a density block — stale entry`);
+      }
+    });
+
+    test('the gate bites: a new unbudgeted layout fails', () => {
+      const errors = [];
+      checkDensityCoverage([...manifests, { name: 'brand-new-prose' }], errors);
+      assert.ok(errors.some((e) => /brand-new-prose: no `density`/.test(e)));
+    });
+
+    test('the gate bites: a stale exemption (now has density) fails', () => {
+      const exemptName = Object.keys(SANCTIONED_DENSITY_EXEMPT)[0];
+      const mutated = manifests.map((m) => (m.name === exemptName ? { ...m, density: { axis: 'item', soft: 5, hard: 8 } } : m));
+      const errors = [];
+      checkDensityCoverage(mutated, errors);
+      assert.ok(errors.some((e) => new RegExp(`'${exemptName}', but it now HAS a density block`).test(e)));
     });
   });
 });

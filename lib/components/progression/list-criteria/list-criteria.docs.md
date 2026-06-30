@@ -6,7 +6,7 @@
 
 **Tags** `requirements` · `assessment` · `okr`
 
-**Density** up to ~14 words per item (overflows past 22) — one criterion with a short proof, not a spec.
+**Density** aim ~14 words per item; past ~22 it reads as a wall of text — one criterion with a short proof, not a spec.
 
 Use to enumerate the criteria a decision must meet, in priority order. Numbering signals weight; each row reads as a complete requirement.
 

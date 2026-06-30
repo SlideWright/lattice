@@ -21,8 +21,20 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { lintText, buildVocab } = require('../lib/authoring/lint');
+// review-core carries the advisory presentation suggestions (brevity / density /
+// verbose chrome). Wiring it here means a CLI / agent author SEES density budgets
+// too — not just the browser Drawing Board panel (2026-06-30 red-team fix). It is
+// pure + render-free, so it costs nothing on the no-Chromium fast path.
+const { reviewText } = require('../lib/authoring/review-core');
+const { loadAll } = require('../lib/components');
 
 const ROOT = path.join(__dirname, '..');
+
+// Load the live manifests for the advisory review pass; never let a manifest
+// problem break the linter — degrade to lint-only.
+function safeLoadAll() {
+  try { return loadAll(); } catch { return []; }
+}
 
 /**
  * Discover every hand-authored + generated deck in the repo: examples, the
@@ -81,7 +93,17 @@ function main(argv) {
 
   // Build the catalog vocabulary once, reuse across all files.
   const vocab = buildVocab();
+  // Advisory review pass (brevity / density / verbose chrome) — on by default for
+  // explicit file args, OFF under --all (the gallery sweep deliberately stress-
+  // tests density, so its suggestions are noise there) and skippable with
+  // --no-review. Suggestions NEVER affect the exit code; they're guidance.
+  const doReview = !flags.has('--all') && !flags.has('--no-review');
+  const byName = new Map((doReview ? safeLoadAll() : []).map((m) => [m.name, m]));
+  const bucketOf = (n) => { const m = byName.get(n); return m ? (m.bucket || m.function) : null; };
+  const densityOf = (n) => byName.get(n)?.density || null;
+
   const report = [];
+  const suggestions = [];
   let errors = 0;
   let warnings = 0;
 
@@ -93,16 +115,14 @@ function main(argv) {
       else warnings += 1;
       report.push({ file, ...f });
     }
+    if (doReview) {
+      for (const s of reviewText(source, { bucketOf, densityOf })) suggestions.push({ file, ...s });
+    }
   }
 
   if (asJson) {
-    process.stdout.write(`${JSON.stringify({ files: files.length, errors, warnings, findings: report }, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify({ files: files.length, errors, warnings, suggestions: suggestions.length, findings: report, reviewFindings: suggestions }, null, 2)}\n`);
     return errors > 0 || (strict && warnings > 0) ? 1 : 0;
-  }
-
-  if (!report.length) {
-    process.stdout.write(`lint:deck — ${files.length} file(s) clean.\n`);
-    return 0;
   }
 
   for (const f of report) {
@@ -112,7 +132,24 @@ function main(argv) {
     if (f.line) process.stderr.write(`    at: ${f.line}\n`);
     process.stderr.write(`    fix: ${f.fix.replace(/\n/g, '\n    ')}\n\n`);
   }
-  process.stderr.write(`lint:deck — ${errors} error(s), ${warnings} warning(s) across ${files.length} file(s).\n`);
+  if (suggestions.length) {
+    process.stderr.write('Presentation suggestions (advisory — never block):\n');
+    for (const s of suggestions) {
+      process.stderr.write(`ℹ ${s.file} · slide ${s.slide} · ${s.rule}\n    ${s.message}\n`);
+      if (s.fix) process.stderr.write(`    fix: ${s.fix.replace(/\n/g, '\n    ')}\n`);
+    }
+    process.stderr.write('\n');
+  }
+  if (!report.length && !suggestions.length) {
+    process.stdout.write(`lint:deck — ${files.length} file(s) clean.\n`);
+    return 0;
+  }
+  const tail = suggestions.length ? `, ${suggestions.length} suggestion(s)` : '';
+  if (report.length) {
+    process.stderr.write(`lint:deck — ${errors} error(s), ${warnings} warning(s)${tail} across ${files.length} file(s).\n`);
+  } else {
+    process.stdout.write(`lint:deck — no errors or warnings${tail} across ${files.length} file(s).\n`);
+  }
   return errors > 0 || (strict && warnings > 0) ? 1 : 0;
 }
 

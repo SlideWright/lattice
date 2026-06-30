@@ -82,9 +82,20 @@ per budgeted role, mirroring `capacity`'s soft/hard:
 
 - **`soft`** = the editorial target (expert-seeded). Surfaced to the LLM as the
   number to aim at; a suggestion fires past it ("reads best with ≤N words").
-- **`hard`** = the geometric ceiling (evidence-clamped, §4). Past it the element
-  overflows; a stronger suggestion fires. `soft ≤ hard` always; in practice
-  `soft` is meaningfully below `hard` — the gap is the whole point.
+- **`hard`** = the editorial MAXIMUM — past it the element reads as a wall of
+  text, and a stronger suggestion fires. It is **not** the physical overflow
+  point (the Fit Spine owns that, far higher); §4 clamps it to stay safely *under*
+  the measured geometric ceiling, so the suggestion never claims a break that
+  won't happen. `soft ≤ hard` always; the soft→hard gap is the editorial
+  "reads well" → "reads heavy" band.
+
+  > **Honesty note (red-team correction, 2026-06-30).** An earlier draft worded
+  > the `hard` suggestion as *"it will overflow"* and called `hard` the "ceiling."
+  > That was false: at a landscape `@size` the geometric break is 40–54+ words
+  > while `hard` is ~16–32, so the slide does *not* physically overflow at `hard`.
+  > The message now reads *"reads as a wall of text"* — an editorial claim, which
+  > is true — not a physical-overflow claim, which wasn't. The budget guides
+  > brevity; the Fit Spine, not this number, governs actual overflow.
 
 ## 3. Decision
 
@@ -97,7 +108,7 @@ the **words per element** along that axis:
 "density": {
   "axis": "item",          // defaults to capacity.axis; the collection whose ELEMENTS carry prose
   "soft": 14,              // words per element — the editorial target (surfaced to the agent)
-  "hard": 22,              // words per element — the evidence-clamped overflow ceiling
+  "hard": 22,              // words per element — editorial max (reads heavy); clamped under the geometric break
   "note": "one short clause per row, not a sentence"   // human consequence (reused in docs + message)
 }
 ```
@@ -139,17 +150,24 @@ number.
 
 ### 3.3 Three consumers, one declaration (same shape as phase 1)
 
-1. **Agent-facing.** `density` is emitted into `dist/docs/components.json`, and
-   the universal table into `AGENTS.md` + the generated docs, so the model reads
-   structured word budgets **while writing** — the fix that addresses the cause,
-   not just the symptom.
-2. **Enforcement (suggest).** A reviewer rule counts each element's / structure's
-   words and emits a **`suggestion`** past `soft`/`hard`. This lives in
-   `review-core.js` (presentation *traps* — renders fine, communicates poorly),
-   **not** `lint-core.js` (footguns — renders wrong). See §3.5 for why that home
-   matters.
-3. **Anti-drift.** The `note` and numbers source the generated docs "Density"
-   line, so the human prose can't silently disagree with the contract.
+1. **Agent-facing — the model reads the budget WHILE writing.** Each layout's
+   budget rides into the LLM authoring primer as a `Budget: ≤ N items, ≤ ~M words
+   each` line (`docs/src/playground/architect-knowledge.js` `layoutBlock`), and the
+   universal chrome limits ride in `AUTHORING_RULES` — so the generation/rewrite
+   prompt itself carries the budget, addressing the cause, not just the symptom.
+   It is also in `dist/docs/components.json` + `AGENTS.md` for catalog readers.
+   *(See §9 — this was the load-bearing claim the red-team found inert as first
+   shipped; it is now wired.)*
+2. **Enforcement (suggest), everywhere an author works.** A reviewer rule counts
+   each element's / structure's words and emits a **`suggestion`** past
+   `soft`/`hard`, in `review-core.js` (presentation *traps* — renders fine,
+   communicates poorly), **not** `lint-core.js` (footguns — renders wrong; §3.5).
+   It surfaces in BOTH the browser Drawing Board panel AND the CLI
+   (`tools/lint-deck.js` runs it, advisory, off under `--all`).
+3. **Anti-drift, gated.** The `note` and numbers source the generated docs
+   "Density" line; and `checkDensityCoverage` (`tools/check-ownership.js`, via
+   `build:check`) fails if any text-bearing layout lacks a budget or an exempt
+   allowlist entry — so coverage can't silently rot (§9).
 
 ### 3.4 The generated docs line
 
@@ -157,7 +175,7 @@ Mirroring the `**Capacity**` line, `build-component-docs.js` emits, when a
 `density` block is present:
 
 ```markdown
-**Density** ~14 words per item (crowds past 14, overflows past 22) — one short clause per row, not a sentence.
+**Density** aim ~14 words per item; past ~22 it reads as a wall of text — one short clause per row, not a sentence.
 ```
 
 ### 3.5 Enforcement home + posture — `review-core`, advisory (locked)
@@ -257,6 +275,40 @@ measurability in the sample. Per HARD RULE 17 the backfill landed in place.
   test: *can the author tighten this element's words without losing required
   content?* Where the answer is no (a statute, a checkmark, a data series), there
   is no budget.
+
+## 9. Red-team corrections (2026-06-30)
+
+After the backfill, a Munger-inversion red team ("how would we *guarantee* this
+fails?") with two independent checker agents found the feature, as first shipped,
+was **inert and partly dishonest**. The corrections, all folded back:
+
+- **Inert in production — the budget reached no consumer.** The catalog the
+  Drawing Board serializes (`drawing-board.astro` `obCatalog`) never carried
+  `density`/`capacity`, and the LLM primer (`architect-knowledge.js` `layoutBlock`)
+  never read them. So the budget reached **neither** the generation prompt **nor**
+  the review panel's `densityOf` (which is built from that same catalog) — it fired
+  nowhere. (An earlier "verification" passed only because it hand-built `densityOf`
+  from `components.json`, not the production path.) **Fix:** `obCatalog` now carries
+  both budgets; `layoutBlock` emits the `Budget:` line; `AUTHORING_RULES` carries the
+  universal chrome limits.
+- **CLI/agent authors never saw it.** `tools/lint-deck.js` ran only `lint-core`.
+  **Fix:** it now also runs `review-core` (advisory, never affects exit; off under
+  `--all`), so the documented author loop surfaces density.
+- **The `hard` message was false.** It said *"it will overflow"* and called `hard`
+  the "ceiling," but `hard` sits editorially *below* the geometric break (40–54+
+  words at landscape). **Fix:** the message, the generated docs line, the schema,
+  and this doc now say *"reads as a wall of text"* — an editorial claim that is
+  true — and frame `hard` as the editorial max clamped under the real ceiling. The
+  Fit Spine, not this number, governs physical overflow (§2).
+- **The numbers could rot; new layouts weren't forced to budget.** No gate. **Fix:**
+  `checkDensityCoverage` (§3.3.3) enforces budget-or-exempt and fails on a stale
+  exempt entry.
+- **Known limitations (accepted, not fixed).** Word count is a noisy proxy for
+  physical wrap (long words wrap sooner) — acceptable because the budget is now
+  framed as *editorial brevity*, not overflow prediction, and an LLM can act on a
+  word target but not a character-width one. The markdown-stage counter is
+  approximate (inline-code-only bodies read as 0; deep nesting folds into one
+  element) — the render-exact `countAxis` remains the staged authority.
 
 ## 7. Relationships
 

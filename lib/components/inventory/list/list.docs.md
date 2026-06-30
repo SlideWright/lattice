@@ -6,7 +6,7 @@
 
 **Tags** `overview` · `summary` · `takeaway` · `walkthrough`
 
-**Density** up to ~14 words per item (overflows past 20) — one statement per line, not a paragraph.
+**Density** aim ~14 words per item; past ~20 it reads as a wall of text — one statement per line, not a paragraph.
 
 Use when the items are genuinely a flat list of one-line points. The default renders accent-bordered pills; the `takeaway` variant renders hairline-ruled single-line takeaways (former tldr); the `principles` variant renders display-weight numbered statements with a large counter (former principles). For richer per-item structure, prefer cards-grid, cards-stack, or list-tabular.
 
