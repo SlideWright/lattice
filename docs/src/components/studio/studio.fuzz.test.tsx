@@ -1,7 +1,7 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fc from 'fast-check';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import StudioShell from './StudioShell';
 
 // Stub the live preview (its engine poller leaks a post-teardown timer in jsdom).
@@ -11,9 +11,21 @@ vi.mock('@/components/DeckPreview', () => ({
 
 const options = { themeBase: '', runtimeUrl: '', engineUrl: '' };
 
+// The journeys include a "switch deck" command that targets the original decks,
+// and assume the full-density shell. Seed a returning-user state so "Q3 Board
+// Review" is active and the panels are docked (not the newcomer welcome deck).
+beforeEach(() => {
+	localStorage.clear();
+	localStorage.setItem('lattice-studio-deck-index', JSON.stringify([
+		{ id: 'q3-board', title: 'Q3 Board Review', builtin: true },
+		{ id: 'product-strategy', title: 'FY26 Product Strategy', builtin: true },
+	]));
+	localStorage.setItem('lattice-studio-settings', JSON.stringify({ validation: true, pageNumbers: true, headerFooter: false, onboarded: true }));
+});
 afterEach(() => {
 	cleanup();
 	document.documentElement.removeAttribute('data-palette');
+	localStorage.clear();
 });
 
 // ── The anti-jank invariant ──────────────────────────────────────────────────

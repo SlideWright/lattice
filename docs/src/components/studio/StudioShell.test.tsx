@@ -1,7 +1,20 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import StudioShell from './StudioShell';
+
+// Most flows here exercise the FULL-density Studio against the original deck set
+// (the 6-slide "Q3 Board Review" active). Seed a returning-user state — the saved
+// deck index without the newcomer welcome deck, plus onboarded:true — which is the
+// real shape for anyone who has used the Studio before. The fresh first-run state
+// (welcome deck + reduced density + welcome banner) is covered separately below.
+function seedReturningUser() {
+	localStorage.setItem('lattice-studio-deck-index', JSON.stringify([
+		{ id: 'q3-board', title: 'Q3 Board Review', builtin: true },
+		{ id: 'product-strategy', title: 'FY26 Product Strategy', builtin: true },
+	]));
+	localStorage.setItem('lattice-studio-settings', JSON.stringify({ validation: true, pageNumbers: true, headerFooter: false, onboarded: true }));
+}
 
 // The live preview loads the real engine by polling `window.LatticePlayground`
 // on a timer that never resolves in jsdom and leaks past teardown. These tests
@@ -43,9 +56,14 @@ function setViewport(bp: 'desktop' | 'tablet' | 'mobile') {
 		})) as typeof window.matchMedia;
 }
 
+beforeEach(() => {
+	localStorage.clear();
+	seedReturningUser();
+});
 afterEach(() => {
 	document.documentElement.removeAttribute('data-palette');
 	window.matchMedia = realMatchMedia;
+	localStorage.clear();
 });
 
 function setup() {
@@ -65,6 +83,35 @@ describe('StudioShell — smoke', () => {
 		expect(screen.getByText('Preview')).toBeInTheDocument();
 		// Present is a verb (button), not a persistent tab.
 		expect(screen.getByRole('button', { name: 'Present' })).toBeInTheDocument();
+	});
+});
+
+describe('StudioShell — newcomer first run', () => {
+	it('opens on the welcome deck with reduced density and a one-time cue', () => {
+		localStorage.clear(); // a true fresh visitor — no seed, no prior use
+		render(<StudioShell options={options} />);
+		// The crafted intro deck is the active deck.
+		expect(screen.getByText('Welcome to Lattice')).toBeInTheDocument();
+		// Reduced density: the Architect coach is NOT open by default.
+		expect(screen.queryByText('Board-ready')).not.toBeInTheDocument();
+		// A one-time welcome cue points the way.
+		expect(screen.getByText(/New here\?/)).toBeInTheDocument();
+	});
+
+	it('dismissing the welcome graduates the user and persists it', async () => {
+		localStorage.clear();
+		const user = userEvent.setup();
+		render(<StudioShell options={options} />);
+		await user.click(screen.getByRole('button', { name: 'Got it' }));
+		expect(screen.queryByText(/New here\?/)).not.toBeInTheDocument();
+		expect(JSON.parse(localStorage.getItem('lattice-studio-settings') ?? '{}').onboarded).toBe(true);
+	});
+
+	it('treats a returning user (prior Studio use) as already onboarded — no cue', () => {
+		// beforeEach already seeded a returning-user state.
+		render(<StudioShell options={options} />);
+		expect(screen.queryByText(/New here\?/)).not.toBeInTheDocument();
+		expect(screen.getByText('Board-ready')).toBeInTheDocument();
 	});
 });
 

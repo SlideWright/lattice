@@ -72,7 +72,7 @@ describe('studio-store — titleFromSource', () => {
 
 describe('studio-store — settings', () => {
 	it('defaults then round-trips', () => {
-		expect(loadSettings()).toMatchObject({ validation: true, pageNumbers: true, headerFooter: false });
+		expect(loadSettings()).toMatchObject({ validation: true, pageNumbers: true, headerFooter: false, onboarded: false });
 		saveSettings({ pageNumbers: false });
 		expect(loadSettings().pageNumbers).toBe(false);
 		expect(loadSettings().validation).toBe(true); // untouched keys keep defaults
