@@ -265,6 +265,19 @@
       "items": { "type": "string", "enum": ["item", "row", "col", "cell", "line"] },
       "description": "Optional. Focusable axes this layout supports for per-axis `_focus` highlighting — a subset of the focus resolver's SUPPORTED_AXES (lib/transformers/focus.js): a `<table>` body → row/col/cell, a top-level list/grid → item, a code block → line. Scopes the editor's `_focus:` / `_focusSteps:` axis completion per layout."
     },
+    "transform": {
+      "type": "array",
+      "description": "Optional declarative structural-transform rules — the component transform DSL (engineering/decisions/2026-06-29-component-transform-dsl.md). An ordered list of `match → do` rules the engine interprets identically across render paths; NO user JS. The AUTHORITATIVE safety gate is validateTransform() in lib/core/transform-dsl/schema.js (closed element/attribute allowlists, closed selector sub-grammar, known-op/known-capability sets, prototype-pollution defense), run by the manifest loader at load time — this schema only marks the field shape. PROTOTYPE: not yet wired into the render pipeline (§12).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "match": { "type": "object" },
+          "do": { "type": "array", "items": { "type": "object" } }
+        },
+        "required": ["do"]
+      }
+    },
     "capacity": {
       "type": "object",
       "additionalProperties": false,
