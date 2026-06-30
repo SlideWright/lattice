@@ -229,7 +229,7 @@ describe('PlaygroundApp — gallery load shows the rendered deck (regression)', 
 // the interaction and asserts.
 type Ctx = { user: ReturnType<typeof userEvent.setup> };
 
-const paneCommand = (label: string, act: (u: Ctx['user']) => Promise<void>): fc.AsyncCommand<unknown, Ctx> => ({
+const paneCommand = (label: string, act: (u: Ctx['user']) => Promise<void>): fc.AsyncCommand<Record<string, never>, Ctx> => ({
 	check: () => true,
 	async run(_model, real) {
 		await act(real.user);

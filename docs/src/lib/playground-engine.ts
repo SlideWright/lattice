@@ -13,22 +13,11 @@ import { ensureEngine } from './load-engine';
 import { renderSig, resolveThemeName } from './playground-controller';
 import { createThemeFetcher } from './theme-fetch';
 
-type PG = {
-	render: (source: string, theme: string, opts?: { baseUrl?: string }) => { html: string; css: string; width?: number; height?: number };
-	addThemes: (css: string[]) => void;
-	hasTheme: (name: string) => boolean;
-};
-type DP = {
-	renderDeck: (opts: Record<string, unknown>) => { state: PreviewState; count: number };
-};
 type PreviewState = { frameSig: string; lastSections: unknown };
 
-declare global {
-	interface Window {
-		LatticePlayground?: PG;
-		LatticeDeckPreview?: DP;
-	}
-}
+// `window.LatticePlayground` / `window.LatticeDeckPreview` (the engine + filmstrip
+// globals the bridge reads against) are declared once, canonically, in
+// playground-global.d.ts.
 
 export type RenderResult =
 	| { status: 'rendered'; count: number; state: PreviewState; geom: { w: number; h: number } }

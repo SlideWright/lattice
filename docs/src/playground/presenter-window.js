@@ -32,7 +32,7 @@ import { slideBox } from './frame-css.js';
  * `show(n)` is driven from the parent via `postMessage({pv:n})`. A no-zoom
  * viewport + touch-action kill the iOS double-tap jolt.
  */
-export function buildStageDoc({ html, width, height, bg, css, runtimeUrl, katexUrl, mermaidUrl, a11yDefs = '' }) {
+export function buildStageDoc({ html, width, height, bg, css, runtimeUrl, katexUrl = '', mermaidUrl = '', a11yDefs = '' }) {
 	html = sanitizeSlideHtml(html); // #616 T-CONTENT — strip script before the same-origin stage srcdoc
 	const sw = width;
 	const sh = height;

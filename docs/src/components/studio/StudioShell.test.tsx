@@ -30,7 +30,18 @@ vi.mock('@/components/DeckPreview', () => ({
 const shareSpies = vi.hoisted(() => ({
 	shareMarkdown: vi.fn(async () => {}),
 	shareMarp: vi.fn(async () => {}),
-	sharePdf: vi.fn(async () => {}),
+	sharePdf: vi.fn(
+		async (
+			_options: unknown,
+			_source: string,
+			_name: string,
+			_palette: string,
+			_mode: 'light' | 'dark',
+			_extra?: { name: string; css: string },
+			_onStatus?: (m: string) => void,
+			_extraCss?: string,
+		) => {},
+	),
 	sharePptx: vi.fn(async () => {}),
 	sharePrintDeck: vi.fn(async () => {}),
 	sharePrintSource: vi.fn(() => {}),
@@ -418,7 +429,10 @@ describe('StudioShell — topbar information architecture', () => {
 				removeListener: () => {},
 				dispatchEvent: () => false,
 			};
-		}) as typeof window.matchMedia;
+			// Deliberate partial MediaQueryList mock: the typed `change` listeners drive
+			// the breakpoint hook, so the shape can't structurally match the full DOM
+			// overloads — go through `unknown` (as the compiler itself suggests for this cast).
+		}) as unknown as typeof window.matchMedia;
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'More controls' }));
 		expect(await screen.findByRole('menuitem', { name: 'Library' })).toBeInTheDocument();

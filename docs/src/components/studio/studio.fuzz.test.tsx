@@ -51,7 +51,9 @@ function expectNoJank() {
 
 type Ctx = { user: ReturnType<typeof userEvent.setup> };
 
-const cmd = (label: string, act: (u: Ctx['user']) => Promise<void>): fc.AsyncCommand<unknown, Ctx> => ({
+type Model = Record<string, never>;
+
+const cmd = (label: string, act: (u: Ctx['user']) => Promise<void>): fc.AsyncCommand<Model, Ctx> => ({
 	check: () => true,
 	async run(_m, real) {
 		await act(real.user);

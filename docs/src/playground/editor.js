@@ -437,6 +437,21 @@ const autoHeightTheme = EditorView.theme({
 // on) — so the setting travels with the deck and is toggled from the deck-setup
 // drawer, not a per-user preference. An editor with no `vocab` (e.g. a fragment
 // sub-editor) never validates.
+/**
+ * @param {{
+ *   parent: HTMLElement,
+ *   doc?: string,
+ *   onChange: (value: string) => void,
+ *   onCursor?: (line: number) => void,
+ *   autoHeight?: boolean,
+ *   vocab?: unknown,
+ *   catalog?: unknown,
+ *   themes?: unknown,
+ *   finishes?: unknown,
+ *   autocomplete?: boolean,
+ *   typeahead?: string,
+ * }} opts
+ */
 export function createEditor({ parent, doc = '', onChange, onCursor, autoHeight = false, vocab, catalog, themes, finishes, autocomplete = true, typeahead = 'class' }) {
 	ensureTooltipTheme(); // global popup theme (reaches CM's detached tooltip layer)
 	// The autocomplete extension lives in a Compartment so the on/off preference

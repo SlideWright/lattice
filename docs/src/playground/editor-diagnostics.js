@@ -44,8 +44,20 @@ export function chunkStartLines(src) {
 // The SAME builder feeds the editor's inline linter and the Architect panel, so a
 // `_class` is judged known/unknown identically in both places. Pure data; no
 // model call validates a name.
+/**
+ * @typedef {Object} VocabSets
+ * @property {Set<string>} names
+ * @property {Set<string>} modifiers
+ * @property {Record<string, { valid: Set<string>; names: string[] }>} [mapRegions]
+ * @property {string[]} [finishNames]
+ * @property {string[]} [splitNames]
+ * @property {Record<string, { axis: string; hard: number }>} [capacity]
+ */
+
+/** @returns {VocabSets} */
 export function buildVocabSets(vocab) {
 	const v = vocab || {};
+	/** @type {VocabSets} */
 	const sets = {
 		names: new Set(v.names || []),
 		modifiers: new Set(v.modifiers || []),
@@ -80,10 +92,22 @@ function clamp(n, lo, hi) {
 // line match (deck-level findings, or a line that has since changed) we fall back
 // to the slide's first line. The underline spans the trimmed content (so leading
 // indentation isn't underlined), and the tooltip carries the message + fix.
+/**
+ * @typedef {Object} EditorDiagnostic
+ * @property {number} from
+ * @property {number} to
+ * @property {string} severity
+ * @property {string} message
+ * @property {string} source
+ * @property {Array<{ name: string; apply: (view: unknown, from: number, to: number) => void }>} [actions]
+ */
+
+/** @returns {EditorDiagnostic[]} */
 export function findingsToDiagnostics(doc, findings, opts = {}) {
 	const onFix = opts.onFix;
 	const starts = chunkStartLines(doc.toString());
 	const total = doc.lines;
+	/** @type {EditorDiagnostic[]} */
 	const out = [];
 	for (const f of findings || []) {
 		if (!f) continue;

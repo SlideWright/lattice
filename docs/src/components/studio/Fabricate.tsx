@@ -460,7 +460,7 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 				<div className="ml-1 inline-flex shrink-0 rounded-[10px] border border-border bg-background p-[3px] sm:ml-2">
 					<button type="button" onClick={() => setTab('theme')} aria-pressed={tab === 'theme'} aria-label="Theme" className={cn('inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] font-semibold sm:px-3', tab === 'theme' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Palette className="size-3.5" /><span className="hidden sm:inline">Theme</span></button>
 					<button type="button" onClick={() => setTab('layout')} aria-pressed={tab === 'layout'} aria-label="Component" className={cn('inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] font-semibold sm:px-3', tab === 'layout' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><LayoutGrid className="size-3.5" /><span className="hidden sm:inline">Component</span></button>
-					<button type="button" onClick={() => setTab('finish')} aria-pressed={tab === 'finish'} aria-label="Finish" className={cn('inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] font-semibold sm:px-3', tab === 'finish' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Sparkles className="size-3.5" /><span className="hidden sm:inline">Finish</span></button>
+					<button type="button" onClick={() => setTab('finish')} aria-pressed={false} aria-label="Finish" className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] font-semibold text-muted-foreground sm:px-3"><Sparkles className="size-3.5" /><span className="hidden sm:inline">Finish</span></button>
 				</div>
 				<div className="flex-1" />
 				<Button variant="outline" size="sm" disabled={!canExport} className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={exportArtifact}><Download className="size-4" /><span className="hidden sm:inline">Export</span></Button>
@@ -574,7 +574,7 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 							{/* Starters */}
 							<TreeGroup name="Starter palettes" count={STARTERS.length} collapsed={collapsed.has('Starters')} onToggle={() => toggleGroup('Starters')}>
 								<div className="flex flex-col gap-1 px-1 pb-1">
-									{STARTERS.map((s) => {
+									{STARTERS.map((s: { name: string; label: string; description: string; essentials: Record<string, string> }) => {
 										const e = s.essentials as Record<string, string>;
 										const active = core.bg === e.bg && core.accent === e.accent;
 										return (

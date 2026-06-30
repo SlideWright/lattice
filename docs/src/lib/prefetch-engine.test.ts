@@ -11,6 +11,15 @@ function base(over: Partial<WarmSignals> = {}): WarmSignals {
 	return { saveData: false, reducedData: false, effectiveType: undefined, wideViewport: false, ...over };
 }
 
+// A minimal stand-in for the on-demand engine global — the prefetch code only
+// checks `window.LatticePlayground` for truthiness ("engine already present"), so
+// the methods are inert stubs typed to the real interface (no `as any`).
+const engineStub: Window['LatticePlayground'] = {
+	render: () => ({ html: '', css: '' }),
+	addThemes: () => {},
+	hasTheme: () => false,
+};
+
 function prefetchLinks(): NodeListOf<HTMLLinkElement> {
 	return document.head.querySelectorAll('link[rel="prefetch"]');
 }
@@ -69,7 +78,7 @@ describe('injectPrefetch', () => {
 	});
 
 	it('skips when the engine is already loaded', () => {
-		(window as Window & { LatticePlayground?: unknown }).LatticePlayground = {};
+		window.LatticePlayground = engineStub;
 		injectPrefetch(ENGINE_URL);
 		expect(prefetchLinks()).toHaveLength(0);
 	});
@@ -126,7 +135,7 @@ describe('warmEngine — intent path (jsdom default signals)', () => {
 	});
 
 	it('does nothing when the engine is already loaded', () => {
-		(window as Window & { LatticePlayground?: unknown }).LatticePlayground = {};
+		window.LatticePlayground = engineStub;
 		const a = addAppLink();
 		warmEngine(ENGINE_URL);
 		a.dispatchEvent(new Event('pointerenter'));

@@ -173,7 +173,7 @@ export function buildSrcdoc({
 	// filmstrip it is also the scroll slot pitch, so the FIT margin and the SYNC
 	// `centered()` math derive from this single number and can't disagree.
 	gap = 18,
-	background,
+	background = null, // optional `(mode) => cssColor`; null → the mode default (DARK_BG/LIGHT_BG) below
 	colorScheme = null, // 'light' | 'dark' | null — forced :root color-scheme
 	contentVisibility = false,
 	cursor = false,
