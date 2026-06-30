@@ -85,6 +85,25 @@ in patch versions.
   The Studio Inspector's swatch-previewed **Finish** field (grouped Plain /
   Finishes) writes the register. Demo: `examples/finish-backdrops.md`. See
   `engineering/decisions/2026-06-30-finish-the-surface-layer.md`.
+- **Four more premium finish presets + four new layer types — leaning into
+  tunable + movable layers.** Adds `finish: nimbus` (a new **mesh** wash — 3–4
+  soft overlapping radial accent blooms summed into an organic gradient-mesh
+  atmosphere, seated by a vignette; the wash intensity tunes the bloom strength),
+  `loom` (a new **lattice** texture — a woven ±45° diagonal cross-hatch, on-brand
+  for the product, with a *movable* corner glow; tune the weave scale, move the
+  glow), `savile` (a new **pinstripe** texture — fine vertical lines whose pitch
+  the scale tunes — plus a *movable* monogram mark), and `gallery` (a new
+  **frame** edge — a thin inset keyline border drawn as four crisp accent strips,
+  no soft-shadow alpha — plus a spotlight and a *movable* numeral). All four are
+  palette-blind (`color-mix(var(--accent)/var(--bg)/var(--ink))`), export-safe
+  (every full-bleed fade is opaque-to-opaque; tiled patterns use a hard 1px
+  `transparent` gap, never an area fade; no `mask-image`, no `url()`, no hex), and
+  ride the same dual-face (rich-on-screen / opaque-on-export) compositor as the
+  first five. The new layer types extend the Studio recipe vocabulary
+  (`WASH_TYPES`/`TEXTURE_TYPES`/`EDGE_TYPES`) and gradient builders, so a
+  fabricated finish can use them too. `FINISH_REGISTER`, the catalog, the
+  recipe↔engine gate, and the demo deck (`examples/finish-backdrops.md`) all carry
+  the four. See `engineering/decisions/2026-06-30-finish-the-surface-layer.md`.
 - **Finishes are now rich-on-screen and safe-on-export — a dual-variant per
   preset.** On screen (live preview, presenter, web, docs) each finish shows the
   richer "dissolving" look of the mockups: the pattern fades directionally toward

@@ -27,10 +27,10 @@
 // (HARD RULE #22).
 
 // ── The closed vocabulary — the only layer types the designer (and the AI) speak.
-export const WASH_TYPES = ['none', 'corner-glow', 'duotone', 'spotlight', 'bands'] as const;
-export const TEXTURE_TYPES = ['none', 'grid', 'dots', 'hatch', 'contour', 'rings', 'ruled'] as const;
+export const WASH_TYPES = ['none', 'corner-glow', 'duotone', 'spotlight', 'bands', 'mesh'] as const;
+export const TEXTURE_TYPES = ['none', 'grid', 'dots', 'hatch', 'contour', 'rings', 'ruled', 'pinstripe', 'lattice'] as const;
 export const MARK_TYPES = ['none', 'monogram', 'tick', 'bar', 'numeral'] as const;
-export const EDGE_TYPES = ['none', 'vignette', 'margin-rule', 'fold'] as const;
+export const EDGE_TYPES = ['none', 'vignette', 'margin-rule', 'fold', 'frame'] as const;
 export const PLACEMENTS = ['top-left', 'top-right', 'bottom-left', 'bottom-right', 'center', 'left'] as const;
 
 export type WashType = (typeof WASH_TYPES)[number];
@@ -107,6 +107,37 @@ export const PRESET_RECIPES: Record<string, FinishRecipe> = {
 		mark: { type: 'bar', placement: 'left' },
 		edge: { type: 'fold', intensity: 16 },
 	},
+	// ── The 4 NEW premium presets — each leans into a tunable/movable layer. ──
+	nimbus: {
+		// Pure atmosphere: a gradient-MESH of overlapping accent blooms, a soft
+		// vignette to seat it. Wash intensity tunes the bloom strength. No texture.
+		wash: { type: 'mesh', intensity: 12 },
+		texture: { type: 'none', intensity: 7, scale: 38 },
+		mark: { type: 'none', placement: 'center' },
+		edge: { type: 'vignette', intensity: 6 },
+	},
+	loom: {
+		// On-brand woven LATTICE cross-hatch + a MOVABLE corner glow (placement).
+		// Texture scale tunes the weave pitch; the glow rides the placement axis.
+		wash: { type: 'corner-glow', intensity: 11 },
+		texture: { type: 'lattice', intensity: 7, scale: 34 },
+		mark: { type: 'none', placement: 'top-left' },
+		edge: { type: 'none', intensity: 6 },
+	},
+	savile: {
+		// Tailored PINSTRIPE (scale tunes the pitch) + a MOVABLE monogram mark.
+		wash: { type: 'none', intensity: 8 },
+		texture: { type: 'pinstripe', intensity: 8, scale: 18 },
+		mark: { type: 'monogram', placement: 'bottom-right' },
+		edge: { type: 'none', intensity: 6 },
+	},
+	gallery: {
+		// Museum framing: an inset keyline FRAME edge + a spotlight + a MOVABLE numeral.
+		wash: { type: 'spotlight', intensity: 7 },
+		texture: { type: 'none', intensity: 7, scale: 38 },
+		mark: { type: 'numeral', placement: 'top-left' },
+		edge: { type: 'frame', intensity: 12 },
+	},
 };
 
 // ── Coercion — clamp/snap any input (a control, or an AI reply) to the vocab. ──
@@ -173,6 +204,22 @@ function washImage(type: WashType, i: number, face: FinishFace): string {
 			return `radial-gradient(80% 70% at 50% 42%, ${mix(a, face)} 0%, ${end} 60%)`;
 		case 'bands':
 			return `linear-gradient(180deg, ${mix(a, face)} 0%, ${end} 30%, ${end} 70%, ${mix(lift(Math.max(3, i * 0.8), face), face)} 100%)`;
+		case 'mesh': {
+			// A gradient-MESH: 3 soft overlapping accent blooms in different corners +
+			// one fainter counter-bloom, summed into an organic atmosphere. Each bloom is
+			// its own full-bleed radial that fades to the face's end-stop (transparent on
+			// screen so the blooms add cleanly; var(--bg) on export so no gray cloud — the
+			// blooms over-mix toward bg but each ends opaque, so the PDF bakes clean).
+			const hi = mix(a, face);
+			const mid = mix(lift(Math.max(3, i * 0.7), face), face);
+			const lo = mix(lift(Math.max(3, i * 0.5), face), face);
+			return (
+				`radial-gradient(60% 60% at 12% 18%, ${hi} 0%, ${end} 60%), ` +
+				`radial-gradient(58% 58% at 88% 24%, ${mid} 0%, ${end} 58%), ` +
+				`radial-gradient(64% 64% at 78% 90%, ${lo} 0%, ${end} 62%), ` +
+				`radial-gradient(50% 50% at 28% 88%, ${lo} 0%, ${end} 58%)`
+			);
+		}
 		default:
 			return 'none';
 	}
@@ -197,12 +244,29 @@ function textureImage(type: TextureType, i: number, s: number, face: FinishFace)
 			return `repeating-radial-gradient(circle at 50% 42%, transparent 0 ${s - 1}px, ${c} ${s - 1}px ${s}px)`;
 		case 'ruled':
 			return `repeating-linear-gradient(180deg, transparent 0 ${s - 1}px, ${c} ${s - 1}px ${s}px)`;
+		case 'pinstripe':
+			// Fine VERTICAL pinstripe lines (90deg = columns); scale tunes the pitch.
+			// One opaque 1px line, then a transparent GAP (a hard stop, never an area
+			// fade) — export-safe in both faces (the line color is the only face knob).
+			return `repeating-linear-gradient(90deg, ${c} 0 1px, transparent 1px ${s}px)`;
+		case 'lattice':
+			// A woven LATTICE cross-hatch: two repeating-linear-gradients at +45°/−45°,
+			// summed into a diagonal weave. Each is a 1px opaque line + transparent gap
+			// (hard stop), so both faces bake clean; scale tunes the weave pitch.
+			return `repeating-linear-gradient(45deg, ${c} 0 1px, transparent 1px ${s}px), repeating-linear-gradient(-45deg, ${c} 0 1px, transparent 1px ${s}px)`;
 		default:
 			return 'none';
 	}
 }
 // The matching background-size for a texture (dots tile to a square; the rest auto).
 const textureSize = (type: TextureType, s: number): string => (type === 'dots' ? `${s}px ${s}px` : 'auto');
+// How many comma-separated background-image LAYERS a wash type emits. Most are one
+// full-bleed gradient; `mesh` is four overlapping blooms. The aux size/position/
+// repeat slots must carry one entry per wash layer so they line up in the compositor.
+const washLayers = (type: WashType): number => (type === 'mesh' ? 4 : type === 'none' ? 0 : 1);
+// How many comma-separated background-image LAYERS a texture type emits. `grid` and
+// `lattice` are two repeating gradients (two directions); the rest are one; none = 0.
+const textureLayers = (type: TextureType): number => (type === 'none' ? 0 : type === 'grid' || type === 'lattice' ? 2 : 1);
 
 // Placement → the engine's mark position keyword(s).
 function markPos(p: Placement): string {
@@ -242,6 +306,12 @@ function edgeImage(type: EdgeType, i: number, face: FinishFace): string {
 			return `linear-gradient(225deg, ${mix(lift(i, face), face)} 0%, ${end} 60%)`;
 		case 'margin-rule':
 			return SOLID;
+		// `frame` draws a SOLID keyline BORDER, not a background gradient (see
+		// recipeSlots — a thin multi-layer background on a pseudo drops in the vector
+		// PDF, where a border prints crisply). So the --fin-edge background is `none`
+		// for a frame; the keyline lives in the --fin-edge-border-* slots.
+		case 'frame':
+			return 'none';
 		default:
 			return 'none';
 	}
@@ -266,13 +336,20 @@ export function recipeSlots(r: FinishRecipe, face: FinishFace = 'opaque'): strin
 	// auxiliary slots up with that order (texture layer, wash layer). These aux slots
 	// (size/position/repeat) are face-invariant — both faces share the same layer
 	// structure, so they're emitted only in the rich/default rule.
-	const texCount = r.texture.type === 'grid' ? 2 : 1; // grid is two repeating gradients
+	// texture and wash can each emit MORE than one background-image layer (grid/lattice
+	// = 2 directions; mesh = 4 overlapping blooms). The aux size/position/repeat slots
+	// carry one entry per layer, in compositor order (all texture layers, then all wash
+	// layers), so a multi-layer wash/texture lines up cleanly.
+	const texCount = textureLayers(r.texture.type) || 1; // ≥1 so a `none` texture still has its no-op slot entry
+	const washCount = washLayers(r.wash.type) || 1;
 	const texSize = textureSize(r.texture.type, r.texture.scale);
 	const washSize = wash === 'none' ? 'auto' : 'cover';
 	const washRepeat = 'no-repeat';
 	const texRepeat = tex === 'none' ? 'no-repeat' : 'repeat';
-	decls.push(`--fin-size:${Array(texCount).fill(texSize).join(', ')}, ${washSize}`);
-	decls.push(`--fin-repeat:${Array(texCount).fill(texRepeat).join(', ')}, ${washRepeat}`);
+	const sizes = [...Array(texCount).fill(texSize), ...Array(washCount).fill(washSize)];
+	const repeats = [...Array(texCount).fill(texRepeat), ...Array(washCount).fill(washRepeat)];
+	decls.push(`--fin-size:${sizes.join(', ')}`);
+	decls.push(`--fin-repeat:${repeats.join(', ')}`);
 
 	// z3 — mark. Marks are small/solid (a bar, a tick) or an opaque ghost glyph —
 	// NOT a full-bleed area fade — so the same in both faces.
@@ -322,6 +399,17 @@ export function recipeSlots(r: FinishRecipe, face: FinishFace = 'opaque'): strin
 	if (r.edge.type === 'vignette') decls.push('--fin-edge-position:center', '--fin-edge-size:cover');
 	else if (r.edge.type === 'fold') decls.push('--fin-edge-position:top right', '--fin-edge-size:9.4cqi 9.4cqi');
 	else if (r.edge.type === 'margin-rule') decls.push('--fin-edge-position:right center', '--fin-edge-size:0.47cqi 100%');
+	else if (r.edge.type === 'frame') {
+		// An inset keyline museum FRAME — two stacked SOLID inset box-shadows on the
+		// SECTION (--fin-frame), NOT the ::after pseudo (the engine reserves ::after for
+		// the pagination marker, so a finish ::after edge is clobbered). An outer
+		// bg-colored mat ring (0 → 2.6cqi) then an accent-into-bg keyline ring. Both
+		// opaque + blur-free, so they bake crisp in the vector PDF and carry no alpha —
+		// identical in both faces (export-safe by construction). Intensity tunes the
+		// keyline strength.
+		const c = `color-mix(in srgb, var(--accent) ${Math.round(Math.min(48, 26 + r.edge.intensity))}%, var(--bg))`;
+		decls.push(`--fin-frame:inset 0 0 0 2.6cqi var(--bg), inset 0 0 0 2.82cqi ${c}`);
+	}
 
 	return decls;
 }

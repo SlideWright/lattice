@@ -40,13 +40,13 @@ import { saveStudioFinish } from './finish-library';
 // a recipe (never CSS) and no model text reaches the preview frame (HARD RULE #22).
 
 // Friendly labels for the closed vocabulary.
-const WASH_LABEL: Record<string, string> = { none: 'None', 'corner-glow': 'Corner glow', duotone: 'Duotone', spotlight: 'Spotlight', bands: 'Bands' };
-const TEXTURE_LABEL: Record<string, string> = { none: 'None', grid: 'Grid', dots: 'Dots', hatch: 'Hatch', contour: 'Contour', rings: 'Rings', ruled: 'Ruled' };
+const WASH_LABEL: Record<string, string> = { none: 'None', 'corner-glow': 'Corner glow', duotone: 'Duotone', spotlight: 'Spotlight', bands: 'Bands', mesh: 'Gradient mesh' };
+const TEXTURE_LABEL: Record<string, string> = { none: 'None', grid: 'Grid', dots: 'Dots', hatch: 'Hatch', contour: 'Contour', rings: 'Rings', ruled: 'Ruled', pinstripe: 'Pinstripe', lattice: 'Lattice weave' };
 const MARK_LABEL: Record<string, string> = { none: 'None', monogram: 'Monogram', tick: 'Registration tick', bar: 'Margin bar', numeral: 'Ghost numeral' };
-const EDGE_LABEL: Record<string, string> = { none: 'None', vignette: 'Vignette', 'margin-rule': 'Margin rule', fold: 'Corner fold' };
+const EDGE_LABEL: Record<string, string> = { none: 'None', vignette: 'Vignette', 'margin-rule': 'Margin rule', fold: 'Corner fold', frame: 'Inset frame' };
 const PLACEMENT_LABEL: Record<Placement, string> = { 'top-left': 'Top left', 'top-right': 'Top right', 'bottom-left': 'Bottom left', 'bottom-right': 'Bottom right', center: 'Center', left: 'Left edge' };
-const PRESETS = ['atrium', 'meridian', 'strata', 'halo', 'ledger'] as const;
-const PRESET_LABEL: Record<string, string> = { atrium: 'Atrium', meridian: 'Meridian', strata: 'Strata', halo: 'Halo', ledger: 'Ledger' };
+const PRESETS = ['atrium', 'meridian', 'strata', 'halo', 'ledger', 'nimbus', 'loom', 'savile', 'gallery'] as const;
+const PRESET_LABEL: Record<string, string> = { atrium: 'Atrium', meridian: 'Meridian', strata: 'Strata', halo: 'Halo', ledger: 'Ledger', nimbus: 'Nimbus', loom: 'Loom', savile: 'Savile', gallery: 'Gallery' };
 
 // A stable preview class so the generated rule (section.finish.finish-<slug>) lands
 // on the specimen section. The specimen carries `finish finish-preview` via _class.

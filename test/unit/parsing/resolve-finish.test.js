@@ -32,8 +32,12 @@ describe('resolve-finish', () => {
     assert.equal(finishClasses('strata'), 'finish finish-strata');
     assert.equal(finishClasses('halo'), 'finish finish-halo');
     assert.equal(finishClasses('ledger'), 'finish finish-ledger');
+    assert.equal(finishClasses('nimbus'), 'finish finish-nimbus');
+    assert.equal(finishClasses('loom'), 'finish finish-loom');
+    assert.equal(finishClasses('savile'), 'finish finish-savile');
+    assert.equal(finishClasses('gallery'), 'finish finish-gallery');
     // every finish preset carries the base `finish` token (the compositor hook)
-    for (const name of ['atrium', 'meridian', 'strata', 'halo', 'ledger']) {
+    for (const name of ['atrium', 'meridian', 'strata', 'halo', 'ledger', 'nimbus', 'loom', 'savile', 'gallery']) {
       assert.ok(
         finishClasses(name).split(/\s+/).includes('finish'),
         `${name} must include the base finish class`,
@@ -67,7 +71,7 @@ describe('resolve-finish', () => {
   test('FINISH_NAMES lists exactly the registered names', () => {
     assert.deepEqual(
       [...FINISH_NAMES].sort(),
-      ['atrium', 'boardroom', 'halo', 'ledger', 'meridian', 'sketch', 'sketch-clean', 'strata'],
+      ['atrium', 'boardroom', 'gallery', 'halo', 'ledger', 'loom', 'meridian', 'nimbus', 'savile', 'sketch', 'sketch-clean', 'strata'],
     );
   });
 

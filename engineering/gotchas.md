@@ -1208,6 +1208,35 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
   be fixed upstream. The gate is the durable guard.
 - **Commits:** HARD RULE #20 + the margin-discipline gate.
 
+### A finish `::after` EDGE layer is clobbered by the pagination marker
+
+- **Symptom:** A finish preset's `edge` layer (the vignette in `halo`, the corner
+  fold in `ledger`) renders in a standalone HTML mock but is **invisible in the real
+  engine/emulator render** (PDF and on-page) whenever the deck shows page numbers.
+  The wash/texture (section background) and the mark (`::before`) all paint normally;
+  only the `::after` edge vanishes.
+- **Cause:** `section.finish::after` (specificity 0,1,1) is the SAME pseudo-element as
+  the engine's pagination marker, `div.lattice > section::after` (0,1,2), which sets
+  `position:absolute; bottom/right: …` for the page number. The higher-specificity
+  scaffold rule wins, so the finish edge pseudo collapses to the page-number box
+  (top/left resolve to `auto`, width/height to `auto`) and its background never fills.
+- **Mitigation (used by the `frame` edge / `gallery` preset):** Draw an edge that
+  must survive the real render on the **section itself**, not the `::after` pseudo —
+  e.g. the `gallery` keyline frame is stacked **solid, blur-free inset `box-shadow`s**
+  on `section.finish` (`--fin-frame`), which paint reliably in the vector PDF and carry
+  no alpha. (A *solid* opaque inset shadow is PDF-safe; only a *blurred / alpha* one
+  grays — different from the vignette caveat above.) The frame rule is scoped
+  `section.finish:not(.overflow)` so it **yields to the overflow-debug red ring**
+  (`section.overflow { box-shadow: inset 0 0 0 4px … }`): both are `(0,1,1)` box-shadow
+  and `base.finish` loads *after* `base.modifiers`, so an unscoped finish box-shadow
+  would win on an overflowing finish slide and silently kill the red ring (a deck-wide
+  finish would broadly defeat the overflow signal). With `:not(.overflow)` the finish
+  rule stops matching once a slide overflows.
+- **Off-path note (HARD RULE #18):** The pre-existing `--fin-edge` (`::after`) layer in
+  `halo`/`ledger` is affected by this same collision and is logged here rather than
+  reworked inside the nimbus/loom/savile/gallery preset change; relocating those edges
+  off `::after` is a separate fix.
+
 ### `white-space:nowrap` on `section code` collapsed code blocks + overflowed eyebrows
 
 - **Symptom:** Every fenced code block (`code`, `compare-code`) rendered as a

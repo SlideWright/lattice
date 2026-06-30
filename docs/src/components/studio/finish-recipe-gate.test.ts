@@ -71,12 +71,16 @@ function layerCount(v: string): number {
 }
 
 // The structural fingerprint of a finish: which layers are on + the texture count.
+// An edge is active either as a background gradient (--fin-edge) OR as the `frame`
+// type's solid inset-keyline box-shadow (--fin-frame) — the frame is drawn on the
+// SECTION via box-shadow, not the ::after pseudo (the engine reserves ::after for
+// the pagination marker), so its edge presence lives in the --fin-frame slot.
 function structure(block: string) {
 	return {
 		wash: active(slot(block, '--fin-wash')),
 		texture: active(slot(block, '--fin-texture')),
 		mark: active(slot(block, '--fin-mark')) || slot(block, '--fin-mark-text').replace(/["']/g, '') !== '',
-		edge: active(slot(block, '--fin-edge')),
+		edge: active(slot(block, '--fin-edge')) || active(slot(block, '--fin-frame')),
 		textureLayers: layerCount(slot(block, '--fin-texture')),
 	};
 }

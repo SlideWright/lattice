@@ -96,6 +96,42 @@ export const FINISHES: FinishEntry[] = [
 				+ `repeating-linear-gradient(180deg, transparent 0 5px, ${A(30)} 5px 6px)`,
 		},
 	},
+	{
+		name: 'nimbus', label: 'Nimbus', group: 'finish', nature: 'parametric', zone: 'field',
+		blurb: 'A gradient mesh of soft accent blooms + a seating vignette.',
+		swatch: {
+			background:
+				`radial-gradient(60% 60% at 15% 20%, ${A(55)}, transparent 60%), `
+				+ `radial-gradient(60% 60% at 85% 25%, ${A(40)}, transparent 58%), `
+				+ `radial-gradient(60% 60% at 75% 90%, ${A(34)}, transparent 62%)`,
+		},
+	},
+	{
+		name: 'loom', label: 'Loom', group: 'finish', nature: 'parametric', zone: 'field',
+		blurb: 'A woven lattice cross-hatch + a movable corner glow.',
+		swatch: {
+			background:
+				`radial-gradient(120% 90% at 0% 0%, ${A(45)}, transparent 60%), `
+				+ `repeating-linear-gradient(45deg, ${A(30)} 0 1px, transparent 1px 7px), `
+				+ `repeating-linear-gradient(-45deg, ${A(30)} 0 1px, transparent 1px 7px)`,
+		},
+	},
+	{
+		name: 'savile', label: 'Savile', group: 'finish', nature: 'parametric', zone: 'field',
+		blurb: 'A tailored vertical pinstripe + a movable monogram.',
+		swatch: {
+			background: `repeating-linear-gradient(90deg, ${A(45)} 0 1px, transparent 1px 5px)`,
+		},
+	},
+	{
+		name: 'gallery', label: 'Gallery', group: 'finish', nature: 'parametric', zone: 'field',
+		blurb: 'A museum inset keyline frame + a spotlight + a movable numeral.',
+		swatch: {
+			background:
+				`linear-gradient(${A(60)}, ${A(60)}) center / calc(100% - 5px) calc(100% - 5px) no-repeat, `
+				+ `radial-gradient(70% 70% at 50% 50%, ${A(30)}, transparent 65%)`,
+		},
+	},
 ];
 
 export const FINISH_BY_NAME: Record<string, FinishEntry> = Object.fromEntries(

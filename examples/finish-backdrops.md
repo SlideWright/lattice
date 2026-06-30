@@ -81,6 +81,53 @@ surface. The deck-wide Atrium finish is replaced for this one slide.
 
 ---
 
+<!-- _class: finish finish-nimbus -->
+
+## Nimbus — a gradient mesh of soft blooms.
+
+A new `mesh` wash floats three or four soft accent blooms across the slide — an
+organic gradient-mesh atmosphere with no pattern at all, seated by a whisper of
+a vignette. The wash intensity tunes how strong the blooms read. Pure premium
+air, set per-slide with `_class: finish finish-nimbus`.
+
+---
+
+<!-- _class: finish finish-loom list-tabular -->
+
+## Loom — a woven lattice, a movable glow.
+
+- Texture
+  - A new `lattice` cross-hatch — two diagonal weaves at ±45° — on-brand for the
+    product, with the weave pitch tunable by scale.
+- Wash
+  - A corner glow, here moved to the top-left to show the placement axis at work.
+- Tunable
+  - Move the glow, change the weave scale, and the whole surface re-tailors.
+
+---
+
+<!-- _class: finish finish-savile -->
+
+## Savile — a tailored pinstripe, a placed monogram.
+
+A new `pinstripe` texture rules fine vertical lines — Savile Row on a slide —
+with the pitch tuned by scale. A movable monogram (your initials, via the glyph
+param) sits in the bottom-right corner. Editorial and tailored, set with
+`_class: finish finish-savile`.
+
+---
+
+<!-- _class: finish finish-gallery -->
+
+## Gallery — a museum keyline frame.
+
+A new `frame` edge draws a thin inset keyline border — no soft shadow, just four
+crisp accent strips — around a centered spotlight, with a movable ghost numeral
+labeling the plate. Museum framing, set per-slide with `_class: finish
+finish-gallery`.
+
+---
+
 <!-- _class: agenda progress-2 -->
 
 ## How the finish is wired.
