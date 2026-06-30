@@ -42,10 +42,26 @@ export type Placement = (typeof PLACEMENTS)[number];
 // A layer recipe — what the controls bind to and the AI returns. Intensity is an
 // accent-into-bg mix percentage (kept low so text-on-bg AA survives without a scrim);
 // placement steers a positioned layer (mark glyph, corner glow).
+//
+// TRANSFORM AXES (the joystick / drag-on-canvas / numeric controls write these).
+// A placed layer is now freely SIZED + MOVED, not snapped to a corner:
+//   • mark.x / mark.y  — the glyph CENTER as a % of the slide (0=left/top,
+//     100=right/bottom). Absent → derived from the coarse `placement` keyword, so
+//     a preset / AI reply that only names a corner still lands sensibly.
+//   • mark.scale       — glyph size as a % of the base ghost size (100 = default);
+//     this is the "they're huge" knob. Range clamps small-corner-mark → dramatic ghost.
+//   • mark.angle       — glyph rotation in degrees (a tilted ghost numeral).
+//   • wash.x / wash.y  — the hotspot CENTER (%) of a single-source wash (corner-glow,
+//     spotlight). Absent → the wash type's natural hotspot. (duotone/bands/mesh are
+//     multi-source / directional, so they ignore the hotspot — the UI hides it.)
+//   • wash.spread      — the hotspot reach as a % of its default radius (100 = default).
+// All are OPTIONAL so every existing preset / AI literal stays valid; coerceRecipe
+// fills them from the coarse fields. They only ever interpolate as clamped NUMBERS,
+// so a crafted recipe still can't escape the generated rule (HARD RULE #22).
 export type FinishRecipe = {
-	wash: { type: WashType; intensity: number };
+	wash: { type: WashType; intensity: number; x?: number; y?: number; spread?: number };
 	texture: { type: TextureType; intensity: number; scale: number };
-	mark: { type: MarkType; placement: Placement; glyph?: string };
+	mark: { type: MarkType; placement: Placement; glyph?: string; x?: number; y?: number; scale?: number; angle?: number };
 	edge: { type: EdgeType; intensity: number };
 };
 
@@ -149,6 +165,42 @@ const clampInt = (v: unknown, lo: number, hi: number, fallback: number): number 
 	const n = Math.round(Number(v));
 	return Number.isFinite(n) ? Math.max(lo, Math.min(hi, n)) : fallback;
 };
+// Same, but only clamps when a value is actually PRESENT — an absent (undefined)
+// transform axis returns `undefined` so the caller can fall back to the coarse field.
+const optInt = (v: unknown, lo: number, hi: number): number | undefined =>
+	v === undefined || v === null || v === '' ? undefined : clampInt(v, lo, hi, lo);
+
+// The transform-axis ranges, in ONE place (controls, coercion, and tests share them).
+export const MARK_SCALE = { min: 30, max: 200, default: 100 } as const; // % of base ghost size
+export const MARK_ANGLE = { min: -30, max: 30, default: 0 } as const; // degrees
+export const WASH_SPREAD = { min: 50, max: 160, default: 100 } as const; // % of default radius
+
+// A coarse placement keyword → the glyph-center (x%, y%) it stands for. Lets a preset
+// or AI reply that only names a corner resolve to real coordinates the joystick/drag
+// can then nudge freely.
+export function placementXY(p: Placement): { x: number; y: number } {
+	switch (p) {
+		case 'top-left':
+			return { x: 12, y: 16 };
+		case 'top-right':
+			return { x: 88, y: 16 };
+		case 'bottom-left':
+			return { x: 12, y: 84 };
+		case 'center':
+			return { x: 50, y: 50 };
+		case 'left':
+			return { x: 8, y: 50 };
+		default:
+			return { x: 88, y: 84 }; // bottom-right
+	}
+}
+// A wash type's natural hotspot — where its single source sits before the user moves it.
+function washHotspot(type: WashType): { x: number; y: number } {
+	return type === 'spotlight' ? { x: 50, y: 42 } : { x: 100, y: 0 }; // corner-glow + fallback
+}
+// Only these washes have a single movable hotspot; the rest are directional/multi-source,
+// so the designer hides the hotspot joystick for them. Exported for the UI to gate on.
+export const washHasHotspot = (type: WashType): boolean => type === 'corner-glow' || type === 'spotlight';
 
 /** Coerce an arbitrary object (untrusted — an AI reply or partial state) into a
  *  full, in-vocabulary recipe. Never throws; always returns a renderable recipe. */
@@ -158,10 +210,32 @@ export function coerceRecipe(input: unknown): FinishRecipe {
 	const t = (o.texture ?? {}) as Record<string, unknown>;
 	const m = (o.mark ?? {}) as Record<string, unknown>;
 	const e = (o.edge ?? {}) as Record<string, unknown>;
+	// Resolve the mark/wash transform axes: a present value is clamped; an absent one
+	// falls back to the coarse field (placement keyword / wash hotspot) so the stored
+	// recipe ALWAYS carries concrete coordinates the joystick + drag + numeric controls
+	// can read and write without a special "unset" branch.
+	const markPlacement = oneOf(PLACEMENTS, m.placement, 'bottom-right');
+	const markHome = placementXY(markPlacement);
+	const washType = oneOf(WASH_TYPES, w.type, 'none');
+	const washHome = washHotspot(washType);
 	return {
-		wash: { type: oneOf(WASH_TYPES, w.type, 'none'), intensity: clampInt(w.intensity, 3, 20, 10) },
+		wash: {
+			type: washType,
+			intensity: clampInt(w.intensity, 3, 20, 10),
+			x: optInt(w.x, 0, 100) ?? washHome.x,
+			y: optInt(w.y, 0, 100) ?? washHome.y,
+			spread: optInt(w.spread, WASH_SPREAD.min, WASH_SPREAD.max) ?? WASH_SPREAD.default,
+		},
 		texture: { type: oneOf(TEXTURE_TYPES, t.type, 'none'), intensity: clampInt(t.intensity, 3, 18, 7), scale: clampInt(t.scale, 12, 64, 38) },
-		mark: { type: oneOf(MARK_TYPES, m.type, 'none'), placement: oneOf(PLACEMENTS, m.placement, 'bottom-right'), ...(typeof m.glyph === 'string' && m.glyph.trim() ? { glyph: m.glyph } : {}) },
+		mark: {
+			type: oneOf(MARK_TYPES, m.type, 'none'),
+			placement: markPlacement,
+			...(typeof m.glyph === 'string' && m.glyph.trim() ? { glyph: m.glyph } : {}),
+			x: optInt(m.x, 0, 100) ?? markHome.x,
+			y: optInt(m.y, 0, 100) ?? markHome.y,
+			scale: optInt(m.scale, MARK_SCALE.min, MARK_SCALE.max) ?? MARK_SCALE.default,
+			angle: optInt(m.angle, MARK_ANGLE.min, MARK_ANGLE.max) ?? MARK_ANGLE.default,
+		},
 		edge: { type: oneOf(EDGE_TYPES, e.type, 'none'), intensity: clampInt(e.intensity, 3, 20, 6) },
 	};
 }
@@ -194,16 +268,21 @@ const lift = (pct: number, face: FinishFace) => (face === 'rich' ? Math.min(22, 
 const SOLID = 'linear-gradient(var(--accent), var(--accent))';
 
 // Build the --fin-wash gradient (z1, full-bleed → export face fades opaque→opaque).
-function washImage(type: WashType, i: number, face: FinishFace): string {
+// A single-source wash (corner-glow, spotlight) reads its movable hotspot from x/y and
+// scales its reach by `spread` (% of the default radius); directional/multi-source
+// washes (duotone, bands, mesh) ignore the hotspot. x/y/spread default via coerceRecipe.
+function washImage(type: WashType, i: number, face: FinishFace, x = 100, y = 0, spread = 100): string {
 	const a = lift(i, face);
 	const end = fadeEnd(face);
+	const sp = spread / 100; // 1 = default reach
+	const at = `at ${clampInt(x, 0, 100, 50)}% ${clampInt(y, 0, 100, 50)}%`;
 	switch (type) {
 		case 'corner-glow':
-			return `radial-gradient(ellipse 120% 90% at 100% 0%, ${mix(a, face)} 0%, ${end} ${face === 'rich' ? '60%' : '55%'})`;
+			return `radial-gradient(ellipse ${Math.round(120 * sp)}% ${Math.round(90 * sp)}% ${at}, ${mix(a, face)} 0%, ${end} ${face === 'rich' ? '60%' : '55%'})`;
 		case 'duotone':
 			return `linear-gradient(118deg, ${mix(a, face)} 0%, ${end} 42%, ${mix(lift(Math.max(3, i * 0.6), face), face)} 100%)`;
 		case 'spotlight':
-			return `radial-gradient(80% 70% at 50% 42%, ${mix(a, face)} 0%, ${end} 60%)`;
+			return `radial-gradient(${Math.round(80 * sp)}% ${Math.round(70 * sp)}% ${at}, ${mix(a, face)} 0%, ${end} 60%)`;
 		case 'bands':
 			return `linear-gradient(180deg, ${mix(a, face)} 0%, ${end} 30%, ${end} 70%, ${mix(lift(Math.max(3, i * 0.8), face), face)} 100%)`;
 		case 'mesh': {
@@ -287,8 +366,35 @@ function markPos(p: Placement): string {
 			return 'bottom 2.7cqi right 3.1cqi';
 	}
 }
-const flexAlign = (p: Placement): string => (p.startsWith('top') ? 'flex-start' : p === 'center' ? 'center' : 'flex-end');
-const flexJustify = (p: Placement): string => (p.endsWith('left') || p === 'left' ? 'flex-start' : p === 'center' ? 'center' : 'flex-end');
+// A TEXT mark (monogram/numeral) is the big "ghost" glyph — the thing that read as
+// "huge". It is now freely SIZED + PLACED + TILTED. The glyph is CENTERED in the
+// full-bleed ::before, then moved by a translate to (x%, y%) of the slide and rotated
+// by `angle`; its size is `scale`% of a sane base (so the default is tasteful and the
+// author dials the dramatic ghost up themselves). The ::before clips overflow, so a
+// large glyph bleeds off the edge exactly like the built-in ghost-numeral presets.
+// 30cqi base → default ≈ a third of the slide height; range ≈ 9cqi … 60cqi.
+const MARK_TEXT_BASE_CQI = 30;
+function markTextSlots(r: FinishRecipe, mixPct: number): string[] {
+	const x = clampInt(r.mark.x ?? placementXY(r.mark.placement).x, 0, 100, 50);
+	const y = clampInt(r.mark.y ?? placementXY(r.mark.placement).y, 0, 100, 50);
+	const scale = clampInt(r.mark.scale ?? MARK_SCALE.default, MARK_SCALE.min, MARK_SCALE.max, MARK_SCALE.default);
+	const angle = clampInt(r.mark.angle ?? MARK_ANGLE.default, MARK_ANGLE.min, MARK_ANGLE.max, MARK_ANGLE.default);
+	const fs = Math.max(6, Math.round((MARK_TEXT_BASE_CQI * scale) / 100));
+	// translate % is relative to the ::before's OWN box (= the slide), so (x-50, y-50)
+	// moves the centered glyph's center to (x%, y%). rotate after translate tilts it
+	// in place. Only clamped integers reach the string (no caller text — HARD RULE #22).
+	const transform = `translate(${x - 50}%, ${y - 50}%) rotate(${angle}deg)`;
+	return [
+		'--fin-mark:none',
+		`--fin-mark-text:"${sanitizeGlyph(r.mark.glyph)}"`,
+		`--fin-mark-color:${mix(mixPct, 'opaque')}`,
+		`--fin-mark-fs:${fs}cqi`,
+		'--fin-mark-align:center',
+		'--fin-mark-justify:center',
+		'--fin-mark-pad:0',
+		`--fin-mark-transform:${transform}`,
+	];
+}
 
 // Build the EDGE gradient (z4 pseudo, full-bleed). Export face: opaque vignette/fold,
 // never an alpha shadow. Screen face: fades to `transparent` for a softer dissolve.
@@ -327,8 +433,8 @@ function edgeImage(type: EdgeType, i: number, face: FinishFace): string {
 export function recipeSlots(r: FinishRecipe, face: FinishFace = 'opaque'): string[] {
 	const decls: string[] = [];
 
-	// z1 — wash (a single full-bleed gradient layer).
-	const wash = washImage(r.wash.type, r.wash.intensity, face);
+	// z1 — wash (a single full-bleed gradient layer; movable hotspot for single-source types).
+	const wash = washImage(r.wash.type, r.wash.intensity, face, r.wash.x, r.wash.y, r.wash.spread);
 	decls.push(`--fin-wash:${wash}`);
 
 	// z2 — texture.
@@ -363,28 +469,14 @@ export function recipeSlots(r: FinishRecipe, face: FinishFace = 'opaque'): strin
 			// The author's initials, sanitized for content:"…". A glyph-mark is author-
 			// personalized: an absent/empty glyph yields "" so NOTHING renders (no baked "L").
 			// The mark TYPE/layer stays present (the designer offers it), only the text is empty.
-			decls.push(
-				'--fin-mark:none',
-				`--fin-mark-text:"${sanitizeGlyph(r.mark.glyph)}"`,
-				`--fin-mark-color:${mix(10, 'opaque')}`,
-				'--fin-mark-fs:42cqi',
-				`--fin-mark-align:${flexAlign(r.mark.placement)}`,
-				`--fin-mark-justify:${flexJustify(r.mark.placement)}`,
-				'--fin-mark-pad:0 2cqi',
-			);
+			// Freely sized/placed/tilted via markTextSlots (scale/x/y/angle).
+			decls.push(...markTextSlots(r, 10));
 			break;
 		case 'numeral':
 			// The author's number, sanitized for content:"…". Author-personalized: an absent/
 			// empty glyph yields "" so NOTHING renders (no baked "03"). Mark TYPE/layer stays.
-			decls.push(
-				'--fin-mark:none',
-				`--fin-mark-text:"${sanitizeGlyph(r.mark.glyph)}"`,
-				`--fin-mark-color:${mix(9, 'opaque')}`,
-				'--fin-mark-fs:40cqi',
-				`--fin-mark-align:${flexAlign(r.mark.placement)}`,
-				`--fin-mark-justify:${flexJustify(r.mark.placement)}`,
-				'--fin-mark-pad:0 1cqi',
-			);
+			// Freely sized/placed/tilted via markTextSlots (scale/x/y/angle).
+			decls.push(...markTextSlots(r, 9));
 			break;
 		case 'tick':
 			decls.push(

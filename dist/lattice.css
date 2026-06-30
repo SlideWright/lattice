@@ -15377,6 +15377,13 @@ section.finish::before {
   line-height: 0.78;
   letter-spacing: -0.04em;
   color: var(--fin-mark-color, var(--bg));
+  /* The placed text glyph is centered (align/justify) then freely MOVED + TILTED by
+   * the designer's transform (translate to x/y, rotate by angle). Default `none`
+   * keeps the built-in presets' flex placement untouched. transform-origin center so
+   * rotation pivots about the glyph, and translate %s resolve against this full-bleed
+   * box (= the slide). */
+  transform: var(--fin-mark-transform, none);
+  transform-origin: center;
 }
 
 /* z4 — the EDGE pseudo. A full-inset layer for vignettes / corner folds; the
@@ -15517,7 +15524,7 @@ section.finish-meridian {
   --fin-mark-opaque: none;
   --fin-mark-text: "";
   --fin-mark-color: color-mix(in srgb, var(--accent) 9%, var(--bg));
-  --fin-mark-fs: 40cqi;              /* oversized, ~512px at 1280 */
+  --fin-mark-fs: 30cqi;              /* tasteful default ghost (~third of slide height) */
   --fin-mark-pad: 0 1cqi 0 0;        /* right-aligned, hug the bottom edge */
   --fin-mark-align: flex-end;
   --fin-mark-justify: flex-end;
@@ -15823,7 +15830,7 @@ section.finish-savile {
   --fin-mark-opaque: none;
   --fin-mark-text: "";
   --fin-mark-color: color-mix(in srgb, var(--accent) 9%, var(--bg));
-  --fin-mark-fs: 42cqi;
+  --fin-mark-fs: 30cqi;
   --fin-mark-pad: 0 2cqi;
   --fin-mark-align: flex-end;
   --fin-mark-justify: flex-end;
@@ -15866,7 +15873,7 @@ section.finish-gallery {
   --fin-mark-opaque: none;
   --fin-mark-text: "";
   --fin-mark-color: color-mix(in srgb, var(--accent) 9%, var(--bg));
-  --fin-mark-fs: 40cqi;
+  --fin-mark-fs: 30cqi;
   --fin-mark-pad: 0 1cqi;
   --fin-mark-align: flex-start;
   --fin-mark-justify: flex-start;

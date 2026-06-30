@@ -27,6 +27,15 @@ in patch versions.
 
 ### Added
 
+- **Finish marks and washes are now freely sized, moved, and tilted.** A finish's
+  ghost glyph (monogram / numeral) is no longer locked to a corner at a fixed huge
+  size — the recipe carries continuous `scale` / `x` / `y` / `angle` axes, so a mark
+  can be a tiny corner emblem or a dramatic slide-spanning ghost, placed anywhere and
+  rotated. Single-source washes (corner-glow, spotlight) gain a movable hotspot
+  (`x` / `y`) and a `spread` reach. All axes round-trip through Save / Share / the AI
+  recipe, stay export-safe (face-invariant transform, no new sinks), and the default
+  ghost size dropped from ~40cqi to a tasteful 30cqi. Authored in the Finish Studio
+  via a 3D joystick, drag-on-canvas handles, and numeric fields.
 - **The Library now manages saved finishes too.** A fabricated finish saved to your
   library appears in the Library shelf (new **Finish** filter) with Apply · Share · Delete,
   mirroring themes and components — Share exports it as a `kind:"finish"` lattice-asset zip
