@@ -1,151 +1,145 @@
 ---
 status: proposed
-summary: The Studio topbar packs ~9–15 controls into one 54px row; on a portrait phone (~390px) it is visibly cramped. This designs the information architecture for that bar — (1) collapse theme + light/dark into one Appearance control, (2) introduce a responsive overflow ("⋯ More") that folds secondary controls into a single dropdown on compact widths while desktop keeps the full bar, and (3) decide the primary-vs-overflow split per breakpoint across BOTH portrait phone (mobile tier, <700px) and landscape phone (tablet tier, 700–1099px). It reuses existing primitives (ThemeMenuItems, Radix DropdownMenu, the ⌘K CommandPalette) per HARD RULE #15, and is red-teamed by Munger inversion + an independent checker before any code.
+summary: The Studio topbar packs up to ~15 controls into one 54px row; on a portrait phone (~390px) it's visibly cramped. This designs the bar's information architecture — (1) group theme + light/dark into one "Appearance" control, and (2) fold the genuinely-secondary controls (Appearance, Library, Workspace, Search) into a single "⋯ More" dropdown on compact widths (≤1099px) while desktop keeps the full bar. After a Munger-inversion red team + an independent checker, the original per-tier split was dropped for ONE compact rule that keeps Present/Share and the Architect/Inspector toggles primary at every width — which also deletes the #635 pulse-mirror problem, the landscape-phone "middle case," and the aria-pressed→menu-item accessibility trap. Reuses ThemeMenuItems + Radix DropdownMenu + the ⌘K CommandPalette (#15). Sequencing: land #635 first, then build this on top.
 ---
 
 # Studio topbar information architecture — appearance grouping + responsive overflow
 
-*2026-06-30 · status: proposed (design only; no code until confirmed)*
+*2026-06-30 · status: proposed (design only; no code until confirmed) · revised after red-team + checker*
 
 ## Problem
 
 The Studio topbar is one 54px row carrying, for an onboarded user, up to ~15
-controls: workspace launcher, deck switcher, ⌘K search, theme, light/dark,
-Present, Share, Focus, Architect toggle, Inspector toggle, Library, Workspace
-settings, avatar. On a **portrait phone (~390px)** that's visibly cramped (user
-report + screenshot); on a **landscape phone / small tablet (700–1099px)** it's
-busy but breathing. Desktop (≥1100px) has room.
+controls. On a **portrait phone (~390px)** it's visibly cramped (user report +
+screenshot); on a **landscape phone / small tablet (700–1099px)** it's busy;
+desktop (≥1100px) has room. Asks: group **theme + color mode**; fold **other**
+controls into a **dropdown** on mobile; decide whether to extend that to
+tablet/desktop, across **portrait and landscape** phones.
 
-The asks: group **theme + color mode**; fold **other** controls into a single
-**dropdown** on mobile; and decide whether that grouping should **extend to
-tablet and desktop**, considering **portrait and landscape** phones.
+## Breakpoints (fixed constraints)
 
-## Breakpoints (the fixed constraints)
+`use-breakpoint.ts`: **mobile <700**, **tablet 700–1099**, **desktop ≥1100**;
+`compact = bp !== 'desktop'` (≤1099). So **portrait phone → mobile**, **landscape
+phone (~844) → tablet**. The redesign keys off these existing tiers — no new
+breakpoint.
 
-`use-breakpoint.ts`: **mobile <700**, **tablet 700–1099**, **desktop ≥1100**.
-So **portrait phone → mobile tier**; **landscape phone (~844) → tablet tier**.
-`compact = mobile || tablet` (≤1099). The redesign keys off these existing tiers
-— it introduces no new breakpoint.
+**Today's starting point (corrected per checker):** theme and light/dark are
+**two separate adjacent icon buttons** (`StudioShell.tsx` ~1014–1022), not one
+control — so "Appearance grouping" is a real (small) build, not a rename.
+Workspace-settings + avatar are *already* hidden `<640px`; the ⌘K pill is gated
+`lg:flex` (**≥1024px**).
 
 ## Principles
 
-1. **Primary actions stay one tap; secondary collapse.** The deliverable verbs
-   (Present, Share) and the working-panel toggles must not require digging.
-2. **Reveal, don't bury (discoverability).** An overflow is only safe if what it
-   hides is genuinely secondary AND there's a second path (⌘K already mirrors
-   every action). Hiding a *frequent* control behind a menu is a regression.
-3. **Group by meaning.** Theme + mode are one concept ("appearance"); they belong
-   together regardless of width.
-4. **Reuse, don't fork (#15).** Use `ThemeMenuItems`, Radix `DropdownMenu`, and
-   the existing `CommandPalette`; do not invent a bespoke menu widget.
-5. **Desktop is not the problem — don't regress it.** Whatever helps the phone
-   must not make the spacious desktop bar worse (an overflow there hides
-   one-click controls power users want).
+1. **Primary actions stay one tap; secondary collapse.** Deliverable verbs
+   (Present, Share) and the working-panel toggles (Architect, Inspector) never get
+   buried.
+2. **Reveal, don't bury.** An overflow is safe only for genuinely-secondary
+   controls; hiding a *frequent* one behind a menu is a regression.
+3. **Group by meaning.** Theme + mode are one concept ("appearance").
+4. **Reuse, don't fork (#15).** `ThemeMenuItems`, Radix `DropdownMenu`, the ⌘K
+   `CommandPalette`.
+5. **Don't regress desktop.** It has room; no overflow there.
 
-## The design
+## The design (revised — one compact rule)
 
-### A. Appearance grouping (all breakpoints)
-Theme picker + light/dark collapse into **one "Appearance" control**:
-- **Desktop / tablet:** a single bordered **segment** — the theme dropdown
-  trigger and the light/dark toggle sit in one rounded group (visually unified,
-  but the mode toggle stays a **direct one-tap** button). This satisfies
-  "grouped" without burying the frequently-used mode toggle (see Munger §M5).
-- **Mobile:** the segment collapses to **one Appearance popover** (palette icon)
-  whose first row is the light/dark toggle, then the `ThemeMenuItems` list.
-  −1 icon where space is tightest; mode is 2 taps on mobile only.
+### A. Appearance grouping (all widths)
+- **Desktop / tablet:** a single bordered **segment** — the theme dropdown trigger
+  + the light/dark toggle in one rounded group, with the **mode toggle kept a
+  direct one-tap button** (don't slow the most-frequent appearance action).
+- **Mobile (<700):** collapses into the **⋯ menu** (below). To avoid taxing the
+  frequent mode toggle with a second level, the **light/dark toggle remains a
+  standalone 1-tap icon on mobile**, and only the *theme picker* folds into ⋯
+  (red-team H1 — the cheaper variant, chosen over a popover that made mode 2 taps).
 
-### B. Responsive overflow ("⋯ More") on compact only
-A single trailing **`⋯` button → Radix `DropdownMenu`** appears at **≤1099px
-(compact: portrait phone + landscape phone + tablet)**; **desktop (≥1100) keeps
-the full bar** (no overflow — principle 5).
+### B. ONE responsive overflow ("⋯ More") for all of ≤1099
+A single trailing **`⋯` button → Radix `DropdownMenu`**, shown whenever
+`compact`; **desktop keeps the full bar**. The membership is the **same on mobile
+and tablet** (the per-tier split is dropped — see §Rejected):
 
-Primary-vs-overflow split, per tier:
-
-| Tier (width) | Left | Right primary | In "⋯ More" |
+| Tier | Left | Right primary | In "⋯ More" |
 |---|---|---|---|
-| **Desktop ≥1100** | launcher · deck switcher | ⌘K · Appearance · Present · Share · Focus · Architect · Inspector · Library · Workspace · avatar | — (no overflow) |
-| **Tablet 700–1099** (landscape phone, small tablets) | launcher · deck switcher | Present · Share · Architect · Inspector · ⋯ | Appearance · Library · Workspace · Search/commands |
-| **Mobile <700** (portrait phone) | launcher · deck switcher | Present · Share · ⋯ | Appearance · Architect · Inspector · Library · Workspace · Search/commands |
+| **Desktop ≥1100** | launcher · deck | ⌘K · Appearance(segment) · Present · Share · Focus · Architect · Inspector · Library · Workspace · avatar | — |
+| **Compact ≤1099** (portrait + landscape phone + tablet) | launcher · deck | Present · Share · Architect · Inspector · mode · ⋯ | Appearance/theme · Library · Workspace · Search/commands |
 
-Rationale for the split:
-- **Present + Share are always primary** — the two deliverable verbs.
-- **Architect + Inspector stay primary on tablet** (room exists) but **fold into
-  ⋯ on portrait** (tightest). On portrait the panels open as full sheets anyway,
-  so one extra tap to reach them is acceptable.
-- **Appearance is secondary** (you set it rarely) → overflow on all compact tiers.
-- **Search/commands** in ⋯ gives touch users the ⌘K surface they otherwise can't
-  reach (⌘K is keyboard-only and hidden <1100).
+- **Present + Share + Architect + Inspector stay primary at every compact width.**
+  Keeping the two panel toggles out of the menu is deliberate: it preserves their
+  one-tap reach, keeps `aria-pressed`/active-color visible, and means the #635
+  Inspector pulse is always directly on the bar (no mirror needed — §C deleted).
+- **⋯ holds only genuinely-secondary controls:** the theme picker, Library,
+  Workspace settings, and a **"Search / commands"** row that opens the existing
+  CommandPalette (touch users' path to ⌘K).
 
-### C. The pulse interaction (depends on #635)
-PR #635 (open) adds a one-time **pulse on the Inspector toggle** after a
-newcomer's first edit. On **portrait**, the Inspector toggle lives *inside* ⋯ —
-a pulse in a closed menu is invisible. **Resolution:** when the Inspector control
-is in the overflow, **mirror the pulse onto the ⋯ trigger** (and open-then-
-highlight on expand). On tablet/desktop the Inspector is on the bar, so the pulse
-is direct. *(This is why #635 should land first or this must be built against it
-— see Sequencing.)*
+### C. The ⌘K dual-search seam (red-team C1 — fixed)
+The ⌘K pill is `lg:flex` (≥1024) but `compact` is ≤1099, so 1024–1099 would show
+**both** the pill and a "Search" row in ⋯. Fix: **gate the ⌘K pill to the desktop
+tier (≥1100)** so it aligns with "no overflow." Then: desktop = full bar + ⌘K
+pill; compact = trimmed bar + ⋯ (whose "Search / commands" row is the only search
+affordance). The ⌘K *keyboard shortcut* stays always-bound (harmless on a tablet
+with a keyboard).
 
-## Why not the alternatives
-- **One overflow on ALL widths (incl. desktop):** rejected — hides one-click
-  controls on a bar that has room; net negative for the primary (power-user)
-  surface (principle 5).
-- **Make ⋯ just open the existing CommandPalette:** tempting reuse, but a command
-  *list* can't host theme swatches or a light/dark toggle well; ⋯ needs to be a
-  settings-style menu. We still surface "Search/commands" *inside* ⋯ as a row that
-  opens the palette — reuse without forcing the wrong widget.
-- **Single Appearance popover everywhere (mode always 2 taps):** rejected on
-  desktop/tablet where room exists — keep mode one-tap there (Munger §M5).
+## Rejected / changed after review
+- **Per-tier primary/overflow split (mobile ≠ tablet)** — *dropped.* It added a
+  third membership set and a "landscape-phone middle case" (red-team M8) for a tiny
+  win (panels are sheets at tablet anyway). One compact rule gets ~90% of the value
+  (checker §3).
+- **§C pulse-mirror onto ⋯** — *deleted.* With the Inspector toggle primary on all
+  compact tiers, the #635 pulse is directly visible; no mirror, and M3 evaporates.
+- **Putting Architect/Inspector in ⋯** — *rejected.* A Radix `menuitem` can't carry
+  `aria-pressed`; it would force `DropdownMenuCheckboxItem`/`aria-checked` and a
+  changed a11y contract (red-team H3 / checker §4). Keeping them primary avoids it.
+- **Reusing `PaletteControls`** — *not reused, deliberately.* It already groups
+  theme+mode, but it's bound to the site-chrome bus (`window.__dbChrome`, shared
+  keys); the Studio runs its own palette state (`lattice-studio-palette`) + `data-
+  mode` observer. We mirror its *pattern*, not the component — noted so a reviewer
+  doesn't later flag a #15 violation.
+- **⋯ opens the CommandPalette wholesale** — *rejected;* a command list can't host
+  swatches/toggles. We surface a "Search / commands" *row* inside ⋯ instead.
 
-## Munger inversion — how would this make the Studio *worse*?
-*(Invert: enumerate the failure modes, then design against each.)*
+## Munger inversion — how would this make the Studio *worse*? (post-review)
+- **Does ⋯ even earn its keep?** (red-team M-b, the sharpest one.) Appearance
+  grouping alone removes one icon; ⋯ now relocates only theme/Library/Workspace +
+  Search. *Answer:* on a 390px portrait phone the right cluster still has Present ·
+  Share · Architect · Inspector · mode · ⋯ — Appearance-grouping-alone would leave
+  theme + Library on the bar too, which is the actual crowding. ⋯ earns its keep by
+  taking those off, but **the visual review must prove the compact bar is
+  legible**; if it isn't even with ⋯, fold Library/Workspace are already the only
+  movers and there's little left to cut — that's the signal to reconsider scope.
+- **Bare `⋯` is opaque, and tooltips don't fire on touch** (red-team M-c): give it a
+  text-or-`aria-label` + an on-tap menu whose items are all labeled; don't rely on
+  hover.
+- **Open ⋯ across a resize** (red-team H4): **close ⋯ on any breakpoint change**
+  (the breakpoint effect already runs on matchMedia change — reset `cmd`/menu
+  state there).
+- **Menu → Sheet focus handoff** (red-team M-d): opening a Sheet from a ⋯ item must
+  sequence focus (Radix `onCloseAutoFocus`/defer) so focus doesn't strand.
+- **Welcome-banner copy** (red-team C3): the first-run banner says "your AI Coach
+  and deck settings live in the toolbar above" with the Sparkles/Sliders glyphs —
+  those toggles **stay primary** under this design, so the copy stays true. (Was a
+  real break under the old split; the simplification fixes it.)
+- **Discoverability for newcomers:** Architect/Inspector stay on the bar, so the
+  product's headline AI entry point isn't demoted into a menu.
 
-- **M1 — A "junk drawer" ⋯ that's a worse ⌘K.** If everything lands in ⋯, it's an
-  unsorted dump. *Guard:* ⋯ holds a short, fixed, semantically-secondary set;
-  power discovery stays ⌘K; ⋯ is compact-only.
-- **M2 — Buried deliverables.** If Present/Share go in ⋯, users can't find how to
-  export/present. *Guard:* Present + Share are primary at every tier.
-- **M3 — The #635 pulse dies in a closed menu** → newcomers never find the
-  Inspector. *Guard:* mirror the pulse to ⋯ when the Inspector is inside it (§C).
-- **M4 — Two competing overflow surfaces (⋯ and ⌘K)** confuse. *Guard:* they
-  don't co-exist visibly — ⌘K is hidden <1100 (no keyboard), so ⋯ *is* the touch
-  overflow; on desktop ⋯ is absent and ⌘K rules. One overflow per tier.
-- **M5 — Grouping makes the frequent mode toggle slower** (1 tap → 2). *Guard:*
-  keep mode a direct toggle inside a bordered Appearance *segment* on
-  desktop/tablet; only collapse to a popover (2 taps) on mobile where space forces
-  it.
-- **M6 — Overflow icon doesn't scan / no label.** A bare `⋯` is ambiguous and the
-  avatar/Workspace lost their home. *Guard:* the trigger has an aria-label
-  ("More controls") + a visible tooltip; everything it contains keeps its label.
-- **M7 — Regrouping silently breaks the test surface.** Tests query topbar
-  buttons by aria-label (Library, Workspace, Present, Share, toggles). *Guard:*
-  preserve every aria-label verbatim; jsdom renders at the desktop tier (full
-  bar), so existing tests keep finding them; add explicit compact-tier tests that
-  open ⋯ and assert the moved controls.
-- **M8 — Landscape phone falls in a bad middle.** A 844px landscape phone is the
-  *tablet* tier — if we tuned only for 390px it could look sparse or wrong at
-  844px. *Guard:* the split is defined per tier (tablet keeps panels primary), and
-  visual review covers 390 portrait, 844 landscape, 820 tablet, 1440 desktop.
-- **M9 — Two open PRs touch the same topbar (#635 + this) → merge conflict /
-  stacked-PR risk (#17).** *Guard:* see Sequencing — fold into #635 or land #635
-  first; never a stacked chain.
-
-## Sequencing (HARD RULE #17)
-This edits the same topbar as the open #635. Options: **(a) fold into #635** (same
-area, not yet merged — "increment in place"), or **(b) land #635 first, then this
-as its own PR off the new main.** Either avoids a stacked chain; the owner picks.
+## Sequencing (HARD RULES #17, #8) — land #635 first
+#635 (open, green, tested) already adds a *second* conditional axis to the topbar
+(`onboarded` trim). Building this width-axis IA **on top of merged #635** lets the
+two axes (onboarded × breakpoint) be reconciled in one settled place. **Do not
+fold** into #635 (it's near-merge; don't reopen its test surface). Plan: merge
+#635 → rebase this branch onto the new `main` → implement as its own PR.
 
 ## Test + verification plan
-- Unit: Appearance segment/popover renders theme + mode; aria-labels preserved
-  (M7); compact-tier tests open ⋯ and assert Library/Workspace/Appearance live
-  inside it; desktop renders the full bar.
-- Visual (HARD RULE Quality Bar — required at all widths): **390 portrait, 844
-  landscape, 820 tablet, 1440 desktop**, light + dark, screenshot evidence.
-- The pulse-in-⋯ mirror (M3) verified in a real browser (jsdom can't fire it).
+- Unit: Appearance segment renders theme + mode with aria-labels preserved;
+  desktop renders the full bar (jsdom = desktop tier, so existing label queries
+  pass); a compact-tier test (force matchMedia) opens ⋯ and asserts theme/Library/
+  Workspace live inside; ⋯ closes on breakpoint change.
+- Visual (Quality Bar — required): **390 portrait, 844 landscape, 820 tablet, 1440
+  desktop**, light + dark, screenshot evidence — explicitly confirm the compact bar
+  is legible (the M-b check).
 
 ## Open questions for the owner
-1. **Split:** is "Present + Share always primary; panels primary on tablet, in ⋯
-   on portrait" the right cut — or keep Architect/Inspector primary on portrait
-   too (tighter bar) / fold Present or Share into ⋯ (rejected here)?
-2. **Appearance:** segment-with-1-tap-mode on desktop/tablet + popover on mobile
-   (recommended), or one popover everywhere (simpler, mode always 2 taps)?
-3. **Sequencing:** fold into #635, or land #635 first then a fresh PR?
+1. **Scope confidence:** ship **Appearance grouping + the one-rule ⋯** (recommended),
+   or start with **Appearance grouping only** and add ⋯ only if the screenshot still
+   looks cramped? (The red-team's strongest point: prove ⋯ is needed.)
+2. **Appearance on mobile:** keep light/dark a standalone 1-tap icon + theme in ⋯
+   (recommended), or one Appearance popover (simpler, mode 2 taps)?
+3. **Sequencing:** confirmed — land #635 first, then this as its own PR.
