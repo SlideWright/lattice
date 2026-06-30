@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { deckFilename } from './decks';
+import { mergeClassTokens } from './front-matter';
 import { shareMarkdown, shareMarp, sharePdf, sharePptx, sharePrintDeck, sharePrintSource } from './share-export';
 
 // Share belongs to the deck (plan §5): two clearly separated intents — hand off
@@ -19,8 +20,19 @@ function Row({ icon, title, desc, dev, busy, status, onClick }: { icon: React.Re
 	);
 }
 
-export function ShareSheet({ open, onOpenChange, deckTitle, source, options, palette, mode, extraTheme, extraCss, onPresent, notify }: { open: boolean; onOpenChange: (v: boolean) => void; deckTitle: string; source: string; options: SingleSlideOptions; palette: string; mode: 'light' | 'dark'; extraTheme?: { name: string; css: string }; extraCss?: string; onPresent: () => void; notify: (msg: string) => void }) {
+export function ShareSheet({ open, onOpenChange, deckTitle, source, finishClass, finishExtraCss, options, palette, mode, extraTheme, extraCss, onPresent, notify }: { open: boolean; onOpenChange: (v: boolean) => void; deckTitle: string; source: string; finishClass?: string; finishExtraCss?: string; options: SingleSlideOptions; palette: string; mode: 'light' | 'dark'; extraTheme?: { name: string; css: string }; extraCss?: string; onPresent: () => void; notify: (msg: string) => void }) {
 	const close = () => onOpenChange(false);
+	// A saved finish renders via a `finish finish-<slug>` class the engine doesn't know
+	// + its generated CSS. The two handoffs treat it differently:
+	//   • ARTIFACT paths (PDF/PPTX/Print/Present) — bake the look in. Stamp the class
+	//     onto every section (merged into any existing `class:`, no clobber) and ride
+	//     the finish CSS in extraCss. The recipient gets pixels, so this is correct.
+	//   • SOURCE paths (Markdown/Marp) — keep the editable source CLEAN (no phantom
+	//     `class:` the deck-lint would flag, no slug that won't resolve elsewhere) and
+	//     instead EMBED the finish's generated CSS as a <style> block, so the recipient
+	//     renders the custom finish from the markup itself. The class is added to the
+	//     embedded copy only (shareMarkdown/shareMarp do that), never the user's source.
+	const artifactSource = finishClass ? mergeClassTokens(source, finishClass) : source;
 	const [busy, setBusy] = React.useState<string | null>(null);
 	// Live per-slide status for the heavy exports (PDF/PPTX), shown in the busy row.
 	const [progress, setProgress] = React.useState<string | null>(null);
@@ -61,15 +73,15 @@ export function ShareSheet({ open, onOpenChange, deckTitle, source, options, pal
 						<h3 className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Hand off the deck</h3>
 						<p className="text-xs text-muted-foreground">The rendered, paginated deck — for your audience.</p>
 						<Row icon={<Link2 className="size-4" />} title="Present link" desc="A live, themed link that opens in Present" onClick={() => { close(); onPresent(); }} />
-						<Row busy={busy === 'pdf'} status={progress} icon={<Download className="size-4" />} title="PDF" desc="One slide per page, high-resolution" onClick={() => run('pdf', 'PDF', (onStatus) => sharePdf(options, source, name, palette, mode, extraTheme, onStatus, extraCss))} />
-						<Row busy={busy === 'pptx'} status={progress} icon={<Monitor className="size-4" />} title="PowerPoint" desc="PPTX, one slide per page" onClick={() => run('pptx', 'PowerPoint', (onStatus) => sharePptx(options, source, name, palette, mode, extraTheme, onStatus, extraCss))} />
-						<Row busy={busy === 'print'} icon={<Printer className="size-4" />} title="Print deck" desc="The rendered slides, vector — default print" onClick={() => run('print', 'Print', () => sharePrintDeck(options, source, name, palette, mode, extraTheme, extraCss))} />
+						<Row busy={busy === 'pdf'} status={progress} icon={<Download className="size-4" />} title="PDF" desc="One slide per page, high-resolution" onClick={() => run('pdf', 'PDF', (onStatus) => sharePdf(options, artifactSource, name, palette, mode, extraTheme, onStatus, extraCss))} />
+						<Row busy={busy === 'pptx'} status={progress} icon={<Monitor className="size-4" />} title="PowerPoint" desc="PPTX, one slide per page" onClick={() => run('pptx', 'PowerPoint', (onStatus) => sharePptx(options, artifactSource, name, palette, mode, extraTheme, onStatus, extraCss))} />
+						<Row busy={busy === 'print'} icon={<Printer className="size-4" />} title="Print deck" desc="The rendered slides, vector — default print" onClick={() => run('print', 'Print', () => sharePrintDeck(options, artifactSource, name, palette, mode, extraTheme, extraCss))} />
 					</section>
 					<section className="space-y-2">
 						<h3 className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Hand off the source</h3>
 						<p className="text-xs text-muted-foreground">The Markdown — for editing, review, or portability.</p>
-						<Row dev busy={busy === 'md'} icon={<FileText className="size-4" />} title="Markdown" desc="Source with the theme embedded" onClick={() => run('md', 'Markdown', () => shareMarkdown(options, source, name, palette, extraTheme))} />
-						<Row dev busy={busy === 'marp'} icon={<Package className="size-4" />} title="Marp bundle" desc="Self-contained ZIP — renders anywhere" onClick={() => run('marp', 'Marp bundle', () => shareMarp(options, source, name, palette))} />
+						<Row dev busy={busy === 'md'} icon={<FileText className="size-4" />} title="Markdown" desc="Source with the theme embedded" onClick={() => run('md', 'Markdown', () => shareMarkdown(options, source, name, palette, extraTheme, finishClass, finishExtraCss))} />
+						<Row dev busy={busy === 'marp'} icon={<Package className="size-4" />} title="Marp bundle" desc="Self-contained ZIP — renders anywhere" onClick={() => run('marp', 'Marp bundle', () => shareMarp(options, source, name, palette, finishClass, finishExtraCss))} />
 						<Row dev icon={<Printer className="size-4" />} title="Print source" desc="The Markdown, monospace — for markup &amp; review" onClick={() => run('printsrc', 'Print source', () => sharePrintSource(source, name))} />
 					</section>
 				</div>

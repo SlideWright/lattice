@@ -1,4 +1,4 @@
-import { ArrowUp, Check, Cloud, Download, Loader2, Moon, Sparkles, Sun } from 'lucide-react';
+import { ArrowUp, Check, Cloud, Download, FileDown, Loader2, Moon, Sparkles, Sun } from 'lucide-react';
 import * as React from 'react';
 import { DeckPreview } from '@/components/DeckPreview';
 import { Button } from '@/components/ui/button';
@@ -51,7 +51,12 @@ const PRESET_LABEL: Record<string, string> = { atrium: 'Atrium', meridian: 'Meri
 // A stable preview class so the generated rule (section.finish.finish-<slug>) lands
 // on the specimen section. The specimen carries `finish finish-preview` via _class.
 const PREVIEW_SLUG = 'preview';
-const SPECIMEN = `<!-- _class: finish finish-${PREVIEW_SLUG} -->\n\n\`Finish · live preview\`\n\n## Your finish, behind real content\n\nThe layers stay faint so body text keeps its contrast — no scrim needed.\n\n- Palette-blind\n  - Recolors with the theme accent automatically.\n- Export-safe\n  - Pure CSS gradients — survives PDF and PPTX.`;
+// The specimen, with the RICH (screen) face by default. With `exporting` on, the
+// section ALSO carries `.lattice-exporting` — the same class the Studio raster export
+// stamps — so the generated rule's opaque export face shows live (the flatter PDF/PPTX
+// look the designer would otherwise never see until after export).
+const specimen = (exporting: boolean) =>
+	`<!-- _class: finish finish-${PREVIEW_SLUG}${exporting ? ' lattice-exporting' : ''} -->\n\n\`Finish · live preview\`\n\n## Your finish, behind real content\n\nThe layers stay faint so body text keeps its contrast — no scrim needed.\n\n- Palette-blind\n  - Recolors with the theme accent automatically.\n- Export-safe\n  - Pure CSS gradients — survives PDF and PPTX.`;
 
 export function FinishStudio({
 	options,
@@ -67,6 +72,9 @@ export function FinishStudio({
 	const [recipe, setRecipe] = React.useState<FinishRecipe>(() => coerceRecipe(PRESET_RECIPES.atrium));
 	const [name, setName] = React.useState('');
 	const [mode, setMode] = React.useState<'light' | 'dark'>('light');
+	// "Export preview" — show the OPAQUE export face the PDF/PPTX bakes, not just the
+	// rich on-screen face, so the designer sees the flatter look before they ship it.
+	const [exporting, setExporting] = React.useState(false);
 	const [prompt, setPrompt] = React.useState('');
 	const [gen, setGen] = React.useState<'idle' | 'working'>('idle');
 	const [saving, setSaving] = React.useState(false);
@@ -196,14 +204,19 @@ export function FinishStudio({
 				<div className="flex min-w-0 flex-col gap-3 bg-[color-mix(in_srgb,var(--bg)_55%,var(--bg-alt))] p-4 lg:overflow-y-auto lg:p-6">
 					<div className="flex items-center justify-between gap-3">
 						<span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Live preview</span>
-						<div className="inline-flex shrink-0 rounded-lg border border-border bg-background p-[3px]">
-							<button type="button" onClick={() => setMode('light')} aria-pressed={mode === 'light'} aria-label="Light specimen" className={cn('inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11.5px] font-semibold', mode === 'light' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Sun className="size-3.5" />Light</button>
-							<button type="button" onClick={() => setMode('dark')} aria-pressed={mode === 'dark'} aria-label="Dark specimen" className={cn('inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11.5px] font-semibold', mode === 'dark' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Moon className="size-3.5" />Dark</button>
+						<div className="flex shrink-0 items-center gap-2">
+							{/* Export preview — adds .lattice-exporting to the specimen so the OPAQUE
+							    export face shows (otherwise the designer never sees the flatter baked look). */}
+							<button type="button" onClick={() => setExporting((v) => !v)} aria-pressed={exporting} aria-label="Export preview" className={cn('inline-flex items-center gap-1 rounded-md border border-border bg-background px-2 py-1 text-[11.5px] font-semibold', exporting ? 'border-[var(--accent)] text-[var(--accent)]' : 'text-muted-foreground')}><FileDown className="size-3.5" />Export preview</button>
+							<div className="inline-flex shrink-0 rounded-lg border border-border bg-background p-[3px]">
+								<button type="button" onClick={() => setMode('light')} aria-pressed={mode === 'light'} aria-label="Light specimen" className={cn('inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11.5px] font-semibold', mode === 'light' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Sun className="size-3.5" />Light</button>
+								<button type="button" onClick={() => setMode('dark')} aria-pressed={mode === 'dark'} aria-label="Dark specimen" className={cn('inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11.5px] font-semibold', mode === 'dark' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Moon className="size-3.5" />Dark</button>
+							</div>
 						</div>
 					</div>
 					<DeckPreview
 						options={options}
-						sample={SPECIMEN}
+						sample={specimen(exporting)}
 						mermaid={false}
 						modeOverride={mode}
 						extraCss={previewCss}
@@ -211,6 +224,9 @@ export function FinishStudio({
 						className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-background shadow-[0_6px_18px_rgba(10,22,40,.10)]"
 						aria-label="Finish specimen"
 					/>
+					{exporting && (
+						<p className="text-[11.5px] leading-relaxed text-[var(--accent)]">Showing the export face — finishes render slightly flatter in baked PDF/PPTX exports.</p>
+					)}
 					<p className="text-[12px] leading-relaxed text-muted-foreground">
 						A finish is a stack of four palette-blind layers. Start from a preset, tune the layers, then <strong className="text-[var(--text-heading)]">Save</strong> it to your library or <strong className="text-[var(--text-heading)]">Export</strong> the CSS.
 					</p>
@@ -257,6 +273,22 @@ export function FinishStudio({
 					{/* Mark */}
 					<LayerGroup label="Mark" hint="z3 · placed emblem">
 						<LayerSelect aria-label="Mark type" value={recipe.mark.type} options={MARK_TYPES} labels={MARK_LABEL} onChange={(v) => patch({ mark: { ...recipe.mark, type: v as FinishRecipe['mark']['type'] } })} />
+						{/* The author's own glyph — initials for a monogram, a number for a numeral.
+						    Sanitized to ~3 chars in the generator (CSS content:), so a brand mark can
+						    carry their letters/number instead of the hardcoded "L"/"03". */}
+						{(recipe.mark.type === 'monogram' || recipe.mark.type === 'numeral') && (
+							<Tuned label={recipe.mark.type === 'numeral' ? 'Number' : 'Initials'}>
+								<input
+									value={recipe.mark.glyph ?? ''}
+									onChange={(e) => patch({ mark: { ...recipe.mark, glyph: e.target.value } })}
+									maxLength={3}
+									spellCheck={false}
+									aria-label="Mark glyph"
+									placeholder={recipe.mark.type === 'numeral' ? '03' : 'L'}
+									className="h-8 w-full rounded-md border border-border bg-background px-2 font-mono text-[12.5px] text-foreground outline-none focus:border-[var(--accent)] placeholder:text-muted-foreground"
+								/>
+							</Tuned>
+						)}
 						{recipe.mark.type !== 'none' && recipe.mark.type !== 'bar' && (
 							<Tuned label="Placement">
 								<LayerSelect aria-label="Mark placement" value={recipe.mark.placement} options={PLACEMENTS} labels={PLACEMENT_LABEL} onChange={(v) => patch({ mark: { ...recipe.mark, placement: v as Placement } })} />

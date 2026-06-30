@@ -9,6 +9,7 @@ import {
 	MARK_TYPES,
 	PRESET_RECIPES,
 	safeFinishSlug,
+	sanitizeGlyph,
 	TEXTURE_TYPES,
 	WASH_TYPES,
 } from './finish-generate';
@@ -153,5 +154,39 @@ describe('finish-generate', () => {
 			expect(typeof sw.background).toBe('string');
 			expect(sw.background.length).toBeGreaterThan(0);
 		}
+	});
+
+	describe('mark glyph — the author can carry their own initials/number (#5b)', () => {
+		it('sanitizeGlyph strips string-escape + tag chars and clamps length', () => {
+			expect(sanitizeGlyph('AB', 'L')).toBe('AB');
+			expect(sanitizeGlyph('toolong', '03')).toBe('too'); // ~3 chars
+			expect(sanitizeGlyph('"; } body {', 'L')).toBe('bod'); // quotes/braces/semicolon/spaces gone
+			expect(sanitizeGlyph('a"b', 'L')).toBe('ab'); // quote removed
+			expect(sanitizeGlyph('<svg>', 'L')).toBe('svg'); // angle brackets gone
+			expect(sanitizeGlyph('', 'L')).toBe('L'); // empty → fallback
+			expect(sanitizeGlyph('   ', '03')).toBe('03'); // whitespace-only → fallback
+			expect(sanitizeGlyph(42, 'L')).toBe('L'); // non-string → fallback
+		});
+
+		it('a monogram emits the author glyph (sanitized), defaulting to "L"', () => {
+			const withGlyph = generateFinishCss('x', { ...DEFAULT_RECIPE, mark: { type: 'monogram', placement: 'center', glyph: 'AB' } });
+			expect(withGlyph).toContain('--fin-mark-text:"AB"');
+			const noGlyph = generateFinishCss('x', { ...DEFAULT_RECIPE, mark: { type: 'monogram', placement: 'center' } });
+			expect(noGlyph).toContain('--fin-mark-text:"L"');
+		});
+
+		it('a numeral emits the author glyph, defaulting to "03" — and cannot break the rule', () => {
+			const numeral = generateFinishCss('x', { ...DEFAULT_RECIPE, mark: { type: 'numeral', placement: 'bottom-right', glyph: '7' } });
+			expect(numeral).toContain('--fin-mark-text:"7"');
+			// A crafted glyph cannot close the content string or inject a declaration.
+			const evil = generateFinishCss('x', { ...DEFAULT_RECIPE, mark: { type: 'numeral', placement: 'bottom-right', glyph: '";color:red;"' } });
+			expect(evil).not.toContain('color:red');
+			expect(evil).not.toMatch(/--fin-mark-text:"[^"]*"[^;]*"/); // no extra quote escapes the value
+		});
+
+		it('coerceRecipe keeps a string glyph and drops a non-string one', () => {
+			expect(coerceRecipe({ mark: { type: 'monogram', glyph: 'AB' } }).mark.glyph).toBe('AB');
+			expect(coerceRecipe({ mark: { type: 'monogram', glyph: 42 } }).mark.glyph).toBeUndefined();
+		});
 	});
 });

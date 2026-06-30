@@ -382,7 +382,9 @@ export async function generateFinish(prompt: string): Promise<FinishGenOutcome> 
 // Pull the first JSON object out of a (possibly fenced) reply and shape it into a
 // recipe-ish object. Validation/clamping to the closed vocab is the CALLER's job
 // (finish-generate's coerceRecipe) — here we only extract + lightly normalize.
-function parseFinishReply(reply: string): { recipe: FinishRecipeOut; name?: string } | null {
+// Exported for unit tests (the AI-recipe extraction contract: structured fields only,
+// never a forwarded model string).
+export function parseFinishReply(reply: string): { recipe: FinishRecipeOut; name?: string } | null {
 	const text = String(reply || '').trim();
 	if (!text) return null;
 	const start = text.indexOf('{');

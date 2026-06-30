@@ -45,7 +45,7 @@ export type Placement = (typeof PLACEMENTS)[number];
 export type FinishRecipe = {
 	wash: { type: WashType; intensity: number };
 	texture: { type: TextureType; intensity: number; scale: number };
-	mark: { type: MarkType; placement: Placement };
+	mark: { type: MarkType; placement: Placement; glyph?: string };
 	edge: { type: EdgeType; intensity: number };
 };
 
@@ -55,6 +55,23 @@ export const DEFAULT_RECIPE: FinishRecipe = {
 	mark: { type: 'none', placement: 'bottom-right' },
 	edge: { type: 'none', intensity: 6 },
 };
+
+// The author's own glyph for a monogram/numeral mark — their initials or a section
+// number. The mark text is emitted into CSS `content:"…"`, so the value is SANITIZED
+// to a short, quote/backslash-free string (no raw injection — a crafted glyph can't
+// close the string or inject a declaration). Empty → the type's sensible default
+// ('L' for a monogram, '03' for a numeral). Kept to ~3 chars (a monogram/section no.).
+export function sanitizeGlyph(input: unknown, fallback: string): string {
+	if (typeof input !== 'string') return fallback;
+	// Drop anything that could escape a CSS string literal (quotes, backslash) or open
+	// a tag (<, >), collapse all whitespace, then keep it short. What survives is plain
+	// text safe inside content:"...". Letters/digits/harmless symbols ride through.
+	const cleaned = input
+		.replace(/["'\\<>{};]/g, '')
+		.replace(/\s+/g, '')
+		.slice(0, 3);
+	return cleaned || fallback;
+}
 
 // The 5 shipped presets, expressed as recipes so "Start from preset" populates the
 // four controls (the engine CSS in base.finish.css is the rendered truth; these
@@ -111,7 +128,7 @@ export function coerceRecipe(input: unknown): FinishRecipe {
 	return {
 		wash: { type: oneOf(WASH_TYPES, w.type, 'none'), intensity: clampInt(w.intensity, 3, 20, 10) },
 		texture: { type: oneOf(TEXTURE_TYPES, t.type, 'none'), intensity: clampInt(t.intensity, 3, 18, 7), scale: clampInt(t.scale, 12, 64, 38) },
-		mark: { type: oneOf(MARK_TYPES, m.type, 'none'), placement: oneOf(PLACEMENTS, m.placement, 'bottom-right') },
+		mark: { type: oneOf(MARK_TYPES, m.type, 'none'), placement: oneOf(PLACEMENTS, m.placement, 'bottom-right'), ...(typeof m.glyph === 'string' && m.glyph.trim() ? { glyph: m.glyph } : {}) },
 		edge: { type: oneOf(EDGE_TYPES, e.type, 'none'), intensity: clampInt(e.intensity, 3, 20, 6) },
 	};
 }
@@ -264,9 +281,10 @@ export function recipeSlots(r: FinishRecipe, face: FinishFace = 'opaque'): strin
 			decls.push(`--fin-mark:${SOLID}`, '--fin-mark-position:left center', '--fin-mark-size-bg:1.1cqi 100%');
 			break;
 		case 'monogram':
+			// The author's initials (default "L"), sanitized for content:"…" (no injection).
 			decls.push(
 				'--fin-mark:none',
-				'--fin-mark-text:"L"',
+				`--fin-mark-text:"${sanitizeGlyph(r.mark.glyph, 'L')}"`,
 				`--fin-mark-color:${mix(10, 'opaque')}`,
 				'--fin-mark-fs:42cqi',
 				`--fin-mark-align:${flexAlign(r.mark.placement)}`,
@@ -275,9 +293,10 @@ export function recipeSlots(r: FinishRecipe, face: FinishFace = 'opaque'): strin
 			);
 			break;
 		case 'numeral':
+			// The author's number (default "03"), sanitized for content:"…".
 			decls.push(
 				'--fin-mark:none',
-				'--fin-mark-text:"03"',
+				`--fin-mark-text:"${sanitizeGlyph(r.mark.glyph, '03')}"`,
 				`--fin-mark-color:${mix(9, 'opaque')}`,
 				'--fin-mark-fs:40cqi',
 				`--fin-mark-align:${flexAlign(r.mark.placement)}`,

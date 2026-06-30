@@ -24,7 +24,7 @@ import { Fabricate } from './Fabricate';
 import { activeFinishLabel, FinishMenuItems, type SavedFinishMenuEntry } from './FinishPicker';
 import { generateSwatch as finishSwatch } from './finish-generate';
 import { deleteStudioFinish, listStudioFinishes, type StudioFinish } from './finish-library';
-import { frontMatterBlock, getFrontMatter, setFrontMatter, stripFrontMatter } from './front-matter';
+import { frontMatterBlock, getFrontMatter, mergeClassTokens, setFrontMatter, stripFrontMatter } from './front-matter';
 import { type ComponentEntry, InsertComponent } from './InsertComponent';
 import { IntentTag } from './IntentTag';
 import { Library } from './Library';
@@ -321,15 +321,19 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		() => [usedLocalCss, finishExtraCss].filter(Boolean).join('\n\n') || undefined,
 		[usedLocalCss, finishExtraCss],
 	);
+	// The class tokens a saved finish stamps onto every section (the engine never
+	// learned the custom name, so we add the class ourselves). Applied ONLY to the
+	// RENDER/ARTIFACT paths (preview, Present, PDF/PPTX/Print) — never the editable
+	// source or the Markdown/Marp source handoff, which stay clean.
+	const finishClass = activeSavedFinish ? `finish finish-${activeSavedFinish.name}` : '';
 	// The deck front-matter the PREVIEW renders with — the editable `fm` plus, when a
-	// saved finish is active, a `class: finish finish-<slug>` directive so the engine
-	// stamps the class onto every section (it doesn't know the custom name). Built via
-	// setFrontMatter so it cleanly merges/replaces an existing `class:` (no dupes);
-	// added to the rendered FM only, never the editable source.
+	// saved finish is active, the `finish finish-<slug>` class MERGED into any existing
+	// `class:` (deduped union — a deck's own `class: dark wide` is preserved). Stamped
+	// onto the rendered FM only, never the editable source.
 	const previewFm = React.useMemo(() => {
-		if (!activeSavedFinish) return fm;
-		return frontMatterBlock(setFrontMatter(source, 'class', `finish finish-${activeSavedFinish.name}`));
-	}, [fm, source, activeSavedFinish]);
+		if (!finishClass) return fm;
+		return frontMatterBlock(mergeClassTokens(source, finishClass));
+	}, [fm, source, finishClass]);
 	const setDeckSize = (value: string) => setSource((s) => setFrontMatter(s, 'size', value));
 	const togglePageNumbers = () => setSource((s) => setFrontMatter(s, 'paginate', pageNumbers ? null : 'true'));
 	const toggleHeaderFooter = () => setSource((s) => setFrontMatter(s, 'header', getFrontMatter(s, 'header') != null ? null : deck.title));
@@ -1238,7 +1242,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 					</div>
 				</SheetContent>
 			</Sheet>
-			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} source={activeSavedFinish ? setFrontMatter(source, 'class', `finish finish-${activeSavedFinish.name}`) : source} options={options} palette={palette} mode={mode === 'dark' ? 'dark' : 'light'} extraTheme={extraTheme} extraCss={previewExtraCss} onPresent={() => setPresentOpen(true)} notify={notify} />
+			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} source={source} finishClass={finishClass} finishExtraCss={finishExtraCss} options={options} palette={palette} mode={mode === 'dark' ? 'dark' : 'light'} extraTheme={extraTheme} extraCss={previewExtraCss} onPresent={() => setPresentOpen(true)} notify={notify} />
 			<WorkspaceSheet open={workspaceOpen} onOpenChange={setWorkspaceOpen} notify={notify} />
 			<Library
 				open={libraryOpen}

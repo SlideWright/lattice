@@ -533,6 +533,20 @@ all three render paths. An unrecognized value (e.g. `finish: sketchh`) resolves
 to no classes — so it would silently ship the boardroom baseline — which is why
 `npm run lint:deck` flags it as an `unknown-finish` warning.
 
+**Reserved finish classes — do not author by hand.** `lattice-exporting` is an
+**engine-reserved class**: the Studio raster export (`drawing-board-export.js`)
+stamps it on every section right before `html-to-image` capture, which flips the
+finish compositor to its opaque export face (`base.finish.css`, the OPAQUE FLIP).
+Never put `lattice-exporting` in deck source — a slide carrying it would render
+its *export* (flatter) finish on screen. The Studio's Finish faculty has an
+**Export-preview** toggle that adds it to the live specimen on purpose, so a
+designer can see the baked look; that is the only legitimate authoring use, and
+it is transient (UI state, never written to the deck). The other reserved finish
+words are the five preset slugs (`atrium`/`meridian`/`strata`/`halo`/`ledger`),
+`finish-none`/`backdrop-none` (the per-slide opt-out), and `finish-preview` (the
+faculty specimen) — a *saved* custom finish whose name collides with any of these
+is namespaced (`atrium` → `atrium-custom`) so it can never shadow a built-in.
+
 #### The `split:` front-matter divider
 
 `split:` is the **deck-wide slide divider selector** — another Lattice

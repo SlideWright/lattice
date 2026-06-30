@@ -6,6 +6,7 @@ import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
 import { componentZipName, packBundle, packComponent, packTheme, themeZipName, unpackBundle } from './asset-bundle';
 import { deleteStudioComponent, listStudioComponents, type StudioComponent, saveStudioComponent } from './component-library';
+import { saveStudioFinish } from './finish-library';
 import { renderThemeShowcase } from './share-export';
 import { deleteStudioTheme, listStudioThemes, type StudioTheme, saveStudioTheme } from './theme-library';
 
@@ -127,15 +128,19 @@ export function Library({ open, onOpenChange, options, activePalette, onApplyThe
 		setBusy('Importing…');
 		let nThemes = 0;
 		let nComps = 0;
+		let nFinishes = 0;
 		try {
 			for (const f of Array.from(files)) {
-				const { themes: ts, components: cs } = await unpackBundle(f);
+				const { themes: ts, components: cs, finishes: fs } = await unpackBundle(f);
 				for (const t of ts) { await saveStudioTheme({ name: t.name, label: t.label, essentials: t.essentials ?? {}, css: t.css }); nThemes++; }
 				for (const c of cs) { await saveStudioComponent({ name: c.name, css: c.css, skeleton: c.skeleton, bucket: c.bucket || undefined }); nComps++; }
+				// Symmetric unpack — a shared finish lands in the finish library, pickable
+				// from the Inspector Finish menu (the same consumption loop a saved finish uses).
+				for (const fin of fs) { await saveStudioFinish({ name: fin.name, label: fin.label, css: fin.css, recipe: fin.recipe }); nFinishes++; }
 			}
 			reload();
 			onChanged();
-			notify(`Imported ${nThemes} theme(s) + ${nComps} component(s).`);
+			notify(`Imported ${nThemes} theme(s) + ${nComps} component(s)${nFinishes ? ` + ${nFinishes} finish(es)` : ''}.`);
 		} catch (e) {
 			notify(`Import failed — ${String((e as Error)?.message || e)}`);
 		} finally {

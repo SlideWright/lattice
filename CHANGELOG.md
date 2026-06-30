@@ -123,6 +123,29 @@ in patch versions.
   Responsive across 1440 / 820 / 390. See
   `engineering/decisions/2026-06-30-finish-the-surface-layer.md` (the REDESIGN
   callout).
+- **Finish portability + safety hardening (review follow-up).** Several fixes
+  closing gaps in the saved-finish loop: (1) **a saved finish no longer clobbers a
+  deck's own `class:`** — the `finish finish-<slug>` stamp is now MERGED (deduped
+  union) into any existing classes (`class: dark wide` survives), and is applied
+  only to the render/artifact paths (preview, Present, PDF/PPTX/Print), never the
+  editable source. (2) **A custom finish now travels with a shared deck** — the
+  Markdown/Marp source handoff embeds the finish's generated CSS as a self-contained
+  `<style>` block (mirroring the theme embed) instead of emitting a phantom `class:`
+  that wouldn't resolve and would trip the deck-lint; and the **lattice-asset share
+  format gained a `kind:'finish'`** (manifest + `<slug>.finish.css` + recipe JSON),
+  packed/unpacked symmetrically into the finish library. (3) A monogram/numeral mark
+  can now **carry the author's own glyph** (their initials or a section number),
+  sanitized for the CSS `content:` sink — no longer hardcoded "L"/"03". (4) A new
+  **Export-preview toggle** in the Finish faculty shows the opaque export face on the
+  live specimen, so the designer sees the flatter baked look before shipping. (5) A
+  saved finish whose name collides with a built-in (the five presets, `boardroom`,
+  `sketch`, `none`, `preview`, …) is now **namespaced** (`atrium` → `atrium-custom`)
+  so it can't shadow a preset; `lattice-exporting` is documented as an engine-reserved
+  class. (6) The treatments compositor's broad `[class*="backdrop"]` selector is
+  tightened to the exact `[class~="backdrop-none"]` token. A new build-time/unit gate
+  asserts the faculty's `PRESET_RECIPES` mirror stays structurally in sync with the
+  rendered truth in `base.finish.css` (no silent recipe↔engine drift), and the AI
+  recipe path gains unit coverage.
 - **Studio Focus mode — a transient "quiet the noise" view.** The Studio's
   four-column desktop layout (Architect · Editor · Preview · Inspector) can now
   collapse to just **Editor + Preview + slide nav**, with most of the topbar
