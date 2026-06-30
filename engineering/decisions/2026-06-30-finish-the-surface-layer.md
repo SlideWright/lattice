@@ -1,219 +1,206 @@
 ---
 status: proposed
-summary: Finish — the surface artifact of the existing Finish axis, the unbuilt half the model already reserved (`design-system.md:69` lists `background` as a Finish modifier that was never implemented). A finish is a composable surface layer over structure+palette with four facets — wash (gradients/tints) · texture (patterns/marks) · cover (full-bleed fill) · stamp (brand mark) — sourced three ways (pick a curated finish · fabricate one parametrically · bring your own asset), saved to the Studio Library beside themes, shared as a lattice-asset zip. Authored deck-wide via a new `background:` front matter (auto-completed from a curated, token-recolorable SVG library that adapts across aspect ratios) and per-slide via the `cover` Finish modifier. First slice: the engine `cover` primitive; generation parametric-first, AI later. No renames — "Finish" is already the axis; "finish" is its surface artifact, beside "theme" (its palette artifact).
+summary: Finish — the surface artifact of the existing Finish axis, a single family that UNIFIES four shipped-but-scattered surface capabilities rather than building new ones. A finish has a NATURE — parametric (token-driven, recolors with the theme) or asset-backed (a brought-in file, identity-preserving) — and a ZONE — field (fills the canvas) or mark (a placed emblem). The shipped pieces already ARE finishes: `tint-*` washes + `mark-*` textures (parametric fields), `![bg cover]` images (asset-backed field), `logo:` brand marks (asset-backed mark). The one genuine hole is curated, token-recolorable PARAMETRIC backdrops; the secondary one is reusing brought-in assets (logos/photos) from a library instead of per-deck. Finish subsumes tint/mark (umbrella, not beside); the picker writes the EXISTING mechanisms underneath — no new `background:` front-matter key. Corrects a first draft whose "three missing things" gap analysis was factually wrong (cover and logo both ship) and whose "mask-based cover is export-safe" claim was backwards (full-bleed masks are the exact PDFKit failure treatments avoid; a real section background is the safe path). First slice: Phase-0 picker over what already ships + one parametric token-gradient set. Carries inversion-derived invariants (export sign-off, required contrast scrim, brand-fidelity for assets, AA across themes, embedded serialization, data:-materialization through the findCssExfil gate).
 ---
 
 # Finish — the surface layer designers have been missing
 
-**The ask (from a creative-designer's-eye review of the Studio).** Lattice is
-strong at *structure* (Form) and *palette* (the color half of Finish) but thin
-on *atmosphere and identity*. A designer can pick a theme and a layout, but the
-two moves that make a deck feel like *theirs* — a distinctive backdrop and their
-brand mark — are exactly what's hard today. There is **no full-bleed cover** in
-the engine (`cover` exists only inside the chart family), **no brand-mark slot**
-that flows deck-wide, and **no way to pick, fabricate, or bring in** a surface
-treatment. This note is the design model; it precedes any CSS or transform work
-(CLAUDE.md "design-before-code").
+**The ask (a creative-designer's-eye review of the Studio).** Lattice is strong
+at *structure* (Form) and *palette* (the color half of Finish) but feels thin on
+*atmosphere and identity*. The two moves that make a deck feel like *theirs* — a
+distinctive backdrop and their brand mark — are harder than they should be.
 
-## The reframe — one concept, not three features
+**What this doc is.** A design model, written before any CSS/transform work
+(CLAUDE.md "design-before-code"). It is a **second draft**: the first draft
+claimed full-bleed covers and a brand-mark slot were *missing*; a red-team +
+independent assessment found **both already ship** (and a third claimed-missing
+piece was a misread). This draft is built on what the engine *actually* does
+today. The honest problem is not "four missing facets" — it is **"four
+shipped-but-scattered surface capabilities with no shared concept, and one real
+hole."**
 
-Marks, gradients, full-bleed covers, and brand marks are **not** separate
-features. They are facets of one thing: the *surface treatment* applied to a
-slide after its structure and palette are set — the wax/polish/patina layer in a
-cobbler's sense. The single model:
+## The model — nature × zone
 
-> **A *finish* is a composable surface layer over a slide's structure (Form) and
-> palette (the theme).** Four facets, independently stackable:
->
-> | Facet | What it is | Today |
-> |---|---|---|
-> | **wash** | color atmosphere — gradients, tints | partial: `tint-*` treatments (peripheral, not full-bleed) |
-> | **texture** | patterns, repeating motifs, marks | partial: `mark-*` treatments (peripheral) |
-> | **cover** | full-bleed fill behind all content (parametric, SVG, or brought-in image) | **missing** — the headline gap |
-> | **stamp** | the brand mark / logo / maker's mark, persistently placed | **missing** — no deck-wide slot |
+A finish is the surface layer of a slide, applied over its structure and palette.
+It has two independent attributes:
 
-A finish can be just a wash, or a cover + stamp, or all four — they compose the
-same way `tint-*` and `mark-*` already stack.
+**Nature — how it gets its pixels:**
 
-## Why "finish" is the right word — and why nothing gets renamed
+- **Parametric** — defined by tokens + parameters, palette-blind, and therefore
+  **recolors automatically** with the theme and `dark`. (washes, textures,
+  gradient/SVG backdrops)
+- **Asset-backed** — a file the designer *brings in* (SVG / PNG / photo),
+  identity-bearing, and therefore **preserves its own appearance** by default
+  (optionally *treated* — e.g. the logo's grayscale watermark is a treatment
+  applied to an asset, never imposed). (logos, photo covers)
 
-This is **not** a new word competing for space. **Finish is already one of the
-four canonical axes** of the system (`design/design-system.md §2`,
-`design/concepts.md`):
+The brand logo is the flagship *asset-backed* finish — "special" precisely
+*because* it is asset-backed, which is the same reason it must never be
+force-recolored.
 
-> **Function · Form · Substance · Finish** — system word **Finish**, human word
-> **Style** ("what should it feel like?").
+**Zone — where it sits:**
 
-`dark` / `sketch` / `compact` are *correctly* Finish modifiers — that is the
-model, not a misnomer. And the canonical Finish-modifier list already reserves
-the slot we need (`design-system.md:69`):
+- **Field** — fills the canvas behind content (washes, textures, covers).
+- **Mark** — a placed emblem in a corner or region (the logo/stamp).
 
-```
-FINISH   dark · compact · loose · accent · mirror · numbered · background · period
-```
+These two attributes organize everything: a vignette is a *parametric field*, a
+blueprint backdrop is a *parametric field*, a photo cover is an *asset-backed
+field*, a logo is an *asset-backed mark*.
 
-**`background` is listed but was never implemented** — only an inert token stub
-exists. So this feature does not invent a layer; it **builds out the unbuilt half
-of the Finish axis.** The vocabulary lands cleanly with no renames:
+## Everything we already ship IS a finish
 
-- **Finish** (system) / **Style** (human) — the axis. Unchanged.
-- A **theme** = the *palette* artifact of Finish (colors/tokens). Unchanged.
-- A **finish** = the *surface* artifact of Finish (wash · texture · cover ·
-  stamp). New. Where a theme answers "what colors," a finish answers "what
-  surface treatment." A theme + a finish together = a deck's full Style.
+We are naming a family, not inventing one. The four human-facing facets map onto
+shipped code:
 
-The axis and the surface artifact share the word "finish" on purpose — a finish
-*is* the axis's literal namesake act (the polish you apply); `theme` is the
-established odd-one-out (it names the palette half). This was confirmed against
-the strict `§2.5` "one system word, one human word, no third synonym" rule: we
-add no synonym, only a second concrete artifact type under the axis, beside
-`theme`.
+| Facet (zone) | Ships today as | Nature | Sourced today | The genuine hole |
+|---|---|---|---|---|
+| **wash** (field) | `tint-*` treatments (`lib/base/base.treatments.css`) | parametric | pick (preset) | parametric *generation* |
+| **texture** (field) | `mark-*` treatments (same) | parametric | pick (preset) | parametric *generation* |
+| **cover** (field) | `![bg cover\|contain\|fit]` (`lib/engine/background-image.js`, kernel `lib/core/bg-image.js`) | asset-backed | bring-your-own image | **curated token-recolorable backdrops** (parametric covers) |
+| **stamp** (mark) | `logo:` + `logo-style: auto\|brand` + `logo-on: all\|title` (`lib/base/_logo/`) | asset-backed | bring-your-own asset | **library reuse** + per-section placement |
 
-## Authoring surface — two entry points
+So the program is:
 
-### Deck-wide: a `background:` front matter
+1. **Unify** these four under one `finish` family with a shared picker and
+   vocabulary (the umbrella decision — see next section).
+2. **Fill the one real hole**: curated, **parametric**, token-recolorable
+   *backdrops* — the only facet with no shipped representative.
+3. **Promote brought-in assets** (logos, photos) from per-deck imports to a
+   reusable library, so a brand mark is set once and reused everywhere.
 
-The dominant entry point is a deck-level front-matter key — the same place
-`theme:` lives — so a designer sets the surface once and it flows across every
-slide:
+The two `![bg left/right]` directional splits are a *partial* shipped feature
+(basic mode collapses them to full-bleed; the inline-SVG split is a later
+milestone per `background-image.js`); the **full-bleed `![bg cover]` is fully
+shipped and prints** (`section` carries `print-color-adjust:exact`,
+`base.elements.css:27`).
 
-```yaml
----
-theme: indaco
-background: blueprint      # ← a curated finish, applied deck-wide
----
-```
+## Finish subsumes tint/mark — it is the umbrella, not a sibling
 
-`background:` is **auto-completable from a curated library** of finishes (see
-below). It is the cheapest possible authoring move: one line, no per-slide
-classing. (`background` is the already-reserved Finish-modifier name from
-`design-system.md:69`, so the front-matter key and the modifier share it.)
+The sharpest design question the first draft dodged: does `finish` *subsume* or
+*sit beside* the mature `tint-*`/`mark-*` subsystem (Tier-1 universal variants
+with a placement axis `at-*`, the `--_bg-radial`/`--_bg-linear` compositor slots,
+and a build-time validator)?
 
-### Per-slide: the `cover` Finish modifier
+**Decision: subsume.** `finish` is the umbrella concept; `tint-*`/`mark-*` become
+the *implementation* of the wash/texture facets. The Studio picker and the
+authoring surface speak "finish"; under the hood they **write the existing
+classes and front matter**. This honors the unification intent ("they're all the
+same concept — wax/polish/patina") and obeys the strict `§2.5` "one concept, one
+name" rule: a designer never has to learn *both* `tint-vignette` *and* a separate
+"finish" that does the same pixels. The `tint-*`/`mark-*` classes remain the
+stable engine primitive (and the gate keeps guarding them); "finish" is the human
+register above them.
 
-A single slide overrides or opts in via the Finish-modifier mechanism that
-`dark` / `sketch` already use:
-
-```markdown
-<!-- _class: cover blueprint -->
-```
-
-Per-slide always wins over the deck-wide default, matching how Finish modifiers
-already cascade.
-
-## The curated SVG library — token-recolorable, size-adaptive
-
-The "pick" library is a set of **SVG backgrounds whose colors are replaceable by
-theme tokens** and which **adapt across aspect ratios** (Lattice is
-portrait-everything per `2026-06-25-retire-landscape-locks-portrait-everything.md`,
-so a finish must read well at 16:9, 4:3, and portrait). Two requirements with a
-real technical constraint behind them:
-
-**Colors must resolve through `var(--token)`** (HARD RULE #3 — palette-blind, so
-a finish recolors automatically when the theme or `dark` changes). The catch: an
-SVG embedded as a `background-image: url("data:…")` is **static** — it cannot read
-`var(--token)`. The existing treatments library already solved this and gives us
-three graded strategies:
-
-1. **Mask-based** (single token color per layer) — the SVG is a shape/luminance
-   `mask-image`; the *color* comes from a `var(--token)` painted behind it. This
-   is exactly how 8 of today's `mark-*` treatments work. Cheapest, export-safe,
-   pure CSS. Covers most single-accent patterns.
-2. **Gradient-based** (washes) — no SVG at all; `color-mix()` of `var(--token)`
-   composed into the existing `--_bg-radial` / `--_bg-linear` compositor slots
-   (`lib/base/base.treatments.css`). For color atmosphere this is the whole job.
-3. **Inline-SVG-in-DOM** (multi-token) — for backgrounds that need *two or more*
-   theme colors, the SVG must be injected into the slide DOM (not a data URI) so
-   `fill="var(--token)"` / `currentColor` resolve. This is the only facet that
-   needs a **transform** (string + DOM, HARD RULE #1 parity) and therefore the
-   only one that touches the **`sanitizeSlideHtml` preview-frame gate** (HARD RULE
-   #22) and the export materialization path. It is deliberately the *last* facet
-   to build, not the first.
-
-**Size adaptivity** — curated SVGs declare how they fill: `tile` (repeat),
-`cover` (scale to fill, crop), or `contain` (fit). `preserveAspectRatio` +
-`viewBox` keep them clean across aspect ratios; the wash/gradient facet is
-resolution-independent by construction.
+**No new `background:` front-matter key.** The first draft proposed one; that
+would be a *fourth* way to set a backdrop alongside `![bg]`, the
+`backgroundImage:` directive, and a class — the top inversion failure mode below.
+Instead, a finish **writes the existing mechanisms**: a parametric/asset *field*
+emits the `![bg]`/`backgroundImage:` background or a `tint-*`/`mark-*` class; an
+asset *mark* writes the shipped `logo:` directives. The only genuinely new
+authoring token is a class for *parametric covers*, and it **cannot be `cover`**
+— that name is a registered chart-family variant guarded by 16 `:not(.cover)`
+rules in `chart-family.css`. Proposed: `bleed` (full-bleed), to be confirmed
+against a prototype before it freezes.
 
 ## Sourcing — pick · fabricate · bring-your-own
 
-One artifact, three ways to get one — matching what the two existing Fabricate
-surfaces (Theme Studio, Component Studio) already do (`input → optional AI →
-live gate/derive → save to Library → export zip`):
+One family, three ways to get a finish — mirroring the two existing Fabricate
+faculties (`input → optional AI → live gate/derive → save to Library → export
+zip`):
 
-- **Pick** — choose a curated finish from the library (the `background:`
-  auto-complete set). Baked, palette-blind, zero cost.
-- **Fabricate** — generate a fresh finish. **Parametric first**: deterministic
-  controls (gradient stops/angle, pattern density, vignette strength, stamp
-  placement) → CSS / mask output. Palette-blind by construction, export-safe, no
-  per-render cost, no XSS surface. An AI "describe the finish you want" front door
-  is a *later* layer, exactly as the Theme Studio added AI on top of a
-  deterministic derive kernel (`2026-06-29-studio-theme-ai.md`).
-- **Bring-your-own** — upload a background image or a brand mark. Rides the
-  **existing asset plumbing** (`2026-06-09-drawing-board-asset-import.md`): stored
-  in IndexedDB, materialized to a `data:` URI at render so all three render paths
-  agree.
+- **Pick** — choose a curated finish (parametric washes/textures/backdrops, or a
+  library asset). Baked, palette-blind, zero cost.
+- **Fabricate** — generate a fresh **parametric** finish: deterministic controls
+  (gradient stops/angle, pattern density, vignette strength) → token-driven CSS.
+  Palette-blind by construction. AI "describe it" is a *later* front door, as the
+  Theme Studio added AI atop a deterministic kernel
+  (`2026-06-29-studio-theme-ai.md`). *Asset-backed finishes are never fabricated
+  — they are brought in.*
+- **Bring-your-own** — upload a backdrop image or a brand mark. This is where the
+  asset plumbing is needed; note it is **proposed, not shipped**
+  (`2026-06-09-drawing-board-asset-import.md` is explicitly *"Not canonical…
+  no shipped behaviour yet"*). BYO covers/logos work *today* only via a path
+  relative to the deck source; a reusable library is real new work, not "existing
+  plumbing."
 
-Saved finishes land in the **same unified Library** as themes and components, and
-share via the established **lattice-asset zip** contract
-(`2026-06-29-lattice-asset-share.md`) — a new `kind: "finish"` beside `theme` /
-`component`, with a live-rendered showcase PDF.
+Saved finishes land in the unified **Library** and share via the established
+**lattice-asset** zip (`2026-06-29-lattice-asset-share.md`) as a new
+`kind: "finish"`.
 
-## The Studio surface — a third Fabricate faculty
+## Invariants (derived by inversion — "assume it failed; what killed it?")
 
-This is the "another fabrication feature" the request named: a **Finish Studio**,
-the third Fabricate faculty beside Theme Studio and Component Studio. It picks /
-fabricates / brings in finishes over a live preview, and writes the `background:`
-front matter (or a per-slide `cover` class) into the open deck. It is built on
-top of the engine primitives below — **not before them** (building Studio UI on a
-missing primitive is the trap we avoid).
+These are not nice-to-haves; each is the avoidance of a concrete failure mode.
 
-## Sequencing — each slice stands alone
+| The failure that would kill it | The invariant it forces |
+|---|---|
+| Became a *fifth* way to set a backdrop; nobody knew which to use | **Subsume, don't add.** Finish is the one front door; it writes the existing mechanisms. No parallel grammar. |
+| Brand logos auto-grayscaled (or recolored when they legally must not) | **Asset-backed finishes preserve identity by default**; treatment is opt-in. (The shipped `logo-style: auto\|brand` already encodes this — honor it.) |
+| Beautiful on screen, solid blocks in the PDF | **Covers are a real section `background-image`, never a full-bleed mask** (masks drop in Apple PDFKit at full-bleed — the exact failure the cropped-bbox treatments architecture avoids; `engineering/treatments.md`). **Export sign-off in dark + light** is part of every facet's definition. |
+| Covers killed text legibility — amateur boardroom decks | A token-driven **contrast scrim is REQUIRED** for covers, gated by the WCAG audit the Theme Studio already runs — not an open question. |
+| Token-recoloring went muddy on some themes | Every curated finish is **AA-audited across all 14 themes × light/dark**. |
+| Shared decks broke — a finish name didn't resolve on another machine | Finishes **serialize embedded** in `.lattice` (like themes), with a defined missing-asset fallback. |
+| A fabricated/BYO finish exfiltrated deck content via a `url()` beacon | **All paths go through `data:`-materialization and clear `findCssExfil`** (`lib/layout/gate.js`, #616); inline-SVG + AI deferred behind the threat model (HARD RULE #22, `2026-06-29-component-transformer-threat-model.md`). The "no XSS surface" claim was wrong — *any* path emitting `url()` is in scope. |
+| Too much engine work for a "nice to have" → half-shipped (a broken window) | **Phase-0 on shipped plumbing first**; each slice banks standalone value (HARD RULE #18). |
 
-1. **Engine: the `cover` finish primitive** *(first slice, confirmed).* A
-   palette-blind full-bleed surface layer that composes with `dark` / `sketch`,
-   driven by a small **closed** set of custom properties, with the curated library
-   as named presets. Print-fidelity-safe (PDF drops CSS backgrounds by default —
-   reuse the treatments' element-layer / `print-color-adjust` approach, not a bare
-   `background-image`). No transform needed for the mask + gradient facets — like
-   `dark`, it is pure CSS keyed off a class + front matter. **HARD RULE #20**: the
-   full-bleed layer is positioned with inset/`padding`, never `margin`.
-2. **Engine: the `stamp` (brand-mark) slot.** Deck-wide persistent placement via
-   front matter, materialized through the existing asset bridge. (A logo-URL
-   capability already exists first-party per the transform-DSL registry —
-   `2026-06-29-component-transform-dsl.md` — reuse it; don't reinvent, HARD RULE
-   #15.)
-3. **Studio: the Finish Studio faculty** — pick / fabricate / bring-your-own,
-   Library save + `lattice-asset` `kind:"finish"` share.
-4. **Generation depth** — parametric controls first; AI "describe it" front door
-   later.
+## Sequencing — Phase-0 first, value banked each slice
 
-The multi-token inline-SVG facet (the only one needing a transform + the
-`sanitizeSlideHtml` / export-materialization paths) is sequenced **after** the
-mask + gradient facets, so the first slices carry no new security surface.
+**Phase 0 (the chosen first slice) — a picker over what already ships, plus one
+parametric set.** Expose the existing `![bg]` covers, `logo:` marks, and the six
+Tier-1 `tint-*`/`mark-*` treatments through a Studio picker (the Inspector "Look"
+section) that writes the existing front matter / classes — **and add one new
+curated *parametric* token-gradient backdrop set** (strategy: pure `color-mix` of
+`var(--token)` composited into the existing `--_bg-radial`/`--_bg-linear` slots —
+no SVG, no transform, no new security surface). This delivers ~80% of the brief —
+"pick a distinctive backdrop + place my brand mark" — on **shipped, export-safe,
+palette-blind plumbing**, with the required contrast scrim, and zero engine
+transform.
 
-## Gates this must honor
+Then, earn-it-later, each behind real usage:
 
-- **#1** two-path parity — any facet that uses a transform ships `applyToHtml` +
-  `applyToDom` with identical output (parity-tested).
-- **#3** no hex in layout CSS — every finish color is `var(--token)`.
-- **#9** a per-feature demo deck `examples/finish.md` (+ committed PDF).
-- **#10 / #6** CHANGELOG + the canonical Finish docs (`design-system.md §6`,
-  `lib/base/base.docs.md`, `design/theming.md`) updated *in the same change* —
-  including flipping `background` from "reserved, inert" to "implemented."
-- **#20** no `margin` in the full-bleed layer.
+1. **Curated token-recolorable SVG backdrops** — extends Phase-0's parametric
+   covers from gradients to single-token *masked* motifs **sized small enough to
+   survive PDFKit** (the cropped-bbox discipline), and gradient covers for
+   full-bleed. (A `data:` SVG can't read `var(--token)`; single-token motifs use
+   the mask technique, washes use gradients.)
+2. **Asset library for marks + covers** — promote brought-in logos/photos to a
+   reusable, embeddable Library tier; per-section stamp placement + suppression
+   over busy covers (extending the shipped `logo:` feature, not rebuilding it).
+3. **Finish Studio faculty + `kind:"finish"` share** — the third Fabricate
+   faculty, once the picker proves the model.
+4. **Multi-token inline-SVG backdrops + AI generation** — the only facet needing
+   a transform (string + DOM parity, HARD RULE #1), DOMPurify-safe injection, and
+   export materialization. **Last**, because it carries the new security surface.
+
+Note the honest tension: the *safe-first* order (gradients/masks first) and the
+*value-first* order disagree — the most differentiated backdrops (two-color
+blueprints, topo lines) are the multi-token inline-SVG ones, which land last.
+Phase-0 mitigates this by making *parametric gradient covers + the existing
+treatments* feel like a real win immediately.
+
+## Gates each slice must honor
+
+- **#1** two-path parity for any transform-bearing facet (`applyToHtml` +
+  `applyToDom`, parity-tested).
+- **#3** every parametric finish color is `var(--token)`; no hex.
+- **#9** a per-feature demo deck (+ committed PDF).
+- **#10 / #6** CHANGELOG + the canonical Finish docs (`design-system.md`,
+  `lib/base/base.docs.md`, `lib/base/_logo/logo.docs.md`,
+  `engineering/treatments.md`, `design/theming.md`) updated in the same change.
+- **#20** no `margin` in any full-bleed layer (it must measure cleanly for the
+  Fit Spine).
 - **#22** any inline-SVG / brought-in HTML reaches the preview frame only through
   `sanitizeSlideHtml`.
-- **Export sign-off (Quality Bar)** — the `cover` primitive alters exported
-  bytes, so a representative demo deck renders in **dark and light** and goes back
-  for inspection before that slice is called done.
+- **Export sign-off (Quality Bar)** — any slice that alters exported bytes
+  renders a representative demo in dark + light for inspection before it's done.
 
-## Open questions (resolve at build time, not now)
+## Open questions (resolve at build time / prototype-first)
 
-- **Stamp placement vocabulary** — corner slot(s)? opacity/scale? per-slide
-  suppression on full-bleed cover slides? Likely a small front-matter object.
-- **Cover + content legibility** — does a busy cover need an automatic scrim
-  (a token-driven overlay) behind the content box to hold contrast? Probably yes;
-  spec it with the WCAG audit the Theme Studio already runs.
-- **Curated library size & taxonomy** — how many starter finishes, grouped how
-  (blueprint / topo / grid / dot / wash families?). Start small, expand on use.
+- **`dark` × finish** — does `dark` *swap* a finish or just recolor it? A
+  parametric finish recolors via tokens; an asset cover may need an alternate or a
+  stronger scrim when inverted.
+- **The `bleed` modifier name** — confirm a non-colliding word for per-slide
+  parametric covers against a prototype before freezing it.
+- **Curated library size & taxonomy** — start small and boardroom-grade
+  (blueprint / topo / grid / dot / wash families?); expand on real use.
+- **Finish serialization in `.lattice`** — embedded vs referenced, and the
+  missing-asset fallback (prototype-first, like the transform-DSL doc insisted).
