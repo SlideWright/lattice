@@ -78,6 +78,9 @@ const slides = STEPS.map((w) => {
   const elems = Array.from({ length: COUNT }, () => build(w)).join('\n');
   return `<!-- _class: ${comp} -->\n\n## Calibration step — ${w} words per element.\n\n${elems}`;
 });
+// No `autosplit: on` — the deck must NOT re-paginate, or page N would no longer
+// map 1:1 to step N. Each content slide = one step; front matter emits no
+// section[data-lattice-slide], so the emulator's `slide: i+1` aligns to STEPS[i].
 const deck = `---\nsize: ${SIZE}\n---\n\n${slides.join('\n\n---\n\n')}\n`;
 
 const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'calibrate-density-'));

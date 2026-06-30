@@ -8,7 +8,7 @@
 
 **Capacity** ~4 items (crowds past 5, overflows past 6) — past that, timeline-list / split across slides.
 
-**Density** ~14 words per item (crowds past 14, overflows past 22) — one sentence per step, not a paragraph.
+**Density** up to ~14 words per item (overflows past 22) — one sentence per step, not a paragraph.
 
 Use for richer sequential processes where each step needs a paragraph rather than a label. More verbose than timeline; more structured than a plain ordered list.
 

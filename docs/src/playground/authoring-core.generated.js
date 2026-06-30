@@ -912,8 +912,8 @@ var require_prose_budgets = __commonJS({
         const words = chromeWordCount(text);
         if (words > b.soft) out.push({ kind, text: String(text).trim(), words, line, level: words > b.hard ? "hard" : "soft", budget: b });
       };
-      const lines = slide.split("\n");
-      const h2 = slide.match(/^##\s+(.+)$/m);
+      const lines = slide.replace(/^[ \t]*```[\s\S]*?^[ \t]*```/gm, "").split("\n");
+      const h2 = lines.join("\n").match(/^##\s+(.+)$/m);
       if (h2) consider("title", h2[1], h2[0].trim());
       for (let i = 0; i < lines.length; i++) {
         const m = CODE_ONLY_LINE.exec(lines[i]);
@@ -927,16 +927,29 @@ var require_prose_budgets = __commonJS({
         if (HEADING_LINE.test(above)) consider("subtitle", m[1], lines[i].trim());
         else if (HEADING_LINE.test(below) || LIST_LINE.test(below)) consider("eyebrow", m[1], lines[i].trim());
       }
-      const quote = [];
-      let quoteLine = null;
+      let lastQuote = null;
+      let lastQuoteLine = null;
+      let run = null;
+      let runLine = null;
       for (const line of lines) {
         const qm = line.match(/^\s*>\s?(.*)$/);
         if (qm) {
-          if (quoteLine == null) quoteLine = line.trim();
-          quote.push(qm[1]);
+          if (run == null) {
+            run = [];
+            runLine = line.trim();
+          }
+          run.push(qm[1]);
+        } else if (run != null) {
+          lastQuote = run;
+          lastQuoteLine = runLine;
+          run = null;
         }
       }
-      if (quote.length) consider("keyInsight", quote.join(" "), quoteLine);
+      if (run != null) {
+        lastQuote = run;
+        lastQuoteLine = runLine;
+      }
+      if (lastQuote) consider("keyInsight", lastQuote.join(" "), lastQuoteLine);
       return out;
     }
     module.exports = {

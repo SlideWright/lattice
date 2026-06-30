@@ -740,7 +740,7 @@ See [split-panel.gallery.light.pdf](../../lib/components/statement/split-panel/s
 
 **Capacity** ~4 items (crowds past 6, overflows past 7) — past that, list-tabular / split across slides.
 
-**Density** ~12 words per item (crowds past 12, overflows past 18) — one short responsibility per row, not a job description.
+**Density** up to ~12 words per item (overflows past 18) — one short responsibility per row, not a job description.
 
 Use to show 'who owns what' across a process, scoring policy, or org chart. Two-column layout: actor on left, responsibilities on right.
 
@@ -1058,7 +1058,7 @@ See [agenda.gallery.light.pdf](../../lib/components/inventory/agenda/agenda.gall
 
 **Capacity** ~3 items (crowds past 4, overflows past 4) — past that, list-tabular / split across slides.
 
-**Density** ~15 words per item (crowds past 15, overflows past 24) — a card body is one short clause, not a paragraph.
+**Density** up to ~15 words per item (overflows past 24) — a card body is one short clause, not a paragraph.
 
 Use when the audience needs to compare or scan a small set of options at a glance. Avoid for more than 4 items — split into multiple slides. For ordered/numbered steps, use list-steps instead.
 
@@ -3273,7 +3273,7 @@ See [list-criteria.gallery.light.pdf](../../lib/components/progression/list-crit
 
 **Capacity** ~4 items (crowds past 5, overflows past 6) — past that, timeline-list / split across slides.
 
-**Density** ~14 words per item (crowds past 14, overflows past 22) — one sentence per step, not a paragraph.
+**Density** up to ~14 words per item (overflows past 22) — one sentence per step, not a paragraph.
 
 Use for richer sequential processes where each step needs a paragraph rather than a label. More verbose than timeline; more structured than a plain ordered list.
 

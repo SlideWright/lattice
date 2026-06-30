@@ -105,4 +105,18 @@ describe('prose-budgets: universalProseOverages', () => {
     const slide = '`Context · Foundations`\n\n## Revenue grew 18%.\n\n> One tight memorable line.\n';
     assert.deepEqual(universalProseOverages(slide), []);
   });
+
+  test('ignores blockquotes and code-only lines INSIDE a fenced code block', () => {
+    const longQuote = `> ${Array.from({ length: 30 }, (_, i) => `w${i}`).join(' ')}`;
+    const slide = `## A tidy title.\n\n\`\`\`\n${longQuote}\n\`${'x '.repeat(10).trim()}\`\n\`\`\`\n`;
+    assert.deepEqual(universalProseOverages(slide), []); // all inside the fence — sample content, not chrome
+  });
+
+  test('budgets only the TRAILING blockquote, not a leading pull-quote summed in', () => {
+    // Two separate 10-word blockquotes; each is within the 18-word key-insight
+    // soft, so neither should fire (the old code summed them to 20 and false-fired).
+    const ten = Array.from({ length: 10 }, (_, i) => `w${i}`).join(' ');
+    const slide = `> ${ten}\n\n## A title.\n\n- a card\n  - body\n\n> ${ten}\n`;
+    assert.ok(!universalProseOverages(slide).some((o) => o.kind === 'keyInsight'));
+  });
 });

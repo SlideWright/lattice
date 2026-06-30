@@ -140,9 +140,15 @@ describe('component-manifest', () => {
     test('density: needs an axis (no capacity to inherit from)', () => {
       assert.ok(validate({ ...WITH_ITEMS, density: { soft: 4, hard: 6 } }).some((e) => /density needs an axis/.test(e)));
     });
-    test('density: rejects an inert axis the sample cannot measure', () => {
+    test('density: rejects an axis not yet counted (col/cell/line)', () => {
+      // col is a SUPPORTED_AXES member but elementWordCounts only does item/row,
+      // so a col density block would validate yet never fire — reject it.
       const m = { ...GOOD, sample: '<!-- _class: x -->\n\n## H\n\n- A\n- B\n', density: { axis: 'col', soft: 4, hard: 6 } };
-      assert.ok(validate(m).some((e) => /density\.axis 'col' is not measurable/.test(e)));
+      assert.ok(validate(m).some((e) => /density\.axis 'col' is not yet counted/.test(e)));
+    });
+    test('density: rejects an inherited axis not yet counted', () => {
+      const m = { ...GOOD, sample: '<!-- _class: x -->\n\n## H\n\n```\nline one\nline two\n```\n', capacity: { axis: 'line', soft: 4, hard: 6 }, density: { soft: 4, hard: 6 } };
+      assert.ok(validate(m).some((e) => /is not yet counted/.test(e)));
     });
 
     test('rejects non-object input', () => {
