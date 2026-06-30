@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import StudioShell from './StudioShell';
@@ -341,5 +341,91 @@ describe('StudioShell — responsive layout', () => {
 		expect(screen.queryByText('this deck')).not.toBeInTheDocument();
 		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
 		expect(await screen.findByText('this deck')).toBeInTheDocument();
+	});
+});
+
+describe('StudioShell — topbar information architecture', () => {
+	it('desktop: theme + light/dark are both directly on the bar (the Appearance segment)', () => {
+		// jsdom defaults to the desktop tier — the grouped segment shows both controls.
+		setup();
+		expect(screen.getByRole('button', { name: 'Theme' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Switch to dark mode' })).toBeInTheDocument();
+		// Desktop keeps the full bar — no ⋯ overflow, and Library/Workspace are primary.
+		expect(screen.queryByRole('button', { name: 'More controls' })).not.toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Open Library' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Workspace settings' })).toBeInTheDocument();
+		// The ⌘K pill is a desktop affordance.
+		expect(screen.getByRole('button', { name: 'Search or run a command' })).toBeInTheDocument();
+	});
+
+	it('compact: secondary controls fold into ⋯ while mode + panel toggles stay primary', () => {
+		setViewport('tablet');
+		setup();
+		// The mode toggle stays a direct 1-tap button; the panel toggles stay primary.
+		expect(screen.getByRole('button', { name: 'Switch to dark mode' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Toggle Architect' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Toggle Deck inspector' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Present' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Share' })).toBeInTheDocument();
+		// The genuinely-secondary controls leave the bar: the theme picker, Library,
+		// Workspace, and the desktop ⌘K pill are no longer direct bar buttons…
+		expect(screen.queryByRole('button', { name: 'Theme' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Open Library' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Workspace settings' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Search or run a command' })).not.toBeInTheDocument();
+		// …they live behind a single ⋯ overflow.
+		expect(screen.getByRole('button', { name: 'More controls' })).toBeInTheDocument();
+	});
+
+	it('compact: ⋯ holds the theme picker, Library, Workspace, and a Search/commands row', async () => {
+		setViewport('tablet');
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'More controls' }));
+		expect(await screen.findByRole('menuitem', { name: 'Theme' })).toBeInTheDocument();
+		expect(screen.getByRole('menuitem', { name: 'Library' })).toBeInTheDocument();
+		expect(screen.getByRole('menuitem', { name: 'Workspace settings' })).toBeInTheDocument();
+		expect(screen.getByRole('menuitem', { name: /Search \/ commands/ })).toBeInTheDocument();
+	});
+
+	it('compact: the ⋯ Search/commands row opens the command palette', async () => {
+		setViewport('tablet');
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'More controls' }));
+		await user.click(await screen.findByRole('menuitem', { name: /Search \/ commands/ }));
+		// The cmdk palette surfaces — its search box is the proof the row is wired.
+		expect(await screen.findByPlaceholderText(/Search|command/i)).toBeInTheDocument();
+	});
+
+	it('compact: opening ⋯ then resizing to desktop and back leaves it closed (H4)', async () => {
+		// A matchMedia that starts compact and can flip to desktop, firing the hook's
+		// listeners so `compact` actually changes (the shared stub is a no-op on change).
+		// Only the breakpoint media queries feed `listeners` (other consumers — e.g.
+		// CodeMirror's print listener — get a no-op so firing a resize can't crash them).
+		const listeners = new Set<(e: { type: string; matches: boolean }) => void>();
+		let isCompact = true;
+		window.matchMedia = ((q: string) => {
+			const isBp = /699|1099/.test(q);
+			return {
+				get matches() { return isCompact ? isBp : false; },
+				media: q,
+				onchange: null,
+				addEventListener: (_: string, cb: (e: { type: string; matches: boolean }) => void) => { if (isBp) listeners.add(cb); },
+				removeEventListener: (_: string, cb: (e: { type: string; matches: boolean }) => void) => { listeners.delete(cb); },
+				addListener: () => {},
+				removeListener: () => {},
+				dispatchEvent: () => false,
+			};
+		}) as typeof window.matchMedia;
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'More controls' }));
+		expect(await screen.findByRole('menuitem', { name: 'Library' })).toBeInTheDocument();
+		// Resize to desktop → ⋯ unmounts; resize back to compact → ⋯ returns CLOSED
+		// (the breakpoint effect reset its open state, so it doesn't reopen stale).
+		const flip = (compact: boolean) => act(() => { isCompact = compact; for (const cb of listeners) cb({ type: 'change', matches: compact }); });
+		await flip(false);
+		await waitFor(() => expect(screen.queryByRole('button', { name: 'More controls' })).not.toBeInTheDocument());
+		await flip(true);
+		expect(await screen.findByRole('button', { name: 'More controls' })).toBeInTheDocument();
+		expect(screen.queryByRole('menuitem', { name: 'Library' })).not.toBeInTheDocument();
 	});
 });
