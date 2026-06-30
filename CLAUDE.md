@@ -192,12 +192,12 @@ anchors). Both are binding; the split tells you *where the enforcement lives*.
   passed", and a polling auto-rebase thrashes the merge train and floods chat
   (`engineering/decisions/2026-06-14-drift-watch-rebase-thrash.md`,
   `2026-06-15-retire-drift-watch.md`). Fold the check into the push:
-  `git fetch origin main`, rebase if behind/conflicted, push. *Once the merge
-  queue is enabled (`workflow.md` §Merging), the queue performs the final
-  pre-merge rebase + retest — until then, re-check manually before an authorized
-  merge.* Resolve recurring `CHANGELOG`/`dist` conflicts mechanically and
-  `--force-with-lease` silently. Never let an open PR **merge** conflicted,
-  stale, or CI-red.
+  `git fetch origin main`, rebase if behind/conflicted, push. *The merge queue is
+  live (`workflow.md` §Merging): it performs the final pre-merge rebase + retest,
+  so there's no manual re-rebase right before an authorized merge — approve, enable
+  auto-merge, and the queue owns the rest.* Resolve recurring `CHANGELOG`/`dist`
+  conflicts mechanically and `--force-with-lease` silently. Never let an open PR
+  **merge** conflicted, stale, or CI-red.
 - **#17 — One feature = one branch → one PR; never a stacked PR chain.** Increment
   in place (many commits, one PR). A slice that builds/tests with only `main` is
   independent → its own branch; one that needs another open PR's branch is not.

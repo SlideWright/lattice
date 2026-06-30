@@ -454,18 +454,15 @@ The contract, and its limits — be precise about what it does and doesn't cover
   before its own merge. One squash (or a tight curated series behind a single
   merge) is one drift event. See
   `decisions/2026-06-14-drift-watch-rebase-thrash.md`.
-- **Merge queue (adopted).** Authorization stays human (above); the queue
-  automates only what happens *after* you approve. With the queue enabled in
-  branch protection, the flow is: you review → approve → **enable auto-merge
-  (squash)** → the queue rebases the PR onto current `main` (plus any PRs ahead),
-  re-runs the required `ci` check on that combined state, and merges only if
-  green. This is the structural fix for the parked-conflict window (§Keeping an
-  open PR mergeable) and it retires the *manual* pre-merge re-rebase dance — the
-  queue owns it. `ci.yml` already carries the `merge_group` trigger; **enabling
-  it is a one-time branch-protection change (owner-driven) — the exact settings
-  are in `decisions/2026-06-17-workflow-efficiency-review.md` §F.** Until it's
-  flipped on, the manual pre-merge re-check (step 2 of §Keeping mergeable) still
-  applies.
+- **Merge queue (live since 2026-06-30).** Authorization stays human (above); the
+  queue automates only what happens *after* you approve. The flow is: you review →
+  approve → **enable auto-merge (squash)** → the queue rebases the PR onto current
+  `main` (plus any PRs ahead), re-runs the required `ci` check on that combined
+  state, and merges only if green. This is the structural fix for the
+  parked-conflict window (§Keeping an open PR mergeable) and it **retires the manual
+  pre-merge re-rebase dance — the queue now owns it** (so step 2 of §Keeping
+  mergeable no longer applies before an authorized merge). Background:
+  `decisions/2026-06-17-workflow-efficiency-review.md` §F.
 - **Bind a closing keyword to *every* issue the PR resolves.** GitHub
   auto-closes only the issues whose number carries its own keyword, so
   `Closes #1, #2, #3` closes **only #1** and silently leaves the rest open.

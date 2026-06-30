@@ -1,18 +1,20 @@
 ---
-status: in-progress
+status: shipped
 summary: Red-team of the agent operating model — leaner CI/hooks, trimmed CLAUDE.md, a merge queue, and machine-readable doc status structure
 created: 2026-06-17
-updated: 2026-06-17
+updated: 2026-06-30
 supersedes:
 superseded-by:
 ---
 
 # Workflow efficiency review — red-team of the agent operating model
 
-> **Status: In progress** — only F's owner action remains; A–E shipped.
-> **Roll-up:** ☑ 5 done (A, B, C, D, E) · ◐ 1 in progress (F: in-repo done,
-> owner flips branch protection). A's generator + 105-note backfill shipped in a
-> follow-up PR (with the K1 Chrome cache); the convention landed in the first PR.
+> **Status: Shipped** — all six workstreams done; the merge queue was enabled in
+> branch protection by the owner on 2026-06-30, completing F.
+> **Roll-up:** ☑ 6 done (A, B, C, D, E, F). A's generator + 105-note backfill
+> shipped in a follow-up PR (with the K1 Chrome cache); the convention landed in
+> the first PR. F's in-repo half (the `merge_group` trigger, dropped `push:[main]`,
+> CLAUDE.md #16, workflow.md §Merging) shipped earlier; the queue is now live.
 > **Decisions (2026-06-17):** E3 → gate the pre-push integration tier behind
 > `LATTICE_FULL_PUSH=1`; F → adopt the merge queue with auto-merge-after-approval
 > (in-repo changes here; branch-protection settings handed to the owner).
@@ -281,9 +283,9 @@ auto-stage); CI's required gate `ci.yml:348-371`.
 
 ---
 
-## Workstream F — GitHub merge queue  ⏸ explain-first
+## Workstream F — GitHub merge queue  ☑ shipped
 
-> **Status:** ◐ In progress — **decided: adopt**; in-repo half shipped (ci.yml `merge_group`, CLAUDE.md #16, workflow.md §Merging), **owner flips branch protection** (steps below) · **Serves:** GitHub cost, less babysitting, closes the parked-conflict gap · **Risk:** med (changes how merges execute)
+> **Status:** ☑ Shipped — **adopted**; in-repo half shipped (ci.yml `merge_group`, CLAUDE.md #16, workflow.md §Merging), and the owner enabled "Require merge queue" in branch protection on 2026-06-30 — the queue is now live · **Serves:** GitHub cost, less babysitting, closes the parked-conflict gap · **Risk:** med (changes how merges execute)
 
 Both retired-drift-watch decision docs name a merge queue as *the* structural fix,
 but it was never wired. The owner asked to understand it before adopting.
@@ -331,12 +333,12 @@ in order.
   added to `ci.yml`, and the redundant `push:[main]` trigger removed); squash
   stays the merge method. HARD RULE #16's pre-merge re-rebase clause becomes the
   queue's job once it's on.
-- **Inert until you flip the setting.** All the in-repo changes (trigger added,
-  `push:[main]` removed, docs reworded) are live now, but the queue's *behavior*
-  — and its cost profile — only takes effect once "Require merge queue" is enabled
-  in branch protection. Until then the repo runs PR-only CI (1 run per merged PR;
-  the post-merge push run is already gone) and merges are the manual squash with
-  HARD RULE #16's pre-merge re-confirm.
+- **Now live (2026-06-30).** The in-repo changes (trigger added, `push:[main]`
+  removed, docs reworded) shipped earlier, and "Require merge queue" was enabled in
+  branch protection on 2026-06-30 — so the queue's behavior and cost profile are now
+  in effect: approve a PR → enable auto-merge (squash) → the queue rebases onto
+  current `main` (plus any PRs ahead), re-runs `ci` on that combined tree, and merges
+  only if green. HARD RULE #16's manual pre-merge re-rebase is now the queue's job.
 
 **Recommendation: adopt it, paired with auto-merge-after-approval.** It is the
 one structural move that lowers GitHub cost *and* the parked-conflict risk *and*
