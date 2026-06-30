@@ -1,6 +1,8 @@
 import { FileCode2, ShieldCheck, TriangleAlert } from 'lucide-react';
+import type * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
+import { cn } from '@/lib/utils';
 import { CodeField } from './CodeField';
 
 // A starter that PASSES the gate out of the box — palette-blind (every colour a
@@ -60,6 +62,7 @@ export function LayoutStudio({
 	onSkeleton,
 	findings,
 	nameOk,
+	manifest,
 }: {
 	options: SingleSlideOptions;
 	name: string;
@@ -69,13 +72,16 @@ export function LayoutStudio({
 	onSkeleton: (v: string) => void;
 	findings: Finding[];
 	nameOk: boolean;
+	// The Manifest panel, rendered as the RIGHT column on desktop (the unified
+	// Studio passes it; below desktop it places the panel itself, so this is unset).
+	manifest?: React.ReactNode;
 }) {
 	const errors = findings.filter((f) => f.level === 'error');
 	const warnings = findings.filter((f) => f.level !== 'error');
 	const ok = errors.length === 0;
 
 	return (
-		<div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:grid md:overflow-hidden md:[grid-template-columns:360px_1fr]">
+		<div className={cn('flex min-h-0 flex-1 flex-col overflow-y-auto md:grid md:overflow-hidden', manifest ? 'md:[grid-template-columns:340px_1fr_360px]' : 'md:[grid-template-columns:360px_1fr]')}>
 			<aside className="flex shrink-0 flex-col border-b border-border md:overflow-y-auto md:border-r md:border-b-0">
 				<div className="flex min-h-[120px] flex-col border-b border-border px-4 py-3.5">
 					<span className="mb-1.5 flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground"><FileCode2 className="size-3.5" />Styles — <span className="normal-case text-muted-foreground/80">.{name || '…'}-scoped, palette-blind</span></span>
@@ -116,6 +122,7 @@ export function LayoutStudio({
 					<div className="grid aspect-video w-full max-w-[620px] place-content-center rounded-xl border border-dashed border-border bg-background text-center text-[13px] text-muted-foreground">Name your component to preview it.</div>
 				)}
 			</div>
+			{manifest && <aside className="shrink-0 border-t border-border bg-card md:overflow-y-auto md:border-l md:border-t-0">{manifest}</aside>}
 		</div>
 	);
 }

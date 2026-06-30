@@ -1,4 +1,4 @@
-import { ArrowUp, Check, ChevronDown, ChevronRight, Cloud, Download, LayoutGrid, Loader2, Moon, Palette, RotateCcw, Search, Sparkles, Sun, Text, TriangleAlert, X } from 'lucide-react';
+import { ArrowUp, Check, ChevronDown, ChevronRight, Cloud, Download, Info, LayoutGrid, Loader2, Moon, Palette, RotateCcw, Search, Sparkles, Sun, Text, TriangleAlert, X } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
 import { Button } from '@/components/ui/button';
@@ -14,9 +14,11 @@ import { BUCKETS, CSS_ONLY_SUBSTANCES, FORMS, FUNCTIONS, gateCss, NAME_RE, scaff
 // repaired), auditBoth → live WCAG report, serializeTheme → a real themes/*.css.
 import { auditBoth, contrastRatio, deriveTheme, STARTERS, serializeTheme, validateEssentials } from '@/playground/theme-core.generated.js';
 import { type ComponentSimilar, connectOpenRouter, generateComponent, generateTheme, useArchitectStatus } from './architect';
+import { CodeField } from './CodeField';
 import { type ComponentMeta, saveStudioComponent } from './component-library';
 import { downloadText } from './download';
 import { type Finding, LayoutStudio, STARTER_CSS, STARTER_DESCRIPTION, STARTER_META, STARTER_NAME, STARTER_SKELETON } from './LayoutStudio';
+import { manifestJsonCompletion } from './manifest-complete';
 import { saveStudioTheme } from './theme-library';
 import { useBreakpoint } from './use-breakpoint';
 
@@ -178,7 +180,9 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 	// classification (#610 manifest-visibility).
 	const [compMeta, setCompMeta] = React.useState<ComponentMeta>(() => ({ ...STARTER_META }));
 	const [metaOpen, setMetaOpen] = React.useState(false);
-	const setMeta = (patch: Partial<ComponentMeta>) => setCompMeta((m) => ({ ...m, ...patch }));
+	// A parse error from the raw-JSON manifest view — surfaced as a gate finding so a
+	// broken edit can't silently save.
+	const [compJsonError, setCompJsonError] = React.useState('');
 	// Component-tab AI: "Describe a component" — the mirror of the Theme tab's
 	// "Describe a look". The model proposes a manifest + scoped CSS + skeleton
 	// grounded in the knowledge file; the SAME live gate below disposes. `compSimilar`
@@ -247,10 +251,11 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 		const out: Finding[] = [];
 		for (const f of gateCss(compCss, compName).findings as Finding[]) out.push(f);
 		if (!skeletonInvokes(compSkeleton, compName)) out.push({ level: 'error', rule: 'skeleton', message: `Skeleton must invoke <!-- _class: ${compName} --> so the preview applies your styles.` });
+		if (compJsonError) out.push({ level: 'error', rule: 'manifest:json', message: compJsonError });
 		const man = validateManifest(compManifest) as { ok: boolean; errors: { field: string; message: string }[] };
 		for (const e of man.errors) out.push({ level: 'error', rule: `manifest:${e.field}`, message: e.message });
 		return out;
-	}, [compName, compCss, compSkeleton, compNameOk, compManifest]);
+	}, [compName, compCss, compSkeleton, compNameOk, compManifest, compJsonError]);
 	const compOk = compFindings.every((f) => f.level !== 'error');
 
 	// Curated WCAG rows: one per role, worst ratio across modes.
@@ -407,6 +412,11 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 		</div>
 	);
 	const isContractToken = (id: string) => CONTRACT.some((c) => c.token === id);
+	// The Component tab's Manifest panel — the right column at desktop, a collapsible
+	// above the editors below it. One element, placed by breakpoint.
+	const compManifestPanel = (
+		<ComponentManifestPanel name={compName} description={compDesc} meta={compMeta} onName={setCompName} onDescription={setCompDesc} onMeta={setCompMeta} jsonError={compJsonError} onJsonError={setCompJsonError} />
+	);
 
 	return (
 		<div className="flex min-h-0 flex-1 flex-col">
@@ -647,31 +657,101 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 						!modelReady && <p className="text-[11px] leading-snug text-muted-foreground">Connect a model to generate a native-feeling component from a description — or author one by hand below.</p>
 					)}
 				</div>
-				{/* Manifest — the component's contract. Collapsed by default; the AI fills
-				    it, you can correct the classification before saving. Persisted on Save
-				    + stamped into the export. */}
-				<div className="shrink-0 border-b border-border bg-card">
-					<button type="button" onClick={() => setMetaOpen((v) => !v)} aria-expanded={metaOpen} className="flex w-full items-center gap-2 px-4 py-2 text-left hover:bg-[color-mix(in_srgb,var(--accent)_5%,transparent)]">
-						<ChevronRight className={cn('size-3.5 text-muted-foreground transition-transform', metaOpen && 'rotate-90')} />
-						<span className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Manifest</span>
-						<span className="truncate text-[11px] text-muted-foreground/70">{compMeta.bucket} · {compMeta.form} · {(compMeta.tags || []).join(', ')}</span>
-					</button>
-					{metaOpen && <ComponentManifest meta={compMeta} onChange={setMeta} />}
-				</div>
-				<LayoutStudio options={options} name={compName} css={compCss} skeleton={compSkeleton} onCss={setCompCss} onSkeleton={setCompSkeleton} findings={compFindings} nameOk={compNameOk} />
+				{/* Below desktop the Manifest is a collapsible above the editors (no
+				    3-column squeeze); at desktop it's the right column inside LayoutStudio. */}
+				{!isDesktop && (
+					<div className="shrink-0 border-b border-border bg-card">
+						<button type="button" onClick={() => setMetaOpen((v) => !v)} aria-expanded={metaOpen} className="flex w-full items-center gap-2 px-4 py-2 text-left hover:bg-[color-mix(in_srgb,var(--accent)_5%,transparent)]">
+							<ChevronRight className={cn('size-3.5 text-muted-foreground transition-transform', metaOpen && 'rotate-90')} />
+							<span className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Manifest</span>
+							<span className="truncate text-[11px] text-muted-foreground/70">{compMeta.bucket} · {compMeta.form} · {(compMeta.tags || []).join(', ')}</span>
+						</button>
+						{metaOpen && compManifestPanel}
+					</div>
+				)}
+				<LayoutStudio options={options} name={compName} css={compCss} skeleton={compSkeleton} onCss={setCompCss} onSkeleton={setCompSkeleton} findings={compFindings} nameOk={compNameOk} manifest={isDesktop ? compManifestPanel : undefined} />
 			</div>
 			)}
 		</div>
 	);
 }
 
-// The editable Manifest panel — the component's contract. The AI fills it; the
-// author can correct the classification (the gate validates it live, so a bad
-// axis/tag count surfaces as a finding below). Persisted on Save + exported.
-function ComponentManifest({ meta, onChange }: { meta: ComponentMeta; onChange: (patch: Partial<ComponentMeta>) => void }) {
-	const sel = (label: string, value: string | undefined, opts: string[], onPick: (v: string) => void) => (
+// One-line definitions for each manifest field (from design/design-system.md), so
+// the author isn't guessing what an axis means — shown as a hover hint on the label.
+const MANIFEST_HINTS: Record<string, string> = {
+	description: 'One sentence — what it shows and when to use it. Stamped into the export + the dedup signal.',
+	bucket: 'Which of the 12 component families it belongs to — drives the gallery folder and dedup ranking.',
+	function: 'The slide’s communicative job: anchor, statement, inventory, comparison, progression, evidence, imagery.',
+	form: 'The visual arrangement of the content — grid, ledger, panel, stack, matrix, and so on.',
+	substance: 'What fills it: prose or structured lists. A transform-free component stays prose/structure.',
+	tags: '3–5 lowercase keywords for search + dedup. Reuse existing tags where they fit.',
+	adapt: 'How it reflows on a portrait/tall frame — native (universal cqi + @container) or reflow (ships per-family layouts).',
+	capacity: 'Legible card/row counts before it crowds — sweet (comfortable), soft (stretched), hard (the cap).',
+};
+// A label with a hover (i) hint — the lightweight "what does this field mean?" affordance.
+function HintLabel({ field, children }: { field: string; children: React.ReactNode }) {
+	return (
+		<span className="flex items-center gap-1 font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+			{children}
+			{MANIFEST_HINTS[field] && (
+				<span title={MANIFEST_HINTS[field]} className="inline-flex cursor-help"><Info className="size-3 text-muted-foreground/60" /></span>
+			)}
+		</span>
+	);
+}
+
+// The Manifest panel — the component's contract, with two synced views: a FIELDS
+// form and the raw manifest.json in CodeMirror (JSON, schema-aware completion). The
+// AI fills it; the author edits either view and they stay in sync; the gate
+// validates live (a bad axis / tag count / invalid JSON surfaces as a finding).
+function ComponentManifestPanel({ name, description, meta, onName, onDescription, onMeta, jsonError, onJsonError }: {
+	name: string;
+	description: string;
+	meta: ComponentMeta;
+	onName: (v: string) => void;
+	onDescription: (v: string) => void;
+	onMeta: (m: ComponentMeta) => void;
+	jsonError: string;
+	onJsonError: (e: string) => void;
+}) {
+	const [view, setView] = React.useState<'fields' | 'json'>('fields');
+	const [jsonDraft, setJsonDraft] = React.useState('');
+	// The manifest.json as the engine writes it (name first), serialized for the editor.
+	const toJson = React.useCallback(() => JSON.stringify({ name, function: meta.function, form: meta.form, substance: meta.substance, bucket: meta.bucket, tags: meta.tags ?? [], description, adapt: meta.adapt ?? { mode: 'native' }, ...(meta.capacity ? { capacity: meta.capacity } : {}) }, null, 2), [name, description, meta]);
+	// Entering the JSON view re-seeds the draft from the live model (the source of truth).
+	// biome-ignore lint/correctness/useExhaustiveDependencies: re-seed only on view switch, not on every keystroke.
+	React.useEffect(() => { if (view === 'json') { setJsonDraft(toJson()); onJsonError(''); } }, [view]);
+
+	function applyJson(text: string) {
+		setJsonDraft(text);
+		let o: Record<string, unknown>;
+		try {
+			o = JSON.parse(text);
+		} catch (e) {
+			onJsonError(`Manifest JSON is invalid — ${(e as Error).message}`);
+			return;
+		}
+		if (!o || typeof o !== 'object' || Array.isArray(o)) {
+			onJsonError('Manifest JSON must be an object.');
+			return;
+		}
+		onJsonError('');
+		if (typeof o.name === 'string') onName(o.name);
+		if (typeof o.description === 'string') onDescription(o.description);
+		onMeta({
+			function: typeof o.function === 'string' ? o.function : undefined,
+			form: typeof o.form === 'string' ? o.form : undefined,
+			substance: typeof o.substance === 'string' ? o.substance : undefined,
+			bucket: typeof o.bucket === 'string' ? o.bucket : undefined,
+			tags: Array.isArray(o.tags) ? o.tags.map(String) : [],
+			adapt: o.adapt && typeof o.adapt === 'object' ? { mode: String((o.adapt as { mode?: unknown }).mode || 'native') } : { mode: 'native' },
+			capacity: o.capacity && typeof o.capacity === 'object' ? (o.capacity as ComponentMeta['capacity']) : undefined,
+		});
+	}
+
+	const sel = (field: string, label: string, value: string | undefined, opts: string[], onPick: (v: string) => void) => (
 		<label className="flex flex-col gap-1">
-			<span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
+			<HintLabel field={field}>{label}</HintLabel>
 			<select value={value ?? ''} onChange={(e) => onPick(e.target.value)} aria-label={label} className="rounded-md border border-border bg-background px-2 py-1 text-[12.5px] text-[var(--text-heading)] outline-none focus:border-[var(--accent)]">
 				{opts.map((o) => <option key={o} value={o}>{o}</option>)}
 			</select>
@@ -684,24 +764,48 @@ function ComponentManifest({ meta, onChange }: { meta: ComponentMeta; onChange: 
 			<input type="number" min={1} value={v ?? ''} onChange={(e) => onN(Math.max(1, Number(e.target.value) || 1))} aria-label={`Capacity ${label}`} className="w-full rounded-md border border-border bg-background px-2 py-1 text-[12.5px] text-[var(--text-heading)] outline-none focus:border-[var(--accent)]" />
 		</label>
 	);
+
 	return (
-		<div className="grid grid-cols-2 gap-2.5 px-4 pb-3.5 sm:grid-cols-4">
-			{sel('Bucket', meta.bucket, BUCKETS as string[], (v) => onChange({ bucket: v }))}
-			{sel('Function', meta.function, FUNCTIONS as string[], (v) => onChange({ function: v }))}
-			{sel('Form', meta.form, FORMS as string[], (v) => onChange({ form: v }))}
-			{sel('Substance', meta.substance, CSS_ONLY_SUBSTANCES as string[], (v) => onChange({ substance: v }))}
-			<label className="col-span-2 flex flex-col gap-1 sm:col-span-4">
-				<span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Tags <span className="normal-case text-muted-foreground/70">— 3–5, comma-separated</span></span>
-				<input value={(meta.tags || []).join(', ')} onChange={(e) => onChange({ tags: e.target.value.split(',').map((t) => t.trim().toLowerCase().replace(/[^a-z0-9-]/g, '')).filter(Boolean) })} aria-label="Tags" spellCheck={false} className="rounded-md border border-border bg-background px-2 py-1 font-mono text-[12px] text-[var(--text-heading)] outline-none focus:border-[var(--accent)]" />
-			</label>
-			<div className="col-span-2 flex flex-col gap-1 sm:col-span-4">
-				<span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Capacity <span className="normal-case text-muted-foreground/70">— legible card/row counts</span></span>
-				<div className="grid grid-cols-3 gap-2">
-					{num('sweet', cap.sweet, (n) => onChange({ capacity: { ...cap, sweet: n } }))}
-					{num('soft', cap.soft, (n) => onChange({ capacity: { ...cap, soft: n } }))}
-					{num('hard', cap.hard, (n) => onChange({ capacity: { ...cap, hard: n } }))}
+		<div className="flex min-h-0 flex-col">
+			<div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+				<span className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Manifest</span>
+				<div className="inline-flex rounded-lg border border-border p-[2px]">
+					{([['fields', 'Fields'], ['json', 'JSON']] as const).map(([v, label]) => (
+						<button key={v} type="button" onClick={() => setView(v)} aria-pressed={view === v} className={cn('rounded-md px-3 py-1 text-[11.5px] font-semibold', view === v ? 'bg-[var(--accent-soft)] text-[var(--accent)]' : 'text-muted-foreground')}>{label}</button>
+					))}
 				</div>
 			</div>
+			{view === 'fields' ? (
+				<div className="grid grid-cols-2 gap-2.5 overflow-y-auto px-4 py-3.5">
+					<label className="col-span-2 flex flex-col gap-1">
+						<HintLabel field="description">Description</HintLabel>
+						<input value={description} onChange={(e) => onDescription(e.target.value)} aria-label="Component description" className="rounded-md border border-border bg-background px-2 py-1 text-[12.5px] text-[var(--text-heading)] outline-none focus:border-[var(--accent)]" />
+					</label>
+					{sel('bucket', 'Bucket', meta.bucket, BUCKETS as string[], (v) => onMeta({ ...meta, bucket: v }))}
+					{sel('function', 'Function', meta.function, FUNCTIONS as string[], (v) => onMeta({ ...meta, function: v }))}
+					{sel('form', 'Form', meta.form, FORMS as string[], (v) => onMeta({ ...meta, form: v }))}
+					{sel('substance', 'Substance', meta.substance, CSS_ONLY_SUBSTANCES as string[], (v) => onMeta({ ...meta, substance: v }))}
+					<label className="col-span-2 flex flex-col gap-1">
+						<HintLabel field="tags">Tags <span className="normal-case text-muted-foreground/70">— 3–5, comma-separated</span></HintLabel>
+						<input value={(meta.tags || []).join(', ')} onChange={(e) => onMeta({ ...meta, tags: e.target.value.split(',').map((t) => t.trim().toLowerCase().replace(/[^a-z0-9-]/g, '')).filter(Boolean) })} aria-label="Tags" spellCheck={false} className="rounded-md border border-border bg-background px-2 py-1 font-mono text-[12px] text-[var(--text-heading)] outline-none focus:border-[var(--accent)]" />
+					</label>
+					{sel('adapt', 'Adapt', meta.adapt?.mode, ['native', 'reflow'], (v) => onMeta({ ...meta, adapt: { mode: v } }))}
+					<div className="col-span-2 flex flex-col gap-1">
+						<HintLabel field="capacity">Capacity <span className="normal-case text-muted-foreground/70">— legible card/row counts</span></HintLabel>
+						<div className="grid grid-cols-3 gap-2">
+							{num('sweet', cap.sweet, (n) => onMeta({ ...meta, capacity: { ...cap, sweet: n } }))}
+							{num('soft', cap.soft, (n) => onMeta({ ...meta, capacity: { ...cap, soft: n } }))}
+							{num('hard', cap.hard, (n) => onMeta({ ...meta, capacity: { ...cap, hard: n } }))}
+						</div>
+					</div>
+				</div>
+			) : (
+				<div className="flex min-h-0 flex-1 flex-col gap-2 px-4 py-3.5">
+					<span className="font-mono text-[10px] text-muted-foreground">{name || '…'}.manifest.json</span>
+					<CodeField language="json" ariaLabel="Manifest JSON" value={jsonDraft} onChange={applyJson} completion={manifestJsonCompletion} className={cn('min-h-[220px] w-full flex-1 rounded-lg border bg-[var(--bg)]', jsonError ? 'border-[color-mix(in_srgb,var(--fail)_55%,var(--border))]' : 'border-border focus-within:border-[var(--accent)]')} />
+					<p className="text-[11px] leading-snug text-muted-foreground">{jsonError ? jsonError : 'Edit the raw manifest — the Fields view stays in sync, completion suggests valid values. The gate validates it live.'}</p>
+				</div>
+			)}
 		</div>
 	);
 }

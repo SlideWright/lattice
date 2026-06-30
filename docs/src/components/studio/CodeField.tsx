@@ -1,5 +1,7 @@
+import { autocompletion, type CompletionContext, type CompletionResult, completionKeymap } from '@codemirror/autocomplete';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { css } from '@codemirror/lang-css';
+import { json } from '@codemirror/lang-json';
 import { markdown } from '@codemirror/lang-markdown';
 import { syntaxHighlighting } from '@codemirror/language';
 import { EditorState } from '@codemirror/state';
@@ -16,7 +18,7 @@ import { editorTheme, studioHighlight } from './editor-theme';
 // Degrades to a <textarea> when CodeMirror can't construct (jsdom), so it never
 // breaks a test — the fallback keeps the same aria-label + onChange contract.
 
-const LANGS = { css, markdown } as const;
+const LANGS = { css, markdown, json } as const;
 
 export function CodeField({
 	value,
@@ -24,17 +26,23 @@ export function CodeField({
 	language,
 	ariaLabel,
 	className,
+	completion,
 }: {
 	value: string;
 	onChange: (next: string) => void;
 	language: keyof typeof LANGS;
 	ariaLabel: string;
 	className?: string;
+	// Optional schema-aware autocomplete source (the manifest JSON view wires one).
+	completion?: (ctx: CompletionContext) => CompletionResult | null;
 }) {
 	const hostRef = React.useRef<HTMLDivElement>(null);
 	const viewRef = React.useRef<EditorView | null>(null);
 	const onChangeRef = React.useRef(onChange);
 	onChangeRef.current = onChange;
+	// Keep the latest completion source reachable from the construct-once editor.
+	const completionRef = React.useRef(completion);
+	completionRef.current = completion;
 	// CodeMirror can't lay out under jsdom (no real geometry), and a content <div>
 	// can't take a `change` event — so a test driving the field via fireEvent.change
 	// would silently no-op. Render the accessible <textarea> fallback there; it
@@ -55,7 +63,8 @@ export function CodeField({
 					extensions: [
 						lineNumbers(),
 						history(),
-						keymap.of([...defaultKeymap, ...historyKeymap]),
+						keymap.of([...defaultKeymap, ...historyKeymap, ...completionKeymap]),
+							autocompletion({ override: [(ctx) => completionRef.current?.(ctx) ?? null] }),
 						LANGS[language](),
 						syntaxHighlighting(studioHighlight),
 						editorTheme,

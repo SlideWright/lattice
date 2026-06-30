@@ -212,6 +212,24 @@ describe('Studio — Fabricate + Present dock respond', () => {
 		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
 	});
 
+	it('Component tab: the Manifest JSON view two-way syncs and guards invalid JSON', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
+		await user.click(await screen.findByText('Fabricate'));
+		await user.click(screen.getByRole('button', { name: /Component/ }));
+		// Switch the manifest panel to the raw-JSON view.
+		await user.click(screen.getByRole('button', { name: 'JSON' }));
+		const json = await screen.findByLabelText('Manifest JSON');
+		// Invalid JSON → a finding surfaces and Save disables (can't silently save a broken edit).
+		fireEvent.change(json, { target: { value: '{ not json' } });
+		expect((await screen.findAllByText(/Manifest JSON is invalid/i)).length).toBeGreaterThan(0);
+		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+		// Valid JSON changing an axis → clean again, and the Fields view reflects it (two-way).
+		fireEvent.change(json, { target: { value: JSON.stringify({ name: 'callout', function: 'comparison', form: 'canvas', substance: 'prose', bucket: 'comparison', tags: ['a', 'b', 'c'], description: 'd', adapt: { mode: 'native' }, capacity: { sweet: 1, soft: 2, hard: 3 } }) } });
+		await user.click(screen.getByRole('button', { name: 'Fields' }));
+		expect((screen.getByLabelText('Bucket') as HTMLSelectElement).value).toBe('comparison');
+	});
+
 	it('Fabricate derives a REAL token contract + WCAG audit from the engine', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
