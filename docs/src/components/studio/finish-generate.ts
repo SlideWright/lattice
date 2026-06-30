@@ -1,9 +1,9 @@
 // Pure parametric finish generator — turns the faculty's slider params into a
-// `section.<name> { … }` backdrop CSS rule. Mirrors lib/base/base.backdrops.css
-// but tunable. Palette-blind by construction (every color is color-mix of
-// var(--accent)), no url(), no mask — so a fabricated finish carries the same
-// export-safety + zero-exfil guarantees as the built-ins. The generated class
-// name always contains `backdrop` so the treatments compositor
+// `section.<name> { … }` CSS rule that writes the tint/mark compositor slots
+// (--_bg-radial / --_bg-linear). Palette-blind by construction (every color is
+// color-mix of var(--accent)), no url(), no mask — so a fabricated finish carries
+// the same export-safety + zero-exfil guarantees as the built-ins. The generated
+// class name always contains `backdrop` so the treatments compositor
 // (`[class*="backdrop"]`) paints its slots.
 
 export type FinishBase = 'wash' | 'aurora' | 'blueprint' | 'dots' | 'hatch';

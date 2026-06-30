@@ -1,100 +1,106 @@
 ---
 marp: true
 theme: indaco
-finish: blueprint
+finish: atrium
 paginate: true
 header: "Lattice · finishes"
 ---
 
-<!-- _class: title silent backdrop-none -->
+<!-- _class: title silent finish-none -->
 
 `Feature demo · finishes`
 
-# A backdrop, set once.
+# A finish is a stack of layers.
 
 A *finish* is the surface of a deck — the wax-and-polish layer over its
-structure and palette. Set `finish: blueprint` in front matter and every slide
-wears the same faint drafting grid. This title opts out with `backdrop-none`.
+structure and palette. Each preset composites up to four palette-blind layers
+behind your content: a **wash**, a **texture**, a **mark**, and an **edge**. Set
+`finish: atrium` once and every slide wears the same composition. This title
+opts out with `finish-none`.
 
 ---
 
 ## The finish is a register, not per-slide markup.
 
 `finish:` names the whole-deck surface in one token — orthogonal to `theme:`,
-which still owns the palette. The engine reads it once and paints the backdrop
-behind every slide, so you never repeat a class.
+which still owns the palette. The engine reads it once and paints the layered
+finish behind every slide, so you never repeat a class.
 
+- Layered
+  - A finish stacks `wash + texture + mark + edge` by z-index — layers combine,
+    they don't replace each other.
 - Palette-blind
-  - Every backdrop is `color-mix()` of the theme accent — swap the theme and it
+  - Every layer is `color-mix()` of the theme accent — swap the theme and it
     recolors itself.
 - Export-safe
-  - Pure CSS gradients (never masks), so the grid survives the PDF and PPTX.
-- Legible by design
-  - The accent stays faint, so text keeps its AA contrast with no scrim.
+  - Pure CSS gradients (never masks); every fade is opaque-to-opaque, so they
+    survive the PDF and PPTX with no muddy gray.
 
 ---
 
-<!-- _class: list-tabular -->
+<!-- _class: finish finish-meridian -->
 
-## Five field backdrops ship in v1.
+## Meridian — duotone, contours, a ghost numeral.
+
+This slide overrides the deck with `_class: finish finish-meridian`. A diagonal
+duotone wash carries faint contour lines, and an oversized ghost numeral anchors
+the bottom-right corner — all from one preset class.
+
+---
+
+<!-- _class: finish finish-strata list-tabular -->
+
+## Strata — bands, a dot-matrix, a corner tick.
 
 - Wash
-  - A soft accent bloom from the top edge.
-- Aurora
-  - A two-corner glow for a sense of depth.
-- Blueprint
-  - A graph-paper grid — the drafting-table finish.
-- Dots
-  - A quiet dot grid behind your content.
-- Hatch
-  - Diagonal accent hatching, textured and energetic.
+  - Soft horizontal bands with a bold accent hairline pinned to the top edge.
+- Texture
+  - A fine 26px dot-matrix, even and faint across the slide.
+- Mark
+  - A corner registration tick in the top-right.
 
 ---
 
-<!-- _class: backdrop backdrop-dots -->
+<!-- _class: finish finish-halo -->
 
-## A slide can override the deck.
+## Halo — a spotlight section treatment.
 
-This slide carries `_class: backdrop backdrop-dots`, so its dot field replaces
-the deck-wide blueprint grid for one slide. Per-slide wins; the rest of the deck
-keeps its grid.
+A centered spotlight, concentric rings, and a whisper of a vignette frame the
+slide — the bookend finish for a section or closing, on a clean light canvas with
+dark, legible text. Set per-slide with `_class: finish finish-halo`.
+
+---
+
+<!-- _class: finish finish-ledger -->
+
+## Ledger — ruled lines, a margin bar, a fold.
+
+This slide carries `_class: finish finish-ledger`: fine horizontal ruled lines, a
+bold accent bar down the left margin, and a top-right corner fold — a board-memo
+surface. The deck-wide Atrium finish is replaced for this one slide.
 
 ---
 
 <!-- _class: agenda progress-2 -->
 
-## How the backdrop is wired.
+## How the finish is wired.
 
-1. Front matter declares `finish: blueprint` `once`
-2. The engine appends `backdrop backdrop-blueprint` `every slide`
-3. The compositor paints it into the section `behind content`
-4. A slide opts out with `backdrop-none` `per-slide`
-5. The deck-lint guards typos `unknown-finish`
-
----
-
-<!-- _class: kpi -->
-
-## It composes with everything.
-
-`Finish · indaco`
-
-- Components
-  - 53 layouts `unchanged`
-- Treatments
-  - tints + marks `compose`
-- Render paths
-  - engine + emulator + runtime `identical`
+1. Front matter declares `finish: atrium` `once`
+2. The engine appends `finish finish-atrium` `every slide`
+3. The compositor blends the layer props `behind content`
+4. A slide overrides with `_class: finish finish-<name>` `per-slide`
+5. A slide opts out with `finish-none` `clean`
 
 ---
 
-<!-- _class: backdrop-none silent -->
+<!-- _class: finish-none silent -->
 
 ## Pick it in the Studio.
 
 The Studio's Inspector has a **Finish** field — swatch-previewed, grouped Plain
-and Backdrops — that writes this `finish:` register for you, with the live
-preview updating as you choose. This slide is clean (`backdrop-none`).
+and Finishes — that writes this `finish:` register for you, with the live preview
+updating as you choose. This slide is clean (`finish-none`), so you see the
+deck's default Atrium finish nowhere here.
 
 ---
 
@@ -104,5 +110,5 @@ preview updating as you choose. This slide is clean (`backdrop-none`).
 
 # Change the finish, keep the content.
 
-Flip `finish:` to `wash`, `dots`, or `boardroom` and the same Markdown ships
+Flip `finish:` to `halo`, `ledger`, or `boardroom` and the same Markdown ships
 with a new surface — no edits to a single slide.

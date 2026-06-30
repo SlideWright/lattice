@@ -7,12 +7,13 @@
 // step with FINISH_REGISTER — every `name` here is a registered finish.
 //
 // A finish is authored deck-wide via the `finish:` front-matter register (no new
-// key) or per-slide via `_class: backdrop …`. Backdrop swatches use var(--accent)
-// so the chip recolors with the site theme, exactly like the real backdrop does.
+// key) or per-slide via `_class: finish finish-<name>`. Preset swatches use
+// var(--accent) so the chip recolors with the site theme, exactly like the real
+// finish does.
 
 export type FinishNature = 'parametric' | 'typographic';
 export type FinishZone = 'field' | 'none';
-export type FinishGroup = 'plain' | 'backdrop';
+export type FinishGroup = 'plain' | 'finish';
 
 export type FinishEntry = {
 	/** the `finish:` register value (and engine FINISH_REGISTER key) */
@@ -29,8 +30,9 @@ export type FinishEntry = {
 const A = (pct: number) => `color-mix(in srgb, var(--accent) ${pct}%, transparent)`;
 
 // Ordered as the picker shows them. `boardroom` is the named baseline (omitting
-// the key renders it). The chips are intentionally a touch more saturated than
-// the real (deliberately subtle) backdrops so the motif reads at 16px.
+// the key renders it). Each finish preset is a STACK of layers in the engine; the
+// chip shows a single representative layer, intentionally a touch more saturated
+// than the real (deliberately subtle) finish so the motif reads at 16px.
 export const FINISHES: FinishEntry[] = [
 	{
 		name: 'boardroom', label: 'Boardroom', group: 'plain', nature: 'typographic', zone: 'none',
@@ -48,29 +50,51 @@ export const FINISHES: FinishEntry[] = [
 		swatch: { background: `repeating-linear-gradient(8deg, ${A(28)} 0 1.5px, transparent 1.5px 7px)` },
 	},
 	{
-		name: 'wash', label: 'Wash', group: 'backdrop', nature: 'parametric', zone: 'field',
-		blurb: 'A soft accent bloom from the top — lit from above.',
-		swatch: { background: `radial-gradient(ellipse at 50% 0%, ${A(45)}, transparent 70%)` },
+		name: 'atrium', label: 'Atrium', group: 'finish', nature: 'parametric', zone: 'field',
+		blurb: 'Corner glow + a fine grid + a left margin rule.',
+		swatch: {
+			background:
+				`radial-gradient(120% 90% at 100% 0%, ${A(45)}, transparent 60%), `
+				+ `repeating-linear-gradient(0deg, ${A(28)} 0 1px, transparent 1px 6px), `
+				+ `repeating-linear-gradient(90deg, ${A(28)} 0 1px, transparent 1px 6px)`,
+		},
 	},
 	{
-		name: 'aurora', label: 'Aurora', group: 'backdrop', nature: 'parametric', zone: 'field',
-		blurb: 'A two-corner accent glow for a sense of depth.',
-		swatch: { background: `radial-gradient(at 0% 0%, ${A(50)}, transparent 60%), radial-gradient(at 100% 100%, ${A(32)}, transparent 60%)` },
+		name: 'meridian', label: 'Meridian', group: 'finish', nature: 'parametric', zone: 'field',
+		blurb: 'Diagonal duotone wash + contour lines + a ghost numeral.',
+		swatch: {
+			background:
+				`linear-gradient(118deg, ${A(40)} 0%, transparent 45%, ${A(24)} 100%), `
+				+ `repeating-linear-gradient(-4deg, transparent 0 7px, ${A(26)} 7px 8px)`,
+		},
 	},
 	{
-		name: 'blueprint', label: 'Blueprint', group: 'backdrop', nature: 'parametric', zone: 'field',
-		blurb: 'A graph-paper grid — the drafting-table finish.',
-		swatch: { background: `repeating-linear-gradient(0deg, ${A(38)} 0 1px, transparent 1px 6px), repeating-linear-gradient(90deg, ${A(38)} 0 1px, transparent 1px 6px)` },
+		name: 'strata', label: 'Strata', group: 'finish', nature: 'parametric', zone: 'field',
+		blurb: 'Soft horizontal bands + a dot-matrix + a corner tick.',
+		swatch: {
+			background:
+				`linear-gradient(125deg, ${A(40)}, transparent 60%), `
+				+ `radial-gradient(${A(55)} 0 1px, transparent 1.6px)`,
+			backgroundSize: 'cover, 6px 6px',
+		},
 	},
 	{
-		name: 'dots', label: 'Dots', group: 'backdrop', nature: 'parametric', zone: 'field',
-		blurb: 'A quiet dot grid behind your content.',
-		swatch: { background: `radial-gradient(circle, ${A(60)} 0 1px, transparent 1.6px)`, backgroundSize: '6px 6px' },
+		name: 'halo', label: 'Halo', group: 'finish', nature: 'parametric', zone: 'field',
+		blurb: 'Centered spotlight + concentric rings + an inset vignette.',
+		swatch: {
+			background:
+				`radial-gradient(60% 60% at 50% 50%, ${A(40)}, transparent 70%), `
+				+ `repeating-radial-gradient(circle at 50% 50%, transparent 0 6px, ${A(34)} 6px 7px)`,
+		},
 	},
 	{
-		name: 'hatch', label: 'Hatch', group: 'backdrop', nature: 'parametric', zone: 'field',
-		blurb: 'Diagonal accent hatching — textured and energetic.',
-		swatch: { background: `repeating-linear-gradient(45deg, ${A(34)} 0 1px, transparent 1px 5px)` },
+		name: 'ledger', label: 'Ledger', group: 'finish', nature: 'parametric', zone: 'field',
+		blurb: 'Fine ruled lines + a bold left margin bar + a corner fold.',
+		swatch: {
+			background:
+				`linear-gradient(90deg, ${A(80)} 0 2px, transparent 2px), `
+				+ `repeating-linear-gradient(180deg, transparent 0 5px, ${A(30)} 5px 6px)`,
+		},
 	},
 ];
 

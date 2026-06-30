@@ -49,19 +49,36 @@ in patch versions.
   threshold, not a physical-overflow claim — the Fit Spine owns overflow), and a new
   `checkDensityCoverage` gate (`build:check`) keeps every prose layout budgeted-or-
   exempt so coverage can't rot. See the decision doc §9.
-- **Finish backdrops — a palette-blind surface layer for decks (the `field` zone
-  of the Finish family).** Five new `finish:` register values — `wash`, `aurora`,
-  `blueprint`, `dots`, `hatch` — paint a faint, theme-recoloring gradient behind
-  every slide, set deck-wide in one line of front matter (`finish: blueprint`) or
-  per-slide via `_class: backdrop …`; `backdrop-none` opts a slide out. All are
-  pure CSS gradients (never masks), so they survive PDF/PPTX export and add no
+- **Finish presets — a palette-blind, STACKED-LAYER surface layer for decks (the
+  `field` zone of the Finish family).** Five premium `finish:` register values —
+  `atrium` (glow + grid + left rule), `meridian` (diagonal duotone + contour
+  lines + ghost numeral), `strata` (soft bands + dot-matrix + corner tick),
+  `halo` (centered spotlight + concentric rings + vignette), and `ledger` (ruled
+  lines + bold left bar + corner fold) — paint a faint,
+  theme-recoloring composition behind every slide, set deck-wide in one line of
+  front matter (`finish: atrium`) or per-slide via `_class: finish finish-<name>`;
+  `finish-none` (back-compat `backdrop-none`) opts a slide out. Each preset is
+  built on a **per-role custom-property layer compositor** (`--fin-wash` /
+  `--fin-texture` / `--fin-mark` / `--fin-edge` blended in one rule on
+  `section.finish`), so layers combine by z-index instead of being either/or and a
+  future right-panel designer can drive any single layer by setting one prop. A
+  per-slide finish (`_class: finish finish-<name>`) **overrides** the deck-wide one
+  rather than stacking on it — the propagation drops the deck's `finish-*` preset
+  when a slide carries its own (or `finish-none`), so two finishes never composite
+  on one section. All layers are pure CSS gradients with NO `mask-image` (drops in
+  Apple PDFKit) and NO `url()`. Every full-bleed fade is **opaque-to-opaque**
+  (`color-mix(var(--accent) N%, var(--bg))` → `var(--bg)`), never to `transparent`
+  — Chromium's print-to-PDF encodes an alpha area-fade so PDF rasterizers (poppler
+  AND Ghostscript both confirmed) interpolate toward transparent-black and bake in
+  a gray cloud; opaque-to-opaque exports clean. Patterns are uniform and faint
+  (thin opaque lines, `transparent` gaps), so they survive PDF/PPTX export, add no
   remote-`url()` surface, and stay subtle enough to keep text at AA contrast with
-  no scrim. New `lib/base/base.backdrops.css`; the existing `FINISH_REGISTER`
+  no scrim. New `lib/base/base.finish.css`
+  (replaces the prior single-value backdrops); `FINISH_REGISTER`
   (`lib/core/resolve-finish.js`) — the single source of truth read by all three
-  render paths — gains the five rows, gated against the CSS by a rot-guard. The
-  Studio Inspector gains a swatch-previewed **Finish** field (grouped Plain /
-  Backdrops) that writes the register; a **Finish** fabrication faculty tunes a
-  custom backdrop and exports it as CSS. Demo: `examples/finish-backdrops.md`. See
+  render paths — carries the five presets, gated against the CSS by a rot-guard.
+  The Studio Inspector's swatch-previewed **Finish** field (grouped Plain /
+  Finishes) writes the register. Demo: `examples/finish-backdrops.md`. See
   `engineering/decisions/2026-06-30-finish-the-surface-layer.md`.
 - **Studio Focus mode — a transient "quiet the noise" view.** The Studio's
   four-column desktop layout (Architect · Editor · Preview · Inspector) can now

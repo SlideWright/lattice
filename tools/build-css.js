@@ -115,12 +115,14 @@ const CHART_FAMILY_SOURCE = 'lib/components/chart/_chart-family/chart-family.css
 // 27 utility classes (12 tints + 11 marks + treatment-none reset) for
 // peripheral atmospheric accents. All palette-blind via var(--accent).
 const TREATMENTS_SOURCE = 'lib/base/base.treatments.css';
-// Parametric full-bleed FINISH backdrops (the `field` zone of the Finish
-// family): pure-gradient, palette-blind, export-safe surface treatments selected
-// deck-wide via the `finish:` register or per-slide via `_class: backdrop …`.
-// Bundled immediately after treatments so it shares the compositor's two slots
-// (the compositor selector matches `.backdrop`). See base.backdrops.css.
-const BACKDROPS_SOURCE = 'lib/base/base.backdrops.css';
+// The layered FINISH presets (the `field` zone of the Finish family): 5 premium
+// stacked-layer surface treatments built on a per-role custom-property compositor
+// (--fin-wash / --fin-texture / --fin-mark / --fin-edge). Pure-gradient,
+// palette-blind, export-safe (no mask/url). Selected deck-wide via the `finish:`
+// register or per-slide via `_class: finish finish-<name>`. Bundled after
+// treatments; the base `finish` class carries its own compositor (independent of
+// the tint/mark slots). See base.finish.css.
+const BACKDROPS_SOURCE = 'lib/base/base.finish.css';
 // Focus & highlighting — the `.lat-focus` / `.lat-recede` treatment contract
 // (content-aware default by axis + spotlight/ring/list-fill variants), keyed on
 // the tags the focus resolver (lib/transformers/focus.js) stamps. Palette-blind

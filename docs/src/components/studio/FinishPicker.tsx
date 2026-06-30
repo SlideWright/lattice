@@ -43,7 +43,7 @@ const LABEL = 'font-mono text-[10px] uppercase tracking-wider text-muted-foregro
 
 /**
  * The grouped finish list, rendered inside any `<DropdownMenuContent>`:
- * Plain (boardroom / sketch) → Backdrops (the field finishes). `finish` is the
+ * Plain (boardroom / sketch) → Finishes (the layered field presets). `finish` is the
  * active deck `finish:` value. (Saved custom finishes from the faculty are
  * Export-only in v1 — listing them here is the next slice.)
  */
@@ -51,15 +51,15 @@ export function FinishMenuItems({
 	finish, onPick,
 }: { finish: string; onPick: (name: string) => void }) {
 	const plain = FINISHES.filter((f) => f.group === 'plain');
-	const backdrops = FINISHES.filter((f) => f.group === 'backdrop');
+	const presets = FINISHES.filter((f) => f.group === 'finish');
 	const active = activeFinish(finish).name;
 	return (
 		<>
 			<DropdownMenuLabel className={LABEL}>Plain</DropdownMenuLabel>
 			{plain.map((f) => <FinishItem key={f.name} entry={f} active={f.name === active} onPick={onPick} />)}
 			<DropdownMenuSeparator />
-			<DropdownMenuLabel className={LABEL}>Backdrops</DropdownMenuLabel>
-			{backdrops.map((f) => <FinishItem key={f.name} entry={f} active={f.name === active} onPick={onPick} />)}
+			<DropdownMenuLabel className={LABEL}>Finishes</DropdownMenuLabel>
+			{presets.map((f) => <FinishItem key={f.name} entry={f} active={f.name === active} onPick={onPick} />)}
 		</>
 	);
 }

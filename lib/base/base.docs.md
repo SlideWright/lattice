@@ -14,7 +14,7 @@ that any component can opt into.
 | `base.variants.css` | Universal opt-in variants — `dark`, `mirror`, `numbered`, `silent`, state markers, tone tokens. Composed via `_class:`. |
 | `base.treatments.css` | 27 treatment utility classes — 12 tints (`tint-corner at-tl`, `tint-vignette`, etc.) and 11 marks (`mark-orbit`, `mark-seeds`, etc.) plus `treatment-none` — for peripheral atmospheric accents. |
 | `base.sketch.css` | The `sketch` finish modifier — a deck-wide hand-drawn skin (handwriting type + drawn boxes). Palette-blind; composed via `class:` / `_class:`. |
-| `base.backdrops.css` | The `field` zone of the Finish family — 5 full-bleed parametric backdrops (`backdrop-wash/aurora/blueprint/dots/hatch` + `backdrop-none`). Pure `color-mix(var(--accent))` gradients (no masks, export-safe; no `url()`). Selected deck-wide via the `finish:` register or per-slide via `_class: backdrop …`. See `engineering/decisions/2026-06-30-finish-the-surface-layer.md`. |
+| `base.finish.css` | The `field` zone of the Finish family — 5 premium **stacked-layer** finish presets (`finish-atrium/meridian/strata/halo/ledger`) on a per-role custom-property compositor (`--fin-wash`/`--fin-texture`/`--fin-mark`/`--fin-edge`), so layers combine by z-index instead of being either/or. `finish-none` (or back-compat `backdrop-none`) opts a slide out. Pure `color-mix(var(--accent)/var(--bg))` gradients (no masks, export-safe; no `url()`). Selected deck-wide via the `finish:` register or per-slide via `_class: finish finish-<name>`. See `engineering/decisions/2026-06-30-finish-the-surface-layer.md`. |
 
 ---
 
@@ -506,6 +506,27 @@ the baseline.
 | `boardroom` | *(no class)* | The baseline — clean type, square boxes. The default when `finish:` is omitted. |
 | `sketch` | `sketch` | Full handwriting (headings **and** body) + drawn boxes. |
 | `sketch-clean` | `sketch sketch-clean-body` | Keep hand headings + boxes; return prose to the clean `--font-body` for text-dense slides. |
+| `atrium` | `finish finish-atrium` | Corner glow + a fine grid + a left margin rule. |
+| `meridian` | `finish finish-meridian` | Diagonal duotone wash + contour lines + an oversized ghost numeral. |
+| `strata` | `finish finish-strata` | Soft horizontal bands + a dot-matrix + a top hairline & corner tick. |
+| `halo` | `finish finish-halo` | Centered spotlight + concentric rings + a vignette (a section/closing treatment). |
+| `ledger` | `finish finish-ledger` | Fine horizontal ruled lines + a bold left margin bar + a top-right corner fold. |
+
+The five `finish-*` presets are the **`field` zone** of the Finish family — a
+z-index STACK of palette-blind, export-safe gradient layers painted behind
+content (`lib/base/base.finish.css`). The base `finish` class carries the layer
+compositor (`--fin-wash`/`--fin-texture`/`--fin-mark`/`--fin-edge`); each preset
+sets those per-role props, so a future right-panel designer can drive any single
+layer. Take one slide out of a deck-wide finish with `<!-- _class: finish-none -->`
+(the back-compat `backdrop-none` is an alias); a per-slide `finish-<name>`
+**overrides** the deck finish rather than stacking on it.
+
+Every full-bleed gradient fades **opaque-to-opaque** (`color-mix(var(--accent)
+N%, var(--bg))` → `var(--bg)`), never to `transparent`. This is load-bearing for
+export: Chromium's print-to-PDF encodes an alpha area-fade so PDF rasterizers
+interpolate toward transparent-black → a gray cloud (the browser hides it, the
+PDF does not). Patterns are therefore uniform and faint (thin opaque lines with
+`transparent` gaps), not directionally faded.
 
 The register is **open** (defined in `lib/core/resolve-finish.js`) and read by
 all three render paths. An unrecognized value (e.g. `finish: sketchh`) resolves

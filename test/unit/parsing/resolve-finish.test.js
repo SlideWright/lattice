@@ -26,17 +26,17 @@ describe('resolve-finish', () => {
     assert.equal(finishClasses('boardroom'), '', 'boardroom is the no-class baseline');
   });
 
-  test('backdrop finishes map to the backdrop base class + their variant', () => {
-    assert.equal(finishClasses('wash'), 'backdrop backdrop-wash');
-    assert.equal(finishClasses('aurora'), 'backdrop backdrop-aurora');
-    assert.equal(finishClasses('blueprint'), 'backdrop backdrop-blueprint');
-    assert.equal(finishClasses('dots'), 'backdrop backdrop-dots');
-    assert.equal(finishClasses('hatch'), 'backdrop backdrop-hatch');
-    // every backdrop finish carries the base `backdrop` token (the compositor hook)
-    for (const name of ['wash', 'aurora', 'blueprint', 'dots', 'hatch']) {
+  test('finish presets map to the finish base class + their preset variant', () => {
+    assert.equal(finishClasses('atrium'), 'finish finish-atrium');
+    assert.equal(finishClasses('meridian'), 'finish finish-meridian');
+    assert.equal(finishClasses('strata'), 'finish finish-strata');
+    assert.equal(finishClasses('halo'), 'finish finish-halo');
+    assert.equal(finishClasses('ledger'), 'finish finish-ledger');
+    // every finish preset carries the base `finish` token (the compositor hook)
+    for (const name of ['atrium', 'meridian', 'strata', 'halo', 'ledger']) {
       assert.ok(
-        finishClasses(name).split(/\s+/).includes('backdrop'),
-        `${name} must include the base backdrop class`,
+        finishClasses(name).split(/\s+/).includes('finish'),
+        `${name} must include the base finish class`,
       );
     }
   });
@@ -67,7 +67,7 @@ describe('resolve-finish', () => {
   test('FINISH_NAMES lists exactly the registered names', () => {
     assert.deepEqual(
       [...FINISH_NAMES].sort(),
-      ['aurora', 'blueprint', 'boardroom', 'dots', 'hatch', 'sketch', 'sketch-clean', 'wash'],
+      ['atrium', 'boardroom', 'halo', 'ledger', 'meridian', 'sketch', 'sketch-clean', 'strata'],
     );
   });
 
@@ -79,31 +79,31 @@ describe('resolve-finish', () => {
 
   // The catalog rot-guard (decision doc: "finish→primitive map is a single gated
   // source of truth — every finish resolves to a live class, every shipped
-  // backdrop class is reachable from a finish"). FINISH_REGISTER is that source;
-  // this test is the gate keeping it in sync with base.backdrops.css.
-  test('every backdrop finish class resolves to a real CSS rule, and vice versa', () => {
+  // finish preset class is reachable from a finish"). FINISH_REGISTER is that
+  // source; this test is the gate keeping it in sync with base.finish.css.
+  test('every finish preset class resolves to a real CSS rule, and vice versa', () => {
     const css = fs.readFileSync(
-      path.join(__dirname, '../../../lib/base/base.backdrops.css'),
+      path.join(__dirname, '../../../lib/base/base.finish.css'),
       'utf8',
     );
-    // The backdrop-* classes the register maps to.
+    // The finish-* preset classes the register maps to.
     const registered = new Set();
     for (const tokens of Object.values(FINISH_REGISTER)) {
       for (const cls of tokens.split(/\s+/).filter(Boolean)) {
-        if (cls.startsWith('backdrop-')) registered.add(cls);
+        if (cls.startsWith('finish-')) registered.add(cls);
       }
     }
-    // The backdrop-* classes the CSS actually defines (section.backdrop-x rules).
+    // The finish-* classes the CSS actually defines (section.finish-x rules).
     const defined = new Set(
-      [...css.matchAll(/section\.(backdrop-[\w-]+)\b/g)].map((m) => m[1]),
+      [...css.matchAll(/section\.(finish-[\w-]+)\b/g)].map((m) => m[1]),
     );
     // Every registered class must have a rule.
     for (const cls of registered) {
-      assert.ok(defined.has(cls), `finish maps to .${cls} but base.backdrops.css has no rule`);
+      assert.ok(defined.has(cls), `finish maps to .${cls} but base.finish.css has no rule`);
     }
     // Every defined class must be reachable from a finish, EXCEPT the documented
-    // per-slide-only escape `backdrop-none` (not a deck finish).
-    const escapes = new Set(['backdrop-none']);
+    // per-slide-only escape `finish-none` (not a deck finish).
+    const escapes = new Set(['finish-none']);
     for (const cls of defined) {
       if (escapes.has(cls)) continue;
       assert.ok(registered.has(cls), `.${cls} defined but unreachable from any finish (rot)`);
