@@ -1,5 +1,6 @@
-import { Cloud, Cpu, Download, ExternalLink, FolderTree, KeyRound, MessageSquareText, Plug, Sparkles, Wallet, Zap } from 'lucide-react';
+import { Cloud, Cpu, Download, ExternalLink, FolderTree, KeyRound, Languages, MessageSquareText, Plug, Sparkles, Wallet, Zap } from 'lucide-react';
 import * as React from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { readDedupEnabled, writeDedupEnabled } from '@/playground/drawing-board-settings.js';
@@ -7,6 +8,8 @@ import { fmtPrice, fmtTokens, fmtUSD } from '@/playground/or-catalog.js';
 import { architectSpend, connectOpenRouter, disconnectOpenRouter, setBudget, setStudioTier, useArchitectStatus } from './architect';
 import { ModelPicker } from './ModelPicker';
 import { OnDeviceTier } from './OnDeviceTier';
+import { languageFor, STUDIO_LANGUAGES } from './studio-language';
+import { loadInstructions, loadSettings, saveInstructions, saveSettings } from './studio-store';
 
 const pct = (used: number, total: number) => (total > 0 ? Math.min(100, Math.max(0, (used / total) * 100)) : 0);
 
@@ -34,13 +37,9 @@ export function WorkspaceSheet({ open, onOpenChange, notify }: { open: boolean; 
 	const ai = useArchitectStatus(pulse);
 	const [genView, setGenView] = React.useState<GenView>('cloud');
 	const userPickedView = React.useRef(false);
-	const [instructions, setInstructions] = React.useState(() => {
-		try {
-			return localStorage.getItem('lattice-studio-instructions') ?? 'Default to a confident, board-ready voice. Lead each slide with the number. Avoid hedging.';
-		} catch {
-			return '';
-		}
-	});
+	const [instructions, setInstructions] = React.useState(loadInstructions);
+	// The AI output language (seeded from the browser the first time; see studio-store).
+	const [language, setLanguage] = React.useState(() => loadSettings().language);
 	const [storeInCloud, setStoreInCloud] = React.useState(false);
 	const [connecting, setConnecting] = React.useState(false);
 	const [spend, setSpend] = React.useState(() => architectSpend());
@@ -214,23 +213,44 @@ export function WorkspaceSheet({ open, onOpenChange, notify }: { open: boolean; 
 
 					{tab === 'Instructions' && (
 						<div>
-							<GroupLabel icon={<MessageSquareText className="size-3.5" />}>Standing instructions</GroupLabel>
-							<p className="mb-2 text-xs text-muted-foreground">Saved with your workspace; sent with every generation.</p>
-							<textarea
-								value={instructions}
-								onChange={(e) => {
-									setInstructions(e.target.value);
-									try {
-										localStorage.setItem('lattice-studio-instructions', e.target.value);
-									} catch {
-										/* non-fatal */
-									}
+							<GroupLabel icon={<Languages className="size-3.5" />}>Output language</GroupLabel>
+							<p className="mb-2 text-xs text-muted-foreground">The language the AI writes deck content in — slides, refine, and chat. Component and theme names stay in English.</p>
+							<Select
+								value={language}
+								onValueChange={(v) => {
+									setLanguage(v);
+									saveSettings({ language: v });
+									notify(`The AI now writes deck content in ${languageFor(v).label}.`);
 								}}
-								rows={5}
-								aria-label="Standing instructions"
-								className="w-full resize-none rounded-xl border border-border bg-background p-3 text-[13px] leading-relaxed text-foreground outline-none focus:border-[var(--accent)]"
-							/>
-							<div className="mt-1 text-right font-mono text-[11px] text-muted-foreground">{instructions.length} chars · saved</div>
+							>
+								<SelectTrigger className="w-full" aria-label="Output language">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									{STUDIO_LANGUAGES.map((l) => (
+										<SelectItem key={l.code} value={l.code}>
+											{l.label}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+
+							<div className="mt-5">
+								<GroupLabel icon={<MessageSquareText className="size-3.5" />}>Standing instructions</GroupLabel>
+								<p className="mb-2 text-xs text-muted-foreground">A standing voice note, sent with every generation. Leave blank for none.</p>
+								<textarea
+									value={instructions}
+									onChange={(e) => {
+										setInstructions(e.target.value);
+										saveInstructions(e.target.value);
+									}}
+									rows={5}
+									placeholder="e.g. Confident, board-ready voice. Lead each slide with the number. Avoid hedging."
+									aria-label="Standing instructions"
+									className="w-full resize-none rounded-xl border border-border bg-background p-3 text-[13px] leading-relaxed text-foreground outline-none placeholder:text-muted-foreground focus:border-[var(--accent)]"
+								/>
+								<div className="mt-1 text-right font-mono text-[11px] text-muted-foreground">{instructions.length} chars · saved</div>
+							</div>
 
 							<div className="mt-5">
 								<GroupLabel icon={<Sparkles className="size-3.5" />}>Component generation</GroupLabel>

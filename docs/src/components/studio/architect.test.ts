@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { applyDeckEdit, architectSpend, estimateUsd, generateComponent, generateTheme, normalizeGeneration, refineSelection, requestFindingFix, runArchitect, setBudget } from './architect';
+import { applyDeckEdit, architectSpend, estimateUsd, generateComponent, generateTheme, normalizeGeneration, refineSelection, requestFindingFix, runArchitect, setBudget, withStudioVoice } from './architect';
 import { suggestFor } from './Editor';
+import { saveInstructions, saveSettings } from './studio-store';
 
 afterEach(() => {
 	try {
@@ -8,6 +9,46 @@ afterEach(() => {
 	} catch {
 		/* no storage */
 	}
+});
+
+// withStudioVoice merges the output-language directive (+ standing instructions)
+// into the system turn of DECK-CONTENT calls — the prose paths only. The structural
+// generators (theme/component) never see it, so their slugs/CSS stay English.
+describe('withStudioVoice — language + instructions injection', () => {
+	it('folds the language directive into an existing system turn', () => {
+		saveSettings({ language: 'en-GB' });
+		const out = withStudioVoice([
+			{ role: 'system', content: 'BASE' },
+			{ role: 'user', content: 'hi' },
+		]);
+		expect(out[0].role).toBe('system');
+		expect(out[0].content).toContain('BASE');
+		expect(out[0].content).toContain('English (United Kingdom)');
+		expect(out[0].content).toContain('British spelling');
+		expect(out[1]).toEqual({ role: 'user', content: 'hi' }); // user turn untouched
+	});
+
+	it('creates a system turn when none exists', () => {
+		saveSettings({ language: 'fr-FR' });
+		const out = withStudioVoice([{ role: 'user', content: 'hi' }]);
+		expect(out[0].role).toBe('system');
+		expect(out[0].content).toContain('French');
+		expect(out).toHaveLength(2);
+	});
+
+	it('appends standing instructions when set, omits them when blank', () => {
+		saveSettings({ language: 'en-US' });
+		saveInstructions('Be terse.');
+		expect(withStudioVoice([{ role: 'system', content: 'X' }])[0].content).toContain('Be terse.');
+		saveInstructions('');
+		expect(withStudioVoice([{ role: 'system', content: 'X' }])[0].content).not.toContain('Be terse.');
+	});
+
+	it('does not mutate the input array', () => {
+		const input = [{ role: 'system', content: 'X' }];
+		withStudioVoice(input);
+		expect(input[0].content).toBe('X');
+	});
 });
 
 // The universal Transformers.js backend's active name is 'transformers', but the

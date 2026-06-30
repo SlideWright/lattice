@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { DECKS } from './decks';
-import { createDeck, deleteDeck, loadCheckpoints, loadDeckList, loadSettings, loadSource, metaFor, renameDeck, saveCheckpoint, saveSettings, saveSource, titleFromSource } from './studio-store';
+import { createDeck, deleteDeck, loadCheckpoints, loadDeckList, loadInstructions, loadSettings, loadSource, metaFor, renameDeck, saveCheckpoint, saveInstructions, saveSettings, saveSource, titleFromSource } from './studio-store';
 
 afterEach(() => localStorage.clear());
 
@@ -72,9 +72,32 @@ describe('studio-store — titleFromSource', () => {
 
 describe('studio-store — settings', () => {
 	it('defaults then round-trips', () => {
-		expect(loadSettings()).toEqual({ validation: true, pageNumbers: true, headerFooter: false });
+		expect(loadSettings()).toMatchObject({ validation: true, pageNumbers: true, headerFooter: false });
 		saveSettings({ pageNumbers: false });
 		expect(loadSettings().pageNumbers).toBe(false);
 		expect(loadSettings().validation).toBe(true); // untouched keys keep defaults
+	});
+
+	it('seeds language from the browser the first time, then honors the saved pick', () => {
+		// No saved value → detected (jsdom navigator resolves to a supported code).
+		const seeded = loadSettings().language;
+		expect(typeof seeded).toBe('string');
+		expect(seeded.length).toBeGreaterThan(0);
+		// An explicit pick persists and overrides detection on later reads.
+		saveSettings({ language: 'fr-FR' });
+		expect(loadSettings().language).toBe('fr-FR');
+		// And it survives an unrelated settings write (no re-detect clobber).
+		saveSettings({ validation: false });
+		expect(loadSettings().language).toBe('fr-FR');
+	});
+});
+
+describe('studio-store — standing instructions', () => {
+	it('round-trips a raw (non-JSON) string, empty by default', () => {
+		expect(loadInstructions()).toBe('');
+		saveInstructions('Be terse.');
+		expect(loadInstructions()).toBe('Be terse.');
+		// Stored verbatim — the format the drawer has always written.
+		expect(localStorage.getItem('lattice-studio-instructions')).toBe('Be terse.');
 	});
 });
