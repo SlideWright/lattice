@@ -40,6 +40,13 @@ if (typeof window !== 'undefined') {
 	// an empty constructor body that lint would call useless.
 	if (!('ResizeObserver' in window)) {
 		class ResizeObserverStub {
+			// Keep the callback the real ResizeObserver takes — a faithful 1-arg
+			// signature (not a zero-arg class), so `new ResizeObserver(cb)` in app code
+			// reads as correct. jsdom has no layout, so it's never invoked.
+			readonly callback: ResizeObserverCallback;
+			constructor(callback: ResizeObserverCallback) {
+				this.callback = callback;
+			}
 			observe() {}
 			unobserve() {}
 			disconnect() {}
