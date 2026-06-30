@@ -408,6 +408,15 @@ async function rasterizeSection(section, fontEmbedCSS) {
 		section.style.borderImageSource = 'none';
 		section.style.borderTopColor = 'transparent';
 	}
+	// Force the finish OPAQUE (export-safe) face for the raster. A finish shows its
+	// RICH screen face by default — directional alpha fades the browser composites
+	// fine, but html-to-image can mis-serialize (color-mix / fade-to-transparent), and
+	// the rich face isn't PDF/PPTX-clean anyway. `.lattice-exporting` flips every
+	// finish slot to its opaque mirror (base.finish.css). It must sit ON the section:
+	// html-to-image clones the section + its descendants only (NOT its ancestors), so
+	// a root-only class would be dropped in the clone. Removed in the finally.
+	const hadExporting = section.classList.contains('lattice-exporting');
+	if (!hadExporting) section.classList.add('lattice-exporting');
 	// Defeat the preview's lazy-render gates (content-visibility virtualization +
 	// the `.lattice` visibility reveal) so html-to-image rasterizes a laid-out,
 	// painted slide even when the preview was never shown (phone Edit-tab export).
@@ -436,6 +445,7 @@ async function rasterizeSection(section, fontEmbedCSS) {
 		section.style.backgroundPosition = prev.backgroundPosition;
 		section.style.backgroundSize = prev.backgroundSize;
 		restoreVisibility();
+		if (!hadExporting) section.classList.remove('lattice-exporting');
 	}
 }
 

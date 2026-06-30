@@ -80,6 +80,23 @@ in patch versions.
   The Studio Inspector's swatch-previewed **Finish** field (grouped Plain /
   Finishes) writes the register. Demo: `examples/finish-backdrops.md`. See
   `engineering/decisions/2026-06-30-finish-the-surface-layer.md`.
+- **Finishes are now rich-on-screen and safe-on-export — a dual-variant per
+  preset.** On screen (live preview, presenter, web, docs) each finish shows the
+  richer "dissolving" look of the mockups: the pattern fades directionally toward
+  a corner, a glow blooms to nothing, rings thin out — fades that run to
+  `transparent` (alpha), which the browser composites perfectly. For any export
+  the engine automatically falls back to the **opaque** look (every full-bleed
+  fade ends on `var(--bg)`, patterns uniform-faint) — the only PDF-clean form,
+  since Chromium's print-to-PDF bakes an alpha area-fade into a gray cloud. The
+  rich value is each preset's slot default; an `--fin-*-opaque` mirror per preset
+  holds the export value, and a single guarded block re-points the slots for
+  **both** export paths — `@media print` (the CLI vector PDF) and
+  `.lattice-exporting` (the Studio html-to-image raster, which now tags each
+  section before capture so the clone inherits the opaque face). The two guards
+  share one declaration list and the opaque values live only on the presets, so
+  the faces can't drift. Both faces stay palette-blind with NO `mask`/`url()`/hex/
+  `margin`; only the screen face uses alpha, and only where it never reaches a
+  PDF. Fabricated finishes (`generateFinishCss`) emit the same dual variant.
 - **Finish faculty — a right-panel layer designer in the Studio, a sibling of the
   Theme + Component studios.** The Fabricate "Finish" tab is now a real designer
   rather than a slider tool: a live preview specimen in the center, a **right-panel

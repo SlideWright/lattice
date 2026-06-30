@@ -24,42 +24,90 @@ const everyRecipe = (): FinishRecipe[] => {
 };
 
 describe('finish-generate', () => {
-	it('emits a section.finish.finish-<slug> rule that drives the engine compositor', () => {
+	it('emits a rich screen rule + a @media print + .lattice-exporting opaque override', () => {
 		const css = generateFinishCss('my-finish', DEFAULT_RECIPE);
+		// The RICH (screen default) rule comes first and drives the engine compositor.
 		expect(css.startsWith('section.finish.finish-my-finish {')).toBe(true);
 		// All four engine layer slots are declared (self-defining — never inherits).
 		expect(css).toContain('--fin-wash:');
 		expect(css).toContain('--fin-texture:');
 		expect(css).toContain('--fin-mark:');
 		expect(css).toContain('--fin-edge:');
+		// BOTH export guards are present, each re-pointing the full-bleed slots. The
+		// export-class guard matches an ancestor OR the section itself (the latter is
+		// load-bearing for the html-to-image raster, which clones the section only).
+		expect(css).toContain('@media print {');
+		expect(css).toContain(':where(.lattice-exporting) section.finish.finish-my-finish');
+		expect(css).toContain('section.finish.finish-my-finish.lattice-exporting {');
 	});
 
-	// Pull one slot's value out of the generated rule (e.g. `--fin-wash`). The slot
-	// value runs to the terminating `;` (color-mix has no `;` inside it).
+	// Split the generated CSS into the SCREEN block (the leading `section…{…}` rule,
+	// before the first `@media`) and the EXPORT blocks (`@media print` + the
+	// `.lattice-exporting` rule). The export face is what bakes into a PDF/PPTX.
+	const screenBlock = (css: string): string => css.slice(0, css.indexOf('@media print'));
+	const exportBlocks = (css: string): string => css.slice(css.indexOf('@media print'));
+	// Pull one slot's value out of a rule (e.g. `--fin-wash`). The slot value runs to
+	// the terminating `;` (color-mix has no `;` inside it).
 	const slotValue = (css: string, slot: string): string => new RegExp(`--${slot}:([^;]*)`).exec(css)?.[1] ?? '';
 
-	it('is export-safe + exfil-safe for EVERY layer type: no full-bleed transparent fade, no mask, no url(, no hex', () => {
+	it('the EXPORT face is export-safe for EVERY layer type: no full-bleed transparent fade, no mask/url/hex/margin', () => {
 		for (const r of everyRecipe()) {
 			const css = generateFinishCss('x', r);
-			// OPAQUE-TO-OPAQUE — the load-bearing PDF rule (base.finish.css header). The
-			// FULL-BLEED slots (wash z1, edge z4) must fade opaque→opaque: NO `transparent`
-			// (a 0-alpha area fade grays into a muddy cloud in PDF export). Every stop is a
-			// var(--accent)-mix or a var(--bg)/var(--ink) value.
-			expect(slotValue(css, 'fin-wash'), `transparent in the full-bleed WASH: ${css}`).not.toMatch(/transparent/);
-			expect(slotValue(css, 'fin-edge'), `transparent in the full-bleed EDGE: ${css}`).not.toMatch(/transparent/);
-			// The ONLY sanctioned `transparent` is a thin stripe/dot GAP in the tiled
-			// texture (a hard 1px stop, not an area fade) — and even then only as a HARD
-			// length stop, never a percentage area fade.
-			const tex = slotValue(css, 'fin-texture');
-			if (/transparent/.test(tex)) {
-				expect(tex, `texture transparent must be a hard length stop, not a % area fade: ${tex}`).not.toMatch(/transparent\s+\d+%/);
-			}
+			const exp = exportBlocks(css);
+			// OPAQUE-TO-OPAQUE — the load-bearing PDF rule (base.finish.css header). In the
+			// EXPORT blocks the FULL-BLEED slots (wash z1, edge z4) must fade opaque→opaque:
+			// NO `transparent` (a 0-alpha area fade grays into a muddy cloud in PDF export).
+			expect(slotValue(exp, 'fin-wash'), `transparent in the EXPORT full-bleed WASH: ${exp}`).not.toMatch(/transparent/);
+			expect(slotValue(exp, 'fin-edge'), `transparent in the EXPORT full-bleed EDGE: ${exp}`).not.toMatch(/transparent/);
+			// The TEXTURE also flips to opaque on export (it's face-variant — the rich face
+			// mixes the line/dot into `transparent`). In the export block, every color-mix in
+			// the texture must mix into var(--bg), never into `transparent`; the ONLY allowed
+			// `transparent` is the hard 1px stripe/dot GAP, never a `transparent <pct>%` fade.
+			const expTex = slotValue(exp, 'fin-texture');
+			expect(expTex, `EXPORT texture must mix the pattern into var(--bg), not transparent: ${expTex}`).not.toMatch(/transparent\)/);
+			expect(expTex, `EXPORT texture must not area-fade to transparent: ${expTex}`).not.toMatch(/transparent\s+\d+%/);
+			// No mask/url/hex/margin in EITHER face (whole CSS).
 			expect(css, 'mask drops in PDFKit').not.toMatch(/\bmask/i);
 			expect(css, 'url() adds exfil surface').not.toMatch(/url\(/i);
 			expect(css, 'hex literal violates HARD RULE #3').not.toMatch(/#[0-9a-f]{3,8}\b/i);
 			expect(css, 'margin violates HARD RULE #20').not.toMatch(/(^|[\s;{])margin\b/i);
 			// Palette-blind — color comes only through var()/color-mix.
 			expect(css).toMatch(/var\(--accent\)|var\(--bg\)|var\(--ink/);
+		}
+	});
+
+	it('a fabricated TEXTURE finish flips its texture to opaque on export (matching the presets)', () => {
+		// A grid texture, no wash/edge — the rich screen face mixes the lines into
+		// `transparent`; the export face (both @media print and .lattice-exporting) must
+		// mix them into var(--bg) instead, so the pattern bakes opaque-clean.
+		const css = generateFinishCss('grid-only', {
+			wash: { type: 'none', intensity: 10 },
+			texture: { type: 'grid', intensity: 9, scale: 30 },
+			mark: { type: 'none', placement: 'center' },
+			edge: { type: 'none', intensity: 6 },
+		});
+		const exp = exportBlocks(css);
+		// The export block re-declares the texture, and its color mixes into var(--bg).
+		expect(exp).toContain('--fin-texture:');
+		expect(slotValue(exp, 'fin-texture')).toContain('var(--bg)');
+		expect(slotValue(exp, 'fin-texture'), 'export texture line color must be opaque, not alpha').not.toMatch(/transparent\)/);
+		// The screen (rich) texture, by contrast, DOES mix into transparent.
+		expect(slotValue(screenBlock(css), 'fin-texture')).toMatch(/transparent\)/);
+	});
+
+	it('the SCREEN face may use alpha fades (rich look) but still NO mask/url/hex/margin', () => {
+		for (const r of everyRecipe()) {
+			const css = generateFinishCss('x', r);
+			const screen = screenBlock(css);
+			// Screen is allowed alpha (fade-to-transparent / color-mix into transparent) —
+			// it's composited by the browser, never baked into a PDF. No assertion against
+			// `transparent` here (that's the whole point of the rich variant).
+			// But the screen face is still exfil/palette safe.
+			expect(screen, 'mask drops in PDFKit').not.toMatch(/\bmask/i);
+			expect(screen, 'url() adds exfil surface').not.toMatch(/url\(/i);
+			expect(screen, 'hex literal violates HARD RULE #3').not.toMatch(/#[0-9a-f]{3,8}\b/i);
+			expect(screen, 'margin violates HARD RULE #20').not.toMatch(/(^|[\s;{])margin\b/i);
+			expect(screen).toMatch(/var\(--accent\)|var\(--bg\)|var\(--ink/);
 		}
 	});
 
@@ -73,8 +121,11 @@ describe('finish-generate', () => {
 
 	it('intensity + scale flow into the output as numbers', () => {
 		const css = generateFinishCss('a', { wash: { type: 'corner-glow', intensity: 14 }, texture: { type: 'grid', intensity: 9, scale: 32 }, mark: { type: 'none', placement: 'center' }, edge: { type: 'none', intensity: 6 } });
-		expect(css).toContain('var(--accent) 14%');
-		expect(css).toContain('var(--accent) 9%');
+		// The EXPORT (opaque) wash carries the literal intensity (no rich lift).
+		expect(exportBlocks(css)).toContain('var(--accent) 14%');
+		// The SCREEN (rich) wash lifts the accent a touch (alpha falloff): 14 → 17.
+		expect(screenBlock(css)).toContain('var(--accent) 17%');
+		// Scale flows through (face-invariant) on the screen texture.
 		expect(css).toContain('32px');
 	});
 
