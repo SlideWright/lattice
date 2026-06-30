@@ -261,9 +261,19 @@ in patch versions.
   the existing tokens (`background:var(--text-heading); color:var(--bg)`), status/traffic-light
   dots are `--fail`/`--warn`/`--pass`, and a material tint (post-it yellow, kraft, a colored
   stamp) is `color-mix(in srgb, var(--cat-3-mark) 12-22%, var(--bg))` over the categorical ramp.
-  Re-running the same 15-prompt creative stress set after the change cut margin/hex gate
-  failures sharply. Generator guidance only — no gate or runtime change. Validation report on
-  `#639`; canon rationale in `engineering/decisions/2026-06-29-ai-component-generation.md` §11.
+  **Evidence (honest scope):** the *mechanism* is verified deterministically — when the model
+  follows the new canon it adopts the exact taught idioms in the previously-failing components
+  (terminal: 15 hex → **0**, via `--fail`/`--warn`/`--pass` + the inverted-token surface;
+  stickynotes: 2 hex → 0, via `color-mix`; polaroid/boarding-pass/luggage-tag: margin → `transform`).
+  **Hex** is strongly addressed (the named token path removes it); **margin** only partially
+  (a few prompts still reach for it). A single before/after run showed gate-failures fall 9/15 →
+  3/15, but that is *suggestive, not controlled* — sampling variance is large (the same prompt
+  yields a 9/10 and a 3/10 draw), and gate-clean is not the same as good (a gate-clean draft can
+  still mis-fit, see `#643`). A controlled K≥5 old-vs-new trial to isolate the rate is **pending an
+  OpenRouter budget refill** (the run hit the account cap). Generator guidance only — no gate or
+  runtime change; the frozen adversarial eval stays 18/18. Validation report on `#639`; canon
+  rationale + the deferred statistical check in
+  `engineering/decisions/2026-06-29-ai-component-generation.md` §11.
 - **Studio component gate now enforces margin discipline (#20) and token typography
   (#4) — the design-audit (#610).** The local/AI component authoring gate
   (`lib/layout/gate.js` `gateCss`) previously checked only hex/scope/exfil, so a draft

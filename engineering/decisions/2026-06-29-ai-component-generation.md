@@ -487,9 +487,24 @@ All three pillars landed, faithful to the design above:
   play is a `transform`** (`rotate()`/`translate()` to scatter/overlap/hang/tilt — never a `margin`), and
   **every concept color has a token recipe** (a dark console inverts `--text-heading`/`--bg`; traffic-light
   dots are `--fail`/`--warn`/`--pass`; a material tint is `color-mix(in srgb, var(--cat-3-mark) 12-22%,
-  var(--bg))` over the categorical ramp). Re-running the identical 15-prompt set cut margin/hex gate failures
-  from **9/15 → 3/15** (gate-clean 6 → 11), with the targeted components flipping FAIL→OK while preserving
-  their identity (terminal stays a 9/10 dark console with zero hex). Generator guidance only — no gate or
-  runtime change. A **separate, softer fit/overflow finding** (odd shapes — honeycomb overflow, stamp/filmstrip
-  dead-space, polaroid/luggagetag/maptrail broken) is logged as its own follow-up, kept off this PR's path
-  (#18/#17). Full report + PNGs on #639.
+  var(--bg))` over the categorical ramp). Generator guidance only — no gate or runtime change; the frozen
+  adversarial eval stays **18/18**.
+  - **Evidence — what is and isn't proven (a red-team pass corrected the first draft's overclaim).** The
+    *mechanism* is established **deterministically** (no sampling involved): when the model follows the new
+    canon it adopts the exact taught idioms in the components that previously failed — terminal **15 hex → 0**
+    (via `--fail`/`--warn`/`--pass` + the inverted-token surface), stickynotes **2 hex → 0** (via `color-mix`),
+    polaroid/boarding-pass/luggage-tag margin → `transform`; **5 of 7 FAIL→OK flips** use the named recipes.
+    So **hex is strongly addressed** (the token path removes the reason to reach for it) and **margin only
+    partially** (receipt/ticketstub/maptrail still reach for it; the few controlled calls that landed showed
+    NEW failures were *all* margin, zero hex). What is **NOT** established is the population-level *rate*: a
+    single before/after run showed gate-failures 9/15 → 3/15, but that is **confounded by large sampling
+    variance** — the same prompt under the same canon yields a 9/10 and a 3/10 draw (the after-canon
+    boarding-pass is gate-clean yet a 3/10, *worse* than the gate-failing 9/10 before-draw), so a single
+    n=1-vs-n=1 comparison cannot attribute the drop to the canon. And **gate-clean ≠ good**: the count moved
+    6 → 11 but several newly-clean drafts are 5–7/10 with residual fit/overflow (see #643), so "preserved
+    identity" holds for terminal, not universally. **Deferred:** a controlled **K≥5 old-vs-new** trial to
+    isolate the rate (`.scratch/stress/redteam.mjs`) — it hit the OpenRouter account cap (HTTP 402) after 14
+    calls and is **pending a budget refill**. PR **#644** is held until that lands.
+  - A **separate, softer fit/overflow finding** (odd shapes — honeycomb overflow, stamp/filmstrip
+    dead-space, polaroid/luggagetag/maptrail broken) is logged as its own follow-up (#643), kept off this
+    PR's path (#18/#17). Full report + PNGs on #639.
