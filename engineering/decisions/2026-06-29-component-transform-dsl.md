@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: in-progress
 summary: The declarative transform DSL the threat-model gate (2026-06-29-component-transformer-threat-model.md) requires — the safe way to give designers/AI the "magic" first-party transformers do, without user JS. A component manifest gains a `transform` field: an ordered list of `match → do` RULES the engine interprets identically across all three render paths. REVISED after an adversarial red-team + an independent assessment, which agreed the core is sound but the first draft oversold two claims. Honest scope: the declarative surface covers ONLY the safe STRUCTURAL-TAGGING / RE-PARENTING subset (add-class, set-attr, extract, wrap, partition, tag-by-index, insert, rewrite-tag) — it has NO loops, conditionals, expressions, raw markup, raw URLs, or raw attributes. Everything imperative, codegen, URL-bearing, fit/repagination, or DECK-SCOPED (chart-family's 13 layouts, logo URL resolution, auto-split/overflow-probe, the cross-slide progress rail) stays FIRST-PARTY and is reached by name through a CLOSED capability registry — the headroom hinge. Safety is SPECIFIED, not asserted: a closed element allowlist, an attribute allowlist + URL-scheme validator (the draft left a CSS-url() beacon open — gate #616), a strict JSON schema with prototype-pollution defense (the interpreter is now an untrusted-JSON attack surface), single-forward-pass evaluation against a pre-rule snapshot with a render-guard budget, and section-scoped matching as an interpreter invariant. Path: PROTOTYPE-FIRST — build the dual string+DOM interpreter for 2 primitives + a capability stub on one real component (split-panel) with the cross-path parity test, before freezing the schema. Also outlines the AI component-generation knowledge file (must be as CONCRETE as THEME_CANON, with a coerce/repair layer).
 ---
 
@@ -222,6 +222,48 @@ build both interpreters." So, before the §12 spec:
   maker-checker-worthy slice.
 - Then ship the grammar; **let the registry grow on demand** — do not implement all 8
   primitives + the full predicate algebra up front (the doc's own §3.2 philosophy).
+
+### 11.1 Prototype outcome — built, the parity risk retired (`lib/core/transform-dsl/`)
+
+The thin vertical prototype landed and the buildability uncertainty is now evidence:
+
+- **The dual interpreter is ONE interpreter.** `applyRulesToDom` (DOM/runtime path) is
+  the only semantics; `applyRulesToHtml` (string/export path) **parses the rendered HTML
+  with jsdom, finds the component's sections with the same `querySelectorAll`** the runtime
+  uses, runs the *same* `applyRulesToDom`, and serializes. Discovery, ops, and the safety
+  envelope are identical on both paths, so §6/§11 cross-path parity holds **by
+  construction**, not by hand-kept lock-step — the exact tar pit the section warned about.
+  jsdom is lazy-required on the engine path only, so it never enters the browser runtime
+  bundle. The `parity.test.js` suite is the evidence on the hard `extract`+`wrap`+capability
+  case (with a `<header>`, multi-section, nested, and upper-case `<SECTION>`).
+- **The string path is a PARSER, not a scanner (maker-checker, 2026-06-30).** An
+  independent security checker broke a first draft that hand-scanned for `</section>`: a
+  literal `</section>` inside an attribute value desynced the scan, leaking unsanitized
+  HTML (a `<script>`) *around* the interpreter — a #616-class XSS — and diverged from the
+  DOM path on nested and upper-case sections. The fix is the parser above (the checker's
+  own recommendation, and the architecturally honest one: the eventual registry wiring
+  parses once and runs every transformer on the DOM). Folded with it: a pre-parse
+  depth/size cap + fail-closed wrapper against a recursive-serializer DoS, and a
+  `^[a-z][a-z0-9-]*$` guard on the scope key so it can't smuggle a selector. Each is a
+  regression test.
+- **`extract` + `wrap` + a `capability` reproduce a REAL component.** The default
+  `split-panel` assembly (the `applyPanel` `else` branch) is re-expressed as DSL rules
+  (a test fixture, not yet in the manifest) and reproduces its `panel-left`/`panel-right`
+  re-parenting — the eyebrow/heading/lede extracted left, the supporting list wrapped
+  right, with the one imperative bit (code-only `<p>` → `span.panel-eyebrow`) done by the
+  `panel-eyebrow` **capability**, proving the bridge composes (goal (c)).
+- **The §6 safety envelope is specified AND enforced, with tests.** `validateTransform`
+  rebuilds the rules onto null-prototype objects (rejecting `__proto__`/`constructor`/
+  `prototype`), enforces the closed element + attribute allowlists (no `style`/`on*`/URL
+  attr — the #616 beacon stays shut), the closed selector sub-grammar, and the
+  known-op/known-capability sets; the interpreter re-checks the element/attr allowlist at
+  node-creation time (defense in depth), holds section-scoping as an invariant, runs a
+  single forward pass, and trips a render-guard budget on a runaway. `safety.test.js`
+  exercises each as an adversarial case.
+
+**Still open (the §12 spec):** the DSL is **not yet wired into the transformer registry**
+or any manifest — that, the JSON-schema additions, the text-only `template` op, and the
+knowledge-file wiring (§10) are the next slices, now that the parity risk is retired.
 
 ## 12. Open spec items (after the prototype)
 
