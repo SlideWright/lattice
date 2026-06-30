@@ -400,9 +400,17 @@ All three pillars landed, faithful to the design above:
 - **Widened beyond inventory** (the §10 prototype having cleared): the frozen set now also covers
   **comparison, evidence/statement, and legal** prompts, and the held-out run is **16/16** with a
   real model. The widening surfaced one real gap — the model reached for `margin` on a two-column
-  layout — closed by a fourth worked example (a two-column comparison built on `grid` + `gap`). The
-  remaining transform-free buckets (code/math prose) and the transform-bearing buckets (the #618 DSL)
-  are the next increments.
+  layout — closed by a fourth worked example (a two-column comparison built on `grid` + `gap`).
+- **Code + math buckets locked in (the full transform-free set now covered).** With fenced code and
+  `$$…$$` math already taught as in-scope structures (the engine highlights/renders them universally),
+  a probe confirmed the model already generates transform-free **code** (`code/canvas`, `code/split`)
+  and **math** (`math/canvas`) components gate-clean with REAL fenced/math content — no over-decline,
+  so no new worked example was needed (the §10 discipline: add an example only where a falsification
+  shows a gap). The frozen set gained a `mustFence` code case and a `mustMath` math case (assert a real
+  ```fence / `$$…$$`, never faked as prose) and runs **18/18**. The boundary holds: a plain fenced
+  block is in scope, but `decline-code` (a highlighted render WITH line numbers — a transform) still
+  routes to the code bucket. The remaining work is the transform-bearing buckets (charts/diagrams/
+  journey/roadmap → the #618 DSL).
 - **Markdown-structure literacy (the canon now teaches the DOM, not just the CSS).** A component must
   be authored as **valid markdown** in the structure that fits the data, so the canon teaches the
   full menu — **lists** (sets), **GFM tables** (a matrix read across columns — styled `section.<name>

@@ -70,6 +70,15 @@ in patch versions.
 
 ### Added
 
+- **Studio — AI component generation now covers the full transform-free set: code + math (#610).**
+  The "Describe a component" generator reliably produces **code** (a fenced sample card, a side-by-side
+  code comparison) and **math** (a labeled formula callout) components — pure CSS framing around the
+  fenced/`$$…$$` blocks the engine already highlights/renders. A probe confirmed the model generates
+  these gate-clean with real fenced/math content, so the frozen held-out set gained a `mustFence` and a
+  `mustMath` case (asserting a real ```fence / `$$…$$`, never faked as prose) and runs **18/18** against
+  a real model. The boundary holds: a highlighted render *with line numbers* is a transform and still
+  routes to the code bucket. No API change.
+
 - **Studio — AI component generation: markdown-structure literacy + a pure-markdown skeleton gate
   (#610).** The component knowledge file now teaches the model to author in the **markdown structure
   that fits the data** — **lists** for sets, real **GFM tables** for a matrix that reads across

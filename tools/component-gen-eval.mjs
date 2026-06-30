@@ -56,6 +56,10 @@ function hasGfmTable(md) {
     return t.includes('|') && t.includes('-') && /^[|\-:\s]+$/.test(t);
   });
 }
+/** A real fenced code block (``` or ~~~). */
+function hasFence(md) { return /(^|\n)[ \t]*(```|~~~)/.test(String(md || '')); }
+/** A real math block ($$…$$) or inline ($…$) render. */
+function hasMath(md) { const s = String(md || ''); return /\$\$[\s\S]+?\$\$/.test(s) || /(^|[^$])\$[^$\n]+\$/.test(s); }
 
 let pass = 0;
 const fails = [];
@@ -92,13 +96,16 @@ for (const t of SET.prompts) {
   const designErrors = design.filter(d => d.level === 'error');
   const reflowOk = !t.mustReflow || (c.manifest.adapt && c.manifest.capacity);
   const dedupOk = !t.dedup || similar.some(s => s.name === t.dedup);
-  // mustTable: a matrix request must come back as a REAL GFM table (a divider row
-  // of pipes + dashes), not a list or a grid of divs faking columns.
+  // mustTable/mustFence/mustMath: a structural request must come back as the REAL
+  // markdown structure (a GFM divider row / a ```fence / a $$…$$ block), never faked
+  // with prose or a list.
   const tableOk = !t.mustTable || hasGfmTable(c.skeleton);
-  const good = g.ok && !designErrors.length && reflowOk && dedupOk && tableOk;
-  if (good) { pass++; console.log(`✓ ${t.id} → .${c.manifest.name} [${c.manifest.bucket}/${c.manifest.form}] gate.ok fixes=${c.fixes.join(',') || 'none'}${t.dedup ? ` dedup→${t.dedup}✓` : ''}${t.mustReflow ? ' reflow✓' : ''}${t.mustTable ? ' table✓' : ''}`); }
+  const fenceOk = !t.mustFence || hasFence(c.skeleton);
+  const mathOk = !t.mustMath || hasMath(c.skeleton);
+  const good = g.ok && !designErrors.length && reflowOk && dedupOk && tableOk && fenceOk && mathOk;
+  if (good) { pass++; console.log(`✓ ${t.id} → .${c.manifest.name} [${c.manifest.bucket}/${c.manifest.form}] gate.ok fixes=${c.fixes.join(',') || 'none'}${t.dedup ? ` dedup→${t.dedup}✓` : ''}${t.mustReflow ? ' reflow✓' : ''}${t.mustTable ? ' table✓' : ''}${t.mustFence ? ' fence✓' : ''}${t.mustMath ? ' math✓' : ''}`); }
   else {
-    const why = [!g.ok && `gate:${g.errors.map(e => e.rule).join('/')}`, designErrors.length && `design:${designErrors.map(e => e.rule).join('/')}`, !reflowOk && 'no-adapt/capacity', !dedupOk && `dedup-miss(${t.dedup})`, !tableOk && 'faked-table-with-list'].filter(Boolean).join(' ');
+    const why = [!g.ok && `gate:${g.errors.map(e => e.rule).join('/')}`, designErrors.length && `design:${designErrors.map(e => e.rule).join('/')}`, !reflowOk && 'no-adapt/capacity', !dedupOk && `dedup-miss(${t.dedup})`, !tableOk && 'faked-table-with-list', !fenceOk && 'no-fenced-code', !mathOk && 'no-math-block'].filter(Boolean).join(' ');
     fails.push(`${t.id}: ${why}`); console.log(`✗ ${t.id} — ${why}`);
   }
 }
