@@ -59,6 +59,25 @@ function saveIndex(index: IndexEntry[]): void {
 	write(INDEX_LS, index);
 }
 
+/**
+ * Has this browser used the Studio before? True if a deck index was ever saved
+ * (new/rename/delete) or any deck source was edited. Used to treat pre-existing
+ * users as already-onboarded, so the first-run welcome shows only to true
+ * newcomers (the `onboarded` flag predates none of their prior activity).
+ */
+export function hasPriorStudioUse(): boolean {
+	try {
+		if (localStorage.getItem(INDEX_LS)) return true;
+		for (let i = 0; i < localStorage.length; i++) {
+			const k = localStorage.key(i);
+			if (k?.startsWith(SRC_PREFIX)) return true;
+		}
+	} catch {
+		/* storage unavailable — treat as a fresh visitor */
+	}
+	return false;
+}
+
 /** Edited source for a deck, or null if it has never been edited. */
 export function loadSource(id: string): string | null {
 	return read<string>(SRC_PREFIX + id);
@@ -168,8 +187,12 @@ export function saveChat(deckId: string, messages: ChatMessage[]): void {
 }
 
 // `language` is the BCP-47 output locale for AI deck content (see studio-language).
-export type StudioSettings = { validation: boolean; pageNumbers: boolean; headerFooter: boolean; language: string };
-const DEFAULT_SETTINGS: StudioSettings = { validation: true, pageNumbers: true, headerFooter: false, language: DEFAULT_LANGUAGE };
+// `onboarded` flips true the first time a newcomer engages (dismisses the
+// welcome, makes an edit, or opens a panel). It gates the reduced-density
+// first-run shell: while false, the side panels start closed and a one-time
+// welcome cue shows; once true, the Studio opens at full density as before.
+export type StudioSettings = { validation: boolean; pageNumbers: boolean; headerFooter: boolean; language: string; onboarded: boolean };
+const DEFAULT_SETTINGS: StudioSettings = { validation: true, pageNumbers: true, headerFooter: false, language: DEFAULT_LANGUAGE, onboarded: false };
 
 export function loadSettings(): StudioSettings {
 	const saved = read<Partial<StudioSettings>>(SETTINGS_LS) ?? {};

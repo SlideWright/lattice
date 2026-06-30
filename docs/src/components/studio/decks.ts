@@ -15,6 +15,24 @@ export type StudioDeck = {
 
 export const DECKS: StudioDeck[] = [
 	{
+		// The newcomer's first deck (DECKS[0] → the first-run default). It is itself a
+		// board-grade deck ABOUT Lattice: brief, one distinct component per slide, so a
+		// first-time author learns the system by reading a beautiful deck, then edits it
+		// or starts their own. Design: engineering/decisions/2026-06-30-studio-newcomer-onboarding.md.
+		id: 'welcome',
+		title: 'Welcome to Lattice',
+		meta: '7 slides',
+		slides: [
+			`<!-- _class: title -->\n\n# Markdown for the boardroom\n\n\`Lattice · A guided tour\`\n\nWrite plain text. Ship a deck with the taste built in.`,
+			`<!-- _class: big-number -->\n\n\`The whole idea\`\n\n- 0\n  - boxes to drag — you write Markdown, the engine designs the slide.`,
+			`<!-- _class: stats -->\n\n\`What's in the box\`\n\n## Everything you need to ship, already designed.\n\n1. 53\n   - components\n2. 14\n   - themes\n3. 4\n   - export formats\n4. 1\n   - source file`,
+			`<!-- _class: cards-grid -->\n\n## Four moves, from blank page to boardroom.\n\n- Write.\n  - Plain Markdown — headings, lists, tables, even \`$math$\`. No drawing tools.\n- Choose a component.\n  - Tag a slide with one directive and it composes itself to the boardroom bar.\n- Render anywhere.\n  - One source becomes a PDF, a PowerPoint, an HTML deck, or a PNG set.\n- Restyle in a click.\n  - Swap the theme; every slide re-skins, and the layout never drifts.`,
+			`<!-- _class: split-compare -->\n\n\`Why Lattice\`\n\n## Drag-the-box tools vs. a deck that designs itself.\n\nBoth put pixels on a slide. Only one keeps its taste when the content changes.\n\n- Slide editors\n  - You place every box, line, and color by hand\n  - Restyling means re-touching slides one by one\n  - Consistency depends on whoever edited last\n- Lattice\n  - You write the content; the engine composes the slide\n  - One theme restyles the whole deck, instantly\n  - The design system holds the line on every slide\n\n> Stop maintaining slides — write the substance and let the engine handle the finish.`,
+			`<!-- _class: list-steps timeline -->\n\n## From keystroke to boardroom, in one pass.\n\n1. Write\n   - *Author the deck as plain Markdown in any editor.*\n2. Render\n   - *The engine lays out every slide in your theme.*\n3. Ship\n   - *Export to PDF, PowerPoint, HTML, or PNG — same source.*`,
+			`<!-- _class: closing -->\n\n## Now make it yours — edit any slide, or start a new deck.\n\n\`Your move\``,
+		],
+	},
+	{
 		id: 'q3-board',
 		title: 'Q3 Board Review',
 		meta: '6 slides',

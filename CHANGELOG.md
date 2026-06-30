@@ -39,6 +39,29 @@ in patch versions.
   Also wired up the previously-dead "Standing instructions" field (it was saved but never
   sent) through the same path. See
   `engineering/decisions/2026-06-30-studio-output-language.md`.
+- **Studio newcomer onboarding — a starter deck that is the pitch.** A first-time
+  author now opens into a crafted 7-slide "Welcome to Lattice" deck — brief, a
+  different component per slide (`title` · `big-number` · `stats` · `cards-grid` ·
+  `split-compare` · `list-steps` · `closing`), a genuine boardroom deck that teaches
+  the system by being read, then edited or replaced. It comes with a reduced-density
+  first-run shell: the side panels start closed (editor + preview + the deck lead,
+  not 35 controls), a one-time dismissible welcome cue points at the Coach and deck
+  settings, and the AI Coach reveals itself on the first edit. A persisted
+  `onboarded` flag makes the whole treatment strictly one-time, and prior Studio
+  users are detected and treated as already-onboarded. Design + rationale:
+  `engineering/decisions/2026-06-30-studio-newcomer-onboarding.md`.
+
+### Fixed
+
+- **Studio editor no longer collapses when the Architect panel is closed.** The
+  desktop grid declared a fixed `0px` first column for the (conditionally rendered)
+  Architect, so closing it dropped the editor into the zero-width track. The column
+  set now matches the rendered children.
+- **Studio inline validation no longer false-flags valid components.** The "unknown
+  component" check used a hardcoded 11-name list instead of the real 53-component
+  catalog the Studio is already handed, so valid components (`split-compare`,
+  `list-steps`, and ~40 others) were underlined as errors on perfectly good decks.
+  The known set now derives from the catalog (`dist/docs/components.json`).
 
 ### Changed
 
