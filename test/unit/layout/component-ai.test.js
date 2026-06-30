@@ -170,6 +170,82 @@ describe('component-ai — the worked examples are gate-clean (make-or-break)', 
   test('worked example D (two-column comparison) passes gateComponent — grid + gap, no margin', () => {
     assert.equal(gateComponent(COMPARE).ok, true, JSON.stringify(gateComponent(COMPARE).errors));
   });
+
+  // Example E — the MATRIX-as-table example. A real GFM table in the skeleton
+  // (a `<table>` styled via thead th/td), proving tables are first-class and the
+  // pure-markdown skeleton (no raw HTML) is gate-clean.
+  const TABLE = {
+    css: [
+      'section.plan-matrix > .cell-stage { display:flex; flex-direction:column; }',
+      'section.plan-matrix table { width:100%; border-collapse:collapse; table-layout:auto; flex:1; font-size:var(--fs-meta); }',
+      'section.plan-matrix thead th { text-align:left; padding:var(--sp-xs) var(--sp-sm); font-size:var(--fs-meta); font-weight:700; color:var(--text-label); border-bottom:2px solid var(--border); }',
+      'section.plan-matrix tbody td { padding:var(--sp-xs) var(--sp-sm); border-bottom:1px solid var(--border); color:var(--text-body); }',
+      'section.plan-matrix tbody td:first-child { font-weight:600; color:var(--text-heading); }',
+    ].join('\n'),
+    manifest: {
+      name: 'plan-matrix', function: 'comparison', form: 'matrix', substance: 'structure', bucket: 'comparison',
+      tags: ['comparison', 'table', 'matrix', 'pricing'], description: 'A feature matrix — features down rows, plans across columns.',
+      skeleton: '<!-- _class: plan-matrix -->\n\n## Plans at a glance\n\n| Feature | Starter | Team |\n| --- | --- | --- |\n| Seats | 3 | 25 |\n| SSO | — | Yes |',
+    },
+  };
+  test('worked example E (matrix table) passes gateComponent — native table, token-styled, pure-markdown skeleton', () => {
+    assert.equal(gateComponent(TABLE).ok, true, JSON.stringify(gateComponent(TABLE).errors));
+  });
+});
+
+describe('component-ai — skeleton is pure markdown (no raw HTML; HARD RULE #22 generation-time complement)', () => {
+  // A valid base: the table example minus its skeleton, so each case swaps only the skeleton.
+  const base = {
+    css: 'section.t > .cell-stage > ul { list-style:none; padding:0; margin:0; }',
+    manifest: {
+      name: 't', function: 'inventory', form: 'stack', substance: 'structure', bucket: 'inventory',
+      tags: ['a', 'b', 'c'], description: 'A list.',
+    },
+  };
+  const withSkel = skeleton => ({ ...base, manifest: { ...base.manifest, skeleton } });
+  const errs = skeleton => gateComponent(withSkel(skeleton)).errors.map(e => e.rule);
+
+  test('a clean pure-markdown skeleton (list + comment note) passes', () => {
+    const r = gateComponent(withSkel('<!-- _class: t -->\n<!-- present slowly -->\n\n## X\n\n- One\n- Two'));
+    assert.equal(r.ok, true, JSON.stringify(r.errors));
+  });
+  test('a <script> tag is rejected', () => {
+    assert.ok(errs('<!-- _class: t -->\n\n## X\n\n<script>steal()</script>').includes('skeleton-html'));
+  });
+  test('a <style> tag is rejected', () => {
+    assert.ok(errs('<!-- _class: t -->\n\n## X\n\n<style>body{}</style>').includes('skeleton-html'));
+  });
+  test('benign tags (<div>/<span>/<br>) are rejected too — pure markdown only', () => {
+    assert.ok(errs('<!-- _class: t -->\n\n## X\n\n<div>a</div><br>').includes('skeleton-html'));
+  });
+  test('an on*= handler / javascript: URL is rejected', () => {
+    assert.ok(errs('<!-- _class: t -->\n\n## X\n\n[x](javascript:alert(1))').includes('skeleton-script'));
+    assert.ok(errs('<!-- _class: t -->\n\n## X\n\n<img src=x onerror=alert(1)>').length > 0);
+  });
+  test('a tag SHOWN inside a code fence or inline span is allowed (it is escaped text)', () => {
+    assert.equal(gateComponent(withSkel('<!-- _class: t -->\n\n## X\n\n```html\n<script>ok</script>\n```')).ok, true);
+    assert.equal(gateComponent(withSkel('<!-- _class: t -->\n\n## X\n\n- Use `<br>` here')).ok, true);
+  });
+  test('prose with a "less than" comparison is NOT flagged (no space-glued tag)', () => {
+    assert.equal(gateComponent(withSkel('<!-- _class: t -->\n\n## X\n\n- revenue < budget this year\n- a < b and c > d')).ok, true);
+  });
+  test('a benign URL or email autolink is allowed (valid markdown, renders to <a>)', () => {
+    assert.equal(gateComponent(withSkel('<!-- _class: t -->\n\n## X\n\n- See <https://example.com/p?q=1>\n- Mail <a@b.com>')).ok, true);
+  });
+  test('a javascript: autolink is still caught by the scheme rule', () => {
+    assert.ok(errs('<!-- _class: t -->\n\n## X\n\n- <javascript:alert(1)>').includes('skeleton-script'));
+  });
+  // Maker-checker found these two HIGH bypasses — regression-locked here.
+  test('a <script> hidden via code-wrapped comment delimiters is still caught (strip code before comments)', () => {
+    assert.ok(errs('<!-- _class: t -->\n\n## X\n\n`<!--` <script>alert(1)</script> `-->`').includes('skeleton-html'));
+  });
+  test('an entity-encoded javascript: scheme is caught (decode entities before the scheme scan)', () => {
+    assert.ok(errs('<!-- _class: t -->\n\n## X\n\n[click](&#106;avascript:alert(1))').includes('skeleton-script'));
+    assert.ok(errs('<!-- _class: t -->\n\n## X\n\n[click](javascript&colon;alert(1))').includes('skeleton-script'));
+  });
+  test('an entity-encoded < is escaped text, not a live tag — NOT flagged', () => {
+    assert.equal(gateComponent(withSkel('<!-- _class: t -->\n\n## X\n\n- List &lt;int&gt; and 5 &lt; 10')).ok, true);
+  });
 });
 
 describe('component-ai — scope-prefix safe fix (§6, self-verifying)', () => {

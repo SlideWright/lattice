@@ -70,10 +70,26 @@ in patch versions.
 
 ### Added
 
+- **Studio — AI component generation: markdown-structure literacy + a pure-markdown skeleton gate
+  (#610).** The component knowledge file now teaches the model to author in the **markdown structure
+  that fits the data** — **lists** for sets, real **GFM tables** for a matrix that reads across
+  columns (styled `section.<name> table/thead th/td` with tokens + `border-collapse`, never faked
+  with a grid of divs), prose, fenced code, and math — plus the **load-bearing slide grammar**
+  (eyebrow → title → subtitle → content → key-insight → below-note; chrome is auto-detected by
+  POSITION, and inline `code` reads as eyebrow vs pill vs label by where it sits) and the universal
+  **`[x]`/`[-]`/`[ ]`/`[/]` state-marker grammar** for rows that carry a true status axis (never a
+  raw emoji). A fifth gate-verified worked example (a matrix as a real table) anchors it. The
+  skeleton is now enforced as **pure markdown**: `gateComponent` rejects ANY raw HTML tag
+  (`findSkeletonHtml`) — the `<script>`/`<style>`/`<iframe>` XSS set AND benign tags like
+  `<div>`/`<br>` — while keeping code shown in `` `inline` ``/```fences and the `<!-- … -->` comment
+  (the `_class` directive and presenter/reader notes). This is the generation-time complement to the
+  preview-frame sanitizer (HARD RULE #22). The frozen held-out set gained a `mustTable` matrix case
+  and a state-marker checklist case and runs **16/16** against a real model.
+
 - **Studio — AI component generation widened beyond `inventory` (#610).** The "Describe a component"
   generator now reliably covers **comparison, evidence/statement, and legal** components, not just
   inventory. The frozen held-out adversarial set (`test/fixtures/component-gen-prompts.json`) gained
-  prompts for those buckets and stays **14/14** against a real model. The widening surfaced one real
+  prompts for those buckets and stays green against a real model. The widening surfaced one real
   gap — the model reaching for `margin` on a two-column layout — closed by a fourth gate-verified
   worked example in the knowledge file (a two-column comparison built on `grid` + `gap`). No API
   change; the generated components are simply native across more of the transform-free set.
