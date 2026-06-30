@@ -507,14 +507,14 @@ the baseline.
 | `sketch` | `sketch` | Full handwriting (headings **and** body) + drawn boxes. |
 | `sketch-clean` | `sketch sketch-clean-body` | Keep hand headings + boxes; return prose to the clean `--font-body` for text-dense slides. |
 | `atrium` | `finish finish-atrium` | Corner glow + a fine grid + a left margin rule. |
-| `meridian` | `finish finish-meridian` | Diagonal duotone wash + contour lines + an oversized ghost numeral. |
+| `meridian` | `finish finish-meridian` | Diagonal duotone wash + contour lines + an (author-set) oversized ghost numeral. |
 | `strata` | `finish finish-strata` | Soft horizontal bands + a dot-matrix + a top hairline & corner tick. |
 | `halo` | `finish finish-halo` | Centered spotlight + concentric rings + a vignette (a section/closing treatment). |
 | `ledger` | `finish finish-ledger` | Fine horizontal ruled lines + a bold left margin bar + a top-right corner fold. |
 | `nimbus` | `finish finish-nimbus` | A gradient **mesh** of soft accent blooms (a new wash type) + a seating vignette — pure premium atmosphere; the wash intensity tunes the bloom strength. |
 | `loom` | `finish finish-loom` | A woven **lattice** cross-hatch (a new texture type — two ±45° weaves; on-brand) + a movable corner glow. Tune the weave scale, move the glow. |
-| `savile` | `finish finish-savile` | A tailored vertical **pinstripe** (a new texture type; tune the pitch via scale) + a movable monogram mark. Editorial. |
-| `gallery` | `finish finish-gallery` | A museum inset keyline **frame** (a new edge type — four crisp accent strips, no soft shadow) + a spotlight + a movable numeral. |
+| `savile` | `finish finish-savile` | A tailored vertical **pinstripe** (a new texture type; tune the pitch via scale) + a movable, author-set monogram mark. Editorial. |
+| `gallery` | `finish finish-gallery` | A museum inset keyline **frame** (a new edge type — four crisp accent strips, no soft shadow) + a spotlight + a movable, author-set numeral. |
 
 The nine `finish-*` presets are the **`field` zone** of the Finish family — a
 z-index STACK of palette-blind, export-safe gradient layers painted behind
@@ -524,6 +524,21 @@ sets those per-role props, so a future right-panel designer can drive any single
 layer. Take one slide out of a deck-wide finish with `<!-- _class: finish-none -->`
 (the back-compat `backdrop-none` is an alias); a per-slide `finish-<name>`
 **overrides** the deck finish rather than stacking on it.
+
+**Glyph-marks (the ghost monogram / numeral) are author-personalized and never
+appear by default.** A finish's `mark` layer carries the layer *type* (so the
+preset and the Studio designer still offer a monogram/numeral), but its rendered
+text (`--fin-mark-text`) is **empty** out of the box — a deck-wide `finish:`
+register paints **no glyph at all**, on any slide. (This is deliberate: a baked
+placeholder like a literal "03" or "L" would otherwise paint the same wrong mark
+on every slide of a deck.) To show a mark, the author sets the glyph themselves —
+in the Studio designer's *Initials*/*Number* field, or in deck source by setting
+the CSS slot on the slide's finish class, e.g. a per-deck/per-slide
+`<style>section.finish-meridian { --fin-mark-text: "Q3"; }</style>`. The other
+mark types (margin bar, registration tick) are pure geometry and render as part
+of their preset; only the *glyph* marks wait for an author value. See the
+`examples/finish-backdrops.md` demo (its meridian/savile/gallery slides opt in
+with explicit glyphs to showcase the movable mark).
 
 Every full-bleed gradient fades **opaque-to-opaque** (`color-mix(var(--accent)
 N%, var(--bg))` → `var(--bg)`), never to `transparent`. This is load-bearing for

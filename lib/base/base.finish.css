@@ -269,10 +269,13 @@ section.finish-meridian {
   --fin-size: auto, cover;
   --fin-position: top left, top left;
   --fin-repeat: repeat, no-repeat;
-  /* ghost numeral — a content:"" glyph in --font-display; OPAQUE faint color */
+  /* ghost numeral — author-personalized; EMPTY by default so a deck-wide finish
+   * paints NO numeral (HARD requirement: a glyph-mark is never a baked placeholder).
+   * The mark LAYER/slots stay wired (the Studio designer offers it, and an author can
+   * set a per-slide glyph), only the rendered text is empty until set. OPAQUE faint color. */
   --fin-mark: none;
   --fin-mark-opaque: none;
-  --fin-mark-text: "03";
+  --fin-mark-text: "";
   --fin-mark-color: color-mix(in srgb, var(--accent) 9%, var(--bg));
   --fin-mark-fs: 40cqi;              /* oversized, ~512px at 1280 */
   --fin-mark-pad: 0 1cqi 0 0;        /* right-aligned, hug the bottom edge */
@@ -573,11 +576,12 @@ section.finish-savile {
   --fin-position: top left, top left;
   --fin-repeat: repeat, no-repeat;
   /* MOVABLE monogram — a ghost glyph in --font-display; OPAQUE faint color.
-   * Default glyph "L"; the Studio glyph param overrides it, the placement axis
-   * moves it (bottom-right here). */
+   * Author-personalized: EMPTY by default so a deck-wide finish paints NO monogram
+   * (a glyph-mark is never a baked placeholder). The Studio glyph param / a per-slide
+   * override sets the initials; the placement axis moves it (bottom-right here). */
   --fin-mark: none;
   --fin-mark-opaque: none;
-  --fin-mark-text: "L";
+  --fin-mark-text: "";
   --fin-mark-color: color-mix(in srgb, var(--accent) 9%, var(--bg));
   --fin-mark-fs: 42cqi;
   --fin-mark-pad: 0 2cqi;
@@ -615,11 +619,12 @@ section.finish-gallery {
   --fin-size: auto, cover;
   --fin-position: top left, top left;
   --fin-repeat: no-repeat, no-repeat;
-  /* MOVABLE numeral — a ghost glyph, top-left. Default "03"; Studio glyph param
-   * overrides, placement axis moves it. */
+  /* MOVABLE numeral — a ghost glyph, top-left. Author-personalized: EMPTY by default
+   * so a deck-wide finish paints NO numeral (never a baked placeholder). The Studio
+   * glyph param / a per-slide override sets it; the placement axis moves it. */
   --fin-mark: none;
   --fin-mark-opaque: none;
-  --fin-mark-text: "03";
+  --fin-mark-text: "";
   --fin-mark-color: color-mix(in srgb, var(--accent) 9%, var(--bg));
   --fin-mark-fs: 40cqi;
   --fin-mark-pad: 0 1cqi;

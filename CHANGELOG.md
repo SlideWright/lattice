@@ -214,6 +214,20 @@ in patch versions.
 
 ### Fixed
 
+- **Finish glyph-marks no longer paint a baked placeholder on every slide.** A
+  glyph-mark (the ghost monogram / numeral) is now **author-personalized and never
+  appears in a finish by default** — a deck-wide `finish:` register (or a per-slide
+  `finish-<name>`) paints **no glyph at all** until an author sets one. Previously
+  the `meridian`/`gallery` (numeral) and `savile` (monogram) presets baked a literal
+  `"03"`/`"L"` into the mark slot, so applying a finish deck-wide stamped the same
+  wrong mark — e.g. a giant faint "03" — on every slide regardless of its real
+  position. The mark layer/type is unchanged (the Studio designer still offers it,
+  and authors can set the glyph in the Studio's *Initials*/*Number* field or via a
+  `<style>section.finish-<name> { --fin-mark-text: "…"; }</style>` slot); only the
+  default rendered text went empty (engine `base.finish.css`; the Studio generator's
+  `sanitizeGlyph` now yields `""` for an empty glyph). Demo `examples/finish-backdrops.md`
+  opts its meridian/savile/gallery slides into explicit glyphs to showcase the
+  movable mark while proving the clean no-glyph default.
 - **Studio editor no longer collapses when the Architect panel is closed.** The
   desktop grid declared a fixed `0px` first column for the (conditionally rendered)
   Architect, so closing it dropped the editor into the zero-width track. The column

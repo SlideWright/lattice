@@ -274,8 +274,9 @@ export function FinishStudio({
 					<LayerGroup label="Mark" hint="z3 · placed emblem">
 						<LayerSelect aria-label="Mark type" value={recipe.mark.type} options={MARK_TYPES} labels={MARK_LABEL} onChange={(v) => patch({ mark: { ...recipe.mark, type: v as FinishRecipe['mark']['type'] } })} />
 						{/* The author's own glyph — initials for a monogram, a number for a numeral.
-						    Sanitized to ~3 chars in the generator (CSS content:), so a brand mark can
-						    carry their letters/number instead of the hardcoded "L"/"03". */}
+						    Sanitized to ~3 chars in the generator (CSS content:). A glyph-mark is
+						    ALWAYS author-personalized: empty renders NOTHING (no baked "L"/"03"), so
+						    the placeholder is only a HINT to type your own — never the rendered text. */}
 						{(recipe.mark.type === 'monogram' || recipe.mark.type === 'numeral') && (
 							<Tuned label={recipe.mark.type === 'numeral' ? 'Number' : 'Initials'}>
 								<input
@@ -284,7 +285,7 @@ export function FinishStudio({
 									maxLength={3}
 									spellCheck={false}
 									aria-label="Mark glyph"
-									placeholder={recipe.mark.type === 'numeral' ? '03' : 'L'}
+									placeholder={recipe.mark.type === 'numeral' ? 'e.g. Q3' : 'your initials'}
 									className="h-8 w-full rounded-md border border-border bg-background px-2 font-mono text-[12.5px] text-foreground outline-none focus:border-[var(--accent)] placeholder:text-muted-foreground"
 								/>
 							</Tuned>

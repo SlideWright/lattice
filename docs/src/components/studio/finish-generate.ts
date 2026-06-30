@@ -59,18 +59,20 @@ export const DEFAULT_RECIPE: FinishRecipe = {
 // The author's own glyph for a monogram/numeral mark — their initials or a section
 // number. The mark text is emitted into CSS `content:"…"`, so the value is SANITIZED
 // to a short, quote/backslash-free string (no raw injection — a crafted glyph can't
-// close the string or inject a declaration). Empty → the type's sensible default
-// ('L' for a monogram, '03' for a numeral). Kept to ~3 chars (a monogram/section no.).
-export function sanitizeGlyph(input: unknown, fallback: string): string {
-	if (typeof input !== 'string') return fallback;
+// close the string or inject a declaration). A glyph-mark is ALWAYS author-personalized:
+// an empty/absent glyph yields an EMPTY string (NO placeholder, NO baked "L"/"03"), and
+// the mark builder then emits NO text so nothing renders. A deck-wide finish must paint
+// no glyph by default — only an author who types their initials/number gets a mark.
+// Kept to ~3 chars (a monogram/section no.).
+export function sanitizeGlyph(input: unknown): string {
+	if (typeof input !== 'string') return '';
 	// Drop anything that could escape a CSS string literal (quotes, backslash) or open
 	// a tag (<, >), collapse all whitespace, then keep it short. What survives is plain
 	// text safe inside content:"...". Letters/digits/harmless symbols ride through.
-	const cleaned = input
+	return input
 		.replace(/["'\\<>{};]/g, '')
 		.replace(/\s+/g, '')
 		.slice(0, 3);
-	return cleaned || fallback;
 }
 
 // The 5 shipped presets, expressed as recipes so "Start from preset" populates the
@@ -358,10 +360,12 @@ export function recipeSlots(r: FinishRecipe, face: FinishFace = 'opaque'): strin
 			decls.push(`--fin-mark:${SOLID}`, '--fin-mark-position:left center', '--fin-mark-size-bg:1.1cqi 100%');
 			break;
 		case 'monogram':
-			// The author's initials (default "L"), sanitized for content:"…" (no injection).
+			// The author's initials, sanitized for content:"…". A glyph-mark is author-
+			// personalized: an absent/empty glyph yields "" so NOTHING renders (no baked "L").
+			// The mark TYPE/layer stays present (the designer offers it), only the text is empty.
 			decls.push(
 				'--fin-mark:none',
-				`--fin-mark-text:"${sanitizeGlyph(r.mark.glyph, 'L')}"`,
+				`--fin-mark-text:"${sanitizeGlyph(r.mark.glyph)}"`,
 				`--fin-mark-color:${mix(10, 'opaque')}`,
 				'--fin-mark-fs:42cqi',
 				`--fin-mark-align:${flexAlign(r.mark.placement)}`,
@@ -370,10 +374,11 @@ export function recipeSlots(r: FinishRecipe, face: FinishFace = 'opaque'): strin
 			);
 			break;
 		case 'numeral':
-			// The author's number (default "03"), sanitized for content:"…".
+			// The author's number, sanitized for content:"…". Author-personalized: an absent/
+			// empty glyph yields "" so NOTHING renders (no baked "03"). Mark TYPE/layer stays.
 			decls.push(
 				'--fin-mark:none',
-				`--fin-mark-text:"${sanitizeGlyph(r.mark.glyph, '03')}"`,
+				`--fin-mark-text:"${sanitizeGlyph(r.mark.glyph)}"`,
 				`--fin-mark-color:${mix(9, 'opaque')}`,
 				'--fin-mark-fs:40cqi',
 				`--fin-mark-align:${flexAlign(r.mark.placement)}`,

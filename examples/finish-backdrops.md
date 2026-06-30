@@ -6,6 +6,18 @@ paginate: true
 header: "Lattice · finishes"
 ---
 
+<!-- A glyph-mark (monogram / numeral) is ALWAYS author-personalized — it NEVER
+     appears in a finish by default (a deck-wide `finish:` paints no glyph). To
+     SHOWCASE the movable mark, this demo sets an explicit glyph on the three
+     slides that carry a mark-bearing finish, scoped to each finish class. Remove
+     these and the marks vanish — proving the clean no-glyph default. -->
+
+<style>
+section.finish-meridian { --fin-mark-text: "Q3"; }
+section.finish-savile   { --fin-mark-text: "AB"; }
+section.finish-gallery  { --fin-mark-text: "04"; }
+</style>
+
 <!-- _class: title silent finish-none -->
 
 `Feature demo · finishes`
@@ -43,8 +55,8 @@ finish behind every slide, so you never repeat a class.
 ## Meridian — duotone, contours, a ghost numeral.
 
 This slide overrides the deck with `_class: finish finish-meridian`. A diagonal
-duotone wash carries faint contour lines, and an oversized ghost numeral anchors
-the bottom-right corner — all from one preset class.
+duotone wash carries faint contour lines. The ghost numeral is **author-set** —
+this slide opts in with its own `Q3`; by default a finish paints no glyph at all.
 
 ---
 
@@ -111,9 +123,9 @@ air, set per-slide with `_class: finish finish-nimbus`.
 ## Savile — a tailored pinstripe, a placed monogram.
 
 A new `pinstripe` texture rules fine vertical lines — Savile Row on a slide —
-with the pitch tuned by scale. A movable monogram (your initials, via the glyph
-param) sits in the bottom-right corner. Editorial and tailored, set with
-`_class: finish finish-savile`.
+with the pitch tuned by scale. The monogram is **author-set** — this slide opts
+in with its own `AB` initials; an unset finish shows no monogram. Editorial and
+tailored, set with `_class: finish finish-savile`.
 
 ---
 
@@ -122,8 +134,9 @@ param) sits in the bottom-right corner. Editorial and tailored, set with
 ## Gallery — a museum keyline frame.
 
 A new `frame` edge draws a thin inset keyline border — no soft shadow, just four
-crisp accent strips — around a centered spotlight, with a movable ghost numeral
-labeling the plate. Museum framing, set per-slide with `_class: finish
+crisp accent strips — around a centered spotlight. The plate numeral is
+**author-set** — this slide opts in with its own `04`; by default the frame
+carries no glyph. Museum framing, set per-slide with `_class: finish
 finish-gallery`.
 
 ---
