@@ -311,6 +311,108 @@ export async function generateTheme(current: ThemeEssentials, prompt: string): P
 	return { status: 'ok', essentials, rampStrategy, tokens, audit, applied, name, description };
 }
 
+// ── Finish faculty: "Describe a finish" ────────────────────────────────────
+// The finish analog of generateTheme, same model-proposes / code-disposes shape:
+// the model returns a STRUCTURED RECIPE (the four layers + params from the closed
+// vocabulary), NOT raw CSS — so the deterministic generator (finish-generate.ts)
+// makes the palette-blind, export-safe CSS and model text never reaches the
+// same-origin preview frame (HARD RULE #22). Honest like the rest: `offline` with
+// no model, `blocked` at the cap, `nochange` for an empty prompt or unusable reply.
+export type FinishRecipeOut = {
+	wash: { type: string; intensity: number };
+	texture: { type: string; intensity: number; scale: number };
+	mark: { type: string; placement: string };
+	edge: { type: string; intensity: number };
+};
+export type FinishGenOutcome =
+	| { status: 'ok'; recipe: FinishRecipeOut; name?: string }
+	| { status: 'offline' }
+	| { status: 'blocked'; note: string }
+	| { status: 'nochange'; note: string };
+
+const FINISH_SYSTEM = [
+	'You design a SLIDE FINISH — a subtle, palette-blind backdrop composed of four stacked layers, behind boardroom content.',
+	'Return ONLY a JSON object (no prose, no CSS) with this exact shape and ONLY values from these closed vocabularies:',
+	'{',
+	'  "name": "<short-kebab-name>",',
+	'  "wash":    { "type": "none|corner-glow|duotone|spotlight|bands", "intensity": <3-20> },',
+	'  "texture": { "type": "none|grid|dots|hatch|contour|rings|ruled", "intensity": <3-18>, "scale": <12-64> },',
+	'  "mark":    { "type": "none|monogram|tick|bar|numeral", "placement": "top-left|top-right|bottom-left|bottom-right|center|left" },',
+	'  "edge":    { "type": "none|vignette|margin-rule|fold", "intensity": <3-20> }',
+	'}',
+	'Keep it RESTRAINED: low intensities (text must stay readable, no scrim). A finish is atmosphere, not decoration. Leave a layer "none" when it is not needed — most good finishes use one or two layers.',
+].join('\n');
+
+/**
+ * Generate a finish RECIPE from a "describe a finish" prompt. The model proposes
+ * the structured layer recipe; the caller coerces it to the vocabulary and the
+ * deterministic generator turns it into CSS. The model NEVER authors CSS, so a
+ * connected model that returns nonsense degrades to the coerced (still-renderable)
+ * recipe — and no model text ever reaches the preview frame.
+ */
+export async function generateFinish(prompt: string): Promise<FinishGenOutcome> {
+	if (!prompt.trim()) return { status: 'nochange', note: 'Describe a finish to generate one.' };
+	const model = await architectModel();
+	if (!model) return { status: 'offline' };
+	const generation = model.availability().generation;
+	if (generation === 'floor') return { status: 'offline' };
+	if (generation === 'openrouter') {
+		const blk = cloudBudgetBlock(model, prompt);
+		if (blk) return { status: 'blocked', note: blk };
+	}
+	let reply = '';
+	try {
+		reply = await model.complete({
+			messages: [
+				{ role: 'system', content: FINISH_SYSTEM },
+				{ role: 'user', content: `Design a finish for: ${prompt.trim()}` },
+			],
+			json: true,
+			fallback: '',
+			onUsage: (u) => recordSpend(u?.cost ?? 0, u?.total_tokens ?? (u?.prompt_tokens || 0) + (u?.completion_tokens || 0)),
+		});
+	} catch {
+		return { status: 'offline' };
+	}
+	const parsed = parseFinishReply(reply);
+	if (!parsed) return { status: 'nochange', note: 'The model returned no usable finish recipe.' };
+	return { status: 'ok', recipe: parsed.recipe, name: parsed.name };
+}
+
+// Pull the first JSON object out of a (possibly fenced) reply and shape it into a
+// recipe-ish object. Validation/clamping to the closed vocab is the CALLER's job
+// (finish-generate's coerceRecipe) — here we only extract + lightly normalize.
+function parseFinishReply(reply: string): { recipe: FinishRecipeOut; name?: string } | null {
+	const text = String(reply || '').trim();
+	if (!text) return null;
+	const start = text.indexOf('{');
+	const end = text.lastIndexOf('}');
+	if (start < 0 || end <= start) return null;
+	let obj: Record<string, unknown>;
+	try {
+		obj = JSON.parse(text.slice(start, end + 1));
+	} catch {
+		return null;
+	}
+	if (!obj || typeof obj !== 'object') return null;
+	const layer = (v: unknown) => (v && typeof v === 'object' ? (v as Record<string, unknown>) : {});
+	const w = layer(obj.wash);
+	const t = layer(obj.texture);
+	const m = layer(obj.mark);
+	const e = layer(obj.edge);
+	const num = (v: unknown) => (Number.isFinite(Number(v)) ? Number(v) : 0);
+	const str = (v: unknown) => (typeof v === 'string' ? v : '');
+	return {
+		name: typeof obj.name === 'string' ? obj.name : undefined,
+		recipe: {
+			wash: { type: str(w.type), intensity: num(w.intensity) },
+			texture: { type: str(t.type), intensity: num(t.intensity), scale: num(t.scale) },
+			mark: { type: str(m.type), placement: str(m.placement) },
+			edge: { type: str(e.type), intensity: num(e.intensity) },
+		},
+	};
+}
+
 // ── Component Studio: "Describe a component" ───────────────────────────────
 // The component analog of generateTheme, mirroring the same model-proposes /
 // deterministic-code-disposes shape (engineering/decisions/2026-06-29-ai-

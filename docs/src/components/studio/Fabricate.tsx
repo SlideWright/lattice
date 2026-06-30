@@ -432,14 +432,12 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 	if (tab === 'finish') {
 		return (
 			<div className="flex min-h-0 flex-1 flex-col">
-				<div className="flex h-[50px] shrink-0 items-center gap-2 border-b border-border bg-card px-3 sm:gap-3 sm:px-4">
+				<div className="flex h-[44px] shrink-0 items-center gap-2 border-b border-border bg-card px-3 sm:gap-3 sm:px-4">
 					<button type="button" onClick={onClose} className="shrink-0 rounded-md p-1 text-muted-foreground hover:text-foreground" aria-label="Back to Compose"><X className="size-4" /></button>
-					<span className="size-2 shrink-0 rounded-full" style={{ background: accent }} />
-					<span className="text-sm font-semibold text-[var(--text-heading)]">Finish</span>
 					{facultyToggle}
 					<div className="flex-1" />
 				</div>
-				<FinishStudio options={options} notify={notify} />
+				<FinishStudio options={options} notify={notify} onSaved={onSaved} onOpenWorkspace={onOpenWorkspace} />
 			</div>
 		);
 	}

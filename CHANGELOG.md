@@ -80,6 +80,32 @@ in patch versions.
   The Studio Inspector's swatch-previewed **Finish** field (grouped Plain /
   Finishes) writes the register. Demo: `examples/finish-backdrops.md`. See
   `engineering/decisions/2026-06-30-finish-the-surface-layer.md`.
+- **Finish faculty — a right-panel layer designer in the Studio, a sibling of the
+  Theme + Component studios.** The Fabricate "Finish" tab is now a real designer
+  rather than a slider tool: a live preview specimen in the center, a **right-panel
+  layer stack** (Wash · Texture · Mark · Edge) — each an Inspector group with a type
+  `Select` over the engine vocabulary (Wash: corner-glow / duotone / spotlight /
+  bands; Texture: grid / dots / hatch / contour / rings / ruled; Mark: monogram /
+  tick / bar / numeral; Edge: vignette / margin-rule / fold) plus an intensity
+  slider and a placement control — a **"Start from preset"** row (Atrium / Meridian /
+  Strata / Halo / Ledger) that populates the four layers, a name + **Export** +
+  **Save** header, and an AI **"Describe a finish"** command bar. The controls drive
+  a deterministic generator that emits a `section.finish.finish-<slug> { --fin-wash:…;
+  --fin-texture:…; --fin-mark:…; --fin-edge:… }` rule through the SAME engine
+  compositor — opaque-to-opaque gradients only (no `transparent` area-fade, no
+  `mask`, no `url()`, no hex), with the slug re-sanitized in the generator (defense
+  in depth, HARD RULE #22). The AI proposes a **structured recipe** (the four layers
+  + params from the closed vocabulary, validated/coerced before it drives the
+  controls), never raw CSS, so model text never reaches the preview frame; it
+  degrades honestly when no model is connected. **Save is wired end-to-end** this
+  time: a new `finish-library.ts` (IndexedDB, the shared Workbench asset store,
+  `kind:'finish'`) persists designed finishes; the Inspector Finish menu gains a
+  **Saved** group + a Manage-saved list, and picking a saved finish injects its CSS
+  into the deck preview `extraCss` AND applies its `finish finish-<slug>` class — so
+  a custom finish actually renders in the deck (and in Share/Present export).
+  Responsive across 1440 / 820 / 390. See
+  `engineering/decisions/2026-06-30-finish-the-surface-layer.md` (the REDESIGN
+  callout).
 - **Studio Focus mode — a transient "quiet the noise" view.** The Studio's
   four-column desktop layout (Architect · Editor · Preview · Inspector) can now
   collapse to just **Editor + Preview + slide nav**, with most of the topbar
