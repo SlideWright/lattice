@@ -126,6 +126,13 @@ function renderDocs(m) {
     lines.push(`**Capacity** ~${sweet} ${axisNoun(c.axis, sweet)} (crowds past ${c.soft}, overflows past ${c.hard})${esc}.`);
     lines.push('');
   }
+  if (m.density) {
+    const d = m.density;
+    const axis = d.axis || m.capacity?.axis || 'item';
+    const note = d.note ? ` — ${d.note}` : '';
+    lines.push(`**Density** up to ~${d.soft} words per ${axisNoun(axis, 1)} (overflows past ${d.hard})${note}.`);
+    lines.push('');
+  }
   if (m.purpose) {
     lines.push(m.purpose);
     lines.push('');

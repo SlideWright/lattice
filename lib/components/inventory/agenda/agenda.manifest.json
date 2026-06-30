@@ -4,6 +4,7 @@
   "adapt": { "mode": "native", "priority": ["title", "items"], "keepTogether": ["item"] },
   "focusAxes": ["item"],
   "capacity": { "axis": "item", "min": 3, "sweet": 4, "soft": 6, "hard": 7, "escalateTo": ["split across slides"], "note": "past six sections the list crowds" },
+  "density": { "axis": "item", "soft": 10, "hard": 16, "note": "a short agenda line, not a description" },
   "function": "inventory",
   "form": "stack",
   "substance": "structure",

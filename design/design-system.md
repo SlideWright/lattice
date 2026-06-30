@@ -445,6 +445,16 @@ AI agents authoring decks get a discovery surface and a validation loop:
   take an `escalateTo` target or split across slides. `lint:deck` warns
   (`capacity-crowd` / `capacity-overflow`) as a backstop. See
   `engineering/decisions/2026-06-17-content-capacity-contract.md`.
+- **Density — budget the words, not just the elements.** The right layout with
+  the right element count still fails if each element is a paragraph. A
+  component's optional `density` block (`{ axis, soft, hard }`) declares how many
+  WORDS each element gets: `soft` is the brevity target, past `hard` it overflows.
+  Universal chrome carries its own budgets regardless of layout — eyebrow ≤ 5
+  words, title ≤ 10, subtitle ≤ 12, key-insight ≤ 18, pill ≤ 2. The Drawing Board
+  reviewer flags overruns as suggestions (`density-crowd` / `density-overflow`,
+  `verbose-eyebrow` / `verbose-subtitle` / `verbose-key-insight`); writing tight
+  up front is the fix. See
+  `engineering/decisions/2026-06-30-prose-density-budget.md`.
 - **`npm run lint:deck -- <file>`** (`tools/lint-deck.js` →
   `lib/authoring/lint.js`) — runs the markdown footgun checks against a
   *draft* deck and emits structured, fix-oriented diagnostics with no

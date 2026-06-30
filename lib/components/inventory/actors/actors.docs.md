@@ -8,6 +8,8 @@
 
 **Capacity** ~4 items (crowds past 6, overflows past 7) — past that, list-tabular / split across slides.
 
+**Density** up to ~12 words per item (overflows past 18) — one short responsibility per row, not a job description.
+
 Use to show 'who owns what' across a process, scoring policy, or org chart. Two-column layout: actor on left, responsibilities on right.
 
 ## When to use

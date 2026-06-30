@@ -3,6 +3,7 @@
   "name": "cards-stack",
   "focusAxes": ["item"],
   "capacity": { "axis": "item", "min": 2, "sweet": 3, "soft": 4, "hard": 4, "escalateTo": ["list-tabular", "split across slides"], "note": "past four rows the stack overflows" },
+  "density": { "axis": "item", "soft": 16, "hard": 26, "note": "a stacked card is a short paragraph at most" },
   "function": "inventory",
   "form": "stack",
   "substance": "structure",

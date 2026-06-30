@@ -948,6 +948,12 @@ function listRepoTextFiles(dir = ROOT, out = []) {
       // sidecar can flicker into existence mid-walk and spuriously fail the budget
       // (a flaky local-only failure CI never sees on its clean checkout). Skip them.
       !/\.gallery\.(light|dark)\.html$/.test(e.name) &&
+      // Deck render sidecars more broadly — the emulator writes <name>.html next to
+      // EVERY <name>.pdf it renders (examples/, baseline-decks/, exemplars/), and the
+      // pre-commit pdf-rebuild regenerates them; the committed artifact is the .pdf.
+      // Skip any .html that has a sibling .md of the same basename (a deck render
+      // sidecar, never house prose) — same transient-flicker reason as galleries.
+      !(path.extname(e.name) === '.html' && fs.existsSync(p.replace(/\.html$/, '.md'))) &&
       !US_ENGLISH_SELF_EXEMPT.has(rel)
     ) {
       out.push(p);

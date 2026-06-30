@@ -4,6 +4,7 @@
   "adapt": { "mode": "native", "priority": ["title", "items"], "keepTogether": ["item"] },
   "focusAxes": ["item"],
   "capacity": { "axis": "item", "min": 4, "sweet": 6, "soft": 8, "hard": 9, "escalateTo": ["split across slides"], "note": "past eight items the checklist overflows" },
+  "density": { "axis": "item", "soft": 10, "hard": 16, "note": "a short readiness line" },
   "families": ["state-markers"],
   "function": "inventory",
   "form": "stack",

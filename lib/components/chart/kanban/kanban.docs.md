@@ -8,6 +8,8 @@
 
 **Capacity** ~3 items (crowds past 5, overflows past 6) — past that, split across slides.
 
+**Density** up to ~8 words per item (overflows past 14) — a terse card title.
+
 Use for status snapshots: what's in each lane (todo/doing/done or similar). Each column is a stage; each card is a work item. By default the board is a calm grid of neutral cards and spends colour only on STATUS, so a flagged card is the focal point; opt into `keyline` (colour-code cards by category) or `tinted` (colour-code columns by stage) when colour coding earns its keep.
 
 ## When to use

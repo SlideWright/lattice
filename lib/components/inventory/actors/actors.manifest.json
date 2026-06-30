@@ -24,6 +24,7 @@
     ]
   },
   "capacity": { "axis": "item", "min": 3, "sweet": 4, "soft": 6, "hard": 7, "escalateTo": ["list-tabular","split across slides"], "note": "the ledger reads cleanly up to about six rows" },
+  "density": { "axis": "item", "soft": 12, "hard": 18, "note": "one short responsibility per row, not a job description" },
   "tags": ["ownership", "onboarding", "reference"],
   "description": "Roster of responsibilities owned by named actors.",
   "purpose": "Use to show 'who owns what' across a process, scoring policy, or org chart. Two-column layout: actor on left, responsibilities on right.",

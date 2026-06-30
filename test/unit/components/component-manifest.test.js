@@ -118,6 +118,39 @@ describe('component-manifest', () => {
       assert.ok(validate({ ...GOOD, capacity: { axis: 'item', soft: 4, hard: 6, escalateTo: [] } }).some((e) => /escalateTo/.test(e)));
     });
 
+    // Prose-density budget (phase 2) — 2026-06-30-prose-density-budget.md.
+    const WITH_ITEMS = { ...GOOD, sample: '<!-- _class: cards-grid -->\n\n## H\n\n- A\n  - body\n- B\n  - body\n' };
+    test('density: accepts a well-formed block (axis inherited from capacity)', () => {
+      const m = { ...WITH_ITEMS, capacity: { axis: 'item', soft: 4, hard: 6 }, density: { soft: 12, hard: 20, note: 'one clause' } };
+      assert.deepEqual(validate(m), []);
+    });
+    test('density: requires soft and hard', () => {
+      assert.ok(validate({ ...WITH_ITEMS, density: { axis: 'item' } }).some((e) => /density\.(soft|hard)/.test(e)));
+    });
+    test('density: rejects hard < soft', () => {
+      assert.ok(validate({ ...WITH_ITEMS, density: { axis: 'item', soft: 20, hard: 12 } }).some((e) => /soft ≤ hard/.test(e)));
+    });
+    test('density: rejects an unknown key', () => {
+      assert.ok(validate({ ...WITH_ITEMS, density: { axis: 'item', soft: 4, hard: 6, bogus: 1 } }).some((e) => /density has unknown key 'bogus'/.test(e)));
+    });
+    test('density: axis must be a focusAxes member when declared', () => {
+      const m = { ...WITH_ITEMS, focusAxes: ['item'], density: { axis: 'row', soft: 4, hard: 6 } };
+      assert.ok(validate(m).some((e) => /density\.axis 'row' must be one of/.test(e)));
+    });
+    test('density: needs an axis (no capacity to inherit from)', () => {
+      assert.ok(validate({ ...WITH_ITEMS, density: { soft: 4, hard: 6 } }).some((e) => /density needs an axis/.test(e)));
+    });
+    test('density: rejects an axis not yet counted (col/cell/line)', () => {
+      // col is a SUPPORTED_AXES member but elementWordCounts only does item/row,
+      // so a col density block would validate yet never fire — reject it.
+      const m = { ...GOOD, sample: '<!-- _class: x -->\n\n## H\n\n- A\n- B\n', density: { axis: 'col', soft: 4, hard: 6 } };
+      assert.ok(validate(m).some((e) => /density\.axis 'col' is not yet counted/.test(e)));
+    });
+    test('density: rejects an inherited axis not yet counted', () => {
+      const m = { ...GOOD, sample: '<!-- _class: x -->\n\n## H\n\n```\nline one\nline two\n```\n', capacity: { axis: 'line', soft: 4, hard: 6 }, density: { soft: 4, hard: 6 } };
+      assert.ok(validate(m).some((e) => /is not yet counted/.test(e)));
+    });
+
     test('rejects non-object input', () => {
       assert.ok(validate(null).length > 0);
       assert.ok(validate('not an object').length > 0);

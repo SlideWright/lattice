@@ -16,6 +16,7 @@
     ],
     "note": "the grid loses scannability past four cards"
   },
+  "density": { "axis": "item", "soft": 15, "hard": 24, "note": "a card body is one short clause, not a paragraph" },
   "function": "inventory",
   "form": "grid",
   "substance": "structure",

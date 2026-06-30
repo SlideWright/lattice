@@ -8,6 +8,8 @@
 
 **Capacity** ~4 items (crowds past 5, overflows past 6) — past that, split across slides (auto with autosplit: on).
 
+**Density** up to ~12 words per item (overflows past 16) — a one-line question and a short answer.
+
 Use to pre-empt the room: line up the three or four hardest questions the audience will raise and answer each one before it is asked. The question reads as a prompt; the prepared answer carries the substance. Distinct from a reference FAQ (many terse look-up pairs) — this is a few weighty defenses of a recommendation.
 
 ## When to use
