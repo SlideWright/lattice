@@ -6,6 +6,8 @@
 
 **Tags** `reference` · `overview` · `status`
 
+**Density** up to ~12 words per item (overflows past 16) — a short row label plus a clause.
+
 Use for compact reference tables: glossary-style entries, key/value pairs, specs. Four primary variants (def, metric, spec, register) tune the visual treatment; secondary modifiers (rule, solid, stacked, outline) refine each.
 
 ## When to use

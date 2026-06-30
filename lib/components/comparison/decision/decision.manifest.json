@@ -4,6 +4,7 @@
   "function": "comparison",
   "form": "canvas",
   "substance": "structure",
+  "density": { "axis": "item", "soft": 20, "hard": 32, "note": "each option's tradeoff in a sentence or two" },
   "adapt": {
     "mode": "reflow",
     "families": [

@@ -211,19 +211,22 @@ expert target honest; it does not replace it.
 | # | Step | Status |
 |---|---|---|
 | 1 | **Decision doc** (this file) | ✅ this commit |
-| 2 | **Schema** — `density` block in `manifest.schema.json` + `validate()` (axis ∈ focusAxes when declared, `soft ≤ hard`, measurability) | ⏳ pilot |
-| 3 | **Universal table** — `lib/authoring/prose-budgets.js` (pure, browser-safe) + detectors; reconcile `long-heading`/`wall-of-text` to it | ⏳ pilot |
-| 4 | **Seed 3 pilot manifests** with `density`, `hard` evidence-clamped (e.g. `actors`, `cards-grid`, `kpi`) | ⏳ pilot |
-| 5 | **Reviewer rules** — per-element + universal `suggestion`s in `review-core.js` | ⏳ pilot |
-| 6 | **Surfacing** — emit `density` into `components.json`; "Density" docs line; `AGENTS.md` "budget the words" note | ⏳ pilot |
-| 7 | **Calibration tool** — `tools/calibrate-density.js` (render at increasing words, read overflow-probe) | ⏳ pilot |
-| 8 | **Demo deck** — `examples/prose-density.md` (+ committed PDF) | ⏳ pilot |
-| 9 | **Docs + changelog** — `design/design-system.md` density note; `CHANGELOG.md` | ⏳ pilot |
-| 10 | **Backfill** — the remaining components, density-clamped in waves | ⏳ ongoing |
+| 2 | **Schema** — `density` block in `manifest.schema.json` + `validate()` (`item`/`row` axes, `soft ≤ hard`, measurability; axis NOT tied to focusAxes — see refinement below) | ✅ #629 |
+| 3 | **Universal table** — `lib/authoring/prose-budgets.js` (pure, browser-safe) + detectors; reconcile `long-heading`/`wall-of-text` to it | ✅ #629 |
+| 4 | **Seed pilot manifests** with `density`, `hard` evidence-clamped (`actors`, `cards-grid`, `list-steps` + the first backfill wave) | ✅ #629 |
+| 5 | **Reviewer rules** — per-element + universal `suggestion`s in `review-core.js` | ✅ #629 |
+| 6 | **Surfacing** — emit `density` into `components.json`; "Density" docs line; `AGENTS.md` "budget the words" note | ✅ #629 |
+| 7 | **Calibration tool** — `tools/calibrate-density.js` (render at increasing words, read overflow-probe) | ✅ #629 |
+| 8 | **Demo deck** — `examples/prose-density.md` (+ committed PDF) | ✅ #629 |
+| 9 | **Docs + changelog** — `design/design-system.md` density note; `CHANGELOG.md` | ✅ #629 |
+| 10 | **Backfill** — every remaining text-bearing layout, density-clamped | ✅ complete — **26 of 53** layouts budgeted; the other 27 are exempt (§6) |
 
-The pilot proves the shape end-to-end on 3 components; step 10 backfills the rest.
-Per HARD RULE 17 the follow-up stays in place (one feature, one PR) or a clearly
-scoped successor.
+**Refinement (backfill).** `density.axis` is NOT tied to `focusAxes` (unlike
+`capacity`). `focusAxes` governs `_focus` HIGHLIGHTING — a ledger may highlight as
+table rows — while `density` counts the MARKDOWN the author writes, where that
+same ledger is a bullet list (the `item` axis). `glossary` is the canonical case
+(`focusAxes: ['row']`, authored as items). The validator's only axis guard is
+measurability in the sample. Per HARD RULE 17 the backfill landed in place.
 
 ## 6. Non-goals / what this does NOT commit to
 
@@ -239,6 +242,21 @@ scoped successor.
   consequence; the author (or agent) tightens the words.
 - **Not deriving budgets from overflow sampling** — §2/§4: sampling sets the
   ceiling, expertise sets the target.
+- **Not budgeting non-prose or single-block layouts** — a `density` block only
+  fits a layout whose elements are PROSE BODIES along a countable axis. The 27
+  exempt layouts fall in clear groups: **data viz** (the 11 remaining `chart`
+  layouts — content is series/graph, not words), **code** (`code`/`compare-code` —
+  budgeted by `line` count), **figural** (`diagram`, `math`, `image`, `logo-wall`,
+  `word-cloud`), **anchors** (`title`/`divider`/`closing` — covered by the
+  universal title/eyebrow/subtitle budgets), **data grids** (`obligation-matrix`,
+  `pricing` — `[x]` cells / feature checklists, not prose; word-counting them
+  mis-fires), **verbatim** (`citation-card` — a quoted statute is intentionally
+  long; trimming it would falsify), and **single-block prose** (`quote`,
+  `big-number`, `content`, `redline` — one block, already governed by the universal
+  key-insight/title budgets and the whole-slide `wall-of-text` rule). The boundary
+  test: *can the author tighten this element's words without losing required
+  content?* Where the answer is no (a statute, a checkmark, a data series), there
+  is no budget.
 
 ## 7. Relationships
 

@@ -4,6 +4,7 @@
   "function": "inventory",
   "form": "ledger",
   "substance": "structure",
+  "density": { "axis": "item", "soft": 12, "hard": 16, "note": "a short row label plus a clause" },
   "adapt": {
     "mode": "reflow",
     "families": [

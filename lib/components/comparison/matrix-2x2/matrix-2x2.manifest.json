@@ -4,6 +4,7 @@
   "function": "comparison",
   "form": "matrix",
   "substance": "structure",
+  "density": { "axis": "item", "soft": 10, "hard": 16, "note": "a short label per quadrant cell" },
   "adapt": {
     "mode": "reflow",
     "families": [

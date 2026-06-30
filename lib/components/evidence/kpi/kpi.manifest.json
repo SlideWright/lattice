@@ -4,6 +4,7 @@
   "function": "evidence",
   "form": "ledger",
   "substance": "structure",
+  "density": { "axis": "item", "soft": 8, "hard": 14, "note": "a metric label, not a sentence" },
   "adapt": {
     "mode": "reflow",
     "families": [

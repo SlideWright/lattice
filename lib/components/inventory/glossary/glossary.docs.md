@@ -6,6 +6,8 @@
 
 **Tags** `definition` · `reference` · `onboarding`
 
+**Density** up to ~16 words per item (overflows past 24) — a term and a one-sentence definition.
+
 Use for jargon-heavy decks where the audience needs a reference page. The runtime auto-adds a range pill (e.g. 'A – G') to the heading.
 
 ## When to use

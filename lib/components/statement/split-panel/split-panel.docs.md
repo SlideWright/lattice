@@ -6,6 +6,8 @@
 
 **Tags** `summary` · `board-deck` · `hero-number` · `pull-quote` · `takeaway`
 
+**Density** up to ~16 words per item (overflows past 24) — one finding per row, a sentence.
+
 Use when one prominent element (a heading, a hero number, a pull-quote, a phase) deserves a dedicated panel and the right side carries the supporting points. The default anchors a heading; variants reshape what the panel features: `metric` (hero number, light-left), `pullquote` (pull-quote), `steps` (numbered step-timeline), `watermark` (accent panel + letterform + meta footer). For a binary decision with a verdict, reach for `split-compare`.
 
 ## When to use

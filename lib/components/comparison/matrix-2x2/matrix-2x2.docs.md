@@ -6,6 +6,8 @@
 
 **Tags** `two-by-two` · `prioritize` · `strategy` · `risk`
 
+**Density** up to ~10 words per item (overflows past 16) — a short label per quadrant cell.
+
 Use for categorical 2×2 reasoning when the items are fixed and you control which cell each lands in. For data-plotted scatter on continuous axes, use quadrant instead.
 
 ## When to use

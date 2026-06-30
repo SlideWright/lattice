@@ -4,6 +4,7 @@
   "function": "comparison",
   "form": "split",
   "substance": "structure",
+  "density": { "axis": "item", "soft": 14, "hard": 22, "note": "a terse point per line" },
   "adapt": {
     "mode": "reflow",
     "families": [

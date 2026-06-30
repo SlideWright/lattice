@@ -6,6 +6,8 @@
 
 **Tags** `requirements` · `assessment` · `okr`
 
+**Density** up to ~14 words per item (overflows past 22) — one criterion with a short proof, not a spec.
+
 Use to enumerate the criteria a decision must meet, in priority order. Numbering signals weight; each row reads as a complete requirement.
 
 ## When to use

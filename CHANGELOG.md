@@ -27,6 +27,19 @@ in patch versions.
 
 ### Added
 
+- **Prose-density budgets now cover every text-bearing layout (26 of 53).** The
+  density backfill is complete: `kpi`, `glossary`, `list`, `list-criteria`,
+  `list-tabular`, `timeline-list`, `compare-prose`, `decision`, `matrix-2x2`,
+  `split-panel`, and `split-compare` gain a per-element word budget (each `hard`
+  ceiling evidence-clamped under its measured overflow point via
+  `tools/calibrate-density.js`). The remaining 27 layouts are deliberately exempt —
+  data viz, code, figures, anchors, `[x]`-cell data grids, verbatim citations, and
+  single-block prose already governed by the universal title/key-insight and
+  whole-slide `wall-of-text` budgets (the boundary is documented in
+  `engineering/decisions/2026-06-30-prose-density-budget.md` §6). Also: `density.axis`
+  is no longer tied to `focusAxes` (focus highlighting ≠ markdown word-counting),
+  so a ledger that highlights as rows but is authored as items — `glossary` — can
+  be budgeted on its real `item` axis.
 - **Studio Focus mode — a transient "quiet the noise" view.** The Studio's
   four-column desktop layout (Architect · Editor · Preview · Inspector) can now
   collapse to just **Editor + Preview + slide nav**, with most of the topbar

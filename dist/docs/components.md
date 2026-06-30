@@ -557,6 +557,8 @@ See [quote.gallery.light.pdf](../../lib/components/statement/quote/quote.gallery
 
 **Tags** `summary` · `board-deck` · `hero-number` · `pull-quote` · `takeaway`
 
+**Density** up to ~16 words per item (overflows past 24) — one finding per row, a sentence.
+
 Use when one prominent element (a heading, a hero number, a pull-quote, a phase) deserves a dedicated panel and the right side carries the supporting points. The default anchors a heading; variants reshape what the panel features: `metric` (hero number, light-left), `pullquote` (pull-quote), `steps` (numbered step-timeline), `watermark` (accent panel + letterform + meta footer). For a binary decision with a verdict, reach for `split-compare`.
 
 #### When to use
@@ -1393,6 +1395,8 @@ See [checklist.gallery.light.pdf](../../lib/components/inventory/checklist/check
 
 **Tags** `definition` · `reference` · `onboarding`
 
+**Density** up to ~16 words per item (overflows past 24) — a term and a one-sentence definition.
+
 Use for jargon-heavy decks where the audience needs a reference page. The runtime auto-adds a range pill (e.g. 'A – G') to the heading.
 
 #### When to use
@@ -1617,6 +1621,8 @@ See [inventory.gallery.light.pdf](../../lib/components/inventory/inventory/inven
 
 **Tags** `overview` · `summary` · `takeaway` · `walkthrough`
 
+**Density** up to ~14 words per item (overflows past 20) — one statement per line, not a paragraph.
+
 Use when the items are genuinely a flat list of one-line points. The default renders accent-bordered pills; the `takeaway` variant renders hairline-ruled single-line takeaways (former tldr); the `principles` variant renders display-weight numbered statements with a large counter (former principles). For richer per-item structure, prefer cards-grid, cards-stack, or list-tabular.
 
 #### When to use
@@ -1781,6 +1787,8 @@ See [list.gallery.light.pdf](../../lib/components/inventory/list/list.gallery.li
 **Function** inventory · **Form** ledger · **Substance** structure
 
 **Tags** `reference` · `overview` · `status`
+
+**Density** up to ~12 words per item (overflows past 16) — a short row label plus a clause.
 
 Use for compact reference tables: glossary-style entries, key/value pairs, specs. Four primary variants (def, metric, spec, register) tune the visual treatment; secondary modifiers (rule, solid, stacked, outline) refine each.
 
@@ -2298,6 +2306,8 @@ See [q-and-a.gallery.light.pdf](../../lib/components/inventory/q-and-a/q-and-a.g
 
 **Tags** `tradeoff` · `contrast` · `recommendation` · `transformation` · `retrospective`
 
+**Density** up to ~20 words per item (overflows past 32) — each side's case in a sentence or two.
+
 Use to weigh two approaches against each other in body text. Add the `chosen` or `decision` modifier to mark the verdict; add `vertical` to stack top/bottom instead of side-by-side.
 
 #### When to use
@@ -2565,6 +2575,8 @@ See [compare-table.gallery.light.pdf](../../lib/components/comparison/compare-ta
 
 **Tags** `recommendation` · `tradeoff` · `strategy`
 
+**Density** up to ~20 words per item (overflows past 32) — each option's tradeoff in a sentence or two.
+
 Use after a comparison slide to land the decision. The justifications render as one unified categorical strip — co-equal cards that together signal a single resolved verdict; the heading carries the decision, not a focal/subordinated split.
 
 #### When to use
@@ -2656,6 +2668,8 @@ See [decision.gallery.light.pdf](../../lib/components/comparison/decision/decisi
 **Function** comparison · **Form** matrix · **Substance** structure
 
 **Tags** `two-by-two` · `prioritize` · `strategy` · `risk`
+
+**Density** up to ~10 words per item (overflows past 16) — a short label per quadrant cell.
 
 Use for categorical 2×2 reasoning when the items are fixed and you control which cell each lands in. For data-plotted scatter on continuous axes, use quadrant instead.
 
@@ -3026,6 +3040,8 @@ See [redline.gallery.light.pdf](../../lib/components/comparison/redline/redline.
 
 **Tags** `tradeoff` · `recommendation` · `contrast`
 
+**Density** up to ~14 words per item (overflows past 22) — a terse point per line.
+
 Use when a decision frames a binary choice and the recommendation must be unambiguous. Second top-level list item is always the preferred option (gets the accent badge). The verdict blockquote becomes a recommendation card with a corner tag, pinned across the bottom.
 
 #### When to use
@@ -3206,6 +3222,8 @@ See [verdict-grid.gallery.light.pdf](../../lib/components/comparison/verdict-gri
 **Function** progression · **Form** ledger · **Substance** structure
 
 **Tags** `requirements` · `assessment` · `okr`
+
+**Density** up to ~14 words per item (overflows past 22) — one criterion with a short proof, not a spec.
 
 Use to enumerate the criteria a decision must meet, in priority order. Numbering signals weight; each row reads as a complete requirement.
 
@@ -3524,6 +3542,8 @@ See [list-steps.gallery.light.pdf](../../lib/components/progression/list-steps/l
 **Function** evidence · **Form** ledger · **Substance** structure
 
 **Tags** `dashboard` · `scorecard` · `metric` · `okr`
+
+**Density** up to ~8 words per item (overflows past 14) — a metric label, not a sentence.
 
 Use for KPI dashboards with status framing — current value, target, trend, attention-needed. Bare `kpi` resolves to the briefing layout; the five modifiers tune the visual emphasis for different audiences (ops, compliance, investor, headline).
 
@@ -5629,6 +5649,8 @@ See [state-chart.gallery.light.pdf](../../lib/components/chart/state-chart/state
 **Function** evidence · **Form** timeline · **Substance** series
 
 **Tags** `changelog` · `milestones` · `status` · `retrospective`
+
+**Density** up to ~16 words per item (overflows past 24) — one stage in a sentence.
 
 Use for milestone history or annotated timelines. Each event sits on a left-to-right spine: a dot with its date pill above it, then the title, an optional status pill, and a short body stacked beneath.
 

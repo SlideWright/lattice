@@ -76,6 +76,17 @@ const BUILDERS = {
   checklist: (w) => `- [x] ${cap(words(w))}`,
   stats: (w) => `1. 73%\n   - ${cap(words(w))}`,
   kpi: (w) => `1. 42%\n   - ${cap(words(w))}`,
+  // Backfill of the remaining text-bearing layouts (2026-06-30 phase-2 §10).
+  list: (w) => `- ${cap(words(w))}.`,
+  glossary: (w) => `- ${cap(words(1))}\n  - ${cap(words(w - 1))}.`,
+  'list-criteria': (w) => `1. ${cap(words(2))}\n   - ${cap(words(w - 2))}.`,
+  'list-tabular': (w) => `1. ${cap(words(2))}\n   - ${cap(words(w - 2))}.`,
+  'timeline-list': (w) => `1. \`2025 Q1\` ${cap(words(2))}\n   - ${cap(words(w - 2))}.`,
+  'compare-prose': (w) => `- ${cap(words(2))}\n  - ${cap(words(w - 2))}.`,
+  decision: (w) => `- ${cap(words(2))}\n  - ${cap(words(w - 2))}.`,
+  'matrix-2x2': (w) => `- **${cap(words(2))}.**\n  - ${cap(words(w - 2))}`,
+  'split-panel': (w) => `- ${cap(words(2))}\n  - ${cap(words(w - 2))}.`,
+  'split-compare': (w) => `- ${cap(words(2))}\n  - ${cap(words(w - 2))}.`,
 };
 const build = BUILDERS[comp];
 if (!build) die(`No element builder for '${comp}'. Add one to tools/calibrate-density.js BUILDERS (pilot covers: ${Object.keys(BUILDERS).join(', ')}).`);

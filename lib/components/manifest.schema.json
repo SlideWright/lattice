@@ -296,7 +296,7 @@
       "properties": {
         "axis": {
           "enum": ["item", "row", "col", "cell", "line"],
-          "description": "The collection whose ELEMENTS carry the budgeted prose — MUST be a focusAxes member when focusAxes is declared. Defaults to `capacity.axis` when omitted. Per-element word counting is currently implemented for `item` and `row` only; validate() rejects the others (col/cell/line) so a block can't validate yet silently never fire."
+          "description": "The collection whose ELEMENTS carry the budgeted prose. Defaults to `capacity.axis` when omitted. Unlike capacity, NOT tied to focusAxes — focusAxes governs _focus highlighting (a ledger may highlight as table rows) while density counts the markdown the author writes (a ledger authored as a bullet list is the `item` axis; glossary is the canonical case). The only axis guard is measurability in the sample. Per-element word counting is currently implemented for `item` and `row` only; validate() rejects the others (col/cell/line) so a block can't validate yet silently never fire."
         },
         "soft": { "type": "integer", "minimum": 1, "description": "Words per element — the editorial target surfaced to the author/agent. Past this the element begins to crowd → soft suggestion." },
         "hard": { "type": "integer", "minimum": 1, "description": "Words per element — the evidence-clamped ceiling. Past this the element overflows → overflow suggestion. Always ≥ soft; in practice meaningfully above it (the gap between 'reads well' and 'breaks')." },
