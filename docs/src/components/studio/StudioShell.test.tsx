@@ -377,14 +377,17 @@ describe('StudioShell — topbar information architecture', () => {
 		expect(screen.getByRole('button', { name: 'More controls' })).toBeInTheDocument();
 	});
 
-	it('compact: ⋯ holds the theme picker, Library, Workspace, and a Search/commands row', async () => {
+	it('compact: ⋯ holds the theme picker (inline, not a side submenu), Library, Workspace, and a Search/commands row', async () => {
 		setViewport('tablet');
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'More controls' }));
-		expect(await screen.findByRole('menuitem', { name: 'Theme' })).toBeInTheDocument();
 		expect(screen.getByRole('menuitem', { name: 'Library' })).toBeInTheDocument();
 		expect(screen.getByRole('menuitem', { name: 'Workspace settings' })).toBeInTheDocument();
 		expect(screen.getByRole('menuitem', { name: /Search \/ commands/ })).toBeInTheDocument();
+		// The theme swatches are inline in the SAME menu — a single scroll region, not a
+		// side-opening submenu (which overflows a phone viewport). Picking one is one tap.
+		expect(await screen.findByRole('menuitem', { name: 'Indaco' })).toBeInTheDocument();
+		expect(screen.getByRole('menuitem', { name: 'Onyx' })).toBeInTheDocument();
 	});
 
 	it('compact: the ⋯ Search/commands row opens the command palette', async () => {

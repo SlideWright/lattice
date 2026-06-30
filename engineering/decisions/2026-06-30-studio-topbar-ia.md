@@ -17,6 +17,19 @@ summary: The Studio topbar packs up to ~15 controls into one 54px row; on a port
 > 820 / 1440, light + dark** — the compact bar is legible (the M-b check passes), so `⋯`
 > earns its keep. Unit coverage: the new `StudioShell — topbar information architecture`
 > suite (desktop full bar, compact fold, `⋯` membership, Search→palette, open→resize→close).
+>
+> **Device-test correction (theme = inline, NOT a side submenu).** The first cut used a
+> Radix `DropdownMenuSub` for the theme picker inside `⋯`. On a real phone that flyout
+> opens to the *side* and, with no room on a ≤844px screen, renders **off the left edge
+> (clipped)**; in landscape it also truncated the long theme list with **no "more below"
+> affordance**. Fix: drop the submenu and render `ThemeMenuItems` **inline** in the one
+> `⋯` `DropdownMenuContent`, actions first — so the menu stays anchored on-screen.
+> Because the OS hides native scrollbars on touch and Radix `DropdownMenu` has **no**
+> scroll buttons, a clipped row alone was too subtle (device feedback) — so the scroll
+> region is wrapped in a `ScrollFade` that shows a **bottom fade + ⌄ chevron while more
+> sits below the fold**, clearing once you reach the end. Lesson logged for #18: nested
+> menus are a desktop-hover pattern, and "the row clips" is not a scroll affordance on
+> touch — verify the *expanded + scrolled* state on a real narrow viewport.
 
 ## Problem
 

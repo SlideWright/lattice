@@ -7,7 +7,7 @@ import DeckPreview from '@/components/DeckPreview';
 import { Button } from '@/components/ui/button';
 import {
 	DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
-	DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger,
+	DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
@@ -1146,17 +1146,19 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 						<DropdownMenuTrigger asChild>
 							<Button variant="ghost" size="icon-sm" aria-label="More controls"><MoreHorizontal className="size-[18px]" /></Button>
 						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end" className="w-56">
-							<DropdownMenuSub>
-								<DropdownMenuSubTrigger><Palette className="size-4" />Theme</DropdownMenuSubTrigger>
-								<DropdownMenuSubContent className="max-h-[70vh] w-52 overflow-y-auto">
-									<ThemeMenuItems palette={palette} onPick={applyPalette} saved={savedMenu} />
-								</DropdownMenuSubContent>
-							</DropdownMenuSub>
-							{onboarded && <DropdownMenuItem onSelect={() => setLibraryOpen(true)}><FileBox className="size-4" />Library</DropdownMenuItem>}
-							{onboarded && <DropdownMenuItem onSelect={() => setWorkspaceOpen(true)}><Settings2 className="size-4" />Workspace settings</DropdownMenuItem>}
-							<DropdownMenuSeparator />
-							<DropdownMenuItem onSelect={() => setCmdOpen(true)}><Search className="size-4" />Search / commands<span className="ml-auto rounded border border-border bg-background px-1.5 font-mono text-[10px]">⌘K</span></DropdownMenuItem>
+						{/* Inline, scrollable content — NOT a side-opening submenu. A nested
+						    Radix submenu flies out to the side, which on a phone overflows the
+						    viewport (clips off-screen) and hides that the theme list scrolls.
+						    Actions sit first; the theme picker fills the rest as one scroll
+						    region so a clipped row signals "more below". */}
+						<DropdownMenuContent align="end" className="w-56 overflow-hidden p-0">
+							<ScrollFade className="max-h-[70vh] overflow-y-auto p-1">
+								{onboarded && <DropdownMenuItem onSelect={() => setLibraryOpen(true)}><FileBox className="size-4" />Library</DropdownMenuItem>}
+								{onboarded && <DropdownMenuItem onSelect={() => setWorkspaceOpen(true)}><Settings2 className="size-4" />Workspace settings</DropdownMenuItem>}
+								<DropdownMenuItem onSelect={() => setCmdOpen(true)}><Search className="size-4" />Search / commands<span className="ml-auto rounded border border-border bg-background px-1.5 font-mono text-[10px]">⌘K</span></DropdownMenuItem>
+								<DropdownMenuSeparator />
+								<ThemeMenuItems palette={palette} onPick={applyPalette} saved={savedMenu} />
+							</ScrollFade>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				)}
@@ -1339,6 +1341,38 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 }
 
 // ── small local building blocks ─────────────────────────────────────────
+// A scroll container that shows a bottom fade + chevron WHILE more content sits
+// below the fold — the only reliable "there's more" cue for a long menu on touch,
+// where the OS hides native scrollbars and Radix DropdownMenu has no scroll
+// buttons. The cue clears once you reach the bottom. `pointer-events-none` so it
+// never eats a tap on the row beneath it.
+function ScrollFade({ children, className }: { children: React.ReactNode; className?: string }) {
+	const ref = React.useRef<HTMLDivElement>(null);
+	const [more, setMore] = React.useState(false);
+	const check = React.useCallback(() => {
+		const el = ref.current;
+		if (el) setMore(el.scrollHeight - el.scrollTop - el.clientHeight > 4);
+	}, []);
+	React.useLayoutEffect(() => {
+		const el = ref.current;
+		if (!el) return;
+		// ResizeObserver fires once on observe — catching the settled height after the
+		// menu's open animation, when scrollHeight/clientHeight are finally valid.
+		const ro = new ResizeObserver(check);
+		ro.observe(el);
+		return () => ro.disconnect();
+	}, [check]);
+	return (
+		<div className="relative">
+			<div ref={ref} onScroll={check} className={className}>{children}</div>
+			{more && (
+				<div className="pointer-events-none absolute inset-x-0 bottom-0 flex h-8 items-end justify-center bg-gradient-to-t from-popover via-popover/80 to-transparent">
+					<ChevronDown className="size-4 translate-y-[-2px] text-muted-foreground" />
+				</div>
+			)}
+		</div>
+	);
+}
 function PaneBtn({ active, onClick, icon, children }: { active: boolean; onClick: () => void; icon: React.ReactNode; children: React.ReactNode }) {
 	return (
 		<button type="button" onClick={onClick} className={cn('inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-[13px] font-semibold', active ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}>{icon}{children}</button>
