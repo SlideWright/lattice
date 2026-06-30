@@ -115,6 +115,12 @@ const CHART_FAMILY_SOURCE = 'lib/components/chart/_chart-family/chart-family.css
 // 27 utility classes (12 tints + 11 marks + treatment-none reset) for
 // peripheral atmospheric accents. All palette-blind via var(--accent).
 const TREATMENTS_SOURCE = 'lib/base/base.treatments.css';
+// Parametric full-bleed FINISH backdrops (the `field` zone of the Finish
+// family): pure-gradient, palette-blind, export-safe surface treatments selected
+// deck-wide via the `finish:` register or per-slide via `_class: backdrop …`.
+// Bundled immediately after treatments so it shares the compositor's two slots
+// (the compositor selector matches `.backdrop`). See base.backdrops.css.
+const BACKDROPS_SOURCE = 'lib/base/base.backdrops.css';
 // Focus & highlighting — the `.lat-focus` / `.lat-recede` treatment contract
 // (content-aware default by axis + spotlight/ring/list-fill variants), keyed on
 // the tags the focus resolver (lib/transformers/focus.js) stamps. Palette-blind
@@ -475,6 +481,11 @@ function bundle() {
   if (treatments) {
     parts.push(`/* === ${TREATMENTS_SOURCE} === */`);
     parts.push(treatments);
+  }
+  const backdrops = readIfExists(BACKDROPS_SOURCE);
+  if (backdrops) {
+    parts.push(`/* === ${BACKDROPS_SOURCE} === */`);
+    parts.push(backdrops);
   }
   const focus = readIfExists(FOCUS_SOURCE);
   if (focus) {

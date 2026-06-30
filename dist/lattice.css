@@ -14713,7 +14713,7 @@ section.chart-frame.cover::after {
  * (per-layer placement modifiers) also match harmlessly — they set no
  * slot values so the compositor renders `none, none` if they're alone.
  */
-section:where([class*="tint-"], [class*="mark-"]) {
+section:where([class*="tint-"], [class*="mark-"], [class*="backdrop"]) {
   background-image: var(--_bg-radial, none), var(--_bg-linear, none);
 }
 
@@ -15235,6 +15235,129 @@ section.mark-chevron::before {
 section.treatment-none {
   --_bg-radial: none;
   --_bg-linear: none;
+}
+
+/* === lib/base/base.backdrops.css === */
+/* base.backdrops.css — parametric full-bleed FINISH backdrops.
+ *
+ * The `field` zone of the Finish family (engineering/decisions/
+ * 2026-06-30-finish-the-surface-layer.md): a deck-wide or per-slide surface
+ * treatment painted BEHIND all content. Selected deck-wide via the `finish:`
+ * register (lib/core/resolve-finish.js → maps e.g. `finish: blueprint` to the
+ * `backdrop backdrop-blueprint` classes on every section) or per-slide via
+ * `<!-- _class: backdrop backdrop-blueprint -->`.
+ *
+ * Design constraints (all four are load-bearing — see the decision doc):
+ *   1. PALETTE-BLIND. Every color is color-mix() of var(--accent)/var(--bg);
+ *      a theme swap (or `dark`) recolors the backdrop automatically. No hex (#3).
+ *   2. EXPORT-SAFE. Painted as a real background-image (gradients), NEVER a
+ *      mask — full-bleed masks drop in Apple PDFKit (the failure the cropped-bbox
+ *      treatments architecture avoids). Gradients survive both export engines
+ *      (the section already carries print-color-adjust:exact, base.elements.css).
+ *   3. NO url(). Pure CSS gradients carry no remote reference, so backdrops add
+ *      zero exfil surface — unlike the asset-backed ![bg]/backgroundImage: path.
+ *   4. SUBTLE. Accent alpha is kept low (6–16%) so text-on-bg AA contrast is
+ *      preserved without a scrim. (The opaque-scrim requirement binds the
+ *      DEFERRED asset-backed photo-cover path, not these parametric fields.)
+ *
+ * Composition. Backdrops reuse the treatments compositor's two slots
+ * (--_bg-radial, --_bg-linear, base.treatments.css) — the compositor selector is
+ * extended to match `.backdrop`. A single slot may hold several comma-separated
+ * gradient layers (grids stack two repeating-linear-gradients in one slot). A
+ * backdrop composes with ::before-based marks. Each variant sets BOTH slots (the
+ * one it uses + the other to `none`) so a single field backdrop is fully
+ * self-defining and never inherits a stray slot from a sibling.
+ *
+ * One field per slide. The primary model is ONE deck-wide field finish (via the
+ * `finish:` register), applied to every section. To take a slide OUT of the deck
+ * field (a title/cover/image or a busy chart), add `<!-- _class: backdrop-none -->`
+ * — it is defined last, so it clears both slots and wins. (Stacking two different
+ * field backdrops on one slide composes by slot and is resolved by source order;
+ * it is an advanced case, not the intended per-slide override.) No margin anywhere
+ * (#20): backdrops paint into the section box, adding no space.
+ */
+
+/* ── WASH · soft ambient accent ───────────────────────────────────────
+ * A gentle radial bloom from the top edge — the most restrained backdrop,
+ * reads as "lit from above" rather than a pattern. */
+section.backdrop-wash {
+  --_bg-linear: none;
+  --_bg-radial: radial-gradient(
+    ellipse 130% 120% at 50% 0%,
+    color-mix(in srgb, var(--accent) 8%, transparent) 0%,
+    transparent 68%
+  );
+}
+
+/* ── AURORA · two-tone corner glow ────────────────────────────────────
+ * Diagonal pair of accent blooms (top-left strong, bottom-right faint) for a
+ * sense of depth. Both layers ride the radial slot. */
+section.backdrop-aurora {
+  --_bg-linear: none;
+  --_bg-radial:
+    radial-gradient(
+      ellipse 72% 60% at 0% 0%,
+      color-mix(in srgb, var(--accent) 13%, transparent) 0%,
+      transparent 62%
+    ),
+    radial-gradient(
+      ellipse 72% 60% at 100% 100%,
+      color-mix(in srgb, var(--accent) 9%, transparent) 0%,
+      transparent 60%
+    );
+}
+
+/* ── BLUEPRINT · graph-paper grid ─────────────────────────────────────
+ * Faint accent rules every 28px in both axes — the characterful "drafting
+ * table" finish. Two repeating-linear-gradients stacked in the linear slot. */
+section.backdrop-blueprint {
+  --_bg-radial: none;
+  --_bg-linear:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--accent) 7%, transparent) 0 1px,
+      transparent 1px 28px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--accent) 7%, transparent) 0 1px,
+      transparent 1px 28px
+    );
+}
+
+/* ── DOTS · dot grid ──────────────────────────────────────────────────
+ * A tiled accent dot every 22px — characterful but quiet. One radial tiled by
+ * background-size (the only backdrop that sets background-size; it applies to
+ * the single radial layer, the empty linear layer ignores it). */
+section.backdrop-dots {
+  --_bg-linear: none;
+  --_bg-radial: radial-gradient(
+    circle at center,
+    color-mix(in srgb, var(--accent) 16%, transparent) 0 1.4px,
+    transparent 1.9px
+  );
+  background-size: 22px 22px;
+}
+
+/* ── HATCH · diagonal rule ────────────────────────────────────────────
+ * 45° accent hatching every 12px — a textured, energetic field. */
+section.backdrop-hatch {
+  --_bg-radial: none;
+  --_bg-linear: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--accent) 6%, transparent) 0 1px,
+    transparent 1px 12px
+  );
+}
+
+/* ── Per-slide opt-out ────────────────────────────────────────────────
+ * `<!-- _class: backdrop-none -->` clears a deck-wide backdrop on one slide
+ * (e.g. a full-bleed image cover or a busy chart). Zeroes both slots; wins by
+ * source order over the backdrop-* setters above. */
+section.backdrop-none {
+  --_bg-radial: none;
+  --_bg-linear: none;
+  background-size: auto;
 }
 
 /* === lib/base/base.focus.css === */

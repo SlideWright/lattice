@@ -66,7 +66,7 @@
  * (per-layer placement modifiers) also match harmlessly — they set no
  * slot values so the compositor renders `none, none` if they're alone.
  */
-section:where([class*="tint-"], [class*="mark-"]) {
+section:where([class*="tint-"], [class*="mark-"], [class*="backdrop"]) {
   background-image: var(--_bg-radial, none), var(--_bg-linear, none);
 }
 

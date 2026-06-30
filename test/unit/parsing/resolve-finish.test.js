@@ -23,6 +23,21 @@ describe('resolve-finish', () => {
     assert.equal(finishClasses('boardroom'), '', 'boardroom is the no-class baseline');
   });
 
+  test('backdrop finishes map to the backdrop base class + their variant', () => {
+    assert.equal(finishClasses('wash'), 'backdrop backdrop-wash');
+    assert.equal(finishClasses('aurora'), 'backdrop backdrop-aurora');
+    assert.equal(finishClasses('blueprint'), 'backdrop backdrop-blueprint');
+    assert.equal(finishClasses('dots'), 'backdrop backdrop-dots');
+    assert.equal(finishClasses('hatch'), 'backdrop backdrop-hatch');
+    // every backdrop finish carries the base `backdrop` token (the compositor hook)
+    for (const name of ['wash', 'aurora', 'blueprint', 'dots', 'hatch']) {
+      assert.ok(
+        finishClasses(name).split(/\s+/).includes('backdrop'),
+        `${name} must include the base backdrop class`,
+      );
+    }
+  });
+
   test('boardroom / omitted / unrecognized all resolve to no classes', () => {
     assert.equal(finishClasses('boardroom'), '');
     assert.equal(finishClasses(''), '');
@@ -47,7 +62,10 @@ describe('resolve-finish', () => {
   });
 
   test('FINISH_NAMES lists exactly the registered names', () => {
-    assert.deepEqual([...FINISH_NAMES].sort(), ['boardroom', 'sketch', 'sketch-clean']);
+    assert.deepEqual(
+      [...FINISH_NAMES].sort(),
+      ['aurora', 'blueprint', 'boardroom', 'dots', 'hatch', 'sketch', 'sketch-clean', 'wash'],
+    );
   });
 
   test('readFrontMatterFinish extracts the value from the front-matter block only', () => {
