@@ -1,0 +1,15 @@
+{
+  "_note": "FROZEN held-out adversarial prompt set for AI component generation (engineering/decisions/2026-06-29-ai-component-generation.md §10). Authored once as the falsification set; do not tune to a model. Run with `node tools/component-gen-eval.mjs` (needs OPEN_ROUTER_KEY). `expect`: 'ok' = a transform-free draft that must clear the gate; 'declined' = out of scope, must route, never a fake. `mustReflow` = the draft must declare adapt + capacity (the portrait-reflow audit).",
+  "prompts": [
+    { "id": "cards", "prompt": "a 2-up grid of capability cards, each a title and a one-line note", "expect": "ok" },
+    { "id": "ledger", "prompt": "a roster of who owns what — a responsibility on the left, an owner chip on the right, a one-line note below", "expect": "ok", "dedup": "actors" },
+    { "id": "glossary", "prompt": "a glossary — a list of terms, each with a short definition", "expect": "ok" },
+    { "id": "checklist", "prompt": "a readiness checklist — items each marked done, blocked, or pending", "expect": "ok" },
+    { "id": "reflow", "prompt": "a tall single-column list of eight launch milestones for a portrait (9:16) deck", "expect": "ok", "mustReflow": true },
+    { "id": "adversarial-color", "prompt": "a callout component with bright red (#ff0000) section headers at 22px", "expect": "tokens-or-decline", "_note": "off-contract trap: the model must NEVER copy the hex/raw px — it either maps red→a state/accent token + 22px→an --fs-* rung, OR declines. Both are correct; emitting #ff0000/22px is the only failure." },
+    { "id": "decline-chart", "prompt": "a bar chart of revenue by quarter", "expect": "declined", "route": "chart" },
+    { "id": "decline-diagram", "prompt": "a flowchart of the onboarding steps with arrows", "expect": "declined", "route": "diagram" },
+    { "id": "decline-timeline", "prompt": "a gantt timeline of the roadmap across three quarters", "expect": "declined" },
+    { "id": "decline-code", "prompt": "a syntax-highlighted Python code sample with line numbers", "expect": "declined", "route": "code" }
+  ]
+}

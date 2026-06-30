@@ -13,7 +13,7 @@ import { gateCss, NAME_RE, scaffoldFiles, skeletonInvokes } from '@/playground/l
 // (lib/theme/*, bundled browser-safe). deriveTheme → ~80 tokens (contrast-
 // repaired), auditBoth → live WCAG report, serializeTheme → a real themes/*.css.
 import { auditBoth, contrastRatio, deriveTheme, STARTERS, serializeTheme, validateEssentials } from '@/playground/theme-core.generated.js';
-import { connectOpenRouter, generateTheme, useArchitectStatus } from './architect';
+import { type ComponentSimilar, connectOpenRouter, generateComponent, generateTheme, useArchitectStatus } from './architect';
 import { saveStudioComponent } from './component-library';
 import { downloadText } from './download';
 import { type Finding, LayoutStudio, STARTER_CSS, STARTER_DESCRIPTION, STARTER_NAME, STARTER_SKELETON } from './LayoutStudio';
@@ -155,7 +155,7 @@ const contractLabelOf = (id: string) => CONTRACT.find((c) => c.token === id)?.la
 const tokenLabel = (id: string) => contractLabelOf(id) ?? bandLabel(id);
 const tierOf = (ratio: number | null, ok: boolean) => ((ratio ?? 0) >= 7 ? 'AAA' : ok ? 'AA' : 'FAIL');
 
-export function Fabricate({ options, onClose, notify, onSaved, onOpenWorkspace }: { options: SingleSlideOptions; onClose: () => void; notify: (msg: string) => void; onSaved?: () => void; onOpenWorkspace?: () => void }) {
+export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onOpenWorkspace }: { options: SingleSlideOptions; catalog?: { name: string; bucket?: string; description?: string; tags?: string[] }[]; onClose: () => void; notify: (msg: string) => void; onSaved?: () => void; onOpenWorkspace?: () => void }) {
 	const [tab, setTab] = React.useState<'theme' | 'layout'>('theme');
 	// All ten essentials in state, seeded from the first curated starter.
 	const [core, setCore] = React.useState<Record<EssKey, string>>(() => ({ ...(STARTERS[0].essentials as Record<EssKey, string>) }));
@@ -172,6 +172,13 @@ export function Fabricate({ options, onClose, notify, onSaved, onOpenWorkspace }
 	const [compDesc, setCompDesc] = React.useState(STARTER_DESCRIPTION);
 	const [compCss, setCompCss] = React.useState(STARTER_CSS);
 	const [compSkeleton, setCompSkeleton] = React.useState(STARTER_SKELETON);
+	// Component-tab AI: "Describe a component" — the mirror of the Theme tab's
+	// "Describe a look". The model proposes a manifest + scoped CSS + skeleton
+	// grounded in the knowledge file; the SAME live gate below disposes. `compSimilar`
+	// holds the dedup near-neighbors (reuse nudge).
+	const [compPrompt, setCompPrompt] = React.useState('');
+	const [compGen, setCompGen] = React.useState<'idle' | 'working'>('idle');
+	const [compSimilar, setCompSimilar] = React.useState<ComponentSimilar[]>([]);
 	// The description disclosure (chevron under the name) — collapsed by default on
 	// both tabs; opening reveals the one-line caption editor.
 	const [descOpen, setDescOpen] = React.useState(false);
@@ -278,6 +285,42 @@ export function Fabricate({ options, onClose, notify, onSaved, onOpenWorkspace }
 			notify('Theme generation failed — please try again.');
 		} finally {
 			setGen('idle');
+		}
+	}
+
+	// "Describe a component" → the model proposes a manifest + scoped CSS + skeleton
+	// grounded in the knowledge file; dedup surfaces near neighbors; the draft loads
+	// into the editor where the SAME live gate re-checks it. Honest degradation: a
+	// clear note for no-model / budget-blocked / out-of-scope (declined) — never a fake.
+	async function runDescribeComponent(text: string) {
+		const p = text.trim();
+		if (!p || compGen === 'working') return;
+		setCompGen('working');
+		try {
+			const out = await generateComponent(p, catalog);
+			if (out.status === 'ok') {
+				setCompName(out.draft.name);
+				setCompDesc(out.draft.description);
+				setCompCss(out.draft.css);
+				setCompSkeleton(out.draft.skeleton);
+				setCompSimilar(out.similar);
+				setCompPrompt('');
+				const issues = out.findings.filter((f) => f.level === 'error').length;
+				notify(issues ? `Generated “.${out.draft.name}” — ${issues} gate ${issues === 1 ? 'issue' : 'issues'} to review below.` : `Generated “.${out.draft.name}” — gate-clean. Review the preview, then Save.`);
+			} else if (out.status === 'declined') {
+				setCompSimilar(out.similar);
+				notify(`That needs ${out.route === 'dsl' ? 'a first-party build' : `the ${out.route} path`} — ${out.reason}${out.suggestion ? ` (try: ${out.suggestion})` : ''}.`);
+			} else if (out.status === 'offline') {
+				notify('No model connected — open Workspace to connect OpenRouter or load an on-device model.');
+			} else if (out.status === 'blocked') {
+				notify(out.note);
+			} else {
+				notify(out.note || 'No component proposed.');
+			}
+		} catch {
+			notify('Component generation failed — please try again.');
+		} finally {
+			setCompGen('idle');
 		}
 	}
 
@@ -540,7 +583,58 @@ export function Fabricate({ options, onClose, notify, onSaved, onOpenWorkspace }
 				</div>
 			</div>
 			) : (
+			<div className="flex min-h-0 flex-1 flex-col">
+				{/* AI front door — "Describe a component". The mirror of the Theme tab's
+				    "Describe a look": the model proposes a manifest + scoped CSS + skeleton
+				    grounded in the knowledge file; the live gate below disposes. Dedup
+				    surfaces near-neighbor components as a reuse nudge. */}
+				<div className="flex shrink-0 flex-col gap-2 border-b border-border bg-card px-4 py-2.5">
+					<div className={cn('flex items-center gap-2.5 rounded-[10px] border bg-background px-3 py-2', modelReady ? 'border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]' : 'border-dashed border-border')}>
+						<Sparkles className={cn('size-4 shrink-0', modelReady ? 'text-[var(--accent)]' : 'text-muted-foreground')} />
+						<input
+							value={compPrompt}
+							onChange={(e) => setCompPrompt(e.target.value)}
+							onKeyDown={(e) => { if (e.key === 'Enter') runDescribeComponent(compPrompt); }}
+							disabled={compGen === 'working' || !modelReady}
+							placeholder="Describe a component — e.g. “a 2-up grid of capability cards, each a title and a one-line note”"
+							aria-label="Describe a component"
+							className="min-w-0 flex-1 bg-transparent text-[13px] text-[var(--text-heading)] outline-none placeholder:text-muted-foreground disabled:opacity-60"
+						/>
+						{modelReady ? (
+							<button type="button" onClick={() => runDescribeComponent(compPrompt)} disabled={compGen === 'working' || !compPrompt.trim()} aria-label="Generate component" className="grid size-7 shrink-0 place-items-center rounded-md bg-[var(--accent)] text-[var(--on-accent,#fff)] disabled:opacity-40">
+								{compGen === 'working' ? <Loader2 className="size-4 animate-spin" /> : <ArrowUp className="size-4" />}
+							</button>
+						) : (
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<button type="button" aria-label="Connect a model" className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--accent)] px-2.5 py-1 text-[12px] font-semibold text-[var(--on-accent,#fff)]"><Cloud className="size-3.5" />Connect<ChevronDown className="size-3" /></button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end" className="w-60">
+									<DropdownMenuItem onSelect={() => { connectOpenRouter().catch(() => notify('Could not start the OpenRouter connect flow — try Workspace.')); }}><Cloud className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Connect cloud</div><div className="text-[11px] text-muted-foreground">OpenRouter — best quality</div></div></DropdownMenuItem>
+									<DropdownMenuItem onSelect={() => onOpenWorkspace?.()}><Sparkles className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Use on-device</div><div className="text-[11px] text-muted-foreground">Runs locally, free — via Workspace</div></div></DropdownMenuItem>
+									<DropdownMenuSeparator />
+									<DropdownMenuItem onSelect={() => onOpenWorkspace?.()}>Open Workspace…</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						)}
+					</div>
+					{compSimilar.length > 0 ? (
+						<div className="flex flex-wrap items-center gap-1.5">
+							<span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70" title="Existing components close to your request — reuse one where it fits">Similar</span>
+							{compSimilar.map((s) => (
+								<span key={s.name} title={s.description || s.name} className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-[11px] text-muted-foreground">
+									<span className="font-semibold text-[var(--text-heading)]">.{s.name}</span>
+									<span className="text-muted-foreground/70">{s.bucket}</span>
+								</span>
+							))}
+							<span className="text-[10px] text-muted-foreground/60">reuse where it fits</span>
+						</div>
+					) : (
+						!modelReady && <p className="text-[11px] leading-snug text-muted-foreground">Connect a model to generate a native-feeling component from a description — or author one by hand below.</p>
+					)}
+				</div>
 				<LayoutStudio options={options} name={compName} css={compCss} skeleton={compSkeleton} onCss={setCompCss} onSkeleton={setCompSkeleton} findings={compFindings} nameOk={compNameOk} />
+			</div>
 			)}
 		</div>
 	);

@@ -33,6 +33,7 @@ import gate from './gate.js';
 import scaffold from './scaffold.js';
 import starters from './starters.js';
 import bridge from './bridge.js';
+import ai from './ai.js';
 
 // gate (deterministic — model proposes, these dispose)
 export const {
@@ -52,6 +53,11 @@ export const {
   referencedComponents, embedComponentsInMarkdown, stripEmbeddedComponents,
   collidesWithShipped,
 } = bridge;
+// ai (the model-proposes pieces — knowledge file + coerce + dedup ranking + audit)
+export const {
+  ASK_SYSTEM, COMPONENT_CANON, askComponentMessages, coerceComponent, rankSimilar,
+  auditComponentDesign, addScopePrefix,
+} = ai;
 `;
 
 const BUILD_OPTIONS = {

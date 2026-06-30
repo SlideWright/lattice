@@ -70,6 +70,31 @@ in patch versions.
 
 ### Added
 
+- **Studio — AI component generation: "Describe a component" (#610).** The Component tab now
+  has the mirror of the Theme tab's "Describe a look" — describe a component and the model
+  proposes a manifest + scoped CSS + skeleton that feels native to Lattice's set, not generic
+  CSS. Same architecture as the Theme AI (#613): the model PROPOSES within a tight contract and
+  deterministic code DISPOSES. The contract is a concrete **knowledge file** (`lib/layout/ai.js`
+  `COMPONENT_CANON`, the analog of `THEME_CANON`) teaching the Form vocabulary (Frame/Cell/Tile,
+  the `section.<name> > .cell-stage` root), the full slot table (eyebrow/title/subtitle/pill/
+  key-insight/footer/pagination/logo + the three-way rail disambiguation), the token system (the
+  `--fs-*` type roles, palette, spacing — never an invented value), every hard invariant with its
+  *why* (no margin #20, var(--token) #3, `--fs-*` #4, card-nesting #5, scoping #7, US #21), the
+  12-bucket taxonomy, the 10/10 rubric, the `@container lattice` doubled-class reflow recipe, and
+  **three fully-worked, gate-verified examples**. **Dedup-first** (§5): before generating, near-
+  duplicate components are surfaced (bge-small embeddings → fuse.js lexical fallback) so you reuse
+  rather than bloat the catalog — default-on, with a **Workspace toggle**. **Guardrails** (§6/§7):
+  the draft runs the same `gateComponent` + `findCssExfil` + design-audit (margin/typography) the
+  Studio enforces, plus an **adapt/capacity coherence audit** and a **data:-URI size cap**;
+  spatially-neutral fixes (card-nesting, scope-prefix) auto-apply while every spatial violation is
+  *flagged, never silently mutated*. **Scope** (§9): transform-free components only — a request for
+  a chart, diagram, code, or non-`ul>li` structure is **declined and routed**, never faked.
+  Validated against a **frozen held-out adversarial prompt set** (`test/fixtures/component-gen-
+  prompts.json` + `tools/component-gen-eval.mjs`): 10/10 cases — gate-clean generation, dedup-route,
+  portrait-reflow, the off-contract-color trap, and four decline cases — pass with a real model.
+  The aesthetic 10/10 read still rests on human review (the Quality Bar) — there is no automated
+  aesthetic gate, by design. See `engineering/decisions/2026-06-29-ai-component-generation.md`.
+
 - **Studio — one unified Theme + Component designer, with first-class names (#610).** The
   Fabricate Theme and Component tabs now share ONE header and ONE Save/Export UX, so moving
   between them is seamless instead of two private layouts. Naming is unified and made
