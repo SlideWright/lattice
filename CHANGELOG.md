@@ -70,6 +70,14 @@ in patch versions.
 
 ### Added
 
+- **Studio — AI component generation widened beyond `inventory` (#610).** The "Describe a component"
+  generator now reliably covers **comparison, evidence/statement, and legal** components, not just
+  inventory. The frozen held-out adversarial set (`test/fixtures/component-gen-prompts.json`) gained
+  prompts for those buckets and stays **14/14** against a real model. The widening surfaced one real
+  gap — the model reaching for `margin` on a two-column layout — closed by a fourth gate-verified
+  worked example in the knowledge file (a two-column comparison built on `grid` + `gap`). No API
+  change; the generated components are simply native across more of the transform-free set.
+
 - **Studio — AI component generation: "Describe a component" (#610).** The Component tab now
   has the mirror of the Theme tab's "Describe a look" — describe a component and the model
   proposes a manifest + scoped CSS + skeleton that feels native to Lattice's set, not generic

@@ -11,7 +11,7 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 
-const { ASK_SYSTEM, askComponentMessages, coerceComponent, rankSimilar, auditComponentDesign, addScopePrefix, MAX_CSS_BYTES } = require('../../../lib/layout/ai.js');
+const { askComponentMessages, coerceComponent, rankSimilar, auditComponentDesign, addScopePrefix, MAX_CSS_BYTES } = require('../../../lib/layout/ai.js');
 const { gateComponent, findUnscopedSelectors } = require('../../../lib/layout/gate.js');
 
 describe('component-ai — prompt', () => {
@@ -154,6 +154,21 @@ describe('component-ai — the worked examples are gate-clean (make-or-break)', 
   });
   test('worked example C (reuse) passes gateComponent', () => {
     assert.equal(gateComponent(REUSE).ok, true, JSON.stringify(gateComponent(REUSE).errors));
+  });
+
+  // Example D — the two-column comparison added after the §10 widening found the
+  // model reached for `margin` on a two-column layout. This teaches grid + gap.
+  const COMPARE = {
+    css: [
+      'section.build-buy > .cell-stage > ul { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-lg); align-content:start; flex:1; min-height:0; list-style:none; padding:0; margin:0; }',
+      'section.build-buy > .cell-stage > ul > li { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md); padding:var(--sp-md); font-size:var(--fs-message); font-weight:700; color:var(--text-heading); }',
+      'section.build-buy > .cell-stage > ul > li > ul { list-style:none; padding:var(--sp-sm) 0 0 0; margin:0; display:flex; flex-direction:column; gap:var(--sp-xs); font-size:var(--fs-body); font-weight:400; color:var(--text-body); }',
+      '@container lattice (aspect-ratio <= 0.9) { section.build-buy.build-buy > .cell-stage > ul { grid-template-columns:1fr; } }',
+    ].join('\n'),
+    manifest: { name: 'build-buy', function: 'comparison', form: 'split', substance: 'structure', bucket: 'comparison', tags: ['comparison', 'two-column', 'tradeoff'], description: 'Two options side by side.', skeleton: '<!-- _class: build-buy -->\n\n## Build vs buy\n\n- Build\n  - Full control\n- Buy\n  - Faster' },
+  };
+  test('worked example D (two-column comparison) passes gateComponent — grid + gap, no margin', () => {
+    assert.equal(gateComponent(COMPARE).ok, true, JSON.stringify(gateComponent(COMPARE).errors));
   });
 });
 

@@ -397,8 +397,12 @@ All three pillars landed, faithful to the design above:
 **Honest residue (unchanged from the design's stance):**
 - The **aesthetic 10/10 is not machine-gated** (§3 B1) — it rests on the knowledge file + the
   model + human review (the Quality Bar). The structural contract is what's gated.
-- The worked examples + frozen set are **inventory/transform-free-centered** (§10 prototype-first);
-  widening the example set to the other transform-free buckets is the next increment.
+- **Widened beyond inventory** (the §10 prototype having cleared): the frozen set now also covers
+  **comparison, evidence/statement, and legal** prompts, and the held-out run stays **14/14** with a
+  real model. The widening surfaced one real gap — the model reached for `margin` on a two-column
+  layout — closed by a fourth worked example (a two-column comparison built on `grid` + `gap`). The
+  remaining transform-free buckets (code/math prose) and the transform-bearing buckets (the #618 DSL)
+  are the next increments.
 - **Embeddings need the on-device CDN** (Transformers.js); without it, dedup runs the fuse/lexical
   fallback (noisier, by design — §5).
 - **Transform-bearing components** (charts/diagrams/journey/roadmap) remain out of scope here and
