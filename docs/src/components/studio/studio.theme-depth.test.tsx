@@ -46,10 +46,14 @@ const options = { themeBase: '', runtimeUrl: '', engineUrl: '' };
 
 beforeEach(() => {
 	themeStore.length = 0;
+	// Fabricate is an advanced surface, hidden from the launcher for a fresh
+	// newcomer. Seed onboarded:true so these depth tests can open it.
+	localStorage.setItem('lattice-studio-settings', JSON.stringify({ validation: true, pageNumbers: true, headerFooter: false, onboarded: true }));
 });
 afterEach(() => {
 	document.documentElement.removeAttribute('data-palette');
 	vi.clearAllMocks();
+	localStorage.clear();
 });
 
 function openFabricate(user: ReturnType<typeof userEvent.setup>) {

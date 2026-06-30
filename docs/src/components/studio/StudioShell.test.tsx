@@ -112,6 +112,24 @@ describe('StudioShell — newcomer first run', () => {
 		render(<StudioShell options={options} />);
 		expect(screen.queryByText(/New here\?/)).not.toBeInTheDocument();
 		expect(screen.getByText('Board-ready')).toBeInTheDocument();
+		// A returning user sees the full topbar (advanced surfaces present).
+		expect(screen.getByRole('button', { name: 'Open Library' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Workspace settings' })).toBeInTheDocument();
+	});
+
+	it('hides the advanced topbar cluster for a newcomer, revealing it on graduation', async () => {
+		localStorage.clear(); // fresh visitor
+		const user = userEvent.setup();
+		render(<StudioShell options={options} />);
+		// Advanced surfaces are out of the way on first run.
+		expect(screen.queryByRole('button', { name: 'Open Library' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Workspace settings' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Enter focus mode' })).not.toBeInTheDocument();
+		// Engaging (dismissing the welcome) graduates them → the cluster appears.
+		await user.click(screen.getByRole('button', { name: 'Got it' }));
+		expect(screen.getByRole('button', { name: 'Open Library' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Workspace settings' })).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Enter focus mode' })).toBeInTheDocument();
 	});
 });
 

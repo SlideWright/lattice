@@ -146,6 +146,15 @@ in patch versions.
   asserts the faculty's `PRESET_RECIPES` mirror stays structurally in sync with the
   rendered truth in `base.finish.css` (no silent recipe↔engine drift), and the AI
   recipe path gains unit coverage.
+- **Studio onboarding, polished further.** Three follow-ups to the newcomer
+  onboarding: (1) a newcomer's **topbar is trimmed to essentials** — the advanced
+  cluster (Library, Workspace settings, Focus, the Fabricate launcher item) is
+  hidden until they engage, then reveals on graduation; (2) the **welcome deck is
+  now offered to returning users** via a one-time, deletable migration that appends
+  it to their deck list (never hijacking the active deck); (3) the deck **Inspector
+  toggle gives a gentle one-time pulse** after the Coach reveals, so it's
+  discoverable without auto-opening settings on a slide click. Design:
+  `engineering/decisions/2026-06-30-studio-onboarding-followups.md`.
 - **Studio Focus mode — a transient "quiet the noise" view.** The Studio's
   four-column desktop layout (Architect · Editor · Preview · Inspector) can now
   collapse to just **Editor + Preview + slide nav**, with most of the topbar
