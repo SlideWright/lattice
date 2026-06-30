@@ -132,8 +132,11 @@ emits the `![bg]`/`backgroundImage:` background or a `tint-*`/`mark-*` class; an
 asset *mark* writes the shipped `logo:` directives. The only genuinely new
 authoring token is a class for *parametric covers*, and it **cannot be `cover`**
 — that name is a registered chart-family variant guarded by 16 `:not(.cover)`
-rules in `chart-family.css`. Proposed: `bleed` (full-bleed), to be confirmed
-against a prototype before it freezes.
+rules in `chart-family.css`. **Decided: `backdrop`** — verified free (no
+`.backdrop` class/modifier exists; the CSS `backdrop-filter` property and
+`::backdrop` pseudo are not class-name collisions). It is the per-slide keyword
+for a full-bleed parametric background, and reads plainly for authors (`bleed`,
+the print term, was rejected as jargon).
 
 ## Sourcing — pick · fabricate · bring-your-own
 
@@ -264,9 +267,8 @@ sequence it into never.
 - **`dark` × finish** — does `dark` *swap* a finish or just recolor it? A
   parametric finish recolors via tokens; an asset cover may need an alternate or a
   stronger scrim when inverted.
-- **The `bleed` modifier name** — confirm a non-colliding word for per-slide
-  parametric covers against a prototype before freezing it (`bleed` is verified
-  free, but it's printing jargon — sanity-check it on a real author first).
+- *(resolved — the per-slide keyword is `backdrop`, verified free; see the
+  subsume section.)*
 - **Curated library size & taxonomy** — start small and boardroom-grade
   (blueprint / topo / grid / dot / wash families?). This is the *same decision* as
   the AA-audit budget (invariant table): library size × theme matrix sets the
