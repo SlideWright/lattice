@@ -1249,9 +1249,11 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				onOpenChange={setLibraryOpen}
 				options={options}
 				activePalette={palette}
+				activeFinish={finish}
 				onApplyTheme={applyPalette}
+				onApplyFinish={(name) => { setFinish(name); notify(`Applied ${name}.`); }}
 				onInsert={(skeleton) => applyDeckOp(addSlideAfter(source, curIndex, skeleton))}
-				onChanged={() => { refreshThemes(); refreshComponents(); }}
+				onChanged={() => { refreshThemes(); refreshComponents(); refreshFinishes(); }}
 				notify={notify}
 			/>
 			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} frontMatter={previewFm} startIndex={activeFullIndex} paletteOverride={activeTheme?.name} extraTheme={extraTheme} extraCss={previewExtraCss} notify={notify} />

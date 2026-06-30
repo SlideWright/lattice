@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
-import { componentZipName, packBundle, packComponent, packTheme, themeZipName, unpackBundle } from './asset-bundle';
+import { componentZipName, finishZipName, packBundle, packComponent, packFinish, packTheme, themeZipName, unpackBundle } from './asset-bundle';
 import { deleteStudioComponent, listStudioComponents, type StudioComponent, saveStudioComponent } from './component-library';
-import { saveStudioFinish } from './finish-library';
+import { generateSwatch } from './finish-generate';
+import { deleteStudioFinish, listStudioFinishes, type StudioFinish, saveStudioFinish } from './finish-library';
 import { renderThemeShowcase } from './share-export';
 import { deleteStudioTheme, listStudioThemes, type StudioTheme, saveStudioTheme } from './theme-library';
 
@@ -16,7 +17,7 @@ import { deleteStudioTheme, listStudioThemes, type StudioTheme, saveStudioTheme 
 // (apply a theme, insert a component) delegate to the shell; storage ops (delete,
 // import) run here, then `onChanged` refreshes the shell's topbar/insert lists.
 
-type Filter = 'all' | 'theme' | 'component';
+type Filter = 'all' | 'theme' | 'component' | 'finish';
 
 function download(blob: Blob, filename: string) {
 	const url = URL.createObjectURL(blob);
@@ -37,18 +38,21 @@ function themeSwatches(t: StudioTheme): string[] {
 	return ['var(--accent)'];
 }
 
-export function Library({ open, onOpenChange, options, activePalette, onApplyTheme, onInsert, onChanged, notify }: {
+export function Library({ open, onOpenChange, options, activePalette, activeFinish, onApplyTheme, onApplyFinish, onInsert, onChanged, notify }: {
 	open: boolean;
 	onOpenChange: (o: boolean) => void;
 	options: SingleSlideOptions;
 	activePalette: string;
+	activeFinish: string;
 	onApplyTheme: (name: string) => void;
+	onApplyFinish: (name: string) => void;
 	onInsert: (skeleton: string, name: string) => void;
 	onChanged: () => void;
 	notify: (msg: string) => void;
 }) {
 	const [themes, setThemes] = React.useState<StudioTheme[]>([]);
 	const [components, setComponents] = React.useState<StudioComponent[]>([]);
+	const [finishes, setFinishes] = React.useState<StudioFinish[]>([]);
 	const [filter, setFilter] = React.useState<Filter>('all');
 	const [query, setQuery] = React.useState('');
 	const [sel, setSel] = React.useState<Set<string>>(new Set());
@@ -57,9 +61,10 @@ export function Library({ open, onOpenChange, options, activePalette, onApplyThe
 	const fileRef = React.useRef<HTMLInputElement>(null);
 
 	const reload = React.useCallback(() => {
-		Promise.all([listStudioThemes(), listStudioComponents()]).then(([t, c]) => {
+		Promise.all([listStudioThemes(), listStudioComponents(), listStudioFinishes()]).then(([t, c, f]) => {
 			setThemes(t);
 			setComponents(c);
+			setFinishes(f);
 		});
 	}, []);
 	// Load (and refresh) whenever the drawer opens.
@@ -72,14 +77,14 @@ export function Library({ open, onOpenChange, options, activePalette, onApplyThe
 	}, [open, reload]);
 
 	const q = query.trim().toLowerCase();
-	const showThemes = filter !== 'component';
-	const showComponents = filter !== 'theme';
-	const vThemes = showThemes ? themes.filter((t) => !q || t.label.toLowerCase().includes(q) || t.name.includes(q)) : [];
-	const vComponents = showComponents ? components.filter((c) => !q || c.name.includes(q) || (c.bucket || '').includes(q)) : [];
-	const total = themes.length + components.length;
+	const vThemes = filter === 'all' || filter === 'theme' ? themes.filter((t) => !q || t.label.toLowerCase().includes(q) || t.name.includes(q)) : [];
+	const vComponents = filter === 'all' || filter === 'component' ? components.filter((c) => !q || c.name.includes(q) || (c.bucket || '').includes(q)) : [];
+	const vFinishes = filter === 'all' || filter === 'finish' ? finishes.filter((f) => !q || f.label.toLowerCase().includes(q) || f.name.includes(q)) : [];
+	const total = themes.length + components.length + finishes.length;
 
 	const tKey = (t: StudioTheme) => `theme:${t.id}`;
 	const cKey = (c: StudioComponent) => `comp:${c.id}`;
+	const fKey = (f: StudioFinish) => `finish:${f.id}`;
 	const toggle = (k: string) => setSel((s) => { const n = new Set(s); n.has(k) ? n.delete(k) : n.add(k); return n; });
 
 	async function shareTheme(t: StudioTheme) {
@@ -104,18 +109,30 @@ export function Library({ open, onOpenChange, options, activePalette, onApplyThe
 			setBusy(null);
 		}
 	}
+	async function shareFinish(f: StudioFinish) {
+		setBusy(`Packing ${f.label}…`);
+		try {
+			download(await packFinish(f), finishZipName(f));
+			notify(`Shared ${f.label}.`);
+		} finally {
+			setBusy(null);
+		}
+	}
 	async function bulkExport() {
 		const selThemes = themes.filter((t) => sel.has(tKey(t)));
 		const selComps = components.filter((c) => sel.has(cKey(c)));
-		if (selThemes.length + selComps.length === 0) return;
+		const selFinishes = finishes.filter((f) => sel.has(fKey(f)));
+		const n = selThemes.length + selComps.length + selFinishes.length;
+		if (n === 0) return;
 		// A single selected asset shares as its own zip; a mix becomes a bundle.
-		if (selThemes.length === 1 && selComps.length === 0) return shareTheme(selThemes[0]);
-		if (selComps.length === 1 && selThemes.length === 0) return shareComponent(selComps[0]);
-		setBusy(`Packing ${selThemes.length + selComps.length} assets…`);
+		if (n === 1 && selThemes.length === 1) return shareTheme(selThemes[0]);
+		if (n === 1 && selComps.length === 1) return shareComponent(selComps[0]);
+		if (n === 1 && selFinishes.length === 1) return shareFinish(selFinishes[0]);
+		setBusy(`Packing ${n} assets…`);
 		try {
 			const withPdf = await Promise.all(selThemes.map(async (theme) => ({ theme, showcase: await renderThemeShowcase(options, theme).catch(() => null) })));
-			download(await packBundle(withPdf, selComps), 'lattice-assets.zip');
-			notify(`Exported ${selThemes.length + selComps.length} assets as lattice-assets.zip.`);
+			download(await packBundle(withPdf, selComps, selFinishes), 'lattice-assets.zip');
+			notify(`Exported ${n} assets as lattice-assets.zip.`);
 			setSel(new Set());
 		} catch {
 			notify('Could not build the bundle.');
@@ -154,6 +171,9 @@ export function Library({ open, onOpenChange, options, activePalette, onApplyThe
 	function removeComponent(c: StudioComponent) {
 		deleteStudioComponent(c.id).then(() => { reload(); onChanged(); notify(`Deleted .${c.name}.`); });
 	}
+	function removeFinish(f: StudioFinish) {
+		deleteStudioFinish(f.id).then(() => { reload(); onChanged(); notify(`Deleted ${f.label}.`); });
+	}
 
 	const selCount = sel.size;
 
@@ -164,7 +184,7 @@ export function Library({ open, onOpenChange, options, activePalette, onApplyThe
 					<SheetTitle className="flex shrink-0 items-center gap-2 text-[15px]"><FileBox className="size-[18px] text-[var(--accent)]" />Library</SheetTitle>
 					<div className="ml-1 flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-border bg-background px-2.5 py-1.5 text-muted-foreground">
 						<Search className="size-3.5 shrink-0" />
-						<input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search themes & components…" aria-label="Search library" className="min-w-0 flex-1 bg-transparent text-[12.5px] text-foreground outline-none placeholder:text-muted-foreground" />
+						<input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search themes, components & finishes…" aria-label="Search library" className="min-w-0 flex-1 bg-transparent text-[12.5px] text-foreground outline-none placeholder:text-muted-foreground" />
 					</div>
 					<Button variant="outline" size="sm" className="shrink-0 gap-1.5" onClick={() => fileRef.current?.click()} aria-label="Import .zip" title="Import a .zip"><Upload className="size-3.5" /><span className="hidden sm:inline">Import</span></Button>
 					<input ref={fileRef} type="file" accept=".zip" multiple hidden onChange={(e) => importFiles(e.target.files)} />
@@ -172,7 +192,7 @@ export function Library({ open, onOpenChange, options, activePalette, onApplyThe
 
 				<div className="flex items-center gap-2 border-b border-border bg-card px-4 py-2.5">
 					<div className="inline-flex rounded-lg border border-border bg-background p-[3px]">
-						{(['all', 'theme', 'component'] as Filter[]).map((f) => (
+						{(['all', 'theme', 'component', 'finish'] as Filter[]).map((f) => (
 							<button key={f} type="button" onClick={() => setFilter(f)} aria-pressed={filter === f} className={cn('rounded-md px-3 py-1 text-[12px] font-semibold capitalize', filter === f ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}>{f === 'all' ? 'All' : `${f}s`}</button>
 						))}
 					</div>
@@ -221,6 +241,26 @@ export function Library({ open, onOpenChange, options, activePalette, onApplyThe
 												<button type="button" onClick={() => { onInsert(c.skeleton, c.name); notify(`Inserted .${c.name}.`); }} className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-[color-mix(in_srgb,var(--accent)_25%,transparent)] bg-[var(--accent-soft)] py-1.5 text-[11.5px] font-semibold text-[var(--accent)]"><Plus className="size-3.5" />Insert</button>
 												<button type="button" disabled={!!busy} onClick={() => shareComponent(c)} aria-label={`Share .${c.name}`} className="flex items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-1.5 text-[11.5px] font-semibold text-foreground disabled:opacity-50"><Share2 className="size-3.5" />Share</button>
 												<DeleteBtn armed={armed === k} onArm={() => setArmed(k)} onConfirm={() => { setArmed(null); removeComponent(c); }} label={`.${c.name}`} />
+											</div>
+										</div>
+									</div>
+								);
+							})}
+							{vFinishes.map((f) => {
+								const k = fKey(f);
+								const active = f.name === activeFinish;
+								const sw = generateSwatch(f.recipe);
+								return (
+									<div key={k} className={cn('relative overflow-hidden rounded-xl border bg-card', sel.has(k) ? 'border-[var(--accent)] ring-1 ring-[var(--accent)]' : 'border-border')}>
+										<button type="button" aria-label={`Select ${f.label}`} aria-pressed={sel.has(k)} onClick={() => toggle(k)} className={cn('absolute left-2.5 top-2.5 z-10 grid size-[18px] place-items-center rounded-md border bg-background', sel.has(k) ? 'border-[var(--accent)] bg-[var(--accent)] text-white' : 'border-border')}>{sel.has(k) && <Check className="size-3" />}</button>
+										<div className="h-[88px] w-full bg-[var(--bg)]" style={{ backgroundImage: sw.background, backgroundSize: sw.backgroundSize }} />
+										<div className="p-2.5">
+											<div className="flex items-center gap-1.5 text-[12.5px] font-bold text-[var(--text-heading)]"><span className="truncate">{f.label}</span><span className="rounded-full border border-[color-mix(in_srgb,var(--accent)_30%,transparent)] bg-[var(--accent-soft)] px-1.5 py-0.5 font-mono text-[8.5px] uppercase tracking-wide text-[var(--accent)]">Finish</span>{active && <span className="ml-auto font-mono text-[9px] uppercase text-[var(--accent)]">Active</span>}</div>
+											<div className="mt-1 truncate font-mono text-[10.5px] text-muted-foreground">{f.name} · layered · palette-blind</div>
+											<div className="mt-2.5 flex items-center gap-1.5">
+												<button type="button" onClick={() => { onApplyFinish(f.name); notify(`Applied ${f.label}.`); }} className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-[color-mix(in_srgb,var(--accent)_25%,transparent)] bg-[var(--accent-soft)] py-1.5 text-[11.5px] font-semibold text-[var(--accent)]"><Check className="size-3.5" />Apply</button>
+												<button type="button" disabled={!!busy} onClick={() => shareFinish(f)} aria-label={`Share ${f.label}`} className="flex items-center justify-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-1.5 text-[11.5px] font-semibold text-foreground disabled:opacity-50"><Share2 className="size-3.5" />Share</button>
+												<DeleteBtn armed={armed === k} onArm={() => setArmed(k)} onConfirm={() => { setArmed(null); removeFinish(f); }} label={f.label} />
 											</div>
 										</div>
 									</div>
