@@ -17,6 +17,7 @@ import { type ComponentSimilar, connectOpenRouter, generateComponent, generateTh
 import { CodeField } from './CodeField';
 import { type ComponentMeta, saveStudioComponent } from './component-library';
 import { downloadText } from './download';
+import { FinishStudio } from './FinishStudio';
 import { type Finding, LayoutStudio, STARTER_CSS, STARTER_DESCRIPTION, STARTER_META, STARTER_NAME, STARTER_SKELETON } from './LayoutStudio';
 import { manifestJsonCompletion } from './manifest-complete';
 import { saveStudioTheme } from './theme-library';
@@ -158,7 +159,7 @@ const tokenLabel = (id: string) => contractLabelOf(id) ?? bandLabel(id);
 const tierOf = (ratio: number | null, ok: boolean) => ((ratio ?? 0) >= 7 ? 'AAA' : ok ? 'AA' : 'FAIL');
 
 export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onOpenWorkspace }: { options: SingleSlideOptions; catalog?: { name: string; bucket?: string; description?: string; tags?: string[] }[]; onClose: () => void; notify: (msg: string) => void; onSaved?: () => void; onOpenWorkspace?: () => void }) {
-	const [tab, setTab] = React.useState<'theme' | 'layout'>('theme');
+	const [tab, setTab] = React.useState<'theme' | 'layout' | 'finish'>('theme');
 	// All ten essentials in state, seeded from the first curated starter.
 	const [core, setCore] = React.useState<Record<EssKey, string>>(() => ({ ...(STARTERS[0].essentials as Record<EssKey, string>) }));
 	// First-class naming, IDENTICAL on both tabs (#57): the name IS a lowercase
@@ -418,6 +419,31 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 		<ComponentManifestPanel name={compName} description={compDesc} meta={compMeta} onName={setCompName} onDescription={setCompDesc} onMeta={setCompMeta} jsonError={compJsonError} onJsonError={setCompJsonError} />
 	);
 
+	// The Finish faculty is self-contained (its own header/controls/preview), so
+	// it renders via an early return with a MINIMAL top bar — back + the faculty
+	// toggle — instead of threading through the shared Theme/Component header.
+	const facultyToggle = (
+		<div className="ml-1 inline-flex shrink-0 rounded-[10px] border border-border bg-background p-[3px] sm:ml-2">
+			<button type="button" onClick={() => setTab('theme')} aria-pressed={false} aria-label="Theme" className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] font-semibold text-muted-foreground sm:px-3"><Palette className="size-3.5" /><span className="hidden sm:inline">Theme</span></button>
+			<button type="button" onClick={() => setTab('layout')} aria-pressed={false} aria-label="Component" className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] font-semibold text-muted-foreground sm:px-3"><LayoutGrid className="size-3.5" /><span className="hidden sm:inline">Component</span></button>
+			<button type="button" aria-pressed={true} aria-label="Finish" className="inline-flex items-center gap-1.5 rounded-md bg-card px-2 py-1 text-[13px] font-semibold text-[var(--accent)] shadow-sm sm:px-3"><Sparkles className="size-3.5" /><span className="hidden sm:inline">Finish</span></button>
+		</div>
+	);
+	if (tab === 'finish') {
+		return (
+			<div className="flex min-h-0 flex-1 flex-col">
+				<div className="flex h-[50px] shrink-0 items-center gap-2 border-b border-border bg-card px-3 sm:gap-3 sm:px-4">
+					<button type="button" onClick={onClose} className="shrink-0 rounded-md p-1 text-muted-foreground hover:text-foreground" aria-label="Back to Compose"><X className="size-4" /></button>
+					<span className="size-2 shrink-0 rounded-full" style={{ background: accent }} />
+					<span className="text-sm font-semibold text-[var(--text-heading)]">Finish</span>
+					{facultyToggle}
+					<div className="flex-1" />
+				</div>
+				<FinishStudio options={options} notify={notify} onSaved={onSaved} />
+			</div>
+		);
+	}
+
 	return (
 		<div className="flex min-h-0 flex-1 flex-col">
 			{/* ONE header, IDENTICAL on both tabs (#57): back · accent dot · first-class
@@ -436,6 +462,7 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 				<div className="ml-1 inline-flex shrink-0 rounded-[10px] border border-border bg-background p-[3px] sm:ml-2">
 					<button type="button" onClick={() => setTab('theme')} aria-pressed={tab === 'theme'} aria-label="Theme" className={cn('inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] font-semibold sm:px-3', tab === 'theme' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Palette className="size-3.5" /><span className="hidden sm:inline">Theme</span></button>
 					<button type="button" onClick={() => setTab('layout')} aria-pressed={tab === 'layout'} aria-label="Component" className={cn('inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] font-semibold sm:px-3', tab === 'layout' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><LayoutGrid className="size-3.5" /><span className="hidden sm:inline">Component</span></button>
+					<button type="button" onClick={() => setTab('finish')} aria-pressed={tab === 'finish'} aria-label="Finish" className={cn('inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] font-semibold sm:px-3', tab === 'finish' ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}><Sparkles className="size-3.5" /><span className="hidden sm:inline">Finish</span></button>
 				</div>
 				<div className="flex-1" />
 				<Button variant="outline" size="sm" disabled={!canExport} className="shrink-0 gap-1.5 px-2 sm:px-3" onClick={exportArtifact}><Download className="size-4" /><span className="hidden sm:inline">Export</span></Button>
