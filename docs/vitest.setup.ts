@@ -35,16 +35,16 @@ if (typeof window !== 'undefined') {
 	}
 	// cmdk (the ⌘K command palette) and ScrollFade observe an element with
 	// ResizeObserver, which jsdom doesn't implement; a no-op stub lets them mount in
-	// tests. The constructor takes the observer callback (matching the real DOM
-	// signature) so a `new ResizeObserver(cb)` call isn't flagged as passing a
-	// superfluous argument to a zero-arg class.
+	// tests. Typed as the real `ResizeObserver` (callback constructor) so a
+	// `new ResizeObserver(cb)` call isn't flagged as a superfluous argument — without
+	// an empty constructor body that lint would call useless.
 	if (!('ResizeObserver' in window)) {
-		(window as unknown as { ResizeObserver: unknown }).ResizeObserver = class {
-			constructor(_callback: ResizeObserverCallback) {}
+		class ResizeObserverStub {
 			observe() {}
 			unobserve() {}
 			disconnect() {}
-		};
+		}
+		(window as unknown as { ResizeObserver: typeof ResizeObserver }).ResizeObserver = ResizeObserverStub as unknown as typeof ResizeObserver;
 	}
 	// CodeMirror measures selection geometry on a scrollIntoView dispatch (the
 	// editor↔preview sync uses one); jsdom's Range has no real layout, so stub the
