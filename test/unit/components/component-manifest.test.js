@@ -83,6 +83,46 @@ describe('component-manifest', () => {
       assert.deepEqual(validate(m), []);
     });
 
+    // transform DSL — the manifest-boundary safety gate (§12.1). A `transform`
+    // field is run through validateTransform at load; an unsafe construct rejects
+    // the manifest. (The field is inert — not yet wired into the render pipeline.)
+    describe('transform (DSL safety gate)', () => {
+      const withTransform = (t) => ({ ...GOOD, transform: t });
+      const safe = [
+        { name: 'feature', match: { section: 'cards-grid' }, do: [
+          { capability: 'panel-eyebrow' },
+          { extract: { into: { element: 'div', class: 'panel-left' }, slots: ['h2', 'p'] } },
+          { wrap: { target: 'rest', into: { element: 'div', class: 'panel-right' } } },
+        ] },
+      ];
+
+      test('accepts a well-formed transform', () => {
+        assert.deepEqual(validate(withTransform(safe)), []);
+      });
+      test('a manifest with no transform field is unaffected', () => {
+        assert.deepEqual(validate(GOOD), []);
+      });
+      test('rejects a barred element and surfaces the DSL message', () => {
+        const errs = validate(withTransform([{ do: [{ extract: { into: { element: 'script' }, slots: ['h2'] } }] }]));
+        assert.ok(errs.some((e) => /transform:.*element "script"/.test(e)), errs.join(' | '));
+      });
+      test('rejects a barred attribute (style / on* / URL)', () => {
+        const errs = validate(withTransform([{ do: [{ extract: { into: { element: 'div', attrs: { onclick: 'x' } }, slots: ['h2'] } }] }]));
+        assert.ok(errs.some((e) => /transform:.*attribute "onclick"/.test(e)), errs.join(' | '));
+      });
+      test('rejects an unknown op and an unknown capability', () => {
+        assert.ok(validate(withTransform([{ do: [{ frobnicate: {} }] }])).some((e) => /transform:.*unknown op/.test(e)));
+        assert.ok(validate(withTransform([{ do: [{ capability: 'exfiltrate' }] }])).some((e) => /transform:.*closed registry/.test(e)));
+      });
+      test('rejects a prototype-pollution payload', () => {
+        const poison = JSON.parse('[{"do":[{"extract":{"into":{"element":"div","__proto__":{"x":1}},"slots":["h2"]}}]}]');
+        assert.ok(validate(withTransform(poison)).some((e) => /transform:.*prototype pollution/.test(e)));
+      });
+      test('rejects a non-array transform', () => {
+        assert.ok(validate(withTransform({ not: 'an array' })).some((e) => /transform:.*must be an array/.test(e)));
+      });
+    });
+
     test('capacity: accepts a well-formed contract', () => {
       const m = {
         ...GOOD,

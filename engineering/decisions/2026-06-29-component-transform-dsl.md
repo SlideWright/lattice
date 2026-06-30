@@ -267,11 +267,21 @@ knowledge-file wiring (§10) are the next slices, now that the parity risk is re
 
 ## 12. Open spec items (after the prototype)
 
-- The strict JSON schema for `match`/`do` + `manifest.schema.json` additions (now a
-  **safety** requirement, §6.6, not just structure).
-- The two interpreters + cross-path parity + adversarial-termination tests (§7).
+- ~~The strict JSON schema for `match`/`do` + `manifest.schema.json` additions (now a
+  **safety** requirement, §6.6, not just structure).~~ **Landed (12.1):** the manifest
+  `transform` field is added to `manifest.schema.json` and, more importantly, the
+  **loader runs `validateTransform` at load** (`lib/components/index.js` `validate`) — so an
+  unsafe/malformed transform on any component (incl. a shared or AI-generated one) is refused
+  at the manifest boundary, before it could reach a render path. A fuller per-op JSON schema
+  can follow, but the imperative gate is the authoritative one (§6).
+- The two interpreters + cross-path parity + adversarial-termination tests (§7). *(parity +
+  budget covered by the prototype; a dedicated adversarial-termination corpus can deepen it.)*
 - The text-only `template` mini-syntax (§6.3).
 - The capability allowlist + per-capability input/budget contracts (§8).
+- **Wiring the DSL into the transformer registry** (replacing a hand-written transformer like
+  `split-panels.js`) — the slice that makes the field *do* something. It changes exported
+  artifact bytes, so it carries the export sign-off gate (a dark+light demo render), unlike the
+  inert slices above.
 - Wiring the knowledge file (§10) into the Studio "design a component" AI path.
 
 ## 13. Links
