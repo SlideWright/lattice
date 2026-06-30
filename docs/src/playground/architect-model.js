@@ -224,6 +224,31 @@ export function orSupportsCache(id) {
   return OR_CACHE_VENDORS.has(String(id || '').split('/')[0]);
 }
 
+// The vendors whose prompt caching needs an EXPLICIT `cache_control` breakpoint to
+// fire. Anthropic + Google cache only the prefix you mark; OpenAI / DeepSeek / x-ai
+// cache automatically (no breakpoint, so we leave their messages untouched — a plain
+// string, which they prefer). Subset of OR_CACHE_VENDORS.
+const OR_CACHE_BREAKPOINT_VENDORS = new Set(['anthropic', 'google']);
+
+// Mark the static SYSTEM block for prompt caching so a repeated, byte-identical
+// system prompt (our authoring canon is ~7K tokens, re-sent on EVERY call) is paid in
+// full ONCE per ~5-min TTL and read at ~0.1x on calls 2..N — instead of re-billed at
+// 1x each time. Only the FIRST `system` message is marked (the user turn and any
+// per-request dedup-neighbor `assistant` block vary, so they stay OUTSIDE the cached
+// prefix). Only for vendors that need an explicit breakpoint; below a provider's min
+// cacheable size the breakpoint is a silent no-op, so marking is always safe. Pure —
+// returns a new array, inputs untouched; a string `content` becomes the one-text-part
+// array form OpenRouter expects the `cache_control` field on.
+export function withCachedSystem(messages, modelId) {
+  if (!OR_CACHE_BREAKPOINT_VENDORS.has(String(modelId || '').split('/')[0])) return messages;
+  let marked = false;
+  return (messages || []).map((m) => {
+    if (marked || !m || m.role !== 'system' || typeof m.content !== 'string') return m;
+    marked = true;
+    return { ...m, content: [{ type: 'text', text: m.content, cache_control: { type: 'ephemeral' } }] };
+  });
+}
+
 // OpenRouter cloud backend — the { ready, complete } shape plus the OAuth methods
 // (beginAuth → redirect → completeAuth) and the catalog (listModels, with
 // per-million pricing) the settings picker reads. OpenAI-compatible streaming. The
@@ -355,7 +380,9 @@ function openRouterBackend(defaultModel = DEFAULT_OR_MODEL, defaultMaxTokens = 0
       if (!key) throw new Error('OpenRouter not connected');
       // usage:{include:true} guarantees the authoritative per-request `usage.cost`
       // (USD) rides back in the response — the source of the per-Lattice spend tally.
-      const body = { model: this.getModel(), messages, stream: !!onToken, usage: { include: true } };
+      // Cache the static system prefix (the big authoring canon) so a fan-out of
+      // calls re-reads it at ~0.1x instead of re-paying full input each time.
+      const body = { model: this.getModel(), messages: withCachedSystem(messages, this.getModel()), stream: !!onToken, usage: { include: true } };
       // max_tokens bounds worst-case completion cost (a runaway reply can't blow the
       // budget). Opt-in per instance: only the Studio sets a ceiling; the Drawing Board
       // (defaultMaxTokens 0) stays uncapped, so its long deck rewrites aren't truncated.

@@ -445,3 +445,31 @@ All three pillars landed, faithful to the design above:
   wait on the #618 DSL (§9) — the model declines them.
 - The flag-and-regenerate loop is **human-mediated** (findings shown in the editor; the author
   re-runs), not an automatic model feedback loop — consistent with §7.1's human-review framing.
+- **Brave-but-disciplined creativity (the canon escalates ambition, then bounds it by fit).** A
+  multi-agent creative stress run showed the generator was good at novel *structure* (a kanban board
+  generated clean) but timid on *visual identity* (everything a bordered box) and prone to *dead-space*
+  slides (sparse cards, body-sized KPI numbers). Two complementary teaching pairs close the gap.
+  **Escalate (the bravery half):** *Start boardroom, escalate on demand* — the restrained boardroom
+  framework is the default and floor; a request that names a distinctive form ("like a boarding pass",
+  "a honeycomb of skills", "terminal-style") unlocks proportionally more freedom, always staying
+  boardroom-ready. *Dare a distinctive visual identity* — rich pure-CSS is in scope (gradients,
+  `::before`/`::after`, `clip-path`, mask, layered `box-shadow`); "transform-free" bars generated
+  *geometry/codegen*, not decorative CSS. *Shape is yours* — a card need not be a rectangle
+  (`border-radius:50%`+`aspect-ratio:1` disc, `clip-path:polygon` hexagon/triangle/diamond),
+  tastefully, text kept inside the safe rectangle. DECLINE was rewritten to fire ONLY for computed
+  geometry/codegen (chart, diagram, 2-D-positioned map, timeline, generated source) — never for a
+  *look*. **Bound it (the discipline half):** *Design for fit* — the structure must earn its
+  `capacity` (sweet fills the stage, hard sits below overflow, a one-number payload goes monumental
+  via `--fs-hero`), sized to what *this* layout truly holds, not a boilerplate `{4,6,8}`. *Write to
+  the word budget* — the generator now emits and honors a `density` block (the manifest's
+  words-per-element budget); `coerceDensity` snaps `axis` to the measured `item`/`row`, the output
+  contract requests it, two worked examples carry it, and `auditComponentDesign` flags an incoherent
+  `soft > hard`. *Responsive by construction* — the `@container lattice` single-column reflow is part
+  of the first draft, not a follow-up. *Prefer flex over grid* — `display:flex` is taught as the
+  default body primitive (single row/column, wrapping matrix, even `flex:1` split); `grid` is reached
+  for only with a proven two-dimensional-alignment need, and a true matrix is usually tabular data
+  routed to a `<table>` — so the two-column comparison worked example was rebuilt on flex. All still
+  bound by the token/no-hex/no-margin/scoping rails;
+  no gate or runtime change for existing components. **Live re-validation of this slice is pending an
+  OpenRouter budget refill** (the stress fan-out exhausted the monthly cap mid-run); the unit suite +
+  gates verify the wiring, the model-facing behavior is validated when the budget returns.

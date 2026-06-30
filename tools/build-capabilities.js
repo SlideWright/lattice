@@ -114,6 +114,7 @@ const SCRIPT_META = {
   'build:exemplar-pdfs':      ['Galleries & preview', 'Bulk-regenerate committed PDFs for the worked exemplar decks (on-demand, like bless; not in build). `-- --only <stem>` for one.'],
   'preview':                  ['Galleries & preview', 'Fast visual-iteration loop: scope-detect from git diff, rebuild affected, pixel-diff vs last commit.'],
   'preview:watch':            ['Galleries & preview', 'Run the preview loop on change.'],
+  'preview:component':         ['Galleries & preview', 'Faithfully render ONE local / AI-generated component to a PNG (lattice.css + the component CSS, full frame) for pixel review.'],
 
   // Test & verify
   'test':                     ['Test & verify', 'Full unit suite (node:test). The inner loop.'],

@@ -193,6 +193,45 @@ in patch versions.
 
 ### Changed
 
+- **Studio AI calls now cache the static system prefix — ~85% off input on a fan-out (#610).**
+  Profiling showed every component-generation call re-ships a byte-identical ~7.3K-token system
+  prompt (the authoring canon + worked examples), re-billed in full each time. `withCachedSystem`
+  (`docs/src/playground/architect-model.js`) now marks the leading `system` block with a
+  `cache_control:{type:"ephemeral"}` breakpoint for the vendors that need an explicit one
+  (anthropic, google; openai/deepseek/x-ai auto-cache and are left as plain strings). The
+  breakpoint sits on the system message, so the varying user turn and any dedup-neighbor block
+  stay outside the cached prefix; within the ~5-min TTL, calls after the first read the prefix at
+  ~0.1× instead of 1×. Zero quality change (the full canon + all examples still ship); below a
+  provider's min cacheable size the breakpoint is a silent no-op. The `usage.cost` we record
+  reflects the discount, so the spend tally stays authoritative. Also documented (decision doc
+  `2026-06-29-studio-spend-budget.md`): the OpenRouter **file-upload** API is the wrong tool for
+  the static canon — referencing a file still bills its content as input tokens every call — so
+  it stays reserved for user-supplied reference docs, not cost reduction.
+- **Studio AI component generator now reasons about content fit, the word budget,
+  and responsive reflow (#610).** The component-generation canon (`lib/layout/ai.js`
+  `COMPONENT_CANON`) gained three teaching bullets that target the recurring
+  stress-test failures — sparse dead-space slides, body-sized KPI numbers, and
+  multi-column drafts with no portrait rule. **Design for fit**: the structure must
+  earn its `capacity` (the sweet count fills the stage; the hard count sits just below
+  overflow; a one-number payload goes monumental via `--fs-hero`/`--fs-emphasis`), and
+  the model is told to size `capacity` to what *this* layout truly holds rather than a
+  boilerplate `{4,6,8}`. **Write to the word budget**: the generator now emits and
+  honors a `density` block (the per-element words-per-element budget already in the
+  manifest schema), with `coerceDensity` snapping `axis` to the two the counter
+  measures (`item`/`row`) and the design-audit flagging an incoherent `soft > hard`.
+  The budget is now threaded end-to-end — through the architect draft, the Studio
+  **Manifest** panel (a new Density field: axis + soft/hard, alongside Capacity), the
+  JSON round-trip, and `saveStudioComponent` — so a generated component persists the
+  budget the reviewer reads, rather than dropping it.
+  **Responsive by construction**: the `@container lattice` single-column reflow is
+  taught as part of the first draft, not a follow-up. **Prefer flex over grid**: the
+  multi-column bullet now makes `display:flex` the default layout primitive and reaches
+  for `grid` only with a proven two-dimensional-alignment reason (and a true matrix is
+  usually tabular data → a `<table>`); the two-column comparison worked example is
+  rebuilt on flex (`flex:1 1 0` per side, `flex-direction:column` reflow) to model it.
+  The worked examples now carry a `density` block, and the output contract requests one. No gate or runtime behavior
+  changes for existing components — this is generator guidance plus the new advisory
+  and the manifest-editor field.
 - **Studio component gate now enforces margin discipline (#20) and token typography
   (#4) — the design-audit (#610).** The local/AI component authoring gate
   (`lib/layout/gate.js` `gateCss`) previously checked only hex/scope/exfil, so a draft

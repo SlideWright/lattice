@@ -434,6 +434,7 @@ export type ComponentDraft = {
 	tags: string[];
 	adapt: { mode: string };
 	capacity: { sweet?: number; soft?: number; hard?: number } | null;
+	density: { axis: string; soft?: number; hard?: number } | null;
 	css: string;
 	skeleton: string;
 };
@@ -542,10 +543,14 @@ export async function generateComponent(
 	// The native-ness design audit (§6) — adapt/capacity coherence + the data: URI
 	// size cap — beyond the structural gate. Advisory + hard findings, both shown.
 	const design = auditComponentDesign(m, coerced.css) as ComponentFinding[];
-	const md = m as typeof m & { adapt: { mode: string }; capacity: { sweet?: number; soft?: number; hard?: number } | null };
+	const md = m as typeof m & {
+		adapt: { mode: string };
+		capacity: { sweet?: number; soft?: number; hard?: number } | null;
+		density: { axis: string; soft?: number; hard?: number } | null;
+	};
 	const draft: ComponentDraft = {
 		name: m.name, description: m.description, function: m.function, form: m.form,
-		substance: m.substance, bucket: m.bucket, tags: m.tags, adapt: md.adapt, capacity: md.capacity,
+		substance: m.substance, bucket: m.bucket, tags: m.tags, adapt: md.adapt, capacity: md.capacity, density: md.density,
 		css: coerced.css, skeleton: coerced.skeleton,
 	};
 	return { status: 'ok', draft, findings: [...(gate.errors ?? []), ...design], fixes: coerced.fixes, similar };

@@ -126,6 +126,7 @@
     "build:exemplar-pdfs": "node tools/build-exemplar-pdfs.js",
     "preview": "node tools/preview.js",
     "preview:watch": "node tools/preview.js --watch",
+    "preview:component": "node tools/preview-component.js",
     "test": "node --test 'test/unit/**/*.test.js'",
     "test:watch": "node --test --watch 'test/unit/**/*.test.js'",
     "bench": "node test/benchmark/engine-bench.mjs",

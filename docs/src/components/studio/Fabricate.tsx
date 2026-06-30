@@ -322,7 +322,7 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 				setCompCss(out.draft.css);
 				setCompSkeleton(out.draft.skeleton);
 				// Capture the FULL manifest the model proposed — not just name/css/skeleton.
-				setCompMeta({ function: out.draft.function, form: out.draft.form, substance: out.draft.substance, bucket: out.draft.bucket, tags: out.draft.tags, adapt: out.draft.adapt, capacity: out.draft.capacity ?? undefined });
+				setCompMeta({ function: out.draft.function, form: out.draft.form, substance: out.draft.substance, bucket: out.draft.bucket, tags: out.draft.tags, adapt: out.draft.adapt, capacity: out.draft.capacity ?? undefined, density: out.draft.density ?? undefined });
 				setCompSimilar(out.similar);
 				setCompPrompt('');
 				const issues = out.findings.filter((f) => f.level === 'error').length;
@@ -712,6 +712,7 @@ const MANIFEST_HINTS: Record<string, string> = {
 	tags: '3–5 lowercase keywords for search + dedup. Reuse existing tags where they fit.',
 	adapt: 'How it reflows on a portrait/tall frame — native (universal cqi + @container) or reflow (ships per-family layouts).',
 	capacity: 'Legible card/row counts before it crowds — sweet (comfortable), soft (stretched), hard (the cap).',
+	density: 'Words per element before it reads heavy — soft (editorial target), hard (wall-of-text ceiling). Axis: item (list/grid) or row (table).',
 };
 // A label with a hover (i) hint — the lightweight "what does this field mean?" affordance.
 function HintLabel({ field, children }: { field: string; children: React.ReactNode }) {
@@ -742,7 +743,7 @@ function ComponentManifestPanel({ name, description, meta, onName, onDescription
 	const [view, setView] = React.useState<'fields' | 'json'>('fields');
 	const [jsonDraft, setJsonDraft] = React.useState('');
 	// The manifest.json as the engine writes it (name first), serialized for the editor.
-	const toJson = React.useCallback(() => JSON.stringify({ name, function: meta.function, form: meta.form, substance: meta.substance, bucket: meta.bucket, tags: meta.tags ?? [], description, adapt: meta.adapt ?? { mode: 'native' }, ...(meta.capacity ? { capacity: meta.capacity } : {}) }, null, 2), [name, description, meta]);
+	const toJson = React.useCallback(() => JSON.stringify({ name, function: meta.function, form: meta.form, substance: meta.substance, bucket: meta.bucket, tags: meta.tags ?? [], description, adapt: meta.adapt ?? { mode: 'native' }, ...(meta.capacity ? { capacity: meta.capacity } : {}), ...(meta.density ? { density: meta.density } : {}) }, null, 2), [name, description, meta]);
 	// Entering the JSON view re-seeds the draft from the live model (the source of truth).
 	// biome-ignore lint/correctness/useExhaustiveDependencies: re-seed only on view switch, not on every keystroke.
 	React.useEffect(() => { if (view === 'json') { setJsonDraft(toJson()); onJsonError(''); } }, [view]);
@@ -771,6 +772,7 @@ function ComponentManifestPanel({ name, description, meta, onName, onDescription
 			tags: Array.isArray(o.tags) ? o.tags.map(String) : [],
 			adapt: o.adapt && typeof o.adapt === 'object' ? { mode: String((o.adapt as { mode?: unknown }).mode || 'native') } : { mode: 'native' },
 			capacity: o.capacity && typeof o.capacity === 'object' ? (o.capacity as ComponentMeta['capacity']) : undefined,
+			density: o.density && typeof o.density === 'object' ? (o.density as ComponentMeta['density']) : undefined,
 		});
 	}
 
@@ -783,10 +785,11 @@ function ComponentManifestPanel({ name, description, meta, onName, onDescription
 		</label>
 	);
 	const cap = meta.capacity || {};
-	const num = (label: string, v: number | undefined, onN: (n: number) => void) => (
+	const den: { axis?: string; soft?: number; hard?: number } = meta.density || {};
+	const num = (group: string, label: string, v: number | undefined, onN: (n: number) => void) => (
 		<label className="flex flex-col gap-1">
 			<span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>
-			<input type="number" min={1} value={v ?? ''} onChange={(e) => onN(Math.max(1, Number(e.target.value) || 1))} aria-label={`Capacity ${label}`} className="w-full rounded-md border border-border bg-background px-2 py-1 text-[12.5px] text-[var(--text-heading)] outline-none focus:border-[var(--accent)]" />
+			<input type="number" min={1} value={v ?? ''} onChange={(e) => onN(Math.max(1, Number(e.target.value) || 1))} aria-label={`${group} ${label}`} className="w-full rounded-md border border-border bg-background px-2 py-1 text-[12.5px] text-[var(--text-heading)] outline-none focus:border-[var(--accent)]" />
 		</label>
 	);
 
@@ -818,9 +821,17 @@ function ComponentManifestPanel({ name, description, meta, onName, onDescription
 					<div className="col-span-2 flex flex-col gap-1">
 						<HintLabel field="capacity">Capacity <span className="normal-case text-muted-foreground/70">— legible card/row counts</span></HintLabel>
 						<div className="grid grid-cols-3 gap-2">
-							{num('sweet', cap.sweet, (n) => onMeta({ ...meta, capacity: { ...cap, sweet: n } }))}
-							{num('soft', cap.soft, (n) => onMeta({ ...meta, capacity: { ...cap, soft: n } }))}
-							{num('hard', cap.hard, (n) => onMeta({ ...meta, capacity: { ...cap, hard: n } }))}
+							{num('Capacity', 'sweet', cap.sweet, (n) => onMeta({ ...meta, capacity: { ...cap, sweet: n } }))}
+							{num('Capacity', 'soft', cap.soft, (n) => onMeta({ ...meta, capacity: { ...cap, soft: n } }))}
+							{num('Capacity', 'hard', cap.hard, (n) => onMeta({ ...meta, capacity: { ...cap, hard: n } }))}
+						</div>
+					</div>
+					<div className="col-span-2 flex flex-col gap-1">
+						<HintLabel field="density">Density <span className="normal-case text-muted-foreground/70">— words per element</span></HintLabel>
+						<div className="grid grid-cols-3 gap-2">
+							{sel('density-axis', 'axis', den.axis, ['item', 'row'], (v) => onMeta({ ...meta, density: { ...den, axis: v } }))}
+							{num('Density', 'soft', den.soft, (n) => onMeta({ ...meta, density: { ...den, axis: den.axis || 'item', soft: n } }))}
+							{num('Density', 'hard', den.hard, (n) => onMeta({ ...meta, density: { ...den, axis: den.axis || 'item', hard: n } }))}
 						</div>
 					</div>
 				</div>

@@ -95,6 +95,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `build:galleries:check` | Freshness gate for the per-component galleries. |
 | `build:gallery-jargon` | Rebuild the jargon showcase gallery PDF. |
 | `preview` | Fast visual-iteration loop: scope-detect from git diff, rebuild affected, pixel-diff vs last commit. |
+| `preview:component` | Faithfully render ONE local / AI-generated component to a PNG (lattice.css + the component CSS, full frame) for pixel review. |
 | `preview:watch` | Run the preview loop on change. |
 
 ### Test & verify
@@ -285,3 +286,4 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `tools/export-marp.js` | export-marp — produce a portable, self-contained bundle of a Lattice deck for |
 | `tools/fetch-emoji-font.js` | Vendor Noto Color Emoji for the opt-in FULL-OFFLINE tier. |
 | `tools/golden-diff.mjs` | Post a PR comment + before/after montage of the gallery slides whose committed golden moved vs the base branch. |
+| `tools/preview-component.js` | Component preview — render ONE local / AI-generated component the way the engine |
