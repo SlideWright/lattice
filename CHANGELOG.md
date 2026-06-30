@@ -25,6 +25,21 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **Studio AI now writes deck content in a language you choose.** A new **Output
+  language** picker in the Workspace drawer's *Instructions* tab sets the locale the
+  Architect writes slides, prose refine, and chat in (BCP-47, e.g. `en-US`, `en-GB`,
+  `fr-FR`). It seeds from your browser on first run (`navigator.language` → a supported
+  code, else `en-US`) and is yours to override; the choice persists per workspace. This
+  fixes the AI defaulting to British-leaning prose. Scope is deliberate — **deck content
+  only**: generated component and theme names, CSS, and `_class` directives stay in
+  canonical English so they keep passing the gates and resolving at render time. Latin-script
+  languages for now; the list is data-driven (`docs/src/components/studio/studio-language.ts`).
+  Also wired up the previously-dead "Standing instructions" field (it was saved but never
+  sent) through the same path. See
+  `engineering/decisions/2026-06-30-studio-output-language.md`.
+
 ### Changed
 
 - **Studio component gate now enforces margin discipline (#20) and token typography

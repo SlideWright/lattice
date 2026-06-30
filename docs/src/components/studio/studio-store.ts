@@ -1,6 +1,7 @@
 import { DECKS, deckSource, type StudioDeck } from './decks';
 import { stripFrontMatter } from './front-matter';
 import { splitSlides } from './lint';
+import { DEFAULT_LANGUAGE, detectLanguage } from './studio-language';
 
 // Studio persistence — localStorage-backed, Studio-scoped (lattice-studio-*).
 // Three concerns, kept independent so a corrupt value in one never breaks the
@@ -13,7 +14,8 @@ import { splitSlides } from './lint';
 
 const INDEX_LS = 'lattice-studio-deck-index'; // [{id,title,builtin}]
 const SRC_PREFIX = 'lattice-studio-src-'; // + deckId → edited source
-const SETTINGS_LS = 'lattice-studio-settings'; // { validation, pageNumbers, headerFooter }
+const SETTINGS_LS = 'lattice-studio-settings'; // { validation, pageNumbers, headerFooter, language }
+const INSTRUCTIONS_LS = 'lattice-studio-instructions'; // standing instructions (free text)
 
 function read<T>(key: string): T | null {
 	try {
@@ -165,12 +167,37 @@ export function saveChat(deckId: string, messages: ChatMessage[]): void {
 	write(CHAT_PREFIX + deckId, messages.slice(-CHAT_CAP));
 }
 
-export type StudioSettings = { validation: boolean; pageNumbers: boolean; headerFooter: boolean };
-const DEFAULT_SETTINGS: StudioSettings = { validation: true, pageNumbers: true, headerFooter: false };
+// `language` is the BCP-47 output locale for AI deck content (see studio-language).
+export type StudioSettings = { validation: boolean; pageNumbers: boolean; headerFooter: boolean; language: string };
+const DEFAULT_SETTINGS: StudioSettings = { validation: true, pageNumbers: true, headerFooter: false, language: DEFAULT_LANGUAGE };
 
 export function loadSettings(): StudioSettings {
-	return { ...DEFAULT_SETTINGS, ...(read<Partial<StudioSettings>>(SETTINGS_LS) ?? {}) };
+	const saved = read<Partial<StudioSettings>>(SETTINGS_LS) ?? {};
+	// Seed the language from the browser the FIRST time only (no saved value); the
+	// user's explicit pick wins forever after. detectLanguage falls back to en-US.
+	const language = saved.language ?? detectLanguage();
+	return { ...DEFAULT_SETTINGS, ...saved, language };
 }
 export function saveSettings(partial: Partial<StudioSettings>): void {
 	write(SETTINGS_LS, { ...loadSettings(), ...partial });
+}
+
+// Standing instructions — a free-text voice prefix the AI honors on every
+// DECK-CONTENT call (kept beside language; both ride through architect's
+// withStudioVoice). Empty by default, so an untouched field injects nothing.
+// Stored as a RAW string (not JSON) — the format the Workspace drawer has always
+// written, so existing values keep working.
+export function loadInstructions(): string {
+	try {
+		return localStorage.getItem(INSTRUCTIONS_LS) ?? '';
+	} catch {
+		return '';
+	}
+}
+export function saveInstructions(text: string): void {
+	try {
+		localStorage.setItem(INSTRUCTIONS_LS, text);
+	} catch {
+		/* storage full / unavailable — non-fatal */
+	}
 }
