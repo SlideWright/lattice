@@ -470,6 +470,26 @@ All three pillars landed, faithful to the design above:
   for only with a proven two-dimensional-alignment need, and a true matrix is usually tabular data
   routed to a `<table>` — so the two-column comparison worked example was rebuilt on flex. All still
   bound by the token/no-hex/no-margin/scoping rails;
-  no gate or runtime change for existing components. **Live re-validation of this slice is pending an
-  OpenRouter budget refill** (the stress fan-out exhausted the monthly cap mid-run); the unit suite +
-  gates verify the wiring, the model-facing behavior is validated when the budget returns.
+  no gate or runtime change for existing components. ~~**Live re-validation of this slice is pending an
+  OpenRouter budget refill**~~ — **done (#639, key refilled).**
+- **Live re-validation (#639) — the canon is structurally sound and creatively strong; one gate-survival
+  gap closed.** With a live key, the frozen set ran **18/18** and a 20-prompt creative stress pass
+  (15 distinctive prompts + 5 transform traps, each generate → gate → *faithful render*) confirmed the
+  wins: **flex-first 15/15**, **density block 15/15**, **declines 5/5** (no faked charts/diagrams), a
+  **monumental-KPI** payload renders at `--fs-hero` (a genuine 9/10), and the distinctive ceiling is high
+  (boarding-pass, terminal, receipt all 9/10). Prompt caching was confirmed live: the ~8.8K-token system
+  prefix is billed full on call 1 (cache WRITE) then read at ~0.1× on calls 2..N — a **91.9% prefix-input
+  cost drop** on a real fan-out. The one gap the renders exposed: **gate-*survival* collapsed under creative
+  pressure** — ~60% of distinctive prompts emitted a non-zero `margin` or a raw `hex`, so a visually-excellent
+  component was rejected by the gate before it could ship (the prior "boarding pass broke once" defect,
+  precisely diagnosed: gate-survival variance, not visual variance). Both were already forbidden but the
+  canon gave no *token path* to the creative need. Closed by strengthening the DARE bullet: **all positional
+  play is a `transform`** (`rotate()`/`translate()` to scatter/overlap/hang/tilt — never a `margin`), and
+  **every concept color has a token recipe** (a dark console inverts `--text-heading`/`--bg`; traffic-light
+  dots are `--fail`/`--warn`/`--pass`; a material tint is `color-mix(in srgb, var(--cat-3-mark) 12-22%,
+  var(--bg))` over the categorical ramp). Re-running the identical 15-prompt set cut margin/hex gate failures
+  from **9/15 → 3/15** (gate-clean 6 → 11), with the targeted components flipping FAIL→OK while preserving
+  their identity (terminal stays a 9/10 dark console with zero hex). Generator guidance only — no gate or
+  runtime change. A **separate, softer fit/overflow finding** (odd shapes — honeycomb overflow, stamp/filmstrip
+  dead-space, polaroid/luggagetag/maptrail broken) is logged as its own follow-up, kept off this PR's path
+  (#18/#17). Full report + PNGs on #639.
