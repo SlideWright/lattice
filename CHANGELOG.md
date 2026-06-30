@@ -193,6 +193,31 @@ in patch versions.
 
 ### Changed
 
+- **Studio AI component generator now reasons about content fit, the word budget,
+  and responsive reflow (#610).** The component-generation canon (`lib/layout/ai.js`
+  `COMPONENT_CANON`) gained three teaching bullets that target the recurring
+  stress-test failures — sparse dead-space slides, body-sized KPI numbers, and
+  multi-column drafts with no portrait rule. **Design for fit**: the structure must
+  earn its `capacity` (the sweet count fills the stage; the hard count sits just below
+  overflow; a one-number payload goes monumental via `--fs-hero`/`--fs-emphasis`), and
+  the model is told to size `capacity` to what *this* layout truly holds rather than a
+  boilerplate `{4,6,8}`. **Write to the word budget**: the generator now emits and
+  honors a `density` block (the per-element words-per-element budget already in the
+  manifest schema), with `coerceDensity` snapping `axis` to the two the counter
+  measures (`item`/`row`) and the design-audit flagging an incoherent `soft > hard`.
+  The budget is now threaded end-to-end — through the architect draft, the Studio
+  **Manifest** panel (a new Density field: axis + soft/hard, alongside Capacity), the
+  JSON round-trip, and `saveStudioComponent` — so a generated component persists the
+  budget the reviewer reads, rather than dropping it.
+  **Responsive by construction**: the `@container lattice` single-column reflow is
+  taught as part of the first draft, not a follow-up. **Prefer flex over grid**: the
+  multi-column bullet now makes `display:flex` the default layout primitive and reaches
+  for `grid` only with a proven two-dimensional-alignment reason (and a true matrix is
+  usually tabular data → a `<table>`); the two-column comparison worked example is
+  rebuilt on flex (`flex:1 1 0` per side, `flex-direction:column` reflow) to model it.
+  The worked examples now carry a `density` block, and the output contract requests one. No gate or runtime behavior
+  changes for existing components — this is generator guidance plus the new advisory
+  and the manifest-editor field.
 - **Studio component gate now enforces margin discipline (#20) and token typography
   (#4) — the design-audit (#610).** The local/AI component authoring gate
   (`lib/layout/gate.js` `gateCss`) previously checked only hex/scope/exfil, so a draft

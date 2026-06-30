@@ -34,6 +34,7 @@ export type ComponentMeta = {
 	description?: string;
 	adapt?: { mode: string };
 	capacity?: { sweet?: number; soft?: number; hard?: number };
+	density?: { axis: string; soft?: number; hard?: number };
 };
 
 /**
@@ -47,7 +48,7 @@ export type ComponentMeta = {
 export async function saveStudioComponent(input: { name: string; css: string; skeleton: string; meta?: ComponentMeta }): Promise<StudioComponent> {
 	const meta = input.meta || {};
 	const manifest: Record<string, unknown> = { name: input.name };
-	for (const k of ['function', 'form', 'substance', 'bucket', 'adapt', 'capacity'] as const) {
+	for (const k of ['function', 'form', 'substance', 'bucket', 'adapt', 'capacity', 'density'] as const) {
 		if (meta[k] != null) manifest[k] = meta[k];
 	}
 	if (Array.isArray(meta.tags) && meta.tags.length) manifest.tags = meta.tags;

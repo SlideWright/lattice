@@ -52,10 +52,24 @@ describe('component-ai — coerce', () => {
     assert.deepEqual(r.manifest.capacity, { sweet: 4, soft: 6, hard: 8 }, 'capacity captured');
   });
 
-  test('defaults adapt to native and capacity to null when the model omits them', () => {
+  test('captures a density block, snapping the axis to an item/row the counter measures', () => {
+    const r = coerceComponent({ ...GOOD, density: { axis: 'item', soft: 6, hard: 12 } });
+    assert.deepEqual(r.manifest.density, { axis: 'item', soft: 6, hard: 12 }, 'density captured');
+    // col/cell/line aren't measured per-element — snap to the default `item`.
+    const snapped = coerceComponent({ ...GOOD, density: { axis: 'cell', soft: 4, hard: 8 } });
+    assert.equal(snapped.manifest.density.axis, 'item', 'unmeasured axis snaps to item');
+    const rowAxis = coerceComponent({ ...GOOD, density: { axis: 'row', soft: 4, hard: 8 } });
+    assert.equal(rowAxis.manifest.density.axis, 'row', 'a table row axis is preserved');
+    // A one-sided budget is meaningless + schema-invalid (both required) — drop it.
+    assert.equal(coerceComponent({ ...GOOD, density: { axis: 'item', soft: 6 } }).manifest.density, null, 'partial density (no hard) drops to null');
+    assert.equal(coerceComponent({ ...GOOD, density: { soft: 'x', hard: 12 } }).manifest.density, null, 'non-numeric soft drops to null');
+  });
+
+  test('defaults adapt to native and capacity/density to null when the model omits them', () => {
     const r = coerceComponent(GOOD);
     assert.equal(r.manifest.adapt.mode, 'native');
     assert.equal(r.manifest.capacity, null);
+    assert.equal(r.manifest.density, null);
   });
 
   test('clamps tags to the gate ceiling (≤ 5) so a 6-tag reply can still pass', () => {
@@ -296,8 +310,12 @@ describe('component-ai — design audit (§6 adapt/capacity + §7 size cap)', ()
     assert.ok(auditComponentDesign({ adapt: { mode: 'native' }, capacity: { soft: 8, hard: 6 } }, 'section.x{}').some(x => x.rule === 'capacity' && /climb/.test(x.message)));
     assert.ok(auditComponentDesign({ adapt: { mode: 'native' }, capacity: { sweet: 9, hard: 8 } }, 'section.x{}').some(x => x.rule === 'capacity'));
   });
+  test('flags an incoherent density that does not climb (soft > hard)', () => {
+    const f = auditComponentDesign({ adapt: { mode: 'native' }, capacity: { sweet: 4, soft: 6, hard: 8 }, density: { axis: 'item', soft: 12, hard: 6 } }, 'section.x{}');
+    assert.ok(f.some(x => x.rule === 'density' && /≤/.test(x.message)));
+  });
   test('a coherent manifest with a small sheet audits clean', () => {
-    const f = auditComponentDesign({ adapt: { mode: 'native' }, capacity: { sweet: 4, soft: 6, hard: 8 } }, 'section.x{ color:var(--text-body) }');
+    const f = auditComponentDesign({ adapt: { mode: 'native' }, capacity: { sweet: 4, soft: 6, hard: 8 }, density: { axis: 'item', soft: 6, hard: 12 } }, 'section.x{ color:var(--text-body) }');
     assert.equal(f.length, 0);
   });
   test('flags an oversized stylesheet (a smuggled data: payload)', () => {
