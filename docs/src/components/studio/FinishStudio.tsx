@@ -1,4 +1,4 @@
-import { Check, Download, Moon, Sun } from 'lucide-react';
+import { Download, Moon, Sun } from 'lucide-react';
 import * as React from 'react';
 import { DeckPreview } from '@/components/DeckPreview';
 import { Slider } from '@/components/ui/slider';
@@ -12,7 +12,9 @@ import {
 	generateFinishCss,
 	generateSwatch,
 } from './finish-generate';
-import { saveStudioFinish, slugifyFinish } from './finish-library';
+
+const slugify = (s: string) =>
+	s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40).replace(/-+$/, '');
 
 // The Finish faculty — the third Fabricate workbench (beside Theme + Component):
 // fabricate a custom parametric BACKDROP by tuning sliders, see it live on a
@@ -36,16 +38,14 @@ const PREVIEW_CLASS = 'backdrop-preview';
 const SPECIMEN = `<!-- _class: ${PREVIEW_CLASS} -->\n\n\`Finish · live preview\`\n\n## Your backdrop, behind real content\n\nThe field stays faint so body text keeps its contrast — no scrim needed.\n\n- Palette-blind\n  - Recolors with the theme accent automatically.\n- Export-safe\n  - Pure CSS gradients — survives PDF and PPTX.`;
 
 export function FinishStudio({
-	options, notify, onSaved,
+	options, notify,
 }: {
 	options: SingleSlideOptions;
 	notify: (msg: string) => void;
-	onSaved?: () => void;
 }) {
 	const [params, setParams] = React.useState<FinishParams>(DEFAULT_PARAMS.blueprint);
 	const [name, setName] = React.useState('');
 	const [mode, setMode] = React.useState<'light' | 'dark'>('light');
-	const [saving, setSaving] = React.useState(false);
 
 	const set = <K extends keyof FinishParams>(k: K, v: FinishParams[K]) =>
 		setParams((p) => ({ ...p, [k]: v }));
@@ -53,32 +53,15 @@ export function FinishStudio({
 		setParams((p) => ({ ...DEFAULT_PARAMS[base], intensity: p.intensity }));
 
 	const previewCss = React.useMemo(() => generateFinishCss(PREVIEW_CLASS, params), [params]);
-	const slug = slugifyFinish(name);
+	const slug = slugify(name);
 	const className = slug ? `backdrop-${slug}` : 'backdrop-custom';
-	const nameOk = slug.length > 0;
 	const hasScale = params.base !== 'wash' && params.base !== 'aurora';
 	const hasAngle = params.base === 'hatch';
 
 	const exportCss = () => {
 		const css = generateFinishCss(className, params);
-		downloadText(`${className}.finish.css`, `/* Lattice finish — apply with <!-- _class: ${className} --> */\n${css}\n`, 'text/css');
+		downloadText(`${className}.finish.css`, `/* Lattice finish — apply with <!-- _class: ${className} --> (per slide) or class: ${className} (deck-wide) */\n${css}\n`, 'text/css');
 		notify(`Exported ${className}.finish.css — drop it in and apply with _class: ${className}.`);
-	};
-
-	const save = async () => {
-		if (!nameOk || saving) return;
-		setSaving(true);
-		try {
-			const css = generateFinishCss(className, params);
-			const sw = generateSwatch(params);
-			const f = await saveStudioFinish({ name: className, label: name.trim(), css, swatch: sw.background });
-			notify(`Saved “${f.label}” to your library — apply it with _class: ${f.name}.`);
-			onSaved?.();
-		} catch {
-			notify('Could not save — your browser may block storage (private mode?).');
-		} finally {
-			setSaving(false);
-		}
 	};
 
 	return (
@@ -94,11 +77,8 @@ export function FinishStudio({
 					spellCheck={false}
 					className="min-w-0 flex-1 bg-transparent font-mono text-[13px] font-semibold text-[var(--text-heading)] outline-none placeholder:font-normal placeholder:text-muted-foreground"
 				/>
-				<button type="button" onClick={exportCss} className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-[13px] font-semibold text-[var(--text-heading)] hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]">
-					<Download className="size-3.5" /><span className="hidden sm:inline">Export</span>
-				</button>
-				<button type="button" disabled={!nameOk || saving} onClick={save} className={cn('inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[13px] font-semibold', nameOk && !saving ? 'bg-[var(--accent)] text-[var(--bg)]' : 'cursor-not-allowed bg-muted text-muted-foreground')}>
-					<Check className="size-3.5" /><span className="hidden sm:inline">{saving ? 'Saving…' : 'Save'}</span>
+				<button type="button" onClick={exportCss} className="inline-flex items-center gap-1.5 rounded-md bg-[var(--accent)] px-2.5 py-1 text-[13px] font-semibold text-[var(--bg)]">
+					<Download className="size-3.5" /><span className="hidden sm:inline">Export CSS</span>
 				</button>
 			</div>
 
@@ -144,8 +124,10 @@ export function FinishStudio({
 					)}
 
 					<p className="text-[12px] leading-relaxed text-muted-foreground">
-						Tune the field, name it, then Save to your Library or Export the CSS.
-						An AI “describe a finish” door is coming — parametric first.
+						Tune the field, name it, then Export the CSS — drop it in and apply with{' '}
+						<code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">_class: {className}</code>{' '}
+						(per slide) or <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">class: {className}</code> (deck-wide).
+						Saving to your Library + an AI “describe a finish” door are coming next.
 					</p>
 				</div>
 

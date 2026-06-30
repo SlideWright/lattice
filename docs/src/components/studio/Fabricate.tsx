@@ -439,7 +439,7 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 					{facultyToggle}
 					<div className="flex-1" />
 				</div>
-				<FinishStudio options={options} notify={notify} onSaved={onSaved} />
+				<FinishStudio options={options} notify={notify} />
 			</div>
 		);
 	}

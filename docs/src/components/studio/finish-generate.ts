@@ -42,9 +42,16 @@ function slotBody(p: FinishParams): string {
 	}
 }
 
-/** The full `section.<name> { … }` rule for a fabricated finish. */
+/**
+ * The full `section.<name> { … }` rule for a fabricated finish. The name is
+ * re-sanitized to a safe class fragment HERE (defense in depth — the generator
+ * never trusts its caller): only `[a-z0-9-]` survive, so a crafted name can't
+ * close the selector or inject a second rule into the same-origin preview frame.
+ * Params are numeric (Math.round/Math.max), never interpolated as strings.
+ */
 export function generateFinishCss(name: string, p: FinishParams): string {
-	return `section.${name} { ${slotBody(p)}; }`;
+	const safe = String(name).toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '') || 'backdrop-custom';
+	return `section.${safe} { ${slotBody(p)}; }`;
 }
 
 /** A preview-chip background (params bumped for visibility at small size). */
