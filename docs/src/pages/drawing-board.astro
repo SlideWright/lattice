@@ -48,6 +48,12 @@ const obCatalog = manifests.map((m) => ({
 	bucket: manifestBucket(m),
 	tags: m.tags || [],
 	summary: m.description || '',
+	// Content budgets — element COUNT (capacity) and per-element WORD budget
+	// (density). Carried into the catalog so buildLatticePrimer can surface them
+	// to the model WHILE it authors (2026-06-30-prose-density-budget.md red-team
+	// fix — previously the budgets reached only the post-hoc review panel).
+	...(m.capacity ? { capacity: m.capacity } : {}),
+	...(m.density ? { density: m.density } : {}),
 	skeleton: m.skeleton || m.sample || `<!-- _class: ${m.name} -->\n`,
 	variants: m.variants || [],
 	// Family (scoped) modifiers in scope for this component — e.g. `checks-*` +

@@ -4,6 +4,7 @@
   "function": "comparison",
   "form": "split",
   "substance": "structure",
+  "density": { "axis": "item", "soft": 20, "hard": 32, "note": "each side's case in a sentence or two" },
   "adapt": {
     "mode": "reflow",
     "families": [

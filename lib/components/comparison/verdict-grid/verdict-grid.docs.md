@@ -8,7 +8,7 @@
 
 **Capacity** ~3 items (crowds past 4, overflows past 5) — past that, compare-table / split across slides.
 
-**Density** up to ~12 words per item (overflows past 18) — a verdict card is a label plus its criteria, not prose.
+**Density** aim ~12 words per item; past ~18 it reads as a wall of text — a verdict card is a label plus its criteria, not prose.
 
 Use to evaluate 2–4 options against the same set of criteria, with pass/partial/fail badges. Each card represents one option; badges per criterion.
 

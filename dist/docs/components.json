@@ -1999,6 +1999,12 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "density": {
+        "axis": "item",
+        "soft": 20,
+        "hard": 32,
+        "note": "each side's case in a sentence or two"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -2433,6 +2439,12 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "density": {
+        "axis": "item",
+        "soft": 20,
+        "hard": 32,
+        "note": "each option's tradeoff in a sentence or two"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -3124,6 +3136,12 @@
       "focusAxes": [
         "row"
       ],
+      "density": {
+        "axis": "item",
+        "soft": 16,
+        "hard": 24,
+        "note": "a term and a one-sentence definition"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -3965,6 +3983,12 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "density": {
+        "axis": "item",
+        "soft": 8,
+        "hard": 14,
+        "note": "a metric label, not a sentence"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -4150,6 +4174,12 @@
       "focusAxes": [
         "item"
       ],
+      "density": {
+        "axis": "item",
+        "soft": 14,
+        "hard": 20,
+        "note": "one statement per line, not a paragraph"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -4290,6 +4320,12 @@
       "focusAxes": [
         "item"
       ],
+      "density": {
+        "axis": "item",
+        "soft": 14,
+        "hard": 22,
+        "note": "one criterion with a short proof, not a spec"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -4630,6 +4666,12 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "density": {
+        "axis": "item",
+        "soft": 12,
+        "hard": 16,
+        "note": "a short row label plus a clause"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -5283,6 +5325,12 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "density": {
+        "axis": "item",
+        "soft": 10,
+        "hard": 16,
+        "note": "a short label per quadrant cell"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -7170,6 +7218,12 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "density": {
+        "axis": "item",
+        "soft": 14,
+        "hard": 22,
+        "note": "a terse point per line"
+      },
       "slots": {
         "frame": {
           "selector": "p:first-of-type > code",
@@ -7330,6 +7384,12 @@
         "with-period"
       ],
       "familyModifiers": [],
+      "density": {
+        "axis": "item",
+        "soft": 16,
+        "hard": 24,
+        "note": "one finding per row, a sentence"
+      },
       "slots": {
         "eyebrow": {
           "selector": "p:first-of-type > code",
@@ -7970,6 +8030,12 @@
       "familyModifiers": [
         "canvas"
       ],
+      "density": {
+        "axis": "item",
+        "soft": 16,
+        "hard": 24,
+        "note": "one stage in a sentence"
+      },
       "slots": {
         "title": {
           "selector": "h2",

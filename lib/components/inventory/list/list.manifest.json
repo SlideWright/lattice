@@ -7,6 +7,7 @@
   "function": "inventory",
   "form": "stack",
   "substance": "prose",
+  "density": { "axis": "item", "soft": 14, "hard": 20, "note": "one statement per line, not a paragraph" },
   "adapt": {
     "mode": "reflow",
     "families": [

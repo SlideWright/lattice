@@ -8,7 +8,7 @@
 
 **Capacity** ~4 items (crowds past 6, overflows past 7) — past that, split across slides.
 
-**Density** up to ~10 words per item (overflows past 16) — a short agenda line, not a description.
+**Density** aim ~10 words per item; past ~16 it reads as a wall of text — a short agenda line, not a description.
 
 Use as the second slide of any multi-section deck. Numbers are generated; authors just write the section titles. Five interchangeable styles — the default `ledger` (a contents page with optional page references), plus `circles`, `rail`, `cards`, and `checks` — all compose with the `progress-N` 'you are here' modifier.
 

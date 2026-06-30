@@ -133,9 +133,13 @@ describe('component-manifest', () => {
     test('density: rejects an unknown key', () => {
       assert.ok(validate({ ...WITH_ITEMS, density: { axis: 'item', soft: 4, hard: 6, bogus: 1 } }).some((e) => /density has unknown key 'bogus'/.test(e)));
     });
-    test('density: axis must be a focusAxes member when declared', () => {
-      const m = { ...WITH_ITEMS, focusAxes: ['item'], density: { axis: 'row', soft: 4, hard: 6 } };
-      assert.ok(validate(m).some((e) => /density\.axis 'row' must be one of/.test(e)));
+    test('density: axis is NOT tied to focusAxes (focus highlighting ≠ word counting)', () => {
+      // glossary's case: focusAxes ['row'] (the ledger highlights as table rows)
+      // but authored as a bullet list, so the density axis is `item`. The only
+      // axis guard is measurability — an item density on an item-authored sample
+      // is valid regardless of focusAxes.
+      const m = { ...WITH_ITEMS, focusAxes: ['row'], density: { axis: 'item', soft: 4, hard: 6 } };
+      assert.deepEqual(validate(m), []);
     });
     test('density: needs an axis (no capacity to inherit from)', () => {
       assert.ok(validate({ ...WITH_ITEMS, density: { soft: 4, hard: 6 } }).some((e) => /density needs an axis/.test(e)));

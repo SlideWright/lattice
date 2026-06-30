@@ -1188,6 +1188,79 @@ function checkPreviewHtmlSinks(errors) {
 
 // ── Runner ────────────────────────────────────────────────────────────────
 
+// Prose-density coverage — every TEXT-BEARING layout declares a `density` word
+// budget, or is on the exempt allowlist with its reason. Without this gate the
+// 26 hand-set budgets silently rot and a NEW prose layout ships unbudgeted with
+// no error (the red-team's #4). Allowlist + anti-rot, same shape as #20/#22: a
+// component with neither density nor an exempt entry fails (forces the
+// budget-or-exempt decision); a stale exempt entry — a name that no longer
+// exists, OR one that now HAS a density block — also fails, so the list can't
+// drift. The boundary test (decision doc §6): can the author tighten this
+// element's words without losing required content? If not (data viz, code,
+// figures, anchors, [x]-cell grids, verbatim citations, single-block prose),
+// it's exempt. See engineering/decisions/2026-06-30-prose-density-budget.md.
+const SANCTIONED_DENSITY_EXEMPT = {
+  // anchors — bookends; covered by the universal title/eyebrow/subtitle budgets.
+  title: 'bookend — universal title/eyebrow budgets cover it',
+  divider: 'bookend — section break, minimal text',
+  closing: 'bookend — universal budgets cover it',
+  // data viz — content is a data series/graph, not prose.
+  funnel: 'data viz — series, not prose',
+  gantt: 'data viz — schedule, not prose',
+  journey: 'data viz — stage map, not prose bodies',
+  map: 'data viz — geographic series',
+  piechart: 'data viz — series',
+  progress: 'data viz — series',
+  quadrant: 'data viz — scatter',
+  radar: 'data viz — scatter series',
+  roadmap: 'data viz — timeline matrix',
+  'state-chart': 'data viz — state graph',
+  'word-cloud': 'data viz — weighted terms, not prose',
+  // code — budgeted by line count, not words.
+  code: 'code — line-based, not word-based',
+  'compare-code': 'code — line-based',
+  // figural — non-prose substance.
+  diagram: 'figural — graph, not prose',
+  math: 'figural — typeset equation',
+  image: 'figural — picture',
+  'logo-wall': 'figural — logos',
+  // data grids — [x]/checkmark cells / feature matrices; word-counting mis-fires.
+  'obligation-matrix': 'data grid — [x] cells, not prose',
+  pricing: 'data grid — feature checklist, terse labels',
+  // verbatim — a quoted statute is intentionally long; trimming would falsify it.
+  'citation-card': 'verbatim — a cited statute, not authorable prose',
+  // single-block prose — one block, governed by the universal key-insight/title
+  // budgets + the whole-slide wall-of-text rule, not a per-element axis.
+  quote: 'single-block — one quotation, key-insight budget applies',
+  'big-number': 'single-block — a hero number + short caption',
+  content: 'single-block — freeform prose, wall-of-text rule governs it',
+  redline: 'single-block — a diff, not item prose',
+};
+
+function checkDensityCoverage(manifests, errors) {
+  const names = new Set(manifests.map((m) => m.name));
+  for (const m of manifests) {
+    if (m.density) continue;
+    if (!(m.name in SANCTIONED_DENSITY_EXEMPT)) {
+      errors.push(
+        `${m.name}: no \`density\` word budget and not on the exempt allowlist. Either add a ` +
+        `density block (calibrate with tools/calibrate-density.js) or, if its elements aren't ` +
+        `authorable prose, add it to SANCTIONED_DENSITY_EXEMPT in tools/check-ownership.js with ` +
+        `its reason. See engineering/decisions/2026-06-30-prose-density-budget.md §6.`,
+      );
+    }
+  }
+  // Anti-rot: every exempt entry must name a real component that still lacks a
+  // density block — otherwise the exemption is stale.
+  for (const name of Object.keys(SANCTIONED_DENSITY_EXEMPT)) {
+    if (!names.has(name)) {
+      errors.push(`SANCTIONED_DENSITY_EXEMPT lists '${name}', which is not a component — remove the stale entry.`);
+    } else if (manifests.find((m) => m.name === name)?.density) {
+      errors.push(`SANCTIONED_DENSITY_EXEMPT lists '${name}', but it now HAS a density block — remove the stale exemption.`);
+    }
+  }
+}
+
 function run() {
   const manifests = loadAll();
   const errors = [];
@@ -1206,6 +1279,7 @@ function run() {
   checkThemeHasSelectors(errors);
   checkAdaptDeclarations(manifests, errors);
   checkSolverIntentDeclared(manifests, errors);
+  checkDensityCoverage(manifests, errors);
   checkPreviewHtmlSinks(errors);
   return {
     errors,
@@ -1250,6 +1324,8 @@ module.exports = {
   checkVariantDeclaration,
   checkAdaptDeclarations,
   checkSolverIntentDeclared,
+  checkDensityCoverage,
+  SANCTIONED_DENSITY_EXEMPT,
   checkTagClustering,
   checkRetiredTokenNames,
   RETIRED_TOKEN_NAMES,

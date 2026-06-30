@@ -21,6 +21,8 @@ const SAMPLE = [
   { name: 'decision', bucket: 'comparison', summary: 'The verdict slide.',
     skeleton: '<!-- _class: decision -->\n\n## Heading\n\n- Chosen path\n  - rationale',
     variants: ['banner-tag'],
+    capacity: { axis: 'item', soft: 2 },
+    density: { axis: 'item', soft: 20, note: "each option's tradeoff in a sentence or two" },
     slots: [
       { name: 'title', required: true, description: 'Slide heading.' }, // generic → skipped
       { name: 'options', required: true, description: 'Top-level bullet is the option name; an indented bullet carries the rationale.' },
@@ -65,6 +67,17 @@ describe('buildLatticePrimer — the authoring dossier', () => {
     const p = buildLatticePrimer(SAMPLE);
     assert.match(p, /`options`: Top-level bullet is the option name; an indented bullet carries the rationale\./);
     assert.doesNotMatch(p, /`title`: Slide heading\./); // generic, the skeleton already shows it
+  });
+
+  test('surfaces the content BUDGET (capacity + density) so the model writes tight while authoring', async () => {
+    // Red-team fix (2026-06-30): the budgets must reach the GENERATION prompt,
+    // not just the post-hoc review panel. A layout with capacity/density gets a
+    // `Budget:` line; the universal chrome limits ride in the authoring rules.
+    const { buildLatticePrimer } = await load();
+    const p = buildLatticePrimer(SAMPLE);
+    assert.match(p, /Budget: ≤ 2 items, ≤ ~20 words each — each option's tradeoff in a sentence or two\./);
+    assert.match(p, /eyebrow ≤ 5 words/); // universal chrome budgets in the rules
+    assert.match(p, /slide title ≤ 10/);
   });
 
   test('intro instructs exact `_class` names + skeleton-verbatim, never guess', async () => {

@@ -24,6 +24,7 @@
   "function": "statement",
   "form": "panel",
   "substance": "structure",
+  "density": { "axis": "item", "soft": 16, "hard": 24, "note": "one finding per row, a sentence" },
   "bucket": "statement",
   "tags": [
     "summary",

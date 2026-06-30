@@ -8,7 +8,7 @@
 
 **Capacity** ~4 items (crowds past 5, overflows past 6) — past that, split across slides (auto with autosplit: on) / statute-stack.
 
-**Density** up to ~14 words per item (overflows past 22) — one clause per tier.
+**Density** aim ~14 words per item; past ~22 it reads as a wall of text — one clause per tier.
 
 Use when the audience needs to see how a rule descends: what the statute says, how the agency implemented it, what guidance interpreted it, and what cases have applied it. Ordered list because the order is the argument.
 

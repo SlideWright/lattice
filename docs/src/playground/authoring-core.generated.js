@@ -1143,7 +1143,7 @@ var require_review_core = __commonJS({
               rule: "density-overflow",
               severity: "suggestion",
               classToken: comp,
-              message: `a ${comp} element runs to ${worst} words (budget ~${dens.soft}, ceiling ${dens.hard}) \u2014 it will overflow`,
+              message: `a ${comp} element runs to ${worst} words \u2014 well past the ~${dens.soft}-word target; it reads as a wall of text`,
               fix: tighten
             });
           } else if (worst > dens.soft) {
@@ -1152,7 +1152,7 @@ var require_review_core = __commonJS({
               rule: "density-crowd",
               severity: "suggestion",
               classToken: comp,
-              message: `a ${comp} element runs to ${worst} words \u2014 reads best at ~${dens.soft} (past that it crowds)`,
+              message: `a ${comp} element runs to ${worst} words \u2014 reads best at ~${dens.soft} (past that it gets heavy)`,
               fix: tighten
             });
           }

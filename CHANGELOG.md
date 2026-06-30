@@ -27,6 +27,28 @@ in patch versions.
 
 ### Added
 
+- **Prose-density budgets now cover every text-bearing layout (26 of 53).** The
+  density backfill is complete: `kpi`, `glossary`, `list`, `list-criteria`,
+  `list-tabular`, `timeline-list`, `compare-prose`, `decision`, `matrix-2x2`,
+  `split-panel`, and `split-compare` gain a per-element word budget (each `hard`
+  ceiling evidence-clamped under its measured overflow point via
+  `tools/calibrate-density.js`). The remaining 27 layouts are deliberately exempt —
+  data viz, code, figures, anchors, `[x]`-cell data grids, verbatim citations, and
+  single-block prose already governed by the universal title/key-insight and
+  whole-slide `wall-of-text` budgets (the boundary is documented in
+  `engineering/decisions/2026-06-30-prose-density-budget.md` §6). Also: `density.axis`
+  is no longer tied to `focusAxes` (focus highlighting ≠ markdown word-counting),
+  so a ledger that highlights as rows but is authored as items — `glossary` — can
+  be budgeted on its real `item` axis. **A Munger-inversion red team then found
+  the budget was reaching no consumer** (the Drawing Board catalog never carried
+  `density`, so it fired in neither the LLM prompt nor the review panel) and its
+  `hard` message falsely claimed *"it will overflow"* — so this release also wires
+  it for real: each layout's budget now rides into the LLM authoring primer as a
+  `Budget:` line, the CLI (`lint:deck`) surfaces density suggestions alongside lint,
+  the message is reworded to the honest *"reads as a wall of text"* (an editorial
+  threshold, not a physical-overflow claim — the Fit Spine owns overflow), and a new
+  `checkDensityCoverage` gate (`build:check`) keeps every prose layout budgeted-or-
+  exempt so coverage can't rot. See the decision doc §9.
 - **Studio Focus mode — a transient "quiet the noise" view.** The Studio's
   four-column desktop layout (Architect · Editor · Preview · Inspector) can now
   collapse to just **Editor + Preview + slide nav**, with most of the topbar

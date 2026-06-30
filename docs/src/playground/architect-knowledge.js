@@ -26,6 +26,7 @@ export const AUTHORING_RULES = [
   'Title slides: `<!-- _class: title silent -->`, then a backtick-wrapped `eyebrow`, then an `# H1`, then a single plain subtitle paragraph — nothing more.',
   'Compose tokens on the class, space-separated: a layout’s own VARIANTS (listed with each layout, e.g. `list-steps timeline`) plus the cross-cutting BASE MODIFIERS — `dark`, `numbered`, `mirror`, `silent`, the `tint-*` / `mark-*` / `with-*` families, and the `tone-pass` / `tone-fail` / `tone-warn` / `tone-skip` state markers. Colours come from theme tokens — never author raw hex.',
   'Rich blocks are supported: ```chart (native charts), ```mermaid (25 diagram types), and $$…$$ (KaTeX math).',
+  'Keep it tight — slides are glance media, not documents. Respect each layout’s `Budget:` line (max elements + words per element). Universal limits on ANY slide regardless of layout: eyebrow ≤ 5 words, slide title ≤ 10, subtitle ≤ 12, a `> ` key-insight ≤ 18 (one memorable sentence), a status pill 1–2 words. When an element needs more, cut it or move the detail to speaker notes — never let a card become a paragraph.',
 ];
 
 // A generic "Slide heading."-style slot description adds nothing the skeleton
@@ -88,6 +89,17 @@ function layoutBlock(c) {
   const lines = [`### ${c.name}${c.summary ? ` — ${c.summary}` : ''}`];
   if (c.variants?.length) {
     lines.push(`Variants: ${c.variants.join(', ')} (append to the class, e.g. \`${c.name} ${c.variants[0]}\`).`);
+  }
+  // Budget the author toward brevity UP FRONT — the element COUNT (capacity) and
+  // the per-element WORD budget (density). This is the single most effective lever
+  // against the model over-stuffing a layout, and the whole point of the budgets:
+  // the model must SEE them while authoring, not just be reviewed after. See
+  // engineering/decisions/2026-06-30-prose-density-budget.md (red-team fix).
+  const budget = [];
+  if (c.capacity) budget.push(`≤ ${c.capacity.soft} ${c.capacity.axis || 'item'}${c.capacity.soft === 1 ? '' : 's'}`);
+  if (c.density) budget.push(`≤ ~${c.density.soft} words each`);
+  if (budget.length) {
+    lines.push(`Budget: ${budget.join(', ')}${c.density?.note ? ` — ${c.density.note}` : ''}. Keep it tight; push detail to speaker notes.`);
   }
   for (const s of c.slots || []) {
     if (!s.description || isGenericSlot(s.description)) continue;
