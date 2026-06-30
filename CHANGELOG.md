@@ -246,6 +246,33 @@ in patch versions.
   The worked examples now carry a `density` block, and the output contract requests one. No gate or runtime behavior
   changes for existing components — this is generator guidance plus the new advisory
   and the manifest-editor field.
+- **Studio AI component canon now keeps creative components gate-clean — token paths for
+  every creative need (#610, #639 follow-up).** Live validation against a real model
+  (`#639`) showed the canon's *creative ceiling* is excellent — distinctive boarding-pass,
+  terminal, receipt, and monumental-KPI components all render at a genuine 9/10 — but
+  gate-*survival* collapsed under creative pressure: roughly 60% of distinctive prompts
+  emitted a non-zero `margin` or a raw `hex`, so a visually-excellent component was rejected
+  by the gate before it could ship. The two root causes were that the canon forbids both but
+  gives no *token path* to the creative need. The DARE bullet (`lib/layout/ai.js`
+  `COMPONENT_CANON`) now supplies both: **all positional play is a `transform`** —
+  `rotate()` a stamp, `translate()` to scatter/overlap/hang/nudge — never a `margin` (which
+  corrupts the stage's height math and fails the gate); and **every concept color has a
+  token recipe** so a named color never drives a hex — a dark terminal/console panel inverts
+  the existing tokens (`background:var(--text-heading); color:var(--bg)`), status/traffic-light
+  dots are `--fail`/`--warn`/`--pass`, and a material tint (post-it yellow, kraft, a colored
+  stamp) is `color-mix(in srgb, var(--cat-3-mark) 12-22%, var(--bg))` over the categorical ramp.
+  **Evidence (controlled old-vs-new trial, K=4, 32 hot-prompt trials per arm — separates the
+  canon's effect from sampling noise):** hot-prompt gate-failures fall **53% → 34%**, and the rule
+  breakdown shows *why* — **`hex` failures go 8 → 0** (decisive: `terminal` and `stickynotes` both
+  flip 0/4 → 4/4, driven by the color-token recipes), while **`margin` failures are flat (12 → 11,
+  within noise)** — the transform-for-offset half doesn't reliably move margin behavior (`receipt`/
+  `polaroid` stay margin-stubborn). So the proven win is the **concept-color token path** (a
+  terminal/sticky/traffic-light component that was *always* rejected on hex now ships); the margin
+  guidance is correct and harmless but statistically neutral. Generator guidance only — no gate or
+  runtime change; the frozen adversarial eval stays 18/18. (An earlier single before/after run
+  suggested 9/15 → 3/15, but that conflated the effect with sampling variance — the controlled trial
+  is the real measure.) Validation report on `#639`; full trial + canon rationale in
+  `engineering/decisions/2026-06-29-ai-component-generation.md` §11.
 - **Studio component gate now enforces margin discipline (#20) and token typography
   (#4) — the design-audit (#610).** The local/AI component authoring gate
   (`lib/layout/gate.js` `gateCss`) previously checked only hex/scope/exfil, so a draft
