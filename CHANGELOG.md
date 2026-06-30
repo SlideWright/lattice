@@ -27,6 +27,15 @@ in patch versions.
 
 ### Added
 
+- **Studio Focus mode — a transient "quiet the noise" view.** The Studio's
+  four-column desktop layout (Architect · Editor · Preview · Inspector) can now
+  collapse to just **Editor + Preview + slide nav**, with most of the topbar
+  hidden, so a power user — or anyone mid-draft — can concentrate without losing
+  any capability: the ⌘K command palette stays live, so every feature is one
+  keystroke away. Enter via the Focus button in the topbar, `⌘.`, or the command
+  palette; leave with the Exit-focus control, `Esc`, or `⌘.`. Opt-in per session
+  (not sticky, not a default); entering Fabricate exits it. Design + rationale:
+  `engineering/decisions/2026-06-30-studio-focus-mode.md`.
 - **Studio AI now writes deck content in a language you choose.** A new **Output
   language** picker in the Workspace drawer's *Instructions* tab sets the locale the
   Architect writes slides, prose refine, and chat in (BCP-47, e.g. `en-US`, `en-GB`,
