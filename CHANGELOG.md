@@ -49,6 +49,103 @@ in patch versions.
   threshold, not a physical-overflow claim — the Fit Spine owns overflow), and a new
   `checkDensityCoverage` gate (`build:check`) keeps every prose layout budgeted-or-
   exempt so coverage can't rot. See the decision doc §9.
+- **Finish presets — a palette-blind, STACKED-LAYER surface layer for decks (the
+  `field` zone of the Finish family).** Five premium `finish:` register values —
+  `atrium` (glow + grid + left rule), `meridian` (diagonal duotone + contour
+  lines + ghost numeral), `strata` (soft bands + dot-matrix + corner tick),
+  `halo` (centered spotlight + concentric rings + vignette), and `ledger` (ruled
+  lines + bold left bar + corner fold) — paint a faint,
+  theme-recoloring composition behind every slide, set deck-wide in one line of
+  front matter (`finish: atrium`) or per-slide via `_class: finish finish-<name>`;
+  `finish-none` (back-compat `backdrop-none`) opts a slide out. Each preset is
+  built on a **per-role custom-property layer compositor** (`--fin-wash` /
+  `--fin-texture` / `--fin-mark` / `--fin-edge` blended in one rule on
+  `section.finish`), so layers combine by z-index instead of being either/or and a
+  future right-panel designer can drive any single layer by setting one prop. A
+  per-slide finish (`_class: finish finish-<name>`) **overrides** the deck-wide one
+  rather than stacking on it — the propagation drops the deck's `finish-*` preset
+  when a slide carries its own (or `finish-none`), so two finishes never composite
+  on one section. All layers are pure CSS gradients with NO `mask-image` (drops in
+  Apple PDFKit) and NO `url()`. Every full-bleed fade is **opaque-to-opaque**
+  (`color-mix(var(--accent) N%, var(--bg))` → `var(--bg)`), never to `transparent`
+  — Chromium's print-to-PDF encodes an alpha area-fade so PDF rasterizers (poppler
+  AND Ghostscript both confirmed) interpolate toward transparent-black and bake in
+  a gray cloud; opaque-to-opaque exports clean. Patterns are uniform and faint
+  (thin opaque lines, `transparent` gaps), so they survive PDF/PPTX export, add no
+  remote-`url()` surface, and stay subtle enough to keep text at AA contrast with
+  no scrim. New `lib/base/base.finish.css`
+  (replaces the prior single-value backdrops); `FINISH_REGISTER`
+  (`lib/core/resolve-finish.js`) — the single source of truth read by all three
+  render paths — carries the five presets, gated against the CSS by a rot-guard.
+  The Studio Inspector's swatch-previewed **Finish** field (grouped Plain /
+  Finishes) writes the register. Demo: `examples/finish-backdrops.md`. See
+  `engineering/decisions/2026-06-30-finish-the-surface-layer.md`.
+- **Finishes are now rich-on-screen and safe-on-export — a dual-variant per
+  preset.** On screen (live preview, presenter, web, docs) each finish shows the
+  richer "dissolving" look of the mockups: the pattern fades directionally toward
+  a corner, a glow blooms to nothing, rings thin out — fades that run to
+  `transparent` (alpha), which the browser composites perfectly. For any export
+  the engine automatically falls back to the **opaque** look (every full-bleed
+  fade ends on `var(--bg)`, patterns uniform-faint) — the only PDF-clean form,
+  since Chromium's print-to-PDF bakes an alpha area-fade into a gray cloud. The
+  rich value is each preset's slot default; an `--fin-*-opaque` mirror per preset
+  holds the export value, and a single guarded block re-points the slots for
+  **both** export paths — `@media print` (the CLI vector PDF) and
+  `.lattice-exporting` (the Studio html-to-image raster, which now tags each
+  section before capture so the clone inherits the opaque face). The two guards
+  share one declaration list and the opaque values live only on the presets, so
+  the faces can't drift. Both faces stay palette-blind with NO `mask`/`url()`/hex/
+  `margin`; only the screen face uses alpha, and only where it never reaches a
+  PDF. Fabricated finishes (`generateFinishCss`) emit the same dual variant.
+- **Finish faculty — a right-panel layer designer in the Studio, a sibling of the
+  Theme + Component studios.** The Fabricate "Finish" tab is now a real designer
+  rather than a slider tool: a live preview specimen in the center, a **right-panel
+  layer stack** (Wash · Texture · Mark · Edge) — each an Inspector group with a type
+  `Select` over the engine vocabulary (Wash: corner-glow / duotone / spotlight /
+  bands; Texture: grid / dots / hatch / contour / rings / ruled; Mark: monogram /
+  tick / bar / numeral; Edge: vignette / margin-rule / fold) plus an intensity
+  slider and a placement control — a **"Start from preset"** row (Atrium / Meridian /
+  Strata / Halo / Ledger) that populates the four layers, a name + **Export** +
+  **Save** header, and an AI **"Describe a finish"** command bar. The controls drive
+  a deterministic generator that emits a `section.finish.finish-<slug> { --fin-wash:…;
+  --fin-texture:…; --fin-mark:…; --fin-edge:… }` rule through the SAME engine
+  compositor — opaque-to-opaque gradients only (no `transparent` area-fade, no
+  `mask`, no `url()`, no hex), with the slug re-sanitized in the generator (defense
+  in depth, HARD RULE #22). The AI proposes a **structured recipe** (the four layers
+  + params from the closed vocabulary, validated/coerced before it drives the
+  controls), never raw CSS, so model text never reaches the preview frame; it
+  degrades honestly when no model is connected. **Save is wired end-to-end** this
+  time: a new `finish-library.ts` (IndexedDB, the shared Workbench asset store,
+  `kind:'finish'`) persists designed finishes; the Inspector Finish menu gains a
+  **Saved** group + a Manage-saved list, and picking a saved finish injects its CSS
+  into the deck preview `extraCss` AND applies its `finish finish-<slug>` class — so
+  a custom finish actually renders in the deck (and in Share/Present export).
+  Responsive across 1440 / 820 / 390. See
+  `engineering/decisions/2026-06-30-finish-the-surface-layer.md` (the REDESIGN
+  callout).
+- **Finish portability + safety hardening (review follow-up).** Several fixes
+  closing gaps in the saved-finish loop: (1) **a saved finish no longer clobbers a
+  deck's own `class:`** — the `finish finish-<slug>` stamp is now MERGED (deduped
+  union) into any existing classes (`class: dark wide` survives), and is applied
+  only to the render/artifact paths (preview, Present, PDF/PPTX/Print), never the
+  editable source. (2) **A custom finish now travels with a shared deck** — the
+  Markdown/Marp source handoff embeds the finish's generated CSS as a self-contained
+  `<style>` block (mirroring the theme embed) instead of emitting a phantom `class:`
+  that wouldn't resolve and would trip the deck-lint; and the **lattice-asset share
+  format gained a `kind:'finish'`** (manifest + `<slug>.finish.css` + recipe JSON),
+  packed/unpacked symmetrically into the finish library. (3) A monogram/numeral mark
+  can now **carry the author's own glyph** (their initials or a section number),
+  sanitized for the CSS `content:` sink — no longer hardcoded "L"/"03". (4) A new
+  **Export-preview toggle** in the Finish faculty shows the opaque export face on the
+  live specimen, so the designer sees the flatter baked look before shipping. (5) A
+  saved finish whose name collides with a built-in (the five presets, `boardroom`,
+  `sketch`, `none`, `preview`, …) is now **namespaced** (`atrium` → `atrium-custom`)
+  so it can't shadow a preset; `lattice-exporting` is documented as an engine-reserved
+  class. (6) The treatments compositor's broad `[class*="backdrop"]` selector is
+  tightened to the exact `[class~="backdrop-none"]` token. A new build-time/unit gate
+  asserts the faculty's `PRESET_RECIPES` mirror stays structurally in sync with the
+  rendered truth in `base.finish.css` (no silent recipe↔engine drift), and the AI
+  recipe path gains unit coverage.
 - **Studio Focus mode — a transient "quiet the noise" view.** The Studio's
   four-column desktop layout (Architect · Editor · Preview · Inspector) can now
   collapse to just **Editor + Preview + slide nav**, with most of the topbar

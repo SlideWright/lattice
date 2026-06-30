@@ -11,6 +11,7 @@
 import { ensureEngine } from '@/lib/load-engine';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { createThemeFetcher } from '@/lib/theme-fetch';
+import { mergeClassTokens } from './front-matter';
 
 type EngineRender = { html: string; css: string; width?: number; height?: number };
 type PG = {
@@ -106,8 +107,28 @@ export async function renderThemeShowcase(options: SingleSlideOptions, theme: { 
 	return ex.renderPdfBlob(render, `${theme.name}-showcase`, undefined, { deck: `${theme.name} showcase`, engine: 'lattice' });
 }
 
-/** Markdown source with the current theme + referenced components embedded. */
-export async function shareMarkdown(options: SingleSlideOptions, source: string, name: string, palette: string, extra?: ExtraTheme): Promise<void> {
+/**
+ * Embed an active saved finish into a SOURCE handoff. A saved finish renders via a
+ * `finish finish-<slug>` class the engine doesn't know + its generated CSS; on
+ * another machine neither resolves from the bare `finish:` register. So — mirroring
+ * `embedThemeInMarkdown` — we (a) MERGE the finish class into the deck's `class:`
+ * (deduped, no clobber) so every section carries it, and (b) inline the generated
+ * finish CSS as a Marp global `<style>` right after the front matter, so the
+ * recipient renders the custom finish from the markup itself. No-op without an
+ * active finish. Pure string surgery — keeps the user's editable source untouched
+ * (this is applied only to the exported copy).
+ */
+function embedFinishInMarkdown(source: string, finishClass?: string, finishCss?: string): string {
+	if (!finishClass || !finishCss) return source;
+	const classed = mergeClassTokens(source, finishClass);
+	const block = `<style>\n/* Lattice Studio — embedded finish (self-contained: this deck keeps its surface\n   finish even where the saved finish is not installed). Generated on export. */\n${finishCss.trim()}\n</style>\n`;
+	const fm = /^(---[ \t]*\r?\n[\s\S]*?\r?\n---[ \t]*(?:\r?\n|$))/.exec(classed);
+	if (fm) return classed.slice(0, fm[0].length) + '\n' + block + '\n' + classed.slice(fm[0].length);
+	return block + '\n' + classed;
+}
+
+/** Markdown source with the current theme + referenced components + (when active) the saved finish embedded. */
+export async function shareMarkdown(options: SingleSlideOptions, source: string, name: string, palette: string, extra?: ExtraTheme, finishClass?: string, finishCss?: string): Promise<void> {
 	const ex = await exporters();
 	// Embed the live theme CSS so the .md keeps its look even where the theme
 	// isn't installed. A saved library theme carries its own CSS; otherwise fetch
@@ -121,14 +142,17 @@ export async function shareMarkdown(options: SingleSlideOptions, source: string,
 			theme = undefined;
 		}
 	}
-	ex.exportMarkdown(source, name, theme, []);
+	// Bake the active saved finish into the exported copy (class + <style>), so the
+	// custom finish renders on another machine. The user's source stays clean.
+	ex.exportMarkdown(embedFinishInMarkdown(source, finishClass, finishCss), name, theme, []);
 }
 
 /** The self-contained Marp ZIP bundle (renders anywhere). */
-export async function shareMarp(options: SingleSlideOptions, source: string, name: string, palette: string): Promise<void> {
+export async function shareMarp(options: SingleSlideOptions, source: string, name: string, palette: string, finishClass?: string, finishCss?: string): Promise<void> {
 	await ensureReady(options); // PG.marp must be present
 	const ex = await exporters();
-	await ex.exportMarp(source, name, palette, options.themeBase, { includeAgent: true });
+	// Same finish-embed as the Markdown handoff so the ZIP renders the custom finish.
+	await ex.exportMarp(embedFinishInMarkdown(source, finishClass, finishCss), name, palette, options.themeBase, { includeAgent: true });
 }
 
 /** One-click image PDF (2× raster, one slide per page). */

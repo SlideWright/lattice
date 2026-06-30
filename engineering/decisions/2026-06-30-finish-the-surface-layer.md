@@ -5,6 +5,78 @@ summary: Finish — the surface artifact of the existing Finish axis, a single f
 
 # Finish — the surface layer designers have been missing
 
+> **REDESIGN (2026-06-30, after PR #631 review) — finishes are STACKED LAYERS,
+> not one register value.** PR #631 shipped a single-value `finish:` register
+> (one backdrop wins per slide), which made it **either/or** — a wash *replaced*
+> a mark instead of layering with it — and left the existing `tint-*`/`mark-*`
+> gradients stranded. That contradicts this doc's own premise ("finishes compose
+> and stack"). The corrected model is below; it supersedes the single-value
+> `finish:` mechanism for the `field` zone.
+>
+> ## A finish is a z-index stack of layers
+>
+> Each finish composites up to four palette-blind layers behind the content,
+> summed by the painter's algorithm (low alpha so they read together):
+>
+> | z | Layer | Mechanism | Examples |
+> |---|---|---|---|
+> | z1 | **wash** | `background-image` gradient slot | corner-glow, duotone, spotlight |
+> | z2 | **texture** | `background-image` gradient slot | grid, dots, hatch, contour |
+> | z3 | **mark** | `::before` (positioned) | monogram, rings, registration tick |
+> | z4 | **edge** | `::after` / inset shadow | vignette, scrim, margin rule |
+> | z5 | content | (untouched) | — |
+>
+> Implementation: each layer writes a **CSS custom property** (`--fin-wash`,
+> `--fin-texture`, `--fin-mark`, `--fin-edge`); ONE compositor rule on
+> `section.finish` blends them. So **any** combination — a named preset, a custom
+> stack, or an AI-proposed recipe — flows through the same mechanism. The existing
+> `tint-*`/`mark-*` treatments become **layer ingredients** in this stack (restored,
+> now composable), not a parallel either/or system.
+>
+> **Export-safe stacking (the PDFKit lesson, again):** layers fade via **stacked
+> `var(--bg)`-colored gradients overlaid on the pattern**, NEVER `mask-image`
+> (full-bleed masks drop in Apple PDFKit). e.g. Atrium = uniform grid + a
+> `var(--bg)` radial overlay that hides the grid where content sits + an accent
+> corner glow — all gradients, both export engines safe.
+>
+> ## Deck-wide AND per-slide — the existing cascade
+>
+> Set deck-wide in front matter (every section gets the finish); override per slide
+> with `_class:` (Halo on the title/section/closing, Atrium on content, `none`
+> behind a dense chart). This is the `plugins.js` finish/class propagation we
+> already have — a per-slide class wins over the deck-wide default. A finish may
+> even carry different layers for **bookend vs content** slides (the engine knows
+> each slide's role).
+>
+> ## The 5 starter presets (mockups locked, `.scratch/finish-mockups/`)
+>
+> All palette-blind, each a layer composition: **Atrium** (glow+grid+rule),
+> **Meridian** (duotone+contour+monogram), **Strata** (bands+dot-matrix+tick),
+> **Halo** (spotlight+rings+vignette — a title treatment), **Ledger**
+> (ruled+margin-bar+fold).
+>
+> ## The Finish faculty — a real right-panel designer (like Theme/Component)
+>
+> Center: live preview specimen. **Right panel: the layer stack** (wash / texture /
+> mark / edge), each with type + intensity + placement controls. Top: an AI
+> **"describe a finish"** command bar. Header: **name + Save + Export** — and Save
+> is wired to the library this time (the consumption loop PR #631 deferred).
+>
+> ## AI generation — safe by construction
+>
+> The AI proposes a **structured finish recipe** (layers + params from the closed
+> vocabulary above), which the deterministic generator turns into palette-blind
+> CSS/SVG — mirroring the Theme Studio AI (model proposes within a contract, code
+> disposes). This delivers "converse to generate" and real CSS/SVG output **without**
+> letting model text reach the same-origin preview frame (HARD RULE #22 intact). A
+> sanitized raw-SVG motif channel (DOMPurify, no `url()`/`@import`) is a documented
+> follow-up if the recipe vocabulary proves too narrow.
+>
+> **Build order:** (1) engine layered compositor + the 5 presets (export-safe,
+> palette-blind, deck/slide cascade) + tests; (2) the right-panel layer designer +
+> name/Save/Export with the consumption loop wired; (3) the AI recipe door. Each
+> slice banks standalone. Merge + export sign-off remain human gates.
+
 **The ask (a creative-designer's-eye review of the Studio).** Lattice is strong
 at *structure* (Form) and *palette* (the color half of Finish) but feels thin on
 *atmosphere and identity*. The two moves that make a deck feel like *theirs* — a

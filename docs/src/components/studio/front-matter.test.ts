@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { frontMatterBlock, getFrontMatter, setFrontMatter, stripFrontMatter } from './front-matter';
+import { frontMatterBlock, getFrontMatter, mergeClassTokens, setFrontMatter, stripFrontMatter } from './front-matter';
 
 const BODY = '<!-- _class: title -->\n\n# Hello\n\n---\n\n## Second';
 
@@ -45,5 +45,40 @@ describe('front-matter', () => {
 		// No leading block → the inter-slide `---` stays in the body.
 		expect(frontMatterBlock(BODY)).toBe('');
 		expect(stripFrontMatter(BODY)).toBe(BODY);
+	});
+});
+
+describe('mergeClassTokens — finish class injection MERGES, never clobbers (MERGE-BLOCKER #1)', () => {
+	it('unions a finish class onto an existing class:, preserving the author tokens', () => {
+		// The bug: setFrontMatter REPLACES `class`, so `class: dark wide` + finish lost
+		// `dark wide`. The fix unions them, deduped, in order.
+		const src = '---\nclass: dark\n---\n\n# Deck';
+		const out = mergeClassTokens(src, 'finish finish-mybrand');
+		expect(getFrontMatter(out, 'class')).toBe('dark finish finish-mybrand');
+	});
+
+	it('preserves multiple author classes (class: dark wide)', () => {
+		const src = '---\nclass: dark wide\n---\n\n# Deck';
+		const out = mergeClassTokens(src, 'finish finish-x');
+		expect(getFrontMatter(out, 'class')).toBe('dark wide finish finish-x');
+	});
+
+	it('creates class: when none exists', () => {
+		const src = '---\nsize: hd\n---\n\n# Deck';
+		const out = mergeClassTokens(src, 'finish finish-x');
+		expect(getFrontMatter(out, 'class')).toBe('finish finish-x');
+		expect(getFrontMatter(out, 'size')).toBe('hd'); // other directives intact
+	});
+
+	it('dedupes — an already-present token is not repeated', () => {
+		const src = '---\nclass: finish dark\n---\n\n# Deck';
+		const out = mergeClassTokens(src, 'finish finish-x');
+		expect(getFrontMatter(out, 'class')).toBe('finish dark finish-x');
+	});
+
+	it('is a no-op with no incoming tokens', () => {
+		const src = '---\nclass: dark\n---\n\n# Deck';
+		expect(mergeClassTokens(src, '')).toBe(src);
+		expect(mergeClassTokens(src, '   ')).toBe(src);
 	});
 });

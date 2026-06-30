@@ -154,6 +154,44 @@ describe('markdown-it-plugins', () => {
     assert.deepEqual(cls, ['title'], `unknown finish should add nothing; got [${cls.join(', ')}]`);
   });
 
+  test('deckClassPropagate: a per-slide finish-* OVERRIDES the deck finish (no two presets stacked)', () => {
+    const m = makeMarp(plugins.deckClassPropagate);
+    const md = [
+      '---', 'finish: atrium', '---', '',
+      '# Slide 1 (gets the deck finish)', '',
+      '---', '',
+      '<!-- _class: finish finish-halo -->',
+      '# Slide 2 (its own finish overrides the deck)',
+    ].join('\n');
+    const { html } = m.render(md);
+    const sections = [...html.matchAll(/<section[^>]*class="([^"]*)"/g)].map(x => x[1].split(/\s+/).filter(Boolean));
+    assert.equal(sections.length, 2);
+    // Slide 1: deck finish applies in full.
+    assert.ok(sections[0].includes('finish') && sections[0].includes('finish-atrium'),
+      `slide 1 should carry the deck finish; got [${sections[0].join(', ')}]`);
+    // Slide 2: keeps its OWN finish-halo, does NOT also get the deck's finish-atrium
+    // (two presets on one section would composite two finishes — the murk bug).
+    assert.ok(sections[1].includes('finish-halo'), `slide 2 lost its own finish; got [${sections[1].join(', ')}]`);
+    assert.ok(!sections[1].includes('finish-atrium'),
+      `slide 2 must NOT inherit the deck finish-atrium; got [${sections[1].join(', ')}]`);
+    // The base `finish` compositor token is still present (it carries the slots).
+    assert.ok(sections[1].includes('finish'), `slide 2 lost the base finish token; got [${sections[1].join(', ')}]`);
+  });
+
+  test('deckClassPropagate: finish-none opts a slide out of the deck finish (no deck preset appended)', () => {
+    const m = makeMarp(plugins.deckClassPropagate);
+    const md = [
+      '---', 'finish: atrium', '---', '',
+      '<!-- _class: finish-none -->',
+      '# Clean slide',
+    ].join('\n');
+    const { html } = m.render(md);
+    const cls = html.match(/<section[^>]*class="([^"]*)"/)[1].split(/\s+/).filter(Boolean);
+    assert.ok(cls.includes('finish-none'), `should keep finish-none; got [${cls.join(', ')}]`);
+    assert.ok(!cls.includes('finish-atrium'),
+      `finish-none must not inherit the deck finish-atrium; got [${cls.join(', ')}]`);
+  });
+
   // The meta, progress and watermark Tiles are self-contained Form Tiles (issue
   // #356): each owns its kernel + cross-path parity pin in test/unit/forms/
   // <id>-tile.test.js, so their coverage is no longer here.

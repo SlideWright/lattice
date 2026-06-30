@@ -1,0 +1,101 @@
+import { Check } from 'lucide-react';
+import {
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
+import { activeFinish, FINISHES, type FinishEntry } from './finish-catalog';
+
+// The Studio finish picker — every built-in finish, grouped, shared by the
+// Inspector "Finish" field and (later) the Finish faculty. Mirrors ThemePicker:
+// a swatch chip + label + active check, grouped Plain → Backdrops → your saved
+// finishes. A finish is applied by writing the `finish:` front-matter register
+// (no new key); per-slide overrides use `_class: backdrop …`. REUSE (#15): same
+// DropdownMenu primitives + visual grammar as the theme picker.
+
+function Swatch({ background, backgroundSize }: { background: string; backgroundSize?: string }) {
+	return (
+		<span
+			className="size-4 shrink-0 rounded-[3px] border border-[color-mix(in_srgb,var(--text-heading)_18%,transparent)]"
+			style={{ background, backgroundSize }}
+		/>
+	);
+}
+
+function FinishItem({
+	entry, active, onPick,
+}: { entry: FinishEntry; active: boolean; onPick: (n: string) => void }) {
+	return (
+		<DropdownMenuItem
+			onSelect={() => onPick(entry.name)}
+			className={cn('gap-2', active && 'font-semibold')}
+			title={entry.blurb}
+		>
+			<Swatch background={entry.swatch.background} backgroundSize={entry.swatch.backgroundSize} />
+			<span className="truncate">{entry.label}</span>
+			{active && <Check className="ml-auto size-3.5 text-[var(--accent)]" />}
+		</DropdownMenuItem>
+	);
+}
+
+const LABEL = 'font-mono text-[10px] uppercase tracking-wider text-muted-foreground';
+
+// A saved (Fabricated) finish, shaped for the picker. Its `name` is NOT in the
+// engine FINISH_REGISTER, so it renders via injected CSS + an applied class (the
+// consumption loop in StudioShell), not the `finish:` register.
+export type SavedFinishMenuEntry = { id: string; name: string; label: string; swatch?: { background: string; backgroundSize?: string } };
+
+/**
+ * The grouped finish list, rendered inside any `<DropdownMenuContent>`:
+ * Plain (boardroom / sketch) → Finishes (the layered field presets) → Saved (your
+ * Fabricated finishes). `finish` is the active selection — a register name for a
+ * built-in, or a saved finish's slug. Picking a saved one renders it in the deck
+ * preview (StudioShell injects its CSS + applies its class).
+ */
+export function FinishMenuItems({
+	finish, onPick, saved = [],
+}: { finish: string; onPick: (name: string) => void; saved?: SavedFinishMenuEntry[] }) {
+	const plain = FINISHES.filter((f) => f.group === 'plain');
+	const presets = FINISHES.filter((f) => f.group === 'finish');
+	// A saved finish is active when the selection matches its slug (and isn't a
+	// built-in register name).
+	const builtin = activeFinish(finish).name;
+	const savedActive = !FINISHES.some((f) => f.name === finish) && finish;
+	return (
+		<>
+			<DropdownMenuLabel className={LABEL}>Plain</DropdownMenuLabel>
+			{plain.map((f) => <FinishItem key={f.name} entry={f} active={!savedActive && f.name === builtin} onPick={onPick} />)}
+			<DropdownMenuSeparator />
+			<DropdownMenuLabel className={LABEL}>Finishes</DropdownMenuLabel>
+			{presets.map((f) => <FinishItem key={f.name} entry={f} active={!savedActive && f.name === builtin} onPick={onPick} />)}
+			{saved.length > 0 && (
+				<>
+					<DropdownMenuSeparator />
+					<DropdownMenuLabel className={LABEL}>Saved</DropdownMenuLabel>
+					{saved.map((s) => (
+						<DropdownMenuItem key={s.id} onSelect={() => onPick(s.name)} className={cn('gap-2', savedActive === s.name && 'font-semibold')}>
+							<Swatch background={s.swatch?.background ?? 'var(--accent-soft, var(--bg))'} backgroundSize={s.swatch?.backgroundSize} />
+							<span className="truncate">{s.label}</span>
+							{savedActive === s.name && <Check className="ml-auto size-3.5 text-[var(--accent)]" />}
+						</DropdownMenuItem>
+					))}
+				</>
+			)}
+		</>
+	);
+}
+
+/** Label + swatch for the active finish (for a trigger button). A saved finish
+ *  (not in the register) is matched by slug against `saved`. */
+export function activeFinishLabel(
+	finish: string,
+	saved: SavedFinishMenuEntry[] = [],
+): { label: string; swatch: string; backgroundSize?: string } {
+	const savedHit = saved.find((s) => s.name === finish);
+	if (savedHit && !FINISHES.some((f) => f.name === finish)) {
+		return { label: savedHit.label, swatch: savedHit.swatch?.background ?? 'var(--accent)', backgroundSize: savedHit.swatch?.backgroundSize };
+	}
+	const e = activeFinish(finish);
+	return { label: e.label, swatch: e.swatch.background, backgroundSize: e.swatch.backgroundSize };
+}

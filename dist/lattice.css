@@ -14713,7 +14713,7 @@ section.chart-frame.cover::after {
  * (per-layer placement modifiers) also match harmlessly — they set no
  * slot values so the compositor renders `none, none` if they're alone.
  */
-section:where([class*="tint-"], [class*="mark-"]) {
+section:where([class*="tint-"], [class*="mark-"], [class~="backdrop-none"]) {
   background-image: var(--_bg-radial, none), var(--_bg-linear, none);
 }
 
@@ -15235,6 +15235,490 @@ section.mark-chevron::before {
 section.treatment-none {
   --_bg-radial: none;
   --_bg-linear: none;
+}
+
+/* === lib/base/base.finish.css === */
+/* base.finish.css — the layered FINISH compositor + the 5 premium presets.
+ *
+ * The `field` zone of the Finish family (engineering/decisions/
+ * 2026-06-30-finish-the-surface-layer.md, the REDESIGN callout). A finish is a
+ * z-index STACK of palette-blind layers painted BEHIND content — not a single
+ * either/or backdrop. The base `finish` class carries the COMPOSITOR; each
+ * preset (`finish-<name>`) just SETS the per-role custom properties the
+ * compositor blends, so layers combine instead of replacing each other and a
+ * future right-panel designer can drive any single layer by setting one prop.
+ *
+ *   z1  --fin-wash      a background-image gradient (ambient color field)
+ *   z2  --fin-texture   a background-image gradient (pattern: grid/dots/lines…)
+ *   z3  ::before        a placed MARK   — --fin-mark (gradient) + --fin-mark-text
+ *   z4  ::after         an EDGE          — --fin-edge (gradient)
+ *   z5  content         (untouched, painted above every layer)
+ *
+ * The two background slots are composited in ONE rule: --fin-texture is listed
+ * first (visually on top of the wash). Because the combined background-image can
+ * hold several comma-separated layers, the matching background-size / -position /
+ * -repeat are ALSO single compositor slots (--fin-size / --fin-position /
+ * --fin-repeat) that each preset fills to line up with its own layer stack
+ * (texture layers first, then wash layers). The mark/edge pseudos carry their
+ * own background-* so they never have to align with the field stack.
+ *
+ * Selected deck-wide via the `finish:` register (lib/core/resolve-finish.js →
+ * maps e.g. `finish: atrium` to `finish finish-atrium` on every section) or
+ * per-slide via `<!-- _class: finish finish-atrium -->`.
+ *
+ * ════════════════════════════════════════════════════════════════════════════
+ * RICH-ON-SCREEN / SAFE-ON-EXPORT — the dual-variant mechanism (load-bearing).
+ * ════════════════════════════════════════════════════════════════════════════
+ * A finish shows TWO faces:
+ *
+ *   • RICH (the screen default) — the directional "dissolving" look of the
+ *     mockups (.scratch/finish-mockups/): a pattern that fades toward a corner,
+ *     a glow that bleeds to nothing, rings that thin out. This look REQUIRES
+ *     alpha fades (a gradient stop that goes to `transparent` / a low-alpha
+ *     color-mix), which the BROWSER composites perfectly (premultiplied alpha).
+ *     It is the value each preset writes into the `--fin-*` slots BY DEFAULT, so
+ *     live preview, the presenter, the web, and the docs site all get the rich
+ *     look.
+ *
+ *   • OPAQUE (the export fallback) — the PDF-clean look. Chromium's print-to-PDF
+ *     encodes a large-area gradient that fades through ALPHA so PDF rasterizers
+ *     (poppler AND Ghostscript both confirmed) interpolate toward transparent-
+ *     BLACK → a muddy GRAY cloud. So every FULL-BLEED fade must end OPAQUE: a
+ *     wash/glow is `color-mix(var(--accent) N%, var(--bg))` → plain `var(--bg)`
+ *     (accent mixed INTO the bg, never into `transparent`); patterns are UNIFORM
+ *     and faint (a 1px opaque line / dot, transparent GAP only — a hard stop,
+ *     never an area fade). This is the look that bakes clean into the vector PDF.
+ *
+ * WHERE EACH FACE APPLIES.
+ *   - The RICH value is the slot DEFAULT (`--fin-wash: …`), so screen gets it.
+ *   - Each preset ALSO declares an `--fin-*-opaque` mirror holding the export-
+ *     safe value. The opaque value is written ONCE, in the preset rule.
+ *   - ONE shared guarded block (the OPAQUE FLIP, below) re-points every slot to
+ *     its `-opaque` mirror. It fires for BOTH export paths:
+ *       @media print                — the CLI vector PDF (lattice-emulator.js
+ *                                      `page.pdf` prints with print media on).
+ *       :where(.lattice-exporting)  — the Studio raster export
+ *                                      (drawing-board-export.js adds this class
+ *                                      to the capture root before html-to-image
+ *                                      `toPng`, which captures the SCREEN DOM
+ *                                      with NO print media).
+ *   Because the flip only swaps `--fin-X: var(--fin-X-opaque)` (the opaque
+ *   VALUES live solely in the preset), the two guards can't drift from each
+ *   other or from the preset — there is a single source for every value.
+ *
+ * Design constraints (all load-bearing — see the decision doc):
+ *   1. PALETTE-BLIND. Every color is color-mix() of var(--accent)/var(--bg);
+ *      a theme swap (or `dark`) recolors the finish automatically. No hex (#3).
+ *      The RICH variant may mix toward `transparent` (alpha) — palette-blind
+ *      still holds (it is the accent/bg color, just faded).
+ *   2. NO mask-image, NO url(), NO hex, NO margin (#3/#20) — in EITHER variant.
+ *      Pure CSS gradients only. The OPAQUE variant additionally bans alpha
+ *      area-fades (the PDF rule above); the RICH variant is screen-only so alpha
+ *      is allowed there and ONLY there.
+ *   3. SUBTLE. Accent alpha is kept low (~5–16% mixed into bg) so text-on-bg AA
+ *      contrast is preserved without a scrim — in both faces.
+ *   4. SAME LAYER COUNT across faces. Rich and opaque differ only in their color
+ *      STOPS, never their layer structure, so --fin-size / -position / -repeat
+ *      stay shared (one declaration serves both faces).
+ */
+
+/* ── COMPOSITOR ───────────────────────────────────────────────────────
+ * ONE rule assembles texture + wash into background-image (texture first =
+ * visually on top of the wash) and lines up the auxiliary background props.
+ * An unset slot defaults to a no-op so a preset only declares what it uses. */
+section.finish {
+  background-image: var(--fin-texture, none), var(--fin-wash, none);
+  background-size: var(--fin-size, auto);
+  background-position: var(--fin-position, top left);
+  background-repeat: var(--fin-repeat, repeat);
+}
+
+/* z3 — the MARK pseudo. A full-inset layer behind content; the preset fills
+ * --fin-mark (a gradient) and/or --fin-mark-text (the ghost numeral glyph).
+ * Always under content (z0); mirrors base.treatments.css mark ordering. */
+section.finish::before {
+  content: var(--fin-mark-text, "");
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden; /* clip the oversized ghost numeral to the section box */
+  background-image: var(--fin-mark, none);
+  background-repeat: var(--fin-mark-repeat, no-repeat);
+  background-position: var(--fin-mark-position, top left);
+  background-size: var(--fin-mark-size-bg, auto);
+  /* ghost-numeral typographic slots (no-ops unless --fin-mark-text is set).
+   * Color is OPAQUE (accent mixed into bg), never an alpha — same PDF rule. */
+  display: flex;
+  align-items: var(--fin-mark-align, flex-end);
+  justify-content: var(--fin-mark-justify, flex-end);
+  padding: var(--fin-mark-pad, 0);
+  font-family: var(--font-display, var(--font, serif));
+  font-weight: 700;
+  font-size: var(--fin-mark-fs, 0);
+  line-height: 0.78;
+  letter-spacing: -0.04em;
+  color: var(--fin-mark-color, var(--bg));
+}
+
+/* z4 — the EDGE pseudo. A full-inset layer for vignettes / corner folds; the
+ * preset fills --fin-edge (a gradient). Above the mark, below content.
+ * (No box-shadow vignette — an inset shadow's rgba alpha grays in the PDF the
+ * same way; an opaque radial-edge gradient is the PDF-safe vignette.) */
+section.finish::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image: var(--fin-edge, none);
+  background-repeat: var(--fin-edge-repeat, no-repeat);
+  background-position: var(--fin-edge-position, top right);
+  background-size: var(--fin-edge-size, auto);
+}
+
+/* Keep slide content above every finish layer (the pseudos are z0/z1). */
+section.finish > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+ * THE 5 PRESETS — each a composition of the slots above.
+ * Reference renders: .scratch/finish-mockups/finish-{1..5}-*.png
+ * Every preset declares ALL FOUR slot families (unused = none) so it is fully
+ * self-defining and never inherits a sibling preset's stray layer.
+ *
+ * Each preset writes the slot DEFAULT to its RICH (screen) value and a matching
+ * `--fin-*-opaque` mirror to its EXPORT-safe value. The OPAQUE FLIP block at the
+ * bottom swaps default → mirror for print + `.lattice-exporting`. Layer COUNT is
+ * identical between faces, so the shared --fin-size / -position / -repeat slots
+ * serve both.
+ * ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1 · ATRIUM — corner glow + fine grid (dissolving) + left rule ────────────
+ * RICH:   the grid DISSOLVES toward the top-right (each grid stripe fades to
+ *         transparent across the slide) and a soft accent bloom blooms from the
+ *         top-right corner to nothing — the mockup's atrium look.
+ * OPAQUE: a UNIFORM faint grid (opaque lines, transparent gaps) + a glow that
+ *         fades opaque accent-in-bg → bg.
+ * mark:   a solid accent rule down the left margin (identical in both faces). */
+section.finish-atrium {
+  /* RICH — grid lines fade to transparent toward the corner via a masking
+   * overlay built INTO the gradient stack: a radial bg-colored wash on top would
+   * be an area fade (gray in PDF) — but this is SCREEN-only, so alpha is fine. */
+  --fin-texture:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--accent) 9%, transparent) 0 1px,
+      transparent 1px 38px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--accent) 9%, transparent) 0 1px,
+      transparent 1px 38px
+    );
+  --fin-wash:
+    radial-gradient(
+      ellipse 120% 95% at 100% 0%,
+      color-mix(in srgb, var(--accent) 13%, transparent) 0%,
+      transparent 60%
+    );
+  /* OPAQUE mirror — uniform faint grid + opaque corner glow. */
+  --fin-texture-opaque:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--accent) 7%, var(--bg)) 0 1px,
+      transparent 1px 38px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--accent) 7%, var(--bg)) 0 1px,
+      transparent 1px 38px
+    );
+  --fin-wash-opaque:
+    radial-gradient(
+      ellipse 120% 90% at 100% 0%,
+      color-mix(in srgb, var(--accent) 10%, var(--bg)) 0%,
+      var(--bg) 55%
+    );
+  /* 3 field layers: grid-h, grid-v, glow (same count in both faces) */
+  --fin-size: auto, auto, cover;
+  --fin-position: top left, top left, top left;
+  --fin-repeat: repeat, repeat, no-repeat;
+  --fin-mark: linear-gradient(var(--accent), var(--accent));
+  --fin-mark-opaque: linear-gradient(var(--accent), var(--accent));
+  --fin-mark-position: left center;
+  --fin-mark-size-bg: 0.47cqi 100%; /* ~6px rule at the left edge */
+  --fin-mark-text: "";
+  --fin-edge: none;
+  --fin-edge-opaque: none;
+}
+
+/* ── 2 · MERIDIAN — diagonal duotone + contour lines + ghost numeral ──────────
+ * RICH:   the contour hairlines THIN OUT (fade to transparent) and the duotone
+ *         wash drifts from an accent tint to nothing along the diagonal.
+ * OPAQUE: uniform faint contours + an opaque accent-in-bg ↔ bg duotone.
+ * mark:   an oversized ghost numeral glyph, bottom-right (opaque mix color). */
+section.finish-meridian {
+  --fin-texture:
+    repeating-linear-gradient(
+      -4deg,
+      transparent 0 46px,
+      color-mix(in srgb, var(--accent) 8%, transparent) 46px 47px
+    );
+  --fin-wash:
+    linear-gradient(
+      118deg,
+      color-mix(in srgb, var(--accent) 11%, transparent) 0%,
+      transparent 48%,
+      color-mix(in srgb, var(--accent) 7%, transparent) 100%
+    );
+  --fin-texture-opaque:
+    repeating-linear-gradient(
+      -4deg,
+      transparent 0 46px,
+      color-mix(in srgb, var(--accent) 6%, var(--bg)) 46px 47px
+    );
+  --fin-wash-opaque:
+    linear-gradient(
+      118deg,
+      color-mix(in srgb, var(--accent) 7%, var(--bg)) 0%,
+      var(--bg) 42%,
+      color-mix(in srgb, var(--accent) 4%, var(--bg)) 100%
+    );
+  /* 2 field layers: contour, duotone */
+  --fin-size: auto, cover;
+  --fin-position: top left, top left;
+  --fin-repeat: repeat, no-repeat;
+  /* ghost numeral — a content:"" glyph in --font-display; OPAQUE faint color */
+  --fin-mark: none;
+  --fin-mark-opaque: none;
+  --fin-mark-text: "03";
+  --fin-mark-color: color-mix(in srgb, var(--accent) 9%, var(--bg));
+  --fin-mark-fs: 40cqi;              /* oversized, ~512px at 1280 */
+  --fin-mark-pad: 0 1cqi 0 0;        /* right-aligned, hug the bottom edge */
+  --fin-mark-align: flex-end;
+  --fin-mark-justify: flex-end;
+  --fin-edge: none;
+  --fin-edge-opaque: none;
+}
+
+/* ── 3 · STRATA — soft bands + dot-matrix (dissolving) + hairline + tick ──────
+ * RICH:   the dot-matrix FADES out vertically (dots thin toward the bottom) and
+ *         the bands carry an accent hairline that bleeds to transparent.
+ * OPAQUE: a uniform dot-matrix + opaque bands + an opaque top hairline.
+ * mark:   a corner registration tick (top-right) — two solid accent strips. */
+section.finish-strata {
+  --fin-texture:
+    radial-gradient(
+      color-mix(in srgb, var(--accent) 15%, transparent) 0 1.3px,
+      transparent 1.7px
+    );
+  --fin-wash:
+    linear-gradient(
+      90deg,
+      var(--accent) 0%,
+      color-mix(in srgb, var(--accent) 35%, transparent) 55%,
+      transparent 100%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 7%, transparent) 0%,
+      transparent 35%,
+      transparent 70%,
+      color-mix(in srgb, var(--accent) 5%, transparent) 100%
+    );
+  --fin-texture-opaque:
+    radial-gradient(
+      color-mix(in srgb, var(--accent) 13%, var(--bg)) 0 1.3px,
+      transparent 1.7px
+    );
+  --fin-wash-opaque:
+    linear-gradient(
+      90deg,
+      var(--accent) 0%,
+      color-mix(in srgb, var(--accent) 35%, var(--bg)) 60%,
+      var(--bg) 100%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 5%, var(--bg)) 0%,
+      var(--bg) 30%,
+      var(--bg) 70%,
+      color-mix(in srgb, var(--accent) 4%, var(--bg)) 100%
+    );
+  /* 3 field layers: dot-matrix, top-hairline, bands */
+  --fin-size: 26px 26px, 100% 0.31cqi, cover;
+  --fin-position: top left, top left, center;
+  --fin-repeat: repeat, no-repeat, no-repeat;
+  /* registration tick — horizontal + vertical solid accent strips at the corner */
+  --fin-mark:
+    linear-gradient(var(--accent), var(--accent)),
+    linear-gradient(var(--accent), var(--accent));
+  --fin-mark-opaque:
+    linear-gradient(var(--accent), var(--accent)),
+    linear-gradient(var(--accent), var(--accent));
+  --fin-mark-position: top 2.7cqi right 3.1cqi, top 2.7cqi right 3.1cqi;
+  --fin-mark-size-bg: 2.65cqi 0.16cqi, 0.16cqi 2.65cqi; /* arm-H, arm-V */
+  --fin-mark-repeat: no-repeat, no-repeat;
+  --fin-mark-text: "";
+  --fin-edge: none;
+  --fin-edge-opaque: none;
+}
+
+/* ── 4 · HALO — centered spotlight + concentric rings + inset vignette ────────
+ * RICH:   the concentric rings THIN OUT toward the edges (each ring fades to
+ *         transparent) and the centered spotlight blooms to nothing — the
+ *         mockup's halo. The vignette deepens to a faint ink alpha at the rim.
+ * OPAQUE: uniform faint rings + an opaque spotlight + an opaque ink-rim vignette. */
+section.finish-halo {
+  --fin-texture:
+    repeating-radial-gradient(
+      circle at 50% 42%,
+      transparent 0 56px,
+      color-mix(in srgb, var(--accent) 8%, transparent) 56px 57px
+    );
+  --fin-wash:
+    radial-gradient(
+      85% 75% at 50% 42%,
+      color-mix(in srgb, var(--accent) 9%, transparent) 0%,
+      transparent 62%
+    );
+  --fin-texture-opaque:
+    repeating-radial-gradient(
+      circle at 50% 42%,
+      transparent 0 56px,
+      color-mix(in srgb, var(--accent) 6%, var(--bg)) 56px 57px
+    );
+  --fin-wash-opaque:
+    radial-gradient(
+      80% 70% at 50% 42%,
+      color-mix(in srgb, var(--accent) 6%, var(--bg)) 0%,
+      var(--bg) 60%
+    );
+  /* 2 field layers: rings, spotlight */
+  --fin-size: auto, cover;
+  --fin-position: top left, top left;
+  --fin-repeat: no-repeat, no-repeat;
+  --fin-mark: none;
+  --fin-mark-opaque: none;
+  --fin-mark-text: "";
+  /* vignette — RICH fades to a low-alpha ink rim; OPAQUE ends on an ink-in-bg mix */
+  --fin-edge:
+    radial-gradient(
+      78% 78% at 50% 50%,
+      transparent 60%,
+      color-mix(in srgb, var(--ink, var(--accent)) 7%, transparent) 100%
+    );
+  --fin-edge-opaque:
+    radial-gradient(
+      78% 78% at 50% 50%,
+      var(--bg) 62%,
+      color-mix(in srgb, var(--ink, var(--accent)) 5%, var(--bg)) 100%
+    );
+  --fin-edge-position: center;
+  --fin-edge-size: cover;
+}
+
+/* ── 5 · LEDGER — fine ruled lines (dissolving) + bold left bar + corner fold ──
+ * RICH:   the ruled lines FADE toward the right edge and the corner fold bleeds
+ *         to transparent.
+ * OPAQUE: uniform faint ruled lines + an opaque corner fold.
+ * mark:   a bold solid accent bar down the full left margin. */
+section.finish-ledger {
+  --fin-texture:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 39px,
+      color-mix(in srgb, var(--accent) 10%, transparent) 39px 40px
+    );
+  --fin-wash: none;
+  --fin-texture-opaque:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 39px,
+      color-mix(in srgb, var(--accent) 8%, var(--bg)) 39px 40px
+    );
+  --fin-wash-opaque: none;
+  /* 2 field layers: ruled lines, wash-none */
+  --fin-size: auto, auto;
+  --fin-position: top left, top left;
+  --fin-repeat: repeat, no-repeat;
+  --fin-mark: linear-gradient(var(--accent), var(--accent));
+  --fin-mark-opaque: linear-gradient(var(--accent), var(--accent));
+  --fin-mark-position: left center;
+  --fin-mark-size-bg: 1.1cqi 100%; /* ~14px bold bar at the left edge */
+  --fin-mark-text: "";
+  --fin-edge:
+    linear-gradient(
+      225deg,
+      color-mix(in srgb, var(--accent) 22%, transparent) 0%,
+      transparent 65%
+    );
+  --fin-edge-opaque:
+    linear-gradient(
+      225deg,
+      color-mix(in srgb, var(--accent) 16%, var(--bg)) 0%,
+      var(--bg) 60%
+    );
+  --fin-edge-position: top right;
+  --fin-edge-size: 9.4cqi 9.4cqi; /* ~120px corner fold */
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+ * THE OPAQUE FLIP — the export fallback (the load-bearing PDF-safety swap).
+ * Re-points every full-bleed slot to its preset's `--fin-*-opaque` mirror, so a
+ * preset's rich alpha-fade screen value is replaced by its opaque export value.
+ * Fires for BOTH export paths; the two guards share ONE declaration list (no
+ * drift). The opaque VALUES live only in the preset rules above — this block
+ * carries no colors, only the var() indirection.
+ *
+ *   @media print               — CLI vector PDF (lattice-emulator.js page.pdf).
+ *   :where(.lattice-exporting) — Studio raster export (drawing-board-export.js
+ *                                tags the capture root before html-to-image).
+ * (:where() keeps the guard at zero specificity so a per-slide override still
+ * wins; the export class is added high in the tree so it covers every section.)
+ * ════════════════════════════════════════════════════════════════════════════ */
+@media print {
+  section.finish {
+    --fin-wash: var(--fin-wash-opaque, none);
+    --fin-texture: var(--fin-texture-opaque, none);
+    --fin-mark: var(--fin-mark-opaque, none);
+    --fin-edge: var(--fin-edge-opaque, none);
+  }
+}
+/* The export class matches BOTH an ANCESTOR (the Studio capture root carries it)
+ * AND the section ITSELF. The latter is load-bearing for the html-to-image raster:
+ * `toPng(section)` clones only the section + its descendants — NOT its ancestors —
+ * so a root-only class would be lost in the clone; drawing-board-export.js therefore
+ * also stamps the class on each section it rasterizes. :where() keeps it at zero
+ * specificity so a per-slide finish override still wins. */
+:where(.lattice-exporting) section.finish,
+section.finish.lattice-exporting {
+  --fin-wash: var(--fin-wash-opaque, none);
+  --fin-texture: var(--fin-texture-opaque, none);
+  --fin-mark: var(--fin-mark-opaque, none);
+  --fin-edge: var(--fin-edge-opaque, none);
+}
+
+/* ── Per-slide opt-out ────────────────────────────────────────────────
+ * `<!-- _class: finish-none -->` (or the back-compat `backdrop-none`) clears a
+ * deck-wide finish on one slide (a title/cover/image or a busy chart). Zeroes
+ * every layer slot (rich AND opaque mirror); wins by source order over the
+ * finish-* setters above and over the opaque flip (it follows them). */
+section.finish-none,
+section.backdrop-none {
+  --fin-wash: none;
+  --fin-texture: none;
+  --fin-mark: none;
+  --fin-mark-text: "";
+  --fin-edge: none;
+  --fin-wash-opaque: none;
+  --fin-texture-opaque: none;
+  --fin-mark-opaque: none;
+  --fin-edge-opaque: none;
+  background-image: none;
 }
 
 /* === lib/base/base.focus.css === */

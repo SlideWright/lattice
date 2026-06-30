@@ -52,6 +52,26 @@ export function getFrontMatter(source: string, key: string): string | undefined 
 }
 
 /**
+ * Add space-separated class tokens to the deck's `class:` directive, deduped and
+ * UNION-ed with whatever is already there — never a destructive replace. A deck
+ * carrying `class: dark wide` keeps `dark wide`; the new tokens append after, in
+ * order, skipping any already present. With no incoming tokens the source is
+ * returned untouched. (Used to stamp a saved finish's `finish finish-<slug>` onto
+ * the RENDER/ARTIFACT front matter without clobbering an author's own classes.)
+ */
+export function mergeClassTokens(source: string, tokens: string): string {
+	const incoming = String(tokens || '').trim().split(/\s+/).filter(Boolean);
+	if (!incoming.length) return source;
+	const existing = (getFrontMatter(source, 'class') || '').trim().split(/\s+/).filter(Boolean);
+	const seen = new Set(existing);
+	const union = [...existing];
+	for (const t of incoming) {
+		if (!seen.has(t)) { seen.add(t); union.push(t); }
+	}
+	return setFrontMatter(source, 'class', union.join(' '));
+}
+
+/**
  * Set (or, with `value === null`, remove) a single front-matter directive,
  * preserving the rest of the block and the body. Creating the first directive
  * adds the block at the very top; removing the last one drops the block entirely.

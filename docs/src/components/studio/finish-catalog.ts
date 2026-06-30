@@ -1,0 +1,109 @@
+// The Studio finish catalog — DISPLAY metadata for the Finish family, the
+// surface artifact of the Finish axis (engineering/decisions/
+// 2026-06-30-finish-the-surface-layer.md). The engine's single source of truth
+// for name→class is FINISH_REGISTER (lib/core/resolve-finish.js), gated by the
+// rot-guard in test/unit/parsing/resolve-finish.test.js. THIS file adds only the
+// human layer the picker needs (label, blurb, swatch preview) and MUST stay in
+// step with FINISH_REGISTER — every `name` here is a registered finish.
+//
+// A finish is authored deck-wide via the `finish:` front-matter register (no new
+// key) or per-slide via `_class: finish finish-<name>`. Preset swatches use
+// var(--accent) so the chip recolors with the site theme, exactly like the real
+// finish does.
+
+export type FinishNature = 'parametric' | 'typographic';
+export type FinishZone = 'field' | 'none';
+export type FinishGroup = 'plain' | 'finish';
+
+export type FinishEntry = {
+	/** the `finish:` register value (and engine FINISH_REGISTER key) */
+	name: string;
+	label: string;
+	blurb: string;
+	group: FinishGroup;
+	nature: FinishNature;
+	zone: FinishZone;
+	/** CSS for the preview chip — background (+ optional size for tiled motifs) */
+	swatch: { background: string; backgroundSize?: string };
+};
+
+const A = (pct: number) => `color-mix(in srgb, var(--accent) ${pct}%, transparent)`;
+
+// Ordered as the picker shows them. `boardroom` is the named baseline (omitting
+// the key renders it). Each finish preset is a STACK of layers in the engine; the
+// chip shows a single representative layer, intentionally a touch more saturated
+// than the real (deliberately subtle) finish so the motif reads at 16px.
+export const FINISHES: FinishEntry[] = [
+	{
+		name: 'boardroom', label: 'Boardroom', group: 'plain', nature: 'typographic', zone: 'none',
+		blurb: 'The clean baseline — no surface treatment.',
+		swatch: { background: 'var(--bg)' },
+	},
+	{
+		name: 'sketch', label: 'Sketch', group: 'plain', nature: 'typographic', zone: 'none',
+		blurb: 'Hand-drawn skin — handwriting type and drawn boxes.',
+		swatch: { background: `repeating-linear-gradient(8deg, ${A(34)} 0 1.5px, transparent 1.5px 5px)` },
+	},
+	{
+		name: 'sketch-clean', label: 'Sketch · clean body', group: 'plain', nature: 'typographic', zone: 'none',
+		blurb: 'Hand-drawn headings and boxes; clean body text.',
+		swatch: { background: `repeating-linear-gradient(8deg, ${A(28)} 0 1.5px, transparent 1.5px 7px)` },
+	},
+	{
+		name: 'atrium', label: 'Atrium', group: 'finish', nature: 'parametric', zone: 'field',
+		blurb: 'Corner glow + a fine grid + a left margin rule.',
+		swatch: {
+			background:
+				`radial-gradient(120% 90% at 100% 0%, ${A(45)}, transparent 60%), `
+				+ `repeating-linear-gradient(0deg, ${A(28)} 0 1px, transparent 1px 6px), `
+				+ `repeating-linear-gradient(90deg, ${A(28)} 0 1px, transparent 1px 6px)`,
+		},
+	},
+	{
+		name: 'meridian', label: 'Meridian', group: 'finish', nature: 'parametric', zone: 'field',
+		blurb: 'Diagonal duotone wash + contour lines + a ghost numeral.',
+		swatch: {
+			background:
+				`linear-gradient(118deg, ${A(40)} 0%, transparent 45%, ${A(24)} 100%), `
+				+ `repeating-linear-gradient(-4deg, transparent 0 7px, ${A(26)} 7px 8px)`,
+		},
+	},
+	{
+		name: 'strata', label: 'Strata', group: 'finish', nature: 'parametric', zone: 'field',
+		blurb: 'Soft horizontal bands + a dot-matrix + a corner tick.',
+		swatch: {
+			background:
+				`linear-gradient(125deg, ${A(40)}, transparent 60%), `
+				+ `radial-gradient(${A(55)} 0 1px, transparent 1.6px)`,
+			backgroundSize: 'cover, 6px 6px',
+		},
+	},
+	{
+		name: 'halo', label: 'Halo', group: 'finish', nature: 'parametric', zone: 'field',
+		blurb: 'Centered spotlight + concentric rings + an inset vignette.',
+		swatch: {
+			background:
+				`radial-gradient(60% 60% at 50% 50%, ${A(40)}, transparent 70%), `
+				+ `repeating-radial-gradient(circle at 50% 50%, transparent 0 6px, ${A(34)} 6px 7px)`,
+		},
+	},
+	{
+		name: 'ledger', label: 'Ledger', group: 'finish', nature: 'parametric', zone: 'field',
+		blurb: 'Fine ruled lines + a bold left margin bar + a corner fold.',
+		swatch: {
+			background:
+				`linear-gradient(90deg, ${A(80)} 0 2px, transparent 2px), `
+				+ `repeating-linear-gradient(180deg, transparent 0 5px, ${A(30)} 5px 6px)`,
+		},
+	},
+];
+
+export const FINISH_BY_NAME: Record<string, FinishEntry> = Object.fromEntries(
+	FINISHES.map((f) => [f.name, f]),
+);
+
+/** The active finish for a deck `finish:` value (defaults to boardroom). */
+export function activeFinish(value: string | undefined | null): FinishEntry {
+	const key = (value ?? '').trim().toLowerCase();
+	return FINISH_BY_NAME[key] ?? FINISH_BY_NAME.boardroom;
+}

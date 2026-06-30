@@ -14,6 +14,7 @@ that any component can opt into.
 | `base.variants.css` | Universal opt-in variants — `dark`, `mirror`, `numbered`, `silent`, state markers, tone tokens. Composed via `_class:`. |
 | `base.treatments.css` | 27 treatment utility classes — 12 tints (`tint-corner at-tl`, `tint-vignette`, etc.) and 11 marks (`mark-orbit`, `mark-seeds`, etc.) plus `treatment-none` — for peripheral atmospheric accents. |
 | `base.sketch.css` | The `sketch` finish modifier — a deck-wide hand-drawn skin (handwriting type + drawn boxes). Palette-blind; composed via `class:` / `_class:`. |
+| `base.finish.css` | The `field` zone of the Finish family — 5 premium **stacked-layer** finish presets (`finish-atrium/meridian/strata/halo/ledger`) on a per-role custom-property compositor (`--fin-wash`/`--fin-texture`/`--fin-mark`/`--fin-edge`), so layers combine by z-index instead of being either/or. `finish-none` (or back-compat `backdrop-none`) opts a slide out. **Rich-on-screen / safe-on-export:** each preset's slot DEFAULT is the richer "dissolving" screen look (directional fades to `transparent` — alpha the browser composites cleanly), with an `--fin-*-opaque` mirror holding the PDF-clean opaque value (every full-bleed fade ends on `var(--bg)`). One guarded block flips the slots to the opaque mirror for BOTH export paths — `@media print` (CLI vector PDF) and `.lattice-exporting` (the Studio html-to-image raster tags each section before capture) — so the screen is rich while every PDF/PPTX stays opaque-clean (an alpha area-fade bakes to a gray cloud in print-to-PDF). Both faces are palette-blind (`color-mix(var(--accent)/var(--bg))`), no masks, no `url()`; only the screen face uses alpha. Selected deck-wide via the `finish:` register or per-slide via `_class: finish finish-<name>`. See `engineering/decisions/2026-06-30-finish-the-surface-layer.md`. |
 
 ---
 
@@ -505,11 +506,46 @@ the baseline.
 | `boardroom` | *(no class)* | The baseline — clean type, square boxes. The default when `finish:` is omitted. |
 | `sketch` | `sketch` | Full handwriting (headings **and** body) + drawn boxes. |
 | `sketch-clean` | `sketch sketch-clean-body` | Keep hand headings + boxes; return prose to the clean `--font-body` for text-dense slides. |
+| `atrium` | `finish finish-atrium` | Corner glow + a fine grid + a left margin rule. |
+| `meridian` | `finish finish-meridian` | Diagonal duotone wash + contour lines + an oversized ghost numeral. |
+| `strata` | `finish finish-strata` | Soft horizontal bands + a dot-matrix + a top hairline & corner tick. |
+| `halo` | `finish finish-halo` | Centered spotlight + concentric rings + a vignette (a section/closing treatment). |
+| `ledger` | `finish finish-ledger` | Fine horizontal ruled lines + a bold left margin bar + a top-right corner fold. |
+
+The five `finish-*` presets are the **`field` zone** of the Finish family — a
+z-index STACK of palette-blind, export-safe gradient layers painted behind
+content (`lib/base/base.finish.css`). The base `finish` class carries the layer
+compositor (`--fin-wash`/`--fin-texture`/`--fin-mark`/`--fin-edge`); each preset
+sets those per-role props, so a future right-panel designer can drive any single
+layer. Take one slide out of a deck-wide finish with `<!-- _class: finish-none -->`
+(the back-compat `backdrop-none` is an alias); a per-slide `finish-<name>`
+**overrides** the deck finish rather than stacking on it.
+
+Every full-bleed gradient fades **opaque-to-opaque** (`color-mix(var(--accent)
+N%, var(--bg))` → `var(--bg)`), never to `transparent`. This is load-bearing for
+export: Chromium's print-to-PDF encodes an alpha area-fade so PDF rasterizers
+interpolate toward transparent-black → a gray cloud (the browser hides it, the
+PDF does not). Patterns are therefore uniform and faint (thin opaque lines with
+`transparent` gaps), not directionally faded.
 
 The register is **open** (defined in `lib/core/resolve-finish.js`) and read by
 all three render paths. An unrecognized value (e.g. `finish: sketchh`) resolves
 to no classes — so it would silently ship the boardroom baseline — which is why
 `npm run lint:deck` flags it as an `unknown-finish` warning.
+
+**Reserved finish classes — do not author by hand.** `lattice-exporting` is an
+**engine-reserved class**: the Studio raster export (`drawing-board-export.js`)
+stamps it on every section right before `html-to-image` capture, which flips the
+finish compositor to its opaque export face (`base.finish.css`, the OPAQUE FLIP).
+Never put `lattice-exporting` in deck source — a slide carrying it would render
+its *export* (flatter) finish on screen. The Studio's Finish faculty has an
+**Export-preview** toggle that adds it to the live specimen on purpose, so a
+designer can see the baked look; that is the only legitimate authoring use, and
+it is transient (UI state, never written to the deck). The other reserved finish
+words are the five preset slugs (`atrium`/`meridian`/`strata`/`halo`/`ledger`),
+`finish-none`/`backdrop-none` (the per-slide opt-out), and `finish-preview` (the
+faculty specimen) — a *saved* custom finish whose name collides with any of these
+is namespaced (`atrium` → `atrium-custom`) so it can never shadow a built-in.
 
 #### The `split:` front-matter divider
 

@@ -11,21 +11,28 @@
 //   lattice-assets.zip            manifest.json · themes/<slug>/… · components/<slug>/… · README.md
 
 import type { StudioComponent } from './component-library';
+import { coerceRecipe, type FinishRecipe } from './finish-generate';
+import type { StudioFinish } from './finish-library';
 import type { StudioTheme } from './theme-library';
 
 export const ASSET_FORMAT = 'lattice-asset/1';
 
 export type ThemeItem = { kind: 'theme'; name: string; label: string; essentials: Record<string, string> | null; css: string; showcase?: string };
 export type ComponentItem = { kind: 'component'; name: string; bucket: string | null; css: string; skeleton: string };
-export type ManifestItem = ThemeItem | ComponentItem;
-export type AssetManifest = { format: typeof ASSET_FORMAT; kind: 'theme' | 'component' | 'bundle'; items: ManifestItem[] };
+// A finish item: the generated `section.finish.finish-<slug>` CSS file + the
+// structured recipe JSON (so a re-import reloads into the faculty for re-editing).
+export type FinishItem = { kind: 'finish'; name: string; label: string; css: string; recipe: string };
+export type ManifestItem = ThemeItem | ComponentItem | FinishItem;
+export type AssetManifest = { format: typeof ASSET_FORMAT; kind: 'theme' | 'component' | 'finish' | 'bundle'; items: ManifestItem[] };
 
 export type ParsedTheme = { name: string; label: string; essentials: Record<string, string> | null; css: string };
 export type ParsedComponent = { name: string; bucket: string | null; css: string; skeleton: string };
-export type ParsedBundle = { themes: ParsedTheme[]; components: ParsedComponent[] };
+export type ParsedFinish = { name: string; label: string; css: string; recipe: FinishRecipe };
+export type ParsedBundle = { themes: ParsedTheme[]; components: ParsedComponent[]; finishes: ParsedFinish[] };
 
 export const themeZipName = (t: { name: string }) => `${t.name}.lattice-theme.zip`;
 export const componentZipName = (c: { name: string }) => `${c.name}.lattice-component.zip`;
+export const finishZipName = (f: { name: string }) => `${f.name}.lattice-finish.zip`;
 
 // A representative deck that exercises the theme across the engine's range —
 // title, KPIs, a journey chart (the categorical series band), a Mermaid flow, a
@@ -153,6 +160,22 @@ Open the Studio → **Library** → **Import .zip**, then **Insert** it into any
 `;
 }
 
+function finishReadme(f: { name: string; label: string }): string {
+	return `# ${f.label} — a Lattice finish
+
+A palette-blind, export-safe surface finish for [Lattice](https://lattice.style).
+Every color is a token; it recolors with the theme and bakes clean into PDF/PPTX.
+
+## What's inside
+- \`${f.name}.finish.css\` — the \`section.finish.finish-${f.name}\` rule (apply per slide with \`<!-- _class: finish finish-${f.name} -->\` or deck-wide with \`class: finish finish-${f.name}\`).
+- \`${f.name}.recipe.json\` — the structured layer recipe (re-opens in the Finish faculty for re-editing).
+- \`manifest.json\` — the asset envelope (re-imports into the Studio Library).
+
+## Use it
+Open the Studio → **Library** → **Import .zip**, then pick it from the Finish menu in the Inspector.
+`;
+}
+
 // biome-ignore lint/suspicious/noExplicitAny: JSZip is dynamically imported.
 async function jszip(): Promise<any> {
 	const { default: JSZip } = await import('jszip');
@@ -184,8 +207,19 @@ export async function packComponent(c: StudioComponent): Promise<Blob> {
 	return zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
 }
 
-/** Pack a MIX of themes + components → one `lattice-assets.zip` Blob (sub-dir layout). */
-export async function packBundle(themes: { theme: StudioTheme; showcase?: Blob | null }[], components: StudioComponent[]): Promise<Blob> {
+/** Pack ONE saved finish → a `.zip` Blob (CSS + recipe JSON + manifest). */
+export async function packFinish(f: StudioFinish): Promise<Blob> {
+	const zip = await jszip();
+	const item: FinishItem = { kind: 'finish', name: f.name, label: f.label, css: `${f.name}.finish.css`, recipe: `${f.name}.recipe.json` };
+	zip.file(item.css, f.css);
+	zip.file(item.recipe, JSON.stringify(f.recipe, null, 2));
+	zip.file('manifest.json', JSON.stringify({ format: ASSET_FORMAT, kind: 'finish', items: [item] } satisfies AssetManifest, null, 2));
+	zip.file('README.md', finishReadme(f));
+	return zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+}
+
+/** Pack a MIX of themes + components + finishes → one `lattice-assets.zip` Blob (sub-dir layout). */
+export async function packBundle(themes: { theme: StudioTheme; showcase?: Blob | null }[], components: StudioComponent[], finishes: StudioFinish[] = []): Promise<Blob> {
 	const zip = await jszip();
 	const items: ManifestItem[] = [];
 	for (const { theme, showcase } of themes) {
@@ -204,12 +238,18 @@ export async function packBundle(themes: { theme: StudioTheme; showcase?: Blob |
 		zip.file(`${base}/${c.name}.skeleton.md`, c.skeleton);
 		items.push({ kind: 'component', name: c.name, bucket: c.bucket, css: `${base}/${c.name}.css`, skeleton: `${base}/${c.name}.skeleton.md` });
 	}
+	for (const f of finishes) {
+		const base = `finishes/${f.name}`;
+		zip.file(`${base}/${f.name}.finish.css`, f.css);
+		zip.file(`${base}/${f.name}.recipe.json`, JSON.stringify(f.recipe, null, 2));
+		items.push({ kind: 'finish', name: f.name, label: f.label, css: `${base}/${f.name}.finish.css`, recipe: `${base}/${f.name}.recipe.json` });
+	}
 	zip.file('manifest.json', JSON.stringify({ format: ASSET_FORMAT, kind: 'bundle', items } satisfies AssetManifest, null, 2));
-	zip.file('README.md', `# Lattice asset bundle\n\n${themes.length} theme(s) + ${components.length} component(s). Import via the Studio → **Library** → **Import .zip**.\n`);
+	zip.file('README.md', `# Lattice asset bundle\n\n${themes.length} theme(s) + ${components.length} component(s) + ${finishes.length} finish(es). Import via the Studio → **Library** → **Import .zip**.\n`);
 	return zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
 }
 
-/** Read a `.zip` (single or bundle) back into themes + components ready to save. */
+/** Read a `.zip` (single or bundle) back into themes + components + finishes ready to save. */
 export async function unpackBundle(file: Blob): Promise<ParsedBundle> {
 	const { default: JSZip } = await import('jszip');
 	const zip = await JSZip.loadAsync(file);
@@ -217,7 +257,7 @@ export async function unpackBundle(file: Blob): Promise<ParsedBundle> {
 	if (!manifestFile) throw new Error('Not a Lattice asset zip — manifest.json missing.');
 	const manifest = JSON.parse(await manifestFile.async('string')) as AssetManifest;
 	if (manifest.format !== ASSET_FORMAT) throw new Error(`Unsupported asset format: ${manifest.format}`);
-	const out: ParsedBundle = { themes: [], components: [] };
+	const out: ParsedBundle = { themes: [], components: [], finishes: [] };
 	for (const item of manifest.items) {
 		if (item.kind === 'theme') {
 			const css = await zip.file(item.css)?.async('string');
@@ -226,6 +266,16 @@ export async function unpackBundle(file: Blob): Promise<ParsedBundle> {
 			const css = await zip.file(item.css)?.async('string');
 			const skeleton = await zip.file(item.skeleton)?.async('string');
 			if (css && skeleton != null) out.components.push({ name: item.name, bucket: item.bucket ?? null, css, skeleton });
+		} else if (item.kind === 'finish') {
+			const css = await zip.file(item.css)?.async('string');
+			const recipeText = await zip.file(item.recipe)?.async('string');
+			if (css) {
+				// coerceRecipe clamps a missing/garbled recipe to the closed vocab, so a
+				// finish always re-imports renderable even if the recipe JSON is absent.
+				let parsed: unknown;
+				try { parsed = recipeText ? JSON.parse(recipeText) : undefined; } catch { parsed = undefined; }
+				out.finishes.push({ name: item.name, label: item.label, css, recipe: coerceRecipe(parsed) });
+			}
 		}
 	}
 	return out;

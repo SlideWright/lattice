@@ -21,7 +21,10 @@ import { addSlideAfter, deleteSlide, duplicateSlide, moveSlide, replaceSlide } f
 import { DECKS, deckSource, type StudioDeck } from './decks';
 import { Editor, type EditorHandle } from './Editor';
 import { Fabricate } from './Fabricate';
-import { frontMatterBlock, getFrontMatter, setFrontMatter, stripFrontMatter } from './front-matter';
+import { activeFinishLabel, FinishMenuItems, type SavedFinishMenuEntry } from './FinishPicker';
+import { generateSwatch as finishSwatch } from './finish-generate';
+import { deleteStudioFinish, listStudioFinishes, type StudioFinish } from './finish-library';
+import { frontMatterBlock, getFrontMatter, mergeClassTokens, setFrontMatter, stripFrontMatter } from './front-matter';
 import { type ComponentEntry, InsertComponent } from './InsertComponent';
 import { IntentTag } from './IntentTag';
 import { Library } from './Library';
@@ -182,6 +185,15 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			.catch(() => setLocalComponents((prev) => (prev.length ? [] : prev)));
 	}, []);
 	React.useEffect(() => { refreshComponents(); }, [refreshComponents]);
+	// Saved (Fabricated) FINISHES from the same shared library (kind:'finish') — a
+	// finish designed + saved in the Finish faculty lands here, becomes pickable in
+	// the Inspector Finish menu, and renders in the deck preview (its CSS injected +
+	// its class applied — the consumption loop). Loaded async; refreshed on save/delete.
+	const [savedFinishes, setSavedFinishes] = React.useState<StudioFinish[]>([]);
+	const refreshFinishes = React.useCallback(() => {
+		listStudioFinishes().then(setSavedFinishes).catch(() => setSavedFinishes([]));
+	}, []);
+	React.useEffect(() => { refreshFinishes(); }, [refreshFinishes]);
 	// The insert palette = your saved local components (first) + the built-in catalog.
 	const insertComponents = React.useMemo<ComponentEntry[]>(
 		() => [...localComponents.map((c) => ({ name: c.name, bucket: 'local', description: 'Your saved component', skeleton: c.skeleton })), ...components],
@@ -277,6 +289,51 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const pageNumbers = getFrontMatter(source, 'paginate') === 'true';
 	const headerFooter = getFrontMatter(source, 'header') != null;
 	// …and WRITE to it (the editor + every export update in lock-step).
+	const finish = getFrontMatter(source, 'finish') || 'boardroom';
+	const setFinish = (value: string) => setSource((s) => setFrontMatter(s, 'finish', value === 'boardroom' ? null : value));
+	// The saved finishes, shaped for the picker (slug + label + a chip swatch).
+	const savedFinishMenu = React.useMemo<SavedFinishMenuEntry[]>(
+		() => savedFinishes.map((f) => ({ id: f.id, name: f.name, label: f.label, swatch: finishSwatch(f.recipe) })),
+		[savedFinishes],
+	);
+	// When the active `finish:` value names a SAVED finish (not a built-in register
+	// entry), it renders via injected CSS + an applied class — the engine doesn't
+	// know its name. `activeSavedFinish` is that record (or undefined).
+	const activeSavedFinish = React.useMemo(() => savedFinishes.find((f) => f.name === finish), [savedFinishes, finish]);
+	function removeFinish(f: StudioFinish) {
+		deleteStudioFinish(f.id).then(() => {
+			refreshFinishes();
+			if (finish === f.name) setFinish('boardroom');
+			notify(`Removed “${f.label}” from your finish library.`);
+		});
+	}
+	// CONSUMPTION LOOP — a saved finish renders by injecting its generated CSS
+	// (section.finish.finish-<slug> { … }) into the preview's extraCss AND applying
+	// its `finish finish-<slug>` class to every section (the engine never learned the
+	// custom name, so we add the class ourselves). Built-ins flow through the engine's
+	// `finish:` register instead, untouched. The editor source still carries the slug
+	// in `finish:` for round-tripping; the class is injected only into the RENDERED
+	// front-matter, not the editable source.
+	const finishExtraCss = activeSavedFinish?.css;
+	// The preview's extraCss = local-component CSS + (when active) the saved finish's
+	// rule. Combined so a deck can use both at once.
+	const previewExtraCss = React.useMemo(
+		() => [usedLocalCss, finishExtraCss].filter(Boolean).join('\n\n') || undefined,
+		[usedLocalCss, finishExtraCss],
+	);
+	// The class tokens a saved finish stamps onto every section (the engine never
+	// learned the custom name, so we add the class ourselves). Applied ONLY to the
+	// RENDER/ARTIFACT paths (preview, Present, PDF/PPTX/Print) — never the editable
+	// source or the Markdown/Marp source handoff, which stay clean.
+	const finishClass = activeSavedFinish ? `finish finish-${activeSavedFinish.name}` : '';
+	// The deck front-matter the PREVIEW renders with — the editable `fm` plus, when a
+	// saved finish is active, the `finish finish-<slug>` class MERGED into any existing
+	// `class:` (deduped union — a deck's own `class: dark wide` is preserved). Stamped
+	// onto the rendered FM only, never the editable source.
+	const previewFm = React.useMemo(() => {
+		if (!finishClass) return fm;
+		return frontMatterBlock(mergeClassTokens(source, finishClass));
+	}, [fm, source, finishClass]);
 	const setDeckSize = (value: string) => setSource((s) => setFrontMatter(s, 'size', value));
 	const togglePageNumbers = () => setSource((s) => setFrontMatter(s, 'paginate', pageNumbers ? null : 'true'));
 	const toggleHeaderFooter = () => setSource((s) => setFrontMatter(s, 'header', getFrontMatter(s, 'header') != null ? null : deck.title));
@@ -363,6 +420,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	// Saved (Fabricated) themes shaped for the grouped picker.
 	const savedMenu = React.useMemo(() => savedThemes.map((t) => ({ id: t.id, name: t.name, label: t.label, accent: t.essentials?.accent })), [savedThemes]);
 	const activePalette = React.useMemo(() => activePaletteLabel(palette, savedMenu), [palette, savedMenu]);
+	const activeFin = React.useMemo(() => activeFinishLabel(finish, savedFinishMenu), [finish, savedFinishMenu]);
 	// Light/dark toggle — flips the shared `data-mode` (engine `light-dark()` resolves
 	// off it); the data-mode observer below pulls the new value into `mode` and the
 	// preview re-renders. Persisted via site-chrome so it survives a reload.
@@ -802,7 +860,29 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</Field>
-				<Field label="Page numbers"><Toggle label="Page numbers" on={pageNumbers} onClick={togglePageNumbers} /></Field>
+				<Field label="Finish">
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Control aria-label="Choose finish"><span className="flex min-w-0 items-center gap-2"><span className="size-3.5 shrink-0 rounded-[3px] border border-[color-mix(in_srgb,var(--text-heading)_18%,transparent)]" style={{ background: activeFin.swatch, backgroundSize: activeFin.backgroundSize }} /><span className="truncate">{activeFin.label}</span></span> <ChevronDown className="size-3.5" /></Control>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end" className="max-h-[60vh] w-56 overflow-y-auto">
+								<FinishMenuItems finish={finish} onPick={setFinish} saved={savedFinishMenu} />
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</Field>
+					{savedFinishes.length > 0 && (
+						<div className="mt-2 space-y-0.5">
+							<div className="mb-1 font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">Manage saved finishes</div>
+							{savedFinishes.map((f) => (
+								<div key={f.id} className="group flex items-center gap-1.5 rounded-md px-1 py-1 hover:bg-[var(--accent-soft)]">
+									<span className="size-3 shrink-0 rounded-[3px] border border-border" style={{ ...finishSwatch(f.recipe) }} />
+									<span className="min-w-0 flex-1 truncate text-[12px] text-[var(--text-heading)]">{f.label}</span>
+									<button type="button" onClick={() => removeFinish(f)} aria-label={`Delete ${f.label}`} className="shrink-0 rounded p-0.5 text-muted-foreground opacity-0 hover:text-[var(--fail,#b3261e)] group-hover:opacity-100"><Trash2 className="size-3.5" /></button>
+								</div>
+							))}
+						</div>
+					)}
+					<Field label="Page numbers"><Toggle label="Page numbers" on={pageNumbers} onClick={togglePageNumbers} /></Field>
 				<Field label="Running header"><Toggle label="Running header" on={headerFooter} onClick={toggleHeaderFooter} /></Field>
 			</InspGroup>
 			<InspGroup icon={<Wand2 className="size-3.5" />} label="Authoring">
@@ -894,7 +974,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				{/* pointer-events-none so a swipe over the slide (an engine iframe, which
 				    would otherwise swallow the touch) reaches the swipe container. */}
 				<div className={cn('pointer-events-none relative overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]', previewPortrait ? 'h-full w-auto' : 'h-auto w-full max-w-[760px]')} style={{ aspectRatio: `${previewRatio[0]} / ${previewRatio[1]}` }}>
-					<DeckPreview options={options} sample={fm ? fm + slide : slide} mermaid={false} paletteOverride={activeTheme?.name} extraTheme={extraTheme} extraCss={usedLocalCss} debounceMs={140} className="size-full" aria-label="Live deck preview" />
+					<DeckPreview options={options} sample={previewFm ? previewFm + slide : slide} mermaid={false} paletteOverride={activeTheme?.name} extraTheme={extraTheme} extraCss={previewExtraCss} debounceMs={140} className="size-full" aria-label="Live deck preview" />
 				</div>
 			</div>
 			{/* Slide navigator — jump to any slide, see its component type */}
@@ -1050,7 +1130,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 
 			{/* ── Body ─────────────────────────────────────────────────── */}
 			{view === 'fabricate' ? (
-				<Fabricate options={options} catalog={components} onClose={() => setView('compose')} notify={notify} onSaved={() => { refreshThemes(); refreshComponents(); }} onOpenWorkspace={() => setWorkspaceOpen(true)} />
+				<Fabricate options={options} catalog={components} onClose={() => setView('compose')} notify={notify} onSaved={() => { refreshThemes(); refreshComponents(); refreshFinishes(); }} onOpenWorkspace={() => setWorkspaceOpen(true)} />
 			) : mobile ? (
 				/* Mobile: one swappable Edit/Preview pane; panels live in sheets. */
 				<div className="flex min-h-0 flex-1 flex-col">
@@ -1162,7 +1242,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 					</div>
 				</SheetContent>
 			</Sheet>
-			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} source={source} options={options} palette={palette} mode={mode === 'dark' ? 'dark' : 'light'} extraTheme={extraTheme} extraCss={usedLocalCss} onPresent={() => setPresentOpen(true)} notify={notify} />
+			<ShareSheet open={shareOpen} onOpenChange={setShareOpen} deckTitle={deck.title} source={source} finishClass={finishClass} finishExtraCss={finishExtraCss} options={options} palette={palette} mode={mode === 'dark' ? 'dark' : 'light'} extraTheme={extraTheme} extraCss={previewExtraCss} onPresent={() => setPresentOpen(true)} notify={notify} />
 			<WorkspaceSheet open={workspaceOpen} onOpenChange={setWorkspaceOpen} notify={notify} />
 			<Library
 				open={libraryOpen}
@@ -1174,7 +1254,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				onChanged={() => { refreshThemes(); refreshComponents(); }}
 				notify={notify}
 			/>
-			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} frontMatter={fm} startIndex={activeFullIndex} paletteOverride={activeTheme?.name} extraTheme={extraTheme} extraCss={usedLocalCss} notify={notify} />
+			<PresentOverlay open={presentOpen} onClose={() => setPresentOpen(false)} options={options} slides={slides} frontMatter={previewFm} startIndex={activeFullIndex} paletteOverride={activeTheme?.name} extraTheme={extraTheme} extraCss={previewExtraCss} notify={notify} />
 			<CommandPalette
 				open={cmdOpen}
 				onOpenChange={setCmdOpen}
