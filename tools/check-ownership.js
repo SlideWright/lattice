@@ -940,11 +940,12 @@ function listRepoTextFiles(dir = ROOT, out = []) {
       US_TEXT_EXTS.has(path.extname(e.name)) &&
       !e.name.startsWith('.') && // hidden files (.c8rc.json, …) aren't house prose
       !/\.(min|generated)\.[a-z]+$/.test(e.name) && // minified / generated bundles
-      // Per-component gallery HTML sidecars (`<name>.gallery.{light,dark}.html`) are
-      // transient, gitignored render artifacts — the emulator writes one next to each
-      // `.gallery.*.pdf` and build-galleries.js deletes it again. The committed sibling
-      // is the .pdf (binary, uncounted). They are NEVER house prose, but the
-      // pre-commit pdf-rebuild step renders galleries in parallel with this scan, so a
+      // Emulator HTML sidecars are transient, gitignored render artifacts — the
+      // emulator writes a `<name>.html` next to every `<name>.pdf` it renders
+      // (gallery sidecars like `<name>.gallery.{light,dark}.html`, and the
+      // sidecar next to a committed `examples/<deck>.pdf`). The committed sibling
+      // is the .pdf (binary, uncounted); the .html is NEVER house prose. The
+      // pre-commit pdf-rebuild step renders decks in parallel with this scan, so a
       // sidecar can flicker into existence mid-walk and spuriously fail the budget
       // (a flaky local-only failure CI never sees on its clean checkout). Skip them.
       !/\.gallery\.(light|dark)\.html$/.test(e.name) &&

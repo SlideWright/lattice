@@ -14,6 +14,7 @@ that any component can opt into.
 | `base.variants.css` | Universal opt-in variants — `dark`, `mirror`, `numbered`, `silent`, state markers, tone tokens. Composed via `_class:`. |
 | `base.treatments.css` | 27 treatment utility classes — 12 tints (`tint-corner at-tl`, `tint-vignette`, etc.) and 11 marks (`mark-orbit`, `mark-seeds`, etc.) plus `treatment-none` — for peripheral atmospheric accents. |
 | `base.sketch.css` | The `sketch` finish modifier — a deck-wide hand-drawn skin (handwriting type + drawn boxes). Palette-blind; composed via `class:` / `_class:`. |
+| `base.backdrops.css` | The `field` zone of the Finish family — 5 full-bleed parametric backdrops (`backdrop-wash/aurora/blueprint/dots/hatch` + `backdrop-none`). Pure `color-mix(var(--accent))` gradients (no masks, export-safe; no `url()`). Selected deck-wide via the `finish:` register or per-slide via `_class: backdrop …`. See `engineering/decisions/2026-06-30-finish-the-surface-layer.md`. |
 
 ---
 

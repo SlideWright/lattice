@@ -49,6 +49,20 @@ in patch versions.
   threshold, not a physical-overflow claim — the Fit Spine owns overflow), and a new
   `checkDensityCoverage` gate (`build:check`) keeps every prose layout budgeted-or-
   exempt so coverage can't rot. See the decision doc §9.
+- **Finish backdrops — a palette-blind surface layer for decks (the `field` zone
+  of the Finish family).** Five new `finish:` register values — `wash`, `aurora`,
+  `blueprint`, `dots`, `hatch` — paint a faint, theme-recoloring gradient behind
+  every slide, set deck-wide in one line of front matter (`finish: blueprint`) or
+  per-slide via `_class: backdrop …`; `backdrop-none` opts a slide out. All are
+  pure CSS gradients (never masks), so they survive PDF/PPTX export and add no
+  remote-`url()` surface, and stay subtle enough to keep text at AA contrast with
+  no scrim. New `lib/base/base.backdrops.css`; the existing `FINISH_REGISTER`
+  (`lib/core/resolve-finish.js`) — the single source of truth read by all three
+  render paths — gains the five rows, gated against the CSS by a rot-guard. The
+  Studio Inspector gains a swatch-previewed **Finish** field (grouped Plain /
+  Backdrops) that writes the register; a **Finish** fabrication faculty tunes a
+  custom backdrop and exports it as CSS. Demo: `examples/finish-backdrops.md`. See
+  `engineering/decisions/2026-06-30-finish-the-surface-layer.md`.
 - **Studio Focus mode — a transient "quiet the noise" view.** The Studio's
   four-column desktop layout (Architect · Editor · Preview · Inspector) can now
   collapse to just **Editor + Preview + slide nav**, with most of the topbar
