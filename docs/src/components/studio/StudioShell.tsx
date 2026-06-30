@@ -1,6 +1,6 @@
 import {
 	AlertTriangle, ArrowLeftToLine, ArrowRightToLine, Check, ChevronDown, ChevronLeft,
-	Copy, Eye, FileBox, FileText, History, Layers, LayoutGrid, ListChecks, Moon, Palette, PencilLine, PencilRuler, Play, Plus, Save, Search, Settings2, Share2, SlidersHorizontal, Sparkles, StickyNote, Sun, Trash2, Upload, Volume2, Wand2, X,
+	Copy, Eye, FileBox, FileText, Focus, History, Layers, LayoutGrid, ListChecks, Minimize2, Moon, Palette, PencilLine, PencilRuler, Play, Plus, Save, Search, Settings2, Share2, SlidersHorizontal, Sparkles, StickyNote, Sun, Trash2, Upload, Volume2, Wand2, X,
 } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
@@ -118,6 +118,11 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const [welcomeOpen, setWelcomeOpen] = React.useState(() => !onboarded);
 	// First contextual reveal of the Architect fires once per session.
 	const firstEditRef = React.useRef(false);
+	// Focus mode — a transient "quiet the noise" posture (2026-06-30-studio-focus-mode.md):
+	// hides the Architect + Inspector columns and most of the topbar, leaving just
+	// Editor + Preview + slide nav. Nothing is removed — ⌘K stays live, so every
+	// feature is one keystroke away. Opt-in per session (not sticky, not a default).
+	const [focus, setFocus] = React.useState(false);
 	const [notesOpen, setNotesOpen] = React.useState(false); // speaker-notes drawer (own surface, not the Inspector)
 	const [view, setView] = React.useState<'compose' | 'fabricate'>('compose');
 	const [shareOpen, setShareOpen] = React.useState(false);
@@ -560,17 +565,26 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		notify('Fix applied — ⌘Z or restore from History to undo.');
 	}, [fixProposal, source, deck.id, notify]);
 
-	// ⌘K
+	// ⌘K (command palette), ⌘. (toggle Focus), Esc (leave Focus). Radix
+	// popovers/sheets/dialogs handle Escape first and stop its propagation, so
+	// `Esc` only reaches here — and only leaves Focus — when nothing is open.
 	React.useEffect(() => {
 		const onKey = (e: KeyboardEvent) => {
 			if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
 				e.preventDefault();
 				setCmdOpen((v) => !v);
+			} else if ((e.metaKey || e.ctrlKey) && e.key === '.') {
+				e.preventDefault();
+				setFocus((v) => !v);
+			} else if (e.key === 'Escape') {
+				setFocus((v) => (v ? false : v));
 			}
 		};
 		window.addEventListener('keydown', onKey);
 		return () => window.removeEventListener('keydown', onKey);
 	}, []);
+	// Fabricate is its own full-screen surface; never sit "focused" behind it.
+	React.useEffect(() => { if (view === 'fabricate') setFocus(false); }, [view]);
 
 	// Track the document's light/dark mode reactively so exports + the preview
 	// follow a mode flip while Studio is open (the topbar writes <html data-mode>).
@@ -924,7 +938,22 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 
 	return (
 		<div className="lx-ui flex h-[100dvh] flex-col bg-background text-foreground">
-			{/* ── Top bar (one lean row, v4) ───────────────────────────── */}
+			{/* ── Top bar ─────────────────────────────────────────────── */}
+			{/* Focus mode: a slim header — deck title · ⌘K · Exit. Most of the
+			    control cluster is gone; ⌘K still reaches every feature. */}
+			{focus ? (
+			<header className="flex h-[54px] shrink-0 items-center gap-3 border-b border-border bg-[color-mix(in_srgb,var(--bg)_92%,transparent)] px-3.5">
+				<span className="grid size-7 shrink-0 place-items-center rounded-lg bg-primary text-[15px] font-extrabold text-primary-foreground">L</span>
+				<span className="min-w-0 truncate text-sm font-semibold text-[var(--text-heading)]">{deck.title}</span>
+				<span className="hidden font-mono text-[11px] text-muted-foreground sm:inline">{metaFor(source)}</span>
+				<div className="flex-1" />
+				<button type="button" onClick={() => setCmdOpen(true)} className="hidden items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-[13px] text-muted-foreground hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))] sm:flex" aria-label="Search or run a command">
+					<Search className="size-4" />Search or run…
+					<span className="ml-2 rounded border border-border bg-background px-1.5 font-mono text-[11px]">⌘K</span>
+				</button>
+				<Button variant="outline" size="sm" onClick={() => setFocus(false)} className="gap-1.5" title="Exit focus (Esc)" aria-label="Exit focus mode"><Minimize2 className="size-4" /><span className="hidden sm:inline">Exit focus</span></Button>
+			</header>
+			) : (
 			<header className="flex h-[54px] shrink-0 items-center gap-1.5 border-b border-border bg-[color-mix(in_srgb,var(--bg)_92%,transparent)] px-2.5 sm:gap-3 sm:px-3.5">
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -996,6 +1025,8 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				<Button size="sm" onClick={() => setShareOpen(true)} className="gap-1.5 px-2 lg:px-3" title="Share"><Share2 className="size-4" /><span className="hidden lg:inline">Share</span></Button>
 
 				<span className="hidden h-5 w-px bg-border sm:block" />
+				{/* Focus — drop to Editor + Preview, hide the panels, quiet the noise (desktop only; tablet/mobile already collapse panels). */}
+				{!compact && <Button variant="ghost" size="icon-sm" onClick={() => setFocus(true)} aria-label="Enter focus mode" title="Focus — hide panels, just write (⌘.)"><Focus className="size-[18px]" /></Button>}
 				{/* Semantic icons (not two identical panel glyphs): the AI Architect vs the deck Inspector. */}
 				<Button variant="ghost" size="icon-sm" aria-pressed={architectOpen} onClick={() => { graduate(); setArchitectOpen((v) => !v); }} aria-label="Toggle Architect" title="Architect — AI coach &amp; chat" className={cn(architectOpen && 'text-[var(--accent)]')}><Sparkles className="size-[18px]" /></Button>
 				<Button variant="ghost" size="icon-sm" aria-pressed={inspectorOpen} onClick={() => { graduate(); setInspectorOpen((v) => !v); }} aria-label="Toggle Deck inspector" title="Deck inspector — look, size, notes, history" className={cn(inspectorOpen && 'text-[var(--accent)]')}><SlidersHorizontal className="size-[18px]" /></Button>
@@ -1003,6 +1034,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				<Button variant="ghost" size="icon-sm" onClick={() => setWorkspaceOpen(true)} aria-label="Workspace settings" className="hidden sm:inline-flex"><Settings2 className="size-[18px]" /></Button>
 				<span className="hidden size-7 shrink-0 place-items-center rounded-full bg-[var(--surface-inverse)] text-[12px] font-bold text-white sm:grid">SA</span>
 			</header>
+			)}
 
 			{/* ── First-run welcome (newcomers only; dismiss graduates) ──── */}
 			{welcomeOpen && view === 'compose' && (
@@ -1032,6 +1064,13 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 						<button type="button" onClick={() => setNotesOpen(true)} aria-label="Speaker notes" title="Speaker notes" className="grid size-8 place-items-center rounded-md text-muted-foreground hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]"><StickyNote className="size-4" /></button>
 					</div>
 					{mobilePane === 'edit' ? editorPane : previewPane}
+				</div>
+			) : focus ? (
+				/* Focus: Editor | Preview only — Architect/Inspector hidden, ⌘K still
+				   reaches everything (2026-06-30-studio-focus-mode.md). */
+				<div className="grid min-h-0 flex-1" style={{ gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.08fr)' }}>
+					{editorPane}
+					{previewPane}
 				</div>
 			) : (
 				/* Desktop: 4-column grid · Tablet: editor | preview (panels → sheets) */
@@ -1146,8 +1185,9 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				onPresent={() => setPresentOpen(true)}
 				onShare={() => setShareOpen(true)}
 				onFabricate={() => setView('fabricate')}
-				onReshape={() => setInspectorOpen(true)}
+				onReshape={() => { setFocus(false); setInspectorOpen(true); }}
 				onInsert={insertComponents.length > 0 ? () => setInsertOpen(true) : undefined}
+				onFocus={() => setFocus(true)}
 			/>
 			<InsertComponent open={insertOpen} onOpenChange={setInsertOpen} components={insertComponents} onInsert={onInsertComponent} />
 			{/* Hidden file input for "Import deck…" (.md upload). */}
