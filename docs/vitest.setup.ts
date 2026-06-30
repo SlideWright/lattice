@@ -33,10 +33,14 @@ if (typeof window !== 'undefined') {
 	if (!Element.prototype.scrollIntoView) {
 		Element.prototype.scrollIntoView = () => {};
 	}
-	// cmdk (the ⌘K command palette) observes its list with ResizeObserver, which
-	// jsdom doesn't implement; a no-op stub lets the dialog mount in tests.
+	// cmdk (the ⌘K command palette) and ScrollFade observe an element with
+	// ResizeObserver, which jsdom doesn't implement; a no-op stub lets them mount in
+	// tests. The constructor takes the observer callback (matching the real DOM
+	// signature) so a `new ResizeObserver(cb)` call isn't flagged as passing a
+	// superfluous argument to a zero-arg class.
 	if (!('ResizeObserver' in window)) {
 		(window as unknown as { ResizeObserver: unknown }).ResizeObserver = class {
+			constructor(_callback: ResizeObserverCallback) {}
 			observe() {}
 			unobserve() {}
 			disconnect() {}
