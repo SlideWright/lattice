@@ -65,6 +65,11 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix, model
 	const vocabSets = buildVocabSets(vocab);
 	const bucketByName = new Map((catalog || []).map((c) => [c.name, c.bucket]));
 	const bucketOf = (n) => bucketByName.get(n) || null;
+	// Per-element prose-density budget for the layouts that declare one (the
+	// `density` manifest block, carried through components.json into the catalog).
+	// Feeds review-core's density suggestion — see 2026-06-30-prose-density-budget.md.
+	const densityByName = new Map((catalog || []).filter((c) => c.density).map((c) => [c.name, c.density]));
+	const densityOf = (n) => densityByName.get(n) || null;
 	let lastSource = '';
 	let timer = null;
 
@@ -389,7 +394,7 @@ export function createArchitect({ vocab, catalog, mount, reveal, applyFix, model
 			window.dispatchEvent(new CustomEvent('db-deck-content', { detail: has }));
 			if (!has) { assessment = { source: lastSource, findings: [], scorecard: null }; render(null, []); return; }
 			const lint = lintCore.lintTextWith(lastSource, vocabSets);
-			const review = reviewCore.reviewText(lastSource, { bucketOf });
+			const review = reviewCore.reviewText(lastSource, { bucketOf, densityOf });
 			const sc = scorecard.scoreDeck({ source: lastSource, lintFindings: lint, reviewFindings: review });
 			assessment = { source: lastSource, findings: [...lint, ...review], scorecard: sc };
 			render(sc, [...lint, ...review]);

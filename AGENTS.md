@@ -24,7 +24,8 @@ Every component is described in two generated, always-current files:
 
 - **`dist/docs/components.json`** — machine-readable. One read gives you
   every component's axes, **search tags**, slots, authoring skeleton,
-  **`capacity`** (how many elements the component holds), and
+  **`capacity`** (how many elements the component holds), **`density`**
+  (how many WORDS each element gets before it overflows), and
   `whenToUse` / `antiPatterns` / `related` prose, plus the controlled
   vocabularies. Load this to select a component.
 - **`dist/docs/components.md`** — the same, human-readable; the browsable
@@ -48,6 +49,19 @@ targets or split the content across slides. `lint:deck` warns when a slide
 exceeds capacity (rules `capacity-crowd` / `capacity-overflow`), but choosing
 by capacity up front is the fix; the warning is the backstop. See
 `engineering/decisions/2026-06-17-content-capacity-contract.md`.
+
+**Then budget the words.** The right component with the right number of elements
+still fails if each element is a paragraph. Where `capacity` bounds the element
+COUNT, **`density`** bounds the WORDS per element: `{ axis, soft, hard }` — `soft`
+is the brevity target (aim here), `hard` the ceiling past which it overflows.
+Write each card / row / step to ~`soft` words; push detail to speaker notes.
+**Universal chrome has its own word budgets** regardless of component — keep the
+**eyebrow ≤ 5 words** (a label, not a sentence), the **slide title ≤ 10**, the
+**subtitle ≤ 12**, a **key-insight ≤ 18** (one memorable sentence), and a
+**status pill to one or two words**. The Drawing Board reviewer flags overruns as
+suggestions (`density-crowd` / `density-overflow`, `verbose-eyebrow` /
+`verbose-subtitle` / `verbose-key-insight`); writing tight up front is the fix.
+See `engineering/decisions/2026-06-30-prose-density-budget.md`.
 
 ## Author, then lint, then render
 

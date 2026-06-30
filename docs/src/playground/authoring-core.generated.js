@@ -850,9 +850,115 @@ ${indent}   - ${body.trim()}`;
   }
 });
 
+// lib/authoring/prose-budgets.js
+var require_prose_budgets = __commonJS({
+  "lib/authoring/prose-budgets.js"(exports, module) {
+    var CLASS_DIRECTIVE = /<!--\s*_class:\s*([^>]+?)\s*-->/;
+    var UNIVERSAL_PROSE_BUDGETS = Object.freeze({
+      title: { soft: 10, hard: 14, label: "slide title", note: "the takeaway lands in one tight line" },
+      eyebrow: { soft: 5, hard: 8, label: "eyebrow", note: "a label, not a sentence" },
+      subtitle: { soft: 12, hard: 18, label: "subtitle", note: "one line of framing" },
+      keyInsight: { soft: 18, hard: 28, label: "key-insight", note: "one sentence the room remembers" },
+      belowNote: { soft: 16, hard: 24, label: "below-note", note: "a footnote, not a paragraph" },
+      annotation: { soft: 12, hard: 18, label: "annotation", note: "a margin aside, kept short" },
+      pill: { soft: 2, hard: 3, label: "pill", note: "one word, two at most (status pills)" }
+    });
+    var SLIDE_PROSE_BUDGET = Object.freeze({ words: 70, bullets: 6 });
+    var CODE_ONLY_LINE = /^\s*`([^`]+)`\s*$/;
+    var HEADING_LINE = /^\s*#{1,6}\s/;
+    var LIST_LINE = /^\s*([-*]|\d+\.)\s/;
+    function chromeWordCount(s) {
+      return String(s || "").replace(/[·|–—]/g, " ").replace(/[*`_]/g, "").trim().split(/\s+/).filter(Boolean).length;
+    }
+    function bodyWordCount(block) {
+      return String(block || "").replace(/`[^`]*`/g, " ").replace(/^[ \t]*([-*]|\d+\.)\s+/gm, " ").replace(/[#>*_[\]()|·–—]/g, " ").trim().split(/\s+/).filter(Boolean).length;
+    }
+    function elementWordCounts(slide, axis) {
+      if (!slide || !axis) return [];
+      const body = String(slide).replace(/^[ \t]*```[\s\S]*?^[ \t]*```/gm, "").replace(CLASS_DIRECTIVE, "");
+      if (axis === "item") {
+        const lines = body.split("\n");
+        const blocks = [];
+        let cur = null;
+        for (const line of lines) {
+          if (/^([-*]|\d+\.)\s+\S/.test(line)) {
+            if (cur != null) blocks.push(cur);
+            cur = line;
+          } else if (cur != null) {
+            if (line.trim() === "" || /^\s/.test(line)) {
+              cur += "\n" + line;
+            } else {
+              blocks.push(cur);
+              cur = null;
+            }
+          }
+        }
+        if (cur != null) blocks.push(cur);
+        return blocks.map(bodyWordCount);
+      }
+      if (axis === "row") {
+        const pipeRows = body.split("\n").filter((l) => /^\s*\|.*\|\s*$/.test(l));
+        if (pipeRows.length < 2) return [];
+        return pipeRows.slice(2).map((r) => bodyWordCount(r.replace(/\|/g, " ")));
+      }
+      return [];
+    }
+    function universalProseOverages(slide) {
+      if (!slide) return [];
+      const out = [];
+      const consider = (kind, text, line) => {
+        const b = UNIVERSAL_PROSE_BUDGETS[kind];
+        if (!b) return;
+        const words = chromeWordCount(text);
+        if (words > b.soft) out.push({ kind, text: String(text).trim(), words, line, level: words > b.hard ? "hard" : "soft", budget: b });
+      };
+      const lines = slide.split("\n");
+      const h2 = slide.match(/^##\s+(.+)$/m);
+      if (h2) consider("title", h2[1], h2[0].trim());
+      for (let i = 0; i < lines.length; i++) {
+        const m = CODE_ONLY_LINE.exec(lines[i]);
+        if (!m) continue;
+        let up = i - 1;
+        while (up >= 0 && !lines[up].trim()) up--;
+        let down = i + 1;
+        while (down < lines.length && !lines[down].trim()) down++;
+        const above = up >= 0 ? lines[up] : "";
+        const below = down < lines.length ? lines[down] : "";
+        if (HEADING_LINE.test(above)) consider("subtitle", m[1], lines[i].trim());
+        else if (HEADING_LINE.test(below) || LIST_LINE.test(below)) consider("eyebrow", m[1], lines[i].trim());
+      }
+      const quote = [];
+      let quoteLine = null;
+      for (const line of lines) {
+        const qm = line.match(/^\s*>\s?(.*)$/);
+        if (qm) {
+          if (quoteLine == null) quoteLine = line.trim();
+          quote.push(qm[1]);
+        }
+      }
+      if (quote.length) consider("keyInsight", quote.join(" "), quoteLine);
+      return out;
+    }
+    module.exports = {
+      UNIVERSAL_PROSE_BUDGETS,
+      SLIDE_PROSE_BUDGET,
+      chromeWordCount,
+      bodyWordCount,
+      elementWordCounts,
+      universalProseOverages
+    };
+  }
+});
+
 // lib/authoring/review-core.js
 var require_review_core = __commonJS({
   "lib/authoring/review-core.js"(exports, module) {
+    var {
+      UNIVERSAL_PROSE_BUDGETS,
+      SLIDE_PROSE_BUDGET,
+      elementWordCounts,
+      universalProseOverages
+    } = require_prose_budgets();
     var CLASS_DIRECTIVE = /<!--\s*_class:\s*([^>]+?)\s*-->/;
     var LABEL_WORDS = /* @__PURE__ */ new Set([
       "overview",
@@ -949,6 +1055,7 @@ var require_review_core = __commonJS({
     }
     function reviewText(source, opts = {}) {
       const bucketOf = opts.bucketOf || (() => null);
+      const densityOf = opts.densityOf || (() => null);
       const findings = [];
       const slides = splitSlides(source);
       const start = firstSlideIndex(source);
@@ -991,7 +1098,7 @@ var require_review_core = __commonJS({
             });
           }
         }
-        if (proseWordCount(slide) > 70 || topBulletCount(slide) > 6) {
+        if (proseWordCount(slide) > SLIDE_PROSE_BUDGET.words || topBulletCount(slide) > SLIDE_PROSE_BUDGET.bullets) {
           findings.push({
             slide: human,
             rule: "wall-of-text",
@@ -1001,7 +1108,7 @@ var require_review_core = __commonJS({
             fix: "Split it or cut to the essential point; push the detail to speaker notes."
           });
         }
-        if (h && !ANCHORS_NO_TITLE_CHECK.has(comp) && wordCount(h) > 14) {
+        if (h && !ANCHORS_NO_TITLE_CHECK.has(comp) && wordCount(h) > UNIVERSAL_PROSE_BUDGETS.title.hard) {
           findings.push({
             slide: human,
             rule: "long-heading",
@@ -1010,6 +1117,45 @@ var require_review_core = __commonJS({
             line: h,
             message: `a ${wordCount(h)}-word heading \u2014 a takeaway should fit one tight line`,
             fix: "Trim to a single assertion; push qualifiers and caveats to the body."
+          });
+        }
+        const dens = comp ? densityOf(comp) : null;
+        if (dens && Number.isInteger(dens.soft) && Number.isInteger(dens.hard)) {
+          const counts = elementWordCounts(slide, dens.axis || "item");
+          const worst = counts.length ? Math.max(...counts) : 0;
+          const tighten = dens.note ? `Tighten to ${dens.note}.` : `Trim to ~${dens.soft} words per element; push detail to speaker notes.`;
+          if (worst > dens.hard) {
+            findings.push({
+              slide: human,
+              rule: "density-overflow",
+              severity: "suggestion",
+              classToken: comp,
+              message: `a ${comp} element runs to ${worst} words (budget ~${dens.soft}, ceiling ${dens.hard}) \u2014 it will overflow`,
+              fix: tighten
+            });
+          } else if (worst > dens.soft) {
+            findings.push({
+              slide: human,
+              rule: "density-crowd",
+              severity: "suggestion",
+              classToken: comp,
+              message: `a ${comp} element runs to ${worst} words \u2014 reads best at ~${dens.soft} (past that it crowds)`,
+              fix: tighten
+            });
+          }
+        }
+        for (const ov of universalProseOverages(slide)) {
+          if (ov.kind === "title") continue;
+          const rule = ov.kind === "keyInsight" ? "verbose-key-insight" : `verbose-${ov.kind}`;
+          const article = /^[aeiou]/i.test(ov.budget.label) ? "an" : "a";
+          findings.push({
+            slide: human,
+            rule,
+            severity: "suggestion",
+            classToken: comp,
+            line: ov.line,
+            message: `${article} ${ov.budget.label} of ${ov.words} words \u2014 ${ov.budget.note}`,
+            fix: `Tighten the ${ov.budget.label} to ~${ov.budget.soft} words.`
           });
         }
         if (h && comp && !HEADING_ONLY_OK.has(comp) && !hasBody(slide)) {

@@ -40,6 +40,9 @@ const SCRIPT_FOR_LIB = {
   // review-scorecard.test.js under test/unit/components/.
   'review-core.js':       'test:components',
   'scorecard.js':         'test:components',
+  // Prose-density budgets (phase 2 of the capacity contract) — covered by
+  // prose-budgets.test.js + review-scorecard.test.js under test/unit/components/.
+  'prose-budgets.js':     'test:components',
 };
 
 // Cross-cutting files: changing any of these can affect every test.

@@ -161,6 +161,56 @@ describe('review-core: editorial + structural heuristics', () => {
   });
 });
 
+describe('review-core: prose-density budgets (2026-06-30)', () => {
+  // densityOf injected the same way the Architect does, from a tiny catalog.
+  const densityOf = (n) => ({
+    'cards-grid': { axis: 'item', soft: 15, hard: 24, note: 'a card body is one short clause' },
+  }[n] || null);
+
+  test('flags a per-element body over the density ceiling', () => {
+    const body = `word `.repeat(30);
+    const deck = `${FM}<!-- _class: cards-grid -->\n\n## A tidy title.\n\n- Alpha\n  - ${body}\n- Beta\n  - short\n`;
+    const f = reviewText(deck, { bucketOf, densityOf });
+    assert.ok(ruleOf(f, 'density-overflow'));
+  });
+
+  test('flags a crowded (soft) element without overflowing', () => {
+    const body = `word `.repeat(18); // > soft 15, ≤ hard 24
+    const deck = `${FM}<!-- _class: cards-grid -->\n\n## A tidy title.\n\n- Alpha\n  - ${body}\n`;
+    const f = reviewText(deck, { bucketOf, densityOf });
+    assert.ok(ruleOf(f, 'density-crowd'));
+    assert.equal(ruleOf(f, 'density-overflow'), undefined);
+  });
+
+  test('stays silent when elements are within budget', () => {
+    const deck = `${FM}<!-- _class: cards-grid -->\n\n## A tidy title.\n\n- Alpha\n  - a short clause body\n- Beta\n  - another short body\n`;
+    const f = reviewText(deck, { bucketOf, densityOf });
+    assert.equal(ruleOf(f, 'density-crowd'), undefined);
+    assert.equal(ruleOf(f, 'density-overflow'), undefined);
+  });
+
+  test('costs nothing for a component with no density block', () => {
+    const deck = `${FM}<!-- _class: content -->\n\n## Title.\n\n- ${'word '.repeat(40)}\n`;
+    const f = reviewText(deck, { bucketOf, densityOf });
+    assert.equal(ruleOf(f, 'density-overflow'), undefined);
+  });
+
+  test('flags an over-budget eyebrow and key-insight (universal chrome)', () => {
+    const eyebrow = '`' + 'word '.repeat(10).trim() + '`';
+    const ki = `> ${'word '.repeat(30).trim()}`;
+    const deck = `${FM}<!-- _class: content -->\n\n${eyebrow}\n\n## A tidy title.\n\n${ki}\n`;
+    const f = reviewText(deck, { bucketOf });
+    assert.ok(ruleOf(f, 'verbose-eyebrow'));
+    assert.ok(ruleOf(f, 'verbose-key-insight'));
+  });
+
+  test('long-heading still owns the slide title (no double-fire with verbose-title)', () => {
+    const f = reviewText(`${FM}<!-- _class: content -->\n\n## ${'word '.repeat(16)}\n\nbody\n`, { bucketOf });
+    assert.ok(ruleOf(f, 'long-heading'));
+    assert.equal(ruleOf(f, 'verbose-title'), undefined);
+  });
+});
+
 describe('review-core: shared ask + pacing (one definition for Coach + scorecard)', () => {
   test('exports ASK_RE and pacingVerdict so coach-actions reuses them', async () => {
     const { ASK_RE, pacingVerdict } = require('../../../lib/authoring/review-core');

@@ -287,6 +287,21 @@
         },
         "note": { "type": "string", "minLength": 1, "description": "One-line human consequence of overflowing (reused in the generated docs line)." }
       }
+    },
+    "density": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["soft", "hard"],
+      "description": "Optional prose-density budget (phase 2 of the content-capacity contract) — how many WORDS each element along `axis` gets before the slide loses brevity, so the author/agent writes tight and the reviewer can flag verbosity. Where `capacity` budgets the element COUNT, `density` budgets the words-per-element. `soft` is the editorial target surfaced to the author (a label + short clause, not a sentence); `hard` is the evidence-clamped overflow ceiling (set just below where rendering actually overflows — see tools/calibrate-density.js). Advisory only — surfaces as a review SUGGESTION (lib/authoring/review-core.js), never a lint warning, so the stress galleries stay free. See engineering/decisions/2026-06-30-prose-density-budget.md.",
+      "properties": {
+        "axis": {
+          "enum": ["item", "row", "col", "cell", "line"],
+          "description": "The collection whose ELEMENTS carry the budgeted prose — MUST be a focusAxes member when focusAxes is declared. Defaults to `capacity.axis` when omitted."
+        },
+        "soft": { "type": "integer", "minimum": 1, "description": "Words per element — the editorial target surfaced to the author/agent. Past this the element begins to crowd → soft suggestion." },
+        "hard": { "type": "integer", "minimum": 1, "description": "Words per element — the evidence-clamped ceiling. Past this the element overflows → overflow suggestion. Always ≥ soft; in practice meaningfully above it (the gap between 'reads well' and 'breaks')." },
+        "note": { "type": "string", "minLength": 1, "description": "One-line human consequence of over-writing the element (reused in the generated Density docs line and the suggestion message)." }
+      }
     }
   }
 }

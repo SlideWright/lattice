@@ -262,6 +262,12 @@
         ],
         "note": "the ledger reads cleanly up to about six rows"
       },
+      "density": {
+        "axis": "item",
+        "soft": 12,
+        "hard": 18,
+        "note": "one short responsibility per row, not a job description"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -913,6 +919,12 @@
           "split across slides"
         ],
         "note": "the grid loses scannability past four cards"
+      },
+      "density": {
+        "axis": "item",
+        "soft": 15,
+        "hard": 24,
+        "note": "a card body is one short clause, not a paragraph"
       },
       "slots": {
         "title": {
@@ -4410,6 +4422,12 @@
           "split across slides"
         ],
         "note": "past five steps the row begins to crowd"
+      },
+      "density": {
+        "axis": "item",
+        "soft": 14,
+        "hard": 22,
+        "note": "one sentence per step, not a paragraph"
       },
       "slots": {
         "title": {

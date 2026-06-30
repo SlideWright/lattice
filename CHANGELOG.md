@@ -85,6 +85,20 @@ in patch versions.
 
 ### Added
 
+- **Prose-density budget — give the LLM a word budget, not just an element count (phase 2 of
+  the content-capacity contract).** Layouts now declare an optional `density` block
+  (`{ axis, soft, hard }`) — where `capacity` budgets how many elements fit, `density` budgets
+  how many WORDS each element gets before the slide loses brevity. A universal table budgets the
+  cross-cutting chrome regardless of layout (eyebrow ≤ 5 words, title ≤ 10, subtitle ≤ 12,
+  key-insight ≤ 18, pill ≤ 2; `lib/authoring/prose-budgets.js`). Budgets are expert-seeded (the
+  presentation canon + `editorial.md`) and evidence-clamped: `tools/calibrate-density.js` renders
+  a layout at rising word counts and reads the real overflow probe, so a `hard` ceiling is never
+  above where it physically breaks. Surfaced to agents in `dist/docs/components.json` and the
+  generated `**Density**` docs line; enforced advisorily as Drawing Board review **suggestions**
+  (`density-crowd` / `density-overflow`, `verbose-eyebrow` / `verbose-subtitle` /
+  `verbose-key-insight`) — never a blocking lint warning, so the stress galleries stay free. Pilot
+  seeds: `cards-grid`, `actors`, `list-steps`. Demo: `examples/prose-density.md`. See
+  `engineering/decisions/2026-06-30-prose-density-budget.md`.
 - **Studio — AI component generation now covers the full transform-free set: code + math (#610).**
   The "Describe a component" generator reliably produces **code** (a fenced sample card, a side-by-side
   code comparison) and **math** (a labeled formula callout) components — pure CSS framing around the
