@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import StudioShell from './StudioShell';
 
 // Slice: per-finding AI fix. The Coach panel surfaces the deck's deterministic lint
@@ -44,6 +44,12 @@ vi.mock('./architect', () => ({
 
 const options = { themeBase: '', runtimeUrl: '', engineUrl: '' };
 
+// The Coach findings live in the Architect panel, which a newcomer starts with
+// closed. Seed onboarded:true (a returning user) so the panel is docked.
+beforeEach(() => {
+	localStorage.clear();
+	localStorage.setItem('lattice-studio-settings', JSON.stringify({ validation: true, pageNumbers: true, headerFooter: false, onboarded: true }));
+});
 afterEach(() => {
 	document.documentElement.removeAttribute('data-palette');
 	vi.clearAllMocks();

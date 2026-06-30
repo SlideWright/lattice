@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import StudioShell from './StudioShell';
 
 // Stub the live preview (its engine poller leaks a post-teardown timer in jsdom).
@@ -10,8 +10,21 @@ vi.mock('@/components/DeckPreview', () => ({
 
 const options = { themeBase: '', runtimeUrl: '', engineUrl: '' };
 
+// These flows test the full-density Studio against the original deck set. Seed a
+// returning-user state (saved deck index sans the newcomer welcome deck +
+// onboarded:true) so the Architect/Inspector are docked and "Q3 Board Review" is
+// active — the real shape for anyone who has used the Studio before.
+beforeEach(() => {
+	localStorage.clear();
+	localStorage.setItem('lattice-studio-deck-index', JSON.stringify([
+		{ id: 'q3-board', title: 'Q3 Board Review', builtin: true },
+		{ id: 'product-strategy', title: 'FY26 Product Strategy', builtin: true },
+	]));
+	localStorage.setItem('lattice-studio-settings', JSON.stringify({ validation: true, pageNumbers: true, headerFooter: false, onboarded: true }));
+});
 afterEach(() => {
 	document.documentElement.removeAttribute('data-palette');
+	localStorage.clear();
 });
 
 function setup() {

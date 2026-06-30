@@ -30,12 +30,16 @@ import { PresentOverlay } from './PresentOverlay';
 import { ShareSheet } from './ShareSheet';
 import { getNote, setNote } from './slide-notes';
 import { listFindings } from './studio-lint';
-import { type Checkpoint, createDeck, deleteDeck as deleteDeckStore, loadCheckpoints, loadDeckList, loadSettings, loadSource, metaFor, renameDeck as renameDeckStore, saveCheckpoint, saveSettings, saveSource, titleFromSource } from './studio-store';
+import { type Checkpoint, createDeck, deleteDeck as deleteDeckStore, hasPriorStudioUse, loadCheckpoints, loadDeckList, loadSettings, loadSource, metaFor, renameDeck as renameDeckStore, saveCheckpoint, saveSettings, saveSource, titleFromSource } from './studio-store';
 import { activePaletteLabel, BUILTIN_PALETTES, ThemeMenuItems } from './ThemePicker';
 import { deleteStudioTheme, listStudioThemes, type StudioTheme } from './theme-library';
 import { useBreakpoint } from './use-breakpoint';
 import { WorkspaceSheet } from './WorkspaceSheet';
 
+// Offline FALLBACK known-components — used only when the real catalog (the
+// `components` prop, the full 53-component manifest) fails to load. The live known
+// set is derived from that catalog (see `catalogNames` below); a hardcoded subset
+// here would false-flag every component it omits on a perfectly valid deck.
 // Module-level so the reference is stable — the Editor re-inits CodeMirror when
 // its `knownComponents` identity changes, so this must never be an inline literal.
 const KNOWN = ['title', 'kpi', 'quote', 'cards-grid', 'agenda', 'big-number', 'stats', 'statement', 'closing', 'q-and-a', 'pricing'];
@@ -97,8 +101,23 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	});
 	const [activeSlide, setActiveSlide] = React.useState(0); // 0-based; index into the VIEWED set
 	const [composeLens, setComposeLens] = React.useState<PresentLens>('full'); // reader lens for the preview
-	const [architectOpen, setArchitectOpen] = React.useState(true);
+	// First-run state. A newcomer (never engaged) gets a reduced-density shell —
+	// side panels closed, a one-time welcome cue — so the killer intro deck and the
+	// editor lead, not 35+ controls. `onboarded` flips true the moment they engage
+	// (dismiss the welcome, edit, or open a panel) and persists, so it's one-time.
+	// Newcomer = never engaged AND no prior Studio activity. The `onboarded` flag
+	// postdates pre-existing users (it defaults false for them), so fall back to
+	// hasPriorStudioUse() — a saved deck index or any edited source — to treat
+	// returning users as already-onboarded and never show them the first-run cue.
+	const [onboarded, setOnboarded] = React.useState(() => loadSettings().onboarded || hasPriorStudioUse());
+	const onboardedRef = React.useRef(onboarded);
+	onboardedRef.current = onboarded;
+	const [architectOpen, setArchitectOpen] = React.useState(() => onboarded); // newcomers start calm
 	const [inspectorOpen, setInspectorOpen] = React.useState(false); // PM-4: preview is sacred
+	// One-time welcome banner — shown only to a newcomer; dismiss graduates them.
+	const [welcomeOpen, setWelcomeOpen] = React.useState(() => !onboarded);
+	// First contextual reveal of the Architect fires once per session.
+	const firstEditRef = React.useRef(false);
 	const [notesOpen, setNotesOpen] = React.useState(false); // speaker-notes drawer (own surface, not the Inspector)
 	const [view, setView] = React.useState<'compose' | 'fabricate'>('compose');
 	const [shareOpen, setShareOpen] = React.useState(false);
@@ -204,7 +223,12 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	// identity also gates the CodeMirror re-init — it only changes when KNOWN or your
 	// saved components do).
 	const localNames = React.useMemo(() => localComponents.map((c) => c.name), [localComponents]);
-	const knownWithLocal = React.useMemo(() => [...KNOWN, ...localNames], [localNames]);
+	// The live known-component set is the REAL catalog (all 53 built-ins, via the
+	// `components` prop) plus your saved local components — never the stale hardcoded
+	// subset, which would false-flag valid components on the welcome deck and beyond.
+	// Falls back to KNOWN only if the catalog failed to load.
+	const catalogNames = React.useMemo(() => (components.length ? components.map((c) => c.name) : KNOWN), [components]);
+	const knownWithLocal = React.useMemo(() => [...catalogNames, ...localNames], [catalogNames, localNames]);
 	const lintKnown = React.useMemo(() => (validation ? knownWithLocal : usedComponents(source)), [validation, source, knownWithLocal]);
 	const issues = React.useMemo(() => unknownComponents(source, lintKnown).length, [source, lintKnown]);
 	const deckScore = React.useMemo(() => scoreDeck(source, lintKnown), [source, lintKnown]);
@@ -212,10 +236,19 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	// Panels are persistent columns on desktop, on-demand sheets below it. Reset
 	// their open state to the right default whenever the breakpoint flips so a
 	// compact load never auto-pops a sheet and a return to desktop re-docks them.
+	// A newcomer (read via ref so graduating mid-session doesn't slam panels) keeps
+	// the Architect closed on desktop too — reduced density until they engage.
 	React.useEffect(() => {
 		if (compact) { setArchitectOpen(false); setInspectorOpen(false); }
-		else { setArchitectOpen(true); setInspectorOpen(false); }
+		else { setArchitectOpen(onboardedRef.current); setInspectorOpen(false); }
 	}, [compact]);
+
+	// Graduate a newcomer to the full-density shell — one-time, persisted. Called
+	// when they dismiss the welcome, make their first edit, or open a panel.
+	const graduate = React.useCallback(() => {
+		setOnboarded((was) => { if (!was) saveSettings({ onboarded: true }); return true; });
+		setWelcomeOpen(false);
+	}, []);
 
 	// Persist the active deck's source (debounced) so edits survive a switch AND a
 	// reload. Skipped on the very first render (nothing changed yet).
@@ -365,6 +398,20 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		toastTimer.current = setTimeout(() => setToast(null), 2600);
 	}, []);
 	React.useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
+
+	// Contextual reveal: the FIRST genuine authoring edit a newcomer makes opens the
+	// Architect (desktop) so the coach appears exactly when they start writing — then
+	// graduate. Fired by the editor's onUserEdit (a real keystroke/paste/delete), NOT
+	// by any `source` change — so a programmatic write (speaker note, AI apply,
+	// checkpoint restore, deck switch) never triggers this misleading cue. (Defined
+	// after `notify` so it isn't referenced in the TDZ.)
+	const onFirstUserEdit = React.useCallback(() => {
+		if (onboardedRef.current || firstEditRef.current) return;
+		firstEditRef.current = true;
+		if (!compact) setArchitectOpen(true);
+		notify('Your AI Coach reviews the deck as you write — it just opened on the left.');
+		graduate();
+	}, [compact, notify, graduate]);
 
 	// ── Architect (AI) ───────────────────────────────────────────────────────
 	const ai = useArchitectStatus();
@@ -808,7 +855,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				<button type="button" onClick={() => setNotesOpen(true)} aria-label="Speaker notes" title="Speaker notes" className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] hover:bg-[var(--accent-soft)]"><StickyNote className="size-3" /><span className="hidden lg:inline">Notes</span></button>
 				<span className="hidden items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-foreground lg:inline-flex"><FileText className="size-3" />Markdown</span>
 			</div>
-			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? knownWithLocal : NO_KNOWN} completionComponents={insertComponents} lintVocab={lintVocab} extraComponentNames={localNames} onCursorSlide={onEditorCursorSlide} onSelectionChange={setHasSelection} className="flex-1" />
+			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? knownWithLocal : NO_KNOWN} completionComponents={insertComponents} lintVocab={lintVocab} extraComponentNames={localNames} onCursorSlide={onEditorCursorSlide} onSelectionChange={setHasSelection} onUserEdit={onFirstUserEdit} className="flex-1" />
 		</section>
 	);
 
@@ -950,12 +997,24 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 
 				<span className="hidden h-5 w-px bg-border sm:block" />
 				{/* Semantic icons (not two identical panel glyphs): the AI Architect vs the deck Inspector. */}
-				<Button variant="ghost" size="icon-sm" aria-pressed={architectOpen} onClick={() => setArchitectOpen((v) => !v)} aria-label="Toggle Architect" title="Architect — AI coach &amp; chat" className={cn(architectOpen && 'text-[var(--accent)]')}><Sparkles className="size-[18px]" /></Button>
-				<Button variant="ghost" size="icon-sm" aria-pressed={inspectorOpen} onClick={() => setInspectorOpen((v) => !v)} aria-label="Toggle Deck inspector" title="Deck inspector — look, size, notes, history" className={cn(inspectorOpen && 'text-[var(--accent)]')}><SlidersHorizontal className="size-[18px]" /></Button>
+				<Button variant="ghost" size="icon-sm" aria-pressed={architectOpen} onClick={() => { graduate(); setArchitectOpen((v) => !v); }} aria-label="Toggle Architect" title="Architect — AI coach &amp; chat" className={cn(architectOpen && 'text-[var(--accent)]')}><Sparkles className="size-[18px]" /></Button>
+				<Button variant="ghost" size="icon-sm" aria-pressed={inspectorOpen} onClick={() => { graduate(); setInspectorOpen((v) => !v); }} aria-label="Toggle Deck inspector" title="Deck inspector — look, size, notes, history" className={cn(inspectorOpen && 'text-[var(--accent)]')}><SlidersHorizontal className="size-[18px]" /></Button>
 				<Button variant="ghost" size="icon-sm" onClick={() => setLibraryOpen(true)} aria-label="Open Library" title="Library — saved themes &amp; components"><FileBox className="size-[18px]" /></Button>
 				<Button variant="ghost" size="icon-sm" onClick={() => setWorkspaceOpen(true)} aria-label="Workspace settings" className="hidden sm:inline-flex"><Settings2 className="size-[18px]" /></Button>
 				<span className="hidden size-7 shrink-0 place-items-center rounded-full bg-[var(--surface-inverse)] text-[12px] font-bold text-white sm:grid">SA</span>
 			</header>
+
+			{/* ── First-run welcome (newcomers only; dismiss graduates) ──── */}
+			{welcomeOpen && view === 'compose' && (
+				<div className="flex shrink-0 items-center gap-2.5 border-b border-border bg-[var(--accent-soft)] px-3.5 py-2 text-[13px] text-[var(--text-heading)]">
+					<Sparkles className="hidden size-4 shrink-0 text-[var(--accent)] sm:block" />
+					<p className="min-w-0 flex-1 leading-snug">
+						<span className="font-semibold">New here?</span> This is a sample deck <span className="hidden sm:inline">about Lattice</span> — edit any slide to make it yours. Your AI Coach <Sparkles className="inline size-3.5 align-text-bottom text-[var(--accent)]" /> and deck settings <SlidersHorizontal className="inline size-3.5 align-text-bottom text-[var(--accent)]" /> live in the toolbar above.
+					</p>
+					<button type="button" onClick={graduate} className="shrink-0 rounded-md border border-[color-mix(in_srgb,var(--accent)_30%,transparent)] bg-background px-2.5 py-1 text-[12px] font-semibold text-[var(--accent)] hover:bg-[var(--accent-soft)]">Got it</button>
+					<button type="button" onClick={graduate} aria-label="Dismiss welcome" className="shrink-0 rounded p-1 text-muted-foreground hover:text-[var(--text-heading)]"><X className="size-4" /></button>
+				</div>
+			)}
 
 			{/* ── Body ─────────────────────────────────────────────────── */}
 			{view === 'fabricate' ? (
@@ -979,9 +1038,12 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				<div
 					className="grid min-h-0 flex-1"
 					style={{
+						// Track count must MATCH the rendered children: the Architect aside is
+						// only present when open, so its column is omitted when closed (a fixed
+						// '0px' track here would push the editor into it and collapse it).
 						gridTemplateColumns: compact
 							? 'minmax(0,1fr) minmax(0,1.08fr)'
-							: [architectOpen ? '232px' : '0px', 'minmax(0,0.92fr)', 'minmax(0,1.08fr)', inspectorOpen ? '300px' : '46px'].join(' '),
+							: [...(architectOpen ? ['232px'] : []), 'minmax(0,0.92fr)', 'minmax(0,1.08fr)', inspectorOpen ? '300px' : '46px'].join(' '),
 					}}
 				>
 					{/* Architect — persistent column only on desktop */}
