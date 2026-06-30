@@ -27,6 +27,11 @@ in patch versions.
 
 ### Added
 
+- **The Library now manages saved finishes too.** A fabricated finish saved to your
+  library appears in the Library shelf (new **Finish** filter) with Apply · Share · Delete,
+  mirroring themes and components — Share exports it as a `kind:"finish"` lattice-asset zip
+  (the symmetric counterpart to the import that already existed). Closes the save→manage→share
+  loop for finishes.
 - **Prose-density budgets now cover every text-bearing layout (26 of 53).** The
   density backfill is complete: `kpi`, `glossary`, `list`, `list-criteria`,
   `list-tabular`, `timeline-list`, `compare-prose`, `decision`, `matrix-2x2`,
