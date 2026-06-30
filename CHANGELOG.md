@@ -193,6 +193,20 @@ in patch versions.
 
 ### Changed
 
+- **Studio AI calls now cache the static system prefix — ~85% off input on a fan-out (#610).**
+  Profiling showed every component-generation call re-ships a byte-identical ~7.3K-token system
+  prompt (the authoring canon + worked examples), re-billed in full each time. `withCachedSystem`
+  (`docs/src/playground/architect-model.js`) now marks the leading `system` block with a
+  `cache_control:{type:"ephemeral"}` breakpoint for the vendors that need an explicit one
+  (anthropic, google; openai/deepseek/x-ai auto-cache and are left as plain strings). The
+  breakpoint sits on the system message, so the varying user turn and any dedup-neighbor block
+  stay outside the cached prefix; within the ~5-min TTL, calls after the first read the prefix at
+  ~0.1× instead of 1×. Zero quality change (the full canon + all examples still ship); below a
+  provider's min cacheable size the breakpoint is a silent no-op. The `usage.cost` we record
+  reflects the discount, so the spend tally stays authoritative. Also documented (decision doc
+  `2026-06-29-studio-spend-budget.md`): the OpenRouter **file-upload** API is the wrong tool for
+  the static canon — referencing a file still bills its content as input tokens every call — so
+  it stays reserved for user-supplied reference docs, not cost reduction.
 - **Studio AI component generator now reasons about content fit, the word budget,
   and responsive reflow (#610).** The component-generation canon (`lib/layout/ai.js`
   `COMPONENT_CANON`) gained three teaching bullets that target the recurring

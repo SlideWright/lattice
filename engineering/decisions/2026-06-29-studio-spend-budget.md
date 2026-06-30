@@ -58,17 +58,43 @@ layer-confusion the red-team flagged):
   closure value — genuinely Studio-only, so the Drawing Board's long rewrites aren't capped.
 - An On-device "free" nudge in the Spend tab.
 
-**Deferred (own follow-ups):** real **prompt caching** (sending `cache_control` breakpoints
-on the static system block — the toggle was removed rather than ship a no-op), a **low-balance
-floor** control (the gauge already reads `readBudgetFloor()`, it's just not yet settable from
-the Studio), and a per-surface model-id key if the Studio should diverge from the shared pick.
+**Deferred (own follow-ups):** a **low-balance floor** control (the gauge already reads
+`readBudgetFloor()`, it's just not yet settable from the Studio), and a per-surface model-id
+key if the Studio should diverge from the shared pick.
 
-## Knowledge file (separate)
+## Prompt caching — WIRED (the efficiency fix)
 
-The OpenRouter file-upload API returns an id but chat **can't reference a file by id**
-(bytes must be inlined per request), so our static authoring canon belongs in **prompt
-caching**, not file upload. A distinct later slice prototypes inline file/PDF input for
-*user-supplied* reference docs.
+Profiled the real per-call cost: a component-generation call ships a **byte-identical
+~7.3K-token system prompt** every time (`COMPONENT_CANON` ~4.4K + the five worked examples &
+output contract ~2.8K); the user turn is ~7 tokens. A 20-prompt fan-out re-paid that prefix 20×.
+
+`withCachedSystem(messages, modelId)` (`architect-model.js`) now marks the leading `system`
+block with a `cache_control:{type:"ephemeral"}` breakpoint for the vendors that need an
+explicit one (**anthropic, google** — `OR_CACHE_BREAKPOINT_VENDORS`; openai/deepseek/x-ai
+auto-cache, so their messages stay plain strings). The breakpoint sits ON the system message,
+so the varying user turn and any per-request dedup-neighbor `assistant` block stay OUTSIDE the
+cached prefix. Within the ~5-min TTL: call 1 writes the prefix (~1.25×), calls 2..N read it at
+~0.1× — **roughly 85% off input on a fan-out**, with zero quality loss (we keep the full canon
++ all five examples). Below a provider's min cacheable size the breakpoint is a silent no-op, so
+marking is always safe. The pure shaping is unit-tested (`architect-model.cache.test.ts`); the
+live cache HIT is a budget-gated manual smoke (the `usage.cost` we already record reflects the
+discount, so the spend tally stays authoritative).
+
+## Knowledge file — file upload is the WRONG tool for the canon (red-team)
+
+Re-examined OpenRouter's `/api/v1/files` ("upload a file to be referenced in future API calls,
+stored under the authenticating key's workspace, ≤100 MB") as a way to host the canon cheaply.
+It does **not** reduce cost: referencing a file still injects its content into context and bills
+it as **input tokens every call** — there is no free server-side context in chat completions
+(only prompt caching's cache-read discount, or a dedicated context-caching product, does that).
+Inversion: adopting it *as a cost fix* would re-pay full tokens every call **and** add an
+upload/lifecycle/cleanup surface **and** (BYOK) push our authoring IP into every user's
+workspace — a false economy that hides the real fix. So: the static canon → **prompt caching**
+(above); file upload stays on the roadmap for its **legitimate** job — letting a user attach
+their OWN reference doc (brand guide, an existing deck, a content brief) to GROUND generation
+(a feature, not a cost trick), shipped with the untrusted-input threat model (prompt-injection
+surface; any doc content reaching slide HTML still crosses the `sanitizeSlideHtml` boundary,
+HARD RULE #22). A distinct later slice prototypes that inline file/PDF input.
 
 ## Verification
 
