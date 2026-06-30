@@ -77,6 +77,11 @@ const BUILDERS = {
   stats: (w) => `1. 73%\n   - ${cap(words(w))}`,
   kpi: (w) => `1. 42%\n   - ${cap(words(w))}`,
   // Backfill of the remaining text-bearing layouts (2026-06-30 phase-2 §10).
+  // NOTE: a few layouts (split-panel, timeline-list) carry a lead/subtitle
+  // paragraph in their real sample that these builders omit — so a re-calibration
+  // reads a slightly MORE generous ceiling than reality. Harmless for the shipped
+  // numbers (hard is set editorially well below the measured ceiling, §2/§4), but
+  // add the lead line here if you ever tighten the clamp toward the geometry.
   list: (w) => `- ${cap(words(w))}.`,
   glossary: (w) => `- ${cap(words(1))}\n  - ${cap(words(w - 1))}.`,
   'list-criteria': (w) => `1. ${cap(words(2))}\n   - ${cap(words(w - 2))}.`,
