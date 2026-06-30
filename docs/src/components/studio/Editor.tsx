@@ -106,8 +106,12 @@ export const Editor = React.forwardRef<EditorHandle, {
 	onCursorSlide?: (index: number) => void;
 	/** Fired when the selection emptiness changes — gates the Refine control. */
 	onSelectionChange?: (hasSelection: boolean) => void;
+	/** Fired only on a genuine USER edit (typing/paste/delete) — NOT on the
+	 *  programmatic doc sync when `value` changes. Distinguishes a real edit from
+	 *  an external setSource so callers can react to authoring, not to their own writes. */
+	onUserEdit?: () => void;
 	className?: string;
-}>(function Editor({ value, onChange, knownComponents = [], completionComponents = [], lintVocab, extraComponentNames, onCursorSlide, onSelectionChange, className }, ref) {
+}>(function Editor({ value, onChange, knownComponents = [], completionComponents = [], lintVocab, extraComponentNames, onCursorSlide, onSelectionChange, onUserEdit, className }, ref) {
 	const hostRef = React.useRef<HTMLDivElement>(null);
 	const viewRef = React.useRef<EditorView | null>(null);
 	const onChangeRef = React.useRef(onChange);
@@ -116,6 +120,8 @@ export const Editor = React.forwardRef<EditorHandle, {
 	onCursorSlideRef.current = onCursorSlide;
 	const onSelectionChangeRef = React.useRef(onSelectionChange);
 	onSelectionChangeRef.current = onSelectionChange;
+	const onUserEditRef = React.useRef(onUserEdit);
+	onUserEditRef.current = onUserEdit;
 	const lastHasSelRef = React.useRef(false);
 	const lastSlideRef = React.useRef(-1);
 	const [failed, setFailed] = React.useState(false);
@@ -232,7 +238,15 @@ export const Editor = React.forwardRef<EditorHandle, {
 						EditorView.lineWrapping,
 						EditorView.contentAttributes.of({ 'aria-label': 'Deck source' }),
 						EditorView.updateListener.of((u) => {
-							if (u.docChanged) onChangeRef.current(u.state.doc.toString());
+							if (u.docChanged) {
+								onChangeRef.current(u.state.doc.toString());
+								// A genuine authoring edit carries a userEvent annotation; the
+								// external value-sync dispatch (deck switch, AI apply, restore)
+								// does not — so this fires for typing/paste/delete only.
+								if (u.transactions.some((tr) => tr.isUserEvent('input') || tr.isUserEvent('delete') || tr.isUserEvent('move'))) {
+									onUserEditRef.current?.();
+								}
+							}
 								if (u.docChanged || u.selectionSet) {
 									const idx = slideIndexAt(u.state.doc.toString(), u.state.selection.main.head);
 									if (idx !== lastSlideRef.current) {

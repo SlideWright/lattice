@@ -249,17 +249,6 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		setOnboarded((was) => { if (!was) saveSettings({ onboarded: true }); return true; });
 		setWelcomeOpen(false);
 	}, []);
-	// Contextual reveal: the first real edit a newcomer makes opens the Architect
-	// (desktop) so the coach appears exactly when they start writing — then graduate.
-	// biome-ignore lint/correctness/useExhaustiveDependencies: keyed on source; the one-shot guard + onboardedRef make extra deps churn, not correctness.
-	React.useEffect(() => {
-		if (onboardedRef.current || firstEditRef.current) return;
-		if (source === deckSource(deck)) return; // unchanged seed — not an edit yet
-		firstEditRef.current = true;
-		if (!compact) setArchitectOpen(true);
-		notify('Your AI Coach reviews the deck as you write — it just opened on the left.');
-		graduate();
-	}, [source]);
 
 	// Persist the active deck's source (debounced) so edits survive a switch AND a
 	// reload. Skipped on the very first render (nothing changed yet).
@@ -409,6 +398,20 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		toastTimer.current = setTimeout(() => setToast(null), 2600);
 	}, []);
 	React.useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current); }, []);
+
+	// Contextual reveal: the FIRST genuine authoring edit a newcomer makes opens the
+	// Architect (desktop) so the coach appears exactly when they start writing — then
+	// graduate. Fired by the editor's onUserEdit (a real keystroke/paste/delete), NOT
+	// by any `source` change — so a programmatic write (speaker note, AI apply,
+	// checkpoint restore, deck switch) never triggers this misleading cue. (Defined
+	// after `notify` so it isn't referenced in the TDZ.)
+	const onFirstUserEdit = React.useCallback(() => {
+		if (onboardedRef.current || firstEditRef.current) return;
+		firstEditRef.current = true;
+		if (!compact) setArchitectOpen(true);
+		notify('Your AI Coach reviews the deck as you write — it just opened on the left.');
+		graduate();
+	}, [compact, notify, graduate]);
 
 	// ── Architect (AI) ───────────────────────────────────────────────────────
 	const ai = useArchitectStatus();
@@ -852,7 +855,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				<button type="button" onClick={() => setNotesOpen(true)} aria-label="Speaker notes" title="Speaker notes" className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] hover:bg-[var(--accent-soft)]"><StickyNote className="size-3" /><span className="hidden lg:inline">Notes</span></button>
 				<span className="hidden items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-foreground lg:inline-flex"><FileText className="size-3" />Markdown</span>
 			</div>
-			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? knownWithLocal : NO_KNOWN} completionComponents={insertComponents} lintVocab={lintVocab} extraComponentNames={localNames} onCursorSlide={onEditorCursorSlide} onSelectionChange={setHasSelection} className="flex-1" />
+			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? knownWithLocal : NO_KNOWN} completionComponents={insertComponents} lintVocab={lintVocab} extraComponentNames={localNames} onCursorSlide={onEditorCursorSlide} onSelectionChange={setHasSelection} onUserEdit={onFirstUserEdit} className="flex-1" />
 		</section>
 	);
 
