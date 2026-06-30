@@ -49,6 +49,14 @@ async function call(messages) {
   return (await res.json()).choices?.[0]?.message?.content ?? '';
 }
 
+/** Does the markdown carry a real GFM table? True iff a line is a pipe+dash divider row. */
+function hasGfmTable(md) {
+  return String(md || '').split('\n').some(line => {
+    const t = line.trim();
+    return t.includes('|') && t.includes('-') && /^[|\-:\s]+$/.test(t);
+  });
+}
+
 let pass = 0;
 const fails = [];
 for (const t of SET.prompts) {
@@ -84,10 +92,13 @@ for (const t of SET.prompts) {
   const designErrors = design.filter(d => d.level === 'error');
   const reflowOk = !t.mustReflow || (c.manifest.adapt && c.manifest.capacity);
   const dedupOk = !t.dedup || similar.some(s => s.name === t.dedup);
-  const good = g.ok && !designErrors.length && reflowOk && dedupOk;
-  if (good) { pass++; console.log(`✓ ${t.id} → .${c.manifest.name} [${c.manifest.bucket}/${c.manifest.form}] gate.ok fixes=${c.fixes.join(',') || 'none'}${t.dedup ? ` dedup→${t.dedup}✓` : ''}${t.mustReflow ? ' reflow✓' : ''}`); }
+  // mustTable: a matrix request must come back as a REAL GFM table (a divider row
+  // of pipes + dashes), not a list or a grid of divs faking columns.
+  const tableOk = !t.mustTable || hasGfmTable(c.skeleton);
+  const good = g.ok && !designErrors.length && reflowOk && dedupOk && tableOk;
+  if (good) { pass++; console.log(`✓ ${t.id} → .${c.manifest.name} [${c.manifest.bucket}/${c.manifest.form}] gate.ok fixes=${c.fixes.join(',') || 'none'}${t.dedup ? ` dedup→${t.dedup}✓` : ''}${t.mustReflow ? ' reflow✓' : ''}${t.mustTable ? ' table✓' : ''}`); }
   else {
-    const why = [!g.ok && `gate:${g.errors.map(e => e.rule).join('/')}`, designErrors.length && `design:${designErrors.map(e => e.rule).join('/')}`, !reflowOk && 'no-adapt/capacity', !dedupOk && `dedup-miss(${t.dedup})`].filter(Boolean).join(' ');
+    const why = [!g.ok && `gate:${g.errors.map(e => e.rule).join('/')}`, designErrors.length && `design:${designErrors.map(e => e.rule).join('/')}`, !reflowOk && 'no-adapt/capacity', !dedupOk && `dedup-miss(${t.dedup})`, !tableOk && 'faked-table-with-list'].filter(Boolean).join(' ');
     fails.push(`${t.id}: ${why}`); console.log(`✗ ${t.id} — ${why}`);
   }
 }

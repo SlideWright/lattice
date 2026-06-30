@@ -397,8 +397,40 @@ All three pillars landed, faithful to the design above:
 **Honest residue (unchanged from the design's stance):**
 - The **aesthetic 10/10 is not machine-gated** (§3 B1) — it rests on the knowledge file + the
   model + human review (the Quality Bar). The structural contract is what's gated.
-- The worked examples + frozen set are **inventory/transform-free-centered** (§10 prototype-first);
-  widening the example set to the other transform-free buckets is the next increment.
+- **Widened beyond inventory** (the §10 prototype having cleared): the frozen set now also covers
+  **comparison, evidence/statement, and legal** prompts, and the held-out run is **16/16** with a
+  real model. The widening surfaced one real gap — the model reached for `margin` on a two-column
+  layout — closed by a fourth worked example (a two-column comparison built on `grid` + `gap`). The
+  remaining transform-free buckets (code/math prose) and the transform-bearing buckets (the #618 DSL)
+  are the next increments.
+- **Markdown-structure literacy (the canon now teaches the DOM, not just the CSS).** A component must
+  be authored as **valid markdown** in the structure that fits the data, so the canon teaches the
+  full menu — **lists** (sets), **GFM tables** (a matrix read across columns — styled `section.<name>
+  table/thead th/td` with tokens + `border-collapse`, never faked with divs), **prose**, **fenced
+  code**, **math** — plus the **load-bearing slide grammar** (eyebrow → title → subtitle → content →
+  key-insight → below-note; auto-chrome is detected by POSITION, and inline `code` means eyebrow vs
+  pill vs label by where it sits) and the **universal `[x]`/`[-]`/`[ ]`/`[/]` state-marker grammar**
+  (when a row carries a true status axis — never a raw emoji or a faked status). A fifth worked
+  example (a matrix as a real table) anchors it, and the frozen set gained a `mustTable` matrix case
+  (asserts a real GFM divider row, not a list faking columns) and a state-marker checklist case —
+  both pass with a real model. The widening surfaced a second real gap — the model spaced a custom
+  `::before` bullet marker with `margin-right` — closed by a targeted no-margin reinforcement
+  (markers space with `padding`/`gap`; self-scan the CSS before returning).
+- **The skeleton is pure markdown — raw HTML is gated out (generation-time complement to HARD RULE
+  #22).** `gateComponent` now rejects ANY raw HTML tag in the skeleton (`findSkeletonHtml`) — not
+  just the XSS set (`<script>`/`<style>`/`<iframe>`/`<img onerror>`) the preview sanitizer forbids,
+  but benign tags too (`<div>`/`<span>`/`<br>`) — because the engine renders structure from the
+  markdown DOM and a tag only smuggles presentation past the palette-blind token contract. Code shown
+  in a `` `inline` `` span or a ```fence is allowed (escaped text, not live HTML), and the
+  `<!-- … -->` comment is kept (the `_class` directive AND any presenter/reader note). This closes the
+  XSS vector at the GATE, before the (separately guarded) preview frame. **A maker-checker pass on the
+  gate caught two HIGH bypasses, both fixed + regression-locked:** (1) a `<script>` smuggled between
+  `<!--`/`-->` delimiters hidden inside inline code — closed by stripping code BEFORE comments so the
+  comment matcher only pairs real delimiters; (2) an entity-encoded scheme (`[x](&#106;avascript:…)`,
+  which markdown-it decodes back to a live `javascript:` href) — closed by decoding HTML entities
+  before the scheme scan (the markdown analog of `decodeCssEscapes`). The tag scan also exempts benign
+  URL/email autolinks and ignores spaced prose `<` (a glued `<tag` is the only flag), matching how
+  CommonMark recognizes a tag.
 - **Embeddings need the on-device CDN** (Transformers.js); without it, dedup runs the fuse/lexical
   fallback (noisier, by design — §5).
 - **Transform-bearing components** (charts/diagrams/journey/roadmap) remain out of scope here and
