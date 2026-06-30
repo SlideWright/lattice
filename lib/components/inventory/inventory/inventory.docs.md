@@ -8,6 +8,8 @@
 
 **Capacity** ~4 items (crowds past 5, overflows past 6) — past that, list-tabular / split across slides.
 
+**Density** up to ~14 words per item (overflows past 22) — one clause of body per part.
+
 Use for a small register of related items where each carries similar weight. Author the content once (a bold lead + detail per item, optional trailing insight) and pick the look with a variant: the default numbered ledger, a cards grid, a horizontal timeline, or a magazine-style editorial split — no re-authoring. For more than six items, escalate to list-tabular or split across slides.
 
 ## When to use

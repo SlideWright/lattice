@@ -8,6 +8,8 @@
 
 **Capacity** ~4 items (crowds past 5, overflows past 6) — past that, split across slides (auto with autosplit: on) / list-tabular.
 
+**Density** up to ~14 words per item (overflows past 22) — one clause per item.
+
 Use when a quarter's regulatory motion needs a single-slide digest. Each row carries the change name, the citation (inline code), the summary, and the effective-date marker (inline code).
 
 ## When to use

@@ -8,6 +8,8 @@
 
 **Capacity** ~3 items (crowds past 4, overflows past 4) — past that, list-tabular / split across slides.
 
+**Density** up to ~16 words per item (overflows past 26) — a stacked card is a short paragraph at most.
+
 Use when the items want vertical reading order — sequential exploration rather than a-glance comparison. 2–4 items work best (a fourth fits with the `compact` modifier).
 
 ## When to use

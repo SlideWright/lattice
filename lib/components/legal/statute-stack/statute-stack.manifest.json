@@ -20,6 +20,7 @@
     "escalateTo": ["split across slides (auto with autosplit: on)", "list-tabular"],
     "note": "past four jurisdictions the three-column rail collapses"
   },
+  "density": { "axis": "item", "soft": 16, "hard": 24, "note": "one obligation line per statute" },
   "split": {
     "strategy": "cover-paginate",
     "axis": "item",

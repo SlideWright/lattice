@@ -8,6 +8,8 @@
 
 **Capacity** ~4 rows (crowds past 6, overflows past 8) — past that, split across slides.
 
+**Density** up to ~12 words per row (overflows past 18) — a few words per cell.
+
 Use when you have 3+ options or 4+ rows of criteria. Wider data than compare-prose can hold legibly.
 
 ## When to use

@@ -96,8 +96,11 @@ in patch versions.
   above where it physically breaks. Surfaced to agents in `dist/docs/components.json` and the
   generated `**Density**` docs line; enforced advisorily as Drawing Board review **suggestions**
   (`density-crowd` / `density-overflow`, `verbose-eyebrow` / `verbose-subtitle` /
-  `verbose-key-insight`) — never a blocking lint warning, so the stress galleries stay free. Pilot
-  seeds: `cards-grid`, `actors`, `list-steps`. Demo: `examples/prose-density.md`. See
+  `verbose-key-insight`) — never a blocking lint warning, so the stress galleries stay free.
+  Seeded on the 15 text-bearing layouts (`cards-grid`, `cards-stack`, `actors`, `inventory`, `list-steps`, `stats`,
+  `verdict-grid`, `compare-table`, `q-and-a`, `agenda`, `checklist`, `kanban`, `authority-chain`, `regulatory-update`,
+  `statute-stack`), each `hard` ceiling clamped under its measured geometric break — the calibrator caught `q-and-a`
+  at 18 words/answer, far tighter than analogy would suggest. Demo: `examples/prose-density.md`. See
   `engineering/decisions/2026-06-30-prose-density-budget.md`.
 - **Studio — AI component generation now covers the full transform-free set: code + math (#610).**
   The "Describe a component" generator reliably produces **code** (a fenced sample card, a side-by-side

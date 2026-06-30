@@ -8,6 +8,8 @@
 
 **Capacity** ~4 items (crowds past 5, overflows past 6) — past that, kpi / split across slides.
 
+**Density** up to ~8 words per item (overflows past 14) — a metric label, not a sentence.
+
 Use for at-a-glance metric rows — quarterly results, headline KPIs. Each tile reads as Big Number + caption.
 
 ## When to use

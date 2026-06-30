@@ -16,6 +16,7 @@
     ],
     "note": "the ledger/editorial looks take a couple more rows than the cards or timeline looks; past six entries, escalate"
   },
+  "density": { "axis": "item", "soft": 14, "hard": 22, "note": "one clause of body per part" },
   "function": "inventory",
   "form": "ledger",
   "substance": "structure",

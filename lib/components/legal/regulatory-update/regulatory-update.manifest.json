@@ -12,6 +12,7 @@
   "form": "ledger",
   "substance": "structure",
   "capacity": { "axis": "item", "min": 2, "sweet": 4, "soft": 5, "hard": 6, "escalateTo": ["split across slides (auto with autosplit: on)", "list-tabular"], "note": "past six changes the vertical list overflows a portrait box" },
+  "density": { "axis": "item", "soft": 14, "hard": 22, "note": "one clause per item" },
   "split": { "strategy": "cover-paginate", "axis": "item", "perPage": 4, "intro": "What changed, and when", "note": "Overflowing list splits as an accent cover → its own native rows paginated (never flattened). lib/core/carousel.js cover-paginate." },
   "tags": ["changelog", "compliance", "regulation"],
   "description": "Change log against a baseline — numbered list of statutes/cases/rules with citation, summary, and effective date.",

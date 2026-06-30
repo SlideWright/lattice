@@ -437,6 +437,12 @@
         ],
         "note": "past six sections the list crowds"
       },
+      "density": {
+        "axis": "item",
+        "soft": 10,
+        "hard": 16,
+        "note": "a short agenda line, not a description"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -600,6 +606,12 @@
           "statute-stack"
         ],
         "note": "past six tiers the chain overflows a portrait box"
+      },
+      "density": {
+        "axis": "item",
+        "soft": 14,
+        "hard": 22,
+        "note": "one clause per tier"
       },
       "slots": {
         "heading": {
@@ -1098,6 +1110,12 @@
         ],
         "note": "past four rows the stack overflows"
       },
+      "density": {
+        "axis": "item",
+        "soft": 16,
+        "hard": 26,
+        "note": "a stacked card is a short paragraph at most"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -1248,6 +1266,12 @@
           "split across slides"
         ],
         "note": "past eight items the checklist overflows"
+      },
+      "density": {
+        "axis": "item",
+        "soft": 10,
+        "hard": 16,
+        "note": "a short readiness line"
       },
       "slots": {
         "title": {
@@ -2123,6 +2147,12 @@
           "split across slides"
         ],
         "note": "the table density crowds past six rows"
+      },
+      "density": {
+        "axis": "row",
+        "soft": 12,
+        "hard": 18,
+        "note": "a few words per cell"
       },
       "slots": {
         "title": {
@@ -3428,6 +3458,12 @@
         ],
         "note": "the ledger/editorial looks take a couple more rows than the cards or timeline looks; past six entries, escalate"
       },
+      "density": {
+        "axis": "item",
+        "soft": 14,
+        "hard": 22,
+        "note": "one clause of body per part"
+      },
       "slots": {
         "eyebrow": {
           "selector": "p:first-child > code",
@@ -3741,6 +3777,12 @@
           "split across slides"
         ],
         "note": "past five lanes the cards compress"
+      },
+      "density": {
+        "axis": "item",
+        "soft": 8,
+        "hard": 14,
+        "note": "a terse card title"
       },
       "slots": {
         "title": {
@@ -6015,6 +6057,12 @@
         ],
         "note": "past six Q/A pairs the column overflows a portrait box"
       },
+      "density": {
+        "axis": "item",
+        "soft": 12,
+        "hard": 16,
+        "note": "a one-line question and a short answer"
+      },
       "slots": {
         "eyebrow": {
           "selector": "p > code:only-child",
@@ -6795,6 +6843,12 @@
           "list-tabular"
         ],
         "note": "past six changes the vertical list overflows a portrait box"
+      },
+      "density": {
+        "axis": "item",
+        "soft": 14,
+        "hard": 22,
+        "note": "one clause per item"
       },
       "slots": {
         "heading": {
@@ -7602,6 +7656,12 @@
         ],
         "note": "the row compresses and numbers shrink past five tiles"
       },
+      "density": {
+        "axis": "item",
+        "soft": 8,
+        "hard": 14,
+        "note": "a metric label, not a sentence"
+      },
       "slots": {
         "title": {
           "selector": "h2",
@@ -7770,6 +7830,12 @@
           "list-tabular"
         ],
         "note": "past four jurisdictions the three-column rail collapses"
+      },
+      "density": {
+        "axis": "item",
+        "soft": 16,
+        "hard": 24,
+        "note": "one obligation line per statute"
       },
       "slots": {
         "heading": {
@@ -8195,6 +8261,12 @@
           "split across slides"
         ],
         "note": "the cards crowd and badges lose legibility past four"
+      },
+      "density": {
+        "axis": "item",
+        "soft": 12,
+        "hard": 18,
+        "note": "a verdict card is a label plus its criteria, not prose"
       },
       "slots": {
         "title": {

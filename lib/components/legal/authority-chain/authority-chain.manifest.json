@@ -12,6 +12,7 @@
   "form": "timeline",
   "substance": "structure",
   "capacity": { "axis": "item", "min": 2, "sweet": 4, "soft": 5, "hard": 6, "escalateTo": ["split across slides (auto with autosplit: on)", "statute-stack"], "note": "past six tiers the chain overflows a portrait box" },
+  "density": { "axis": "item", "soft": 14, "hard": 22, "note": "one clause per tier" },
   "split": { "strategy": "cover-paginate", "axis": "item", "perPage": 4, "intro": "From statute to case law", "note": "Overflowing chain splits as an accent cover → its own native tiers paginated (never flattened). lib/core/carousel.js cover-paginate." },
   "tags": ["regulation", "citation", "sequence"],
   "description": "Provenance chain — statute to regulation to guidance to case, walked in order.",

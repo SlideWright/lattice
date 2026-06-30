@@ -66,8 +66,15 @@ const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const BUILDERS = {
   'cards-grid': (w) => `- ${cap(words(2))}\n  - ${cap(words(w - 2))}.`,
+  'cards-stack': (w) => `- ${cap(words(2))}\n  - ${cap(words(w - 2))}.`,
+  'verdict-grid': (w) => `- **${cap(words(2))}.**\n  - ${cap(words(w - 2))}.`,
+  inventory: (w) => `- **${cap(words(2))}.** ${cap(words(w - 2))}.`,
   actors: (w) => `- ${cap(words(w - 2))} \`Head of Product\`\n  - ${cap(words(2))}.`,
   'list-steps': (w) => `1. ${cap(words(2))}\n   - ${cap(words(w - 2))}.`,
+  'q-and-a': (w) => `- ${cap(words(2))}?\n  - ${cap(words(w - 2))}.`,
+  agenda: (w) => `1. ${cap(words(w))} \`p.3\``,
+  checklist: (w) => `- [x] ${cap(words(w))}`,
+  stats: (w) => `1. 73%\n   - ${cap(words(w))}`,
   kpi: (w) => `1. 42%\n   - ${cap(words(w))}`,
 };
 const build = BUILDERS[comp];

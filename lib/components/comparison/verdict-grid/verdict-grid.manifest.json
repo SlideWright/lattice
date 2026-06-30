@@ -6,6 +6,7 @@
   "form": "grid",
   "substance": "structure",
   "capacity": { "axis": "item", "min": 2, "sweet": 3, "soft": 4, "hard": 5, "escalateTo": ["compare-table","split across slides"], "note": "the cards crowd and badges lose legibility past four" },
+  "density": { "axis": "item", "soft": 12, "hard": 18, "note": "a verdict card is a label plus its criteria, not prose" },
   "adapt": {
     "mode": "reflow",
     "families": ["wide", "square", "tall", "strip"],
