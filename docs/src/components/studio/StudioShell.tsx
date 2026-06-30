@@ -959,7 +959,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 
 			{/* ── Body ─────────────────────────────────────────────────── */}
 			{view === 'fabricate' ? (
-				<Fabricate options={options} onClose={() => setView('compose')} notify={notify} onSaved={() => { refreshThemes(); refreshComponents(); }} onOpenWorkspace={() => setWorkspaceOpen(true)} />
+				<Fabricate options={options} catalog={components} onClose={() => setView('compose')} notify={notify} onSaved={() => { refreshThemes(); refreshComponents(); }} onOpenWorkspace={() => setWorkspaceOpen(true)} />
 			) : mobile ? (
 				/* Mobile: one swappable Edit/Preview pane; panels live in sheets. */
 				<div className="flex min-h-0 flex-1 flex-col">

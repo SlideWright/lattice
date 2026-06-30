@@ -1,22 +1,27 @@
-import { Check, FileCode2, ShieldCheck, SquareDashedBottomCode, TriangleAlert } from 'lucide-react';
-import * as React from 'react';
+import { FileCode2, ShieldCheck, TriangleAlert } from 'lucide-react';
+import type * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
-import { Button } from '@/components/ui/button';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
-// The REAL layout gate — the deterministic core the Node tooling + the Workbench
-// Layout Studio use (lib/layout/*, bundled browser-safe). gateCss enforces the
-// two invariants that make a layout safe: palette-blind (no hex, only var(--…)
-// tokens) and scoped (every selector under `.name`, so it can't leak onto other
-// slides). skeletonInvokes checks the sample actually uses the component.
-import { gateCss, NAME_RE, skeletonInvokes } from '@/playground/layout-core.generated.js';
 import { CodeField } from './CodeField';
-import { saveStudioComponent } from './component-library';
 
 // A starter that PASSES the gate out of the box — palette-blind (every colour a
 // token), scoped to `.callout`, and invoked by its skeleton. Edit from here.
-const STARTER_NAME = 'callout';
-const STARTER_CSS = `section.callout {
+// Exported so the unified Studio (Fabricate) can seed the component tab's state.
+export const STARTER_NAME = 'callout';
+export const STARTER_DESCRIPTION = 'A centered callout — a big accent headline over a supporting line.';
+// A complete, gate-valid default manifest so the manual starter (and the panel)
+// open with a coherent contract, not blank axes.
+export const STARTER_META = {
+	function: 'statement',
+	form: 'canvas',
+	substance: 'prose',
+	bucket: 'statement',
+	tags: ['callout', 'centered', 'accent'],
+	adapt: { mode: 'native' },
+	capacity: { sweet: 1, soft: 1, hard: 1 },
+};
+export const STARTER_CSS = `section.callout {
   display: grid;
   place-content: center;
   gap: 1.25rem;
@@ -34,71 +39,57 @@ section.callout p {
   color: var(--text-body);
   font-size: var(--fs-lead);
 }`;
-const STARTER_SKELETON = `<!-- _class: callout -->
+export const STARTER_SKELETON = `<!-- _class: callout -->
 
 ## A callout that pops
 
 A local component you styled here — palette-blind, scope-checked, live.`;
 
-type Finding = { level: string; rule: string; line?: number; message: string };
+export type Finding = { level: string; rule: string; line?: number; message: string };
 
-export function LayoutStudio({ options, notify, onSaved }: { options: SingleSlideOptions; notify: (msg: string) => void; onSaved?: () => void }) {
-	const [name, setName] = React.useState(STARTER_NAME);
-	const [css, setCss] = React.useState(STARTER_CSS);
-	const [skeleton, setSkeleton] = React.useState(STARTER_SKELETON);
-	const [saving, setSaving] = React.useState(false);
-
-	const nameOk = NAME_RE.test(name);
-	// Live findings — the real gate, every keystroke. Name → CSS (no-hex + scope) →
-	// skeleton-invokes. A clean run is what "Save to library" requires.
-	const findings = React.useMemo<Finding[]>(() => {
-		const out: Finding[] = [];
-		if (!nameOk) {
-			out.push({ level: 'error', rule: 'name', message: 'Component name must be a lowercase slug — a–z, 0–9, hyphen, starting with a letter.' });
-			return out;
-		}
-		for (const f of gateCss(css, name).findings as Finding[]) out.push(f);
-		if (!skeletonInvokes(skeleton, name)) out.push({ level: 'error', rule: 'skeleton', message: `Skeleton must invoke <!-- _class: ${name} --> so the preview applies your styles.` });
-		return out;
-	}, [name, css, skeleton, nameOk]);
+// The component-tab BODY of the unified Studio. Naming, description, save, and
+// export now live in Fabricate's shared header (so the Theme and Component tabs
+// share one save/export UX), so this is a CONTROLLED editor: it owns no name or
+// save state — it renders the CSS + skeleton editors, the live gate findings,
+// and the preview, and reports edits up. `findings`/`nameOk` are computed by the
+// parent (the same bundled gate) so the header's Save button and this panel agree.
+export function LayoutStudio({
+	options,
+	name,
+	css,
+	skeleton,
+	onCss,
+	onSkeleton,
+	findings,
+	nameOk,
+	manifest,
+}: {
+	options: SingleSlideOptions;
+	name: string;
+	css: string;
+	skeleton: string;
+	onCss: (v: string) => void;
+	onSkeleton: (v: string) => void;
+	findings: Finding[];
+	nameOk: boolean;
+	// The Manifest panel, rendered as the RIGHT column on desktop (the unified
+	// Studio passes it; below desktop it places the panel itself, so this is unset).
+	manifest?: React.ReactNode;
+}) {
 	const errors = findings.filter((f) => f.level === 'error');
 	const warnings = findings.filter((f) => f.level !== 'error');
 	const ok = errors.length === 0;
 
-	async function save() {
-		if (saving || !ok) return;
-		setSaving(true);
-		try {
-			const c = await saveStudioComponent({ name, css, skeleton });
-			notify(`Saved “.${c.name}” to your component library.`);
-			onSaved?.();
-		} catch {
-			notify('Could not save — check the component name, or your browser may block storage.');
-		} finally {
-			setSaving(false);
-		}
-	}
-
 	return (
-		<div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:grid md:overflow-hidden md:[grid-template-columns:360px_1fr]">
+		<div className={cn('flex min-h-0 flex-1 flex-col overflow-y-auto md:grid md:overflow-hidden', manifest ? 'md:[grid-template-columns:340px_1fr_360px]' : 'md:[grid-template-columns:360px_1fr]')}>
 			<aside className="flex shrink-0 flex-col border-b border-border md:overflow-y-auto md:border-r md:border-b-0">
-				<div className="flex items-center gap-2 border-b border-border px-4 py-3 font-mono text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-					<SquareDashedBottomCode className="size-3.5" />Component Studio
-				</div>
-				<div className="border-b border-border px-4 py-3.5">
-					<label htmlFor="ls-name" className="mb-1.5 block font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Component name</label>
-					<div className="flex items-center gap-2">
-						<span className="font-mono text-[13px] text-muted-foreground">.</span>
-						<input id="ls-name" value={name} onChange={(e) => setName(e.target.value)} spellCheck={false} aria-label="Component name" className={cn('min-w-0 flex-1 rounded-md border bg-background px-2 py-1 font-mono text-[13px] text-[var(--text-heading)] outline-none focus:border-[var(--accent)]', nameOk ? 'border-border' : 'border-[color-mix(in_srgb,var(--chart-2,#9c3f00)_55%,transparent)]')} />
-					</div>
-				</div>
 				<div className="flex min-h-[120px] flex-col border-b border-border px-4 py-3.5">
 					<span className="mb-1.5 flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground"><FileCode2 className="size-3.5" />Styles — <span className="normal-case text-muted-foreground/80">.{name || '…'}-scoped, palette-blind</span></span>
-					<CodeField language="css" ariaLabel="Component CSS" value={css} onChange={setCss} className="w-full flex-1 rounded-lg border border-border bg-[var(--bg)] focus-within:border-[var(--accent)]" />
+					<CodeField language="css" ariaLabel="Component CSS" value={css} onChange={onCss} className="w-full flex-1 rounded-lg border border-border bg-[var(--bg)] focus-within:border-[var(--accent)]" />
 				</div>
 				<div className="flex min-h-[100px] flex-col border-b border-border px-4 py-3.5">
 					<span className="mb-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Skeleton — the slide that uses it</span>
-					<CodeField language="markdown" ariaLabel="Component skeleton" value={skeleton} onChange={setSkeleton} className="w-full flex-1 rounded-lg border border-border bg-[var(--bg)] focus-within:border-[var(--accent)]" />
+					<CodeField language="markdown" ariaLabel="Component skeleton" value={skeleton} onChange={onSkeleton} className="w-full flex-1 rounded-lg border border-border bg-[var(--bg)] focus-within:border-[var(--accent)]" />
 				</div>
 				<div className="px-4 py-3.5">
 					<div className="mb-2 flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -114,14 +105,13 @@ export function LayoutStudio({ options, notify, onSaved }: { options: SingleSlid
 								const color = isErr ? 'var(--chart-2,#9c3f00)' : 'var(--chart-4,#9a6a00)';
 								return (
 									<li key={`${f.rule}:${f.line ?? ''}:${f.message}`} className="flex items-start gap-2 text-[12px] leading-snug text-foreground">
-										<span className="mt-px shrink-0" style={{ color }}>{isErr ? <TriangleAlert className="size-3.5" /> : <TriangleAlert className="size-3.5" />}</span>
+										<span className="mt-px shrink-0" style={{ color }}><TriangleAlert className="size-3.5" /></span>
 										<span><span className="font-mono text-[11px] text-muted-foreground">{f.rule}{f.line ? `:${f.line}` : ''}</span> — {f.message}</span>
 									</li>
 								);
 							})}
 						</ul>
 					)}
-					<Button size="sm" disabled={!ok || saving} onClick={save} className="mt-3 w-full gap-1.5"><Check className="size-4" />{saving ? 'Saving…' : 'Save to component library'}</Button>
 				</div>
 			</aside>
 			<div className="flex flex-col items-center gap-4 bg-card p-4 md:overflow-y-auto md:p-7">
@@ -132,6 +122,7 @@ export function LayoutStudio({ options, notify, onSaved }: { options: SingleSlid
 					<div className="grid aspect-video w-full max-w-[620px] place-content-center rounded-xl border border-dashed border-border bg-background text-center text-[13px] text-muted-foreground">Name your component to preview it.</div>
 				)}
 			</div>
+			{manifest && <aside className="shrink-0 border-t border-border bg-card md:overflow-y-auto md:border-l md:border-t-0">{manifest}</aside>}
 		</div>
 	);
 }

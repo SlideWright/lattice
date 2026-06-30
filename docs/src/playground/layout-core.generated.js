@@ -108,6 +108,28 @@ var require_gate = __commonJS({
       }
       return out;
     }
+    var MARGIN_RE = /(?<![\w-])margin(?:-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?)?\s*:\s*([^;{}]+)/gi;
+    var isAllZeroMargin = (v) => String(v).replace(/!important/gi, "").trim().split(/\s+/).every((t) => /^-?0(?:\.0+)?(?:[a-z%]+)?$/i.test(t));
+    function findMargins(css) {
+      const src = stripComments(css);
+      const out = [];
+      for (const m of src.matchAll(MARGIN_RE)) {
+        if (!isAllZeroMargin(m[1])) out.push({ value: m[1].trim(), line: lineAt(src, m.index) });
+      }
+      return out;
+    }
+    var FONTSIZE_RE = /(?<![\w-])font-size\s*:\s*([^;{}]+)/gi;
+    var RAW_FONT_LEN_RE = /\d(?:\.\d+)?\s*(px|pt|pc|in|cm|mm|rem|cqi|cqh|cqw|cqb|cqmin|cqmax|vh|vw|vmin|vmax)\b/i;
+    function findRawFontSize(css) {
+      const src = stripComments(css);
+      const out = [];
+      for (const m of src.matchAll(FONTSIZE_RE)) {
+        const v = m[1];
+        if (/var\(\s*--fs-/.test(v)) continue;
+        if (RAW_FONT_LEN_RE.test(v)) out.push({ value: v.trim(), line: lineAt(src, m.index) });
+      }
+      return out;
+    }
     function findHexLiterals2(css) {
       const src = stripComments(css);
       const out = [];
@@ -228,6 +250,22 @@ var require_gate = __commonJS({
       for (const e of findCssExfil(css)) {
         findings.push({ rule: e.rule, level: "error", line: e.line, message: e.message });
       }
+      for (const m of findMargins(css)) {
+        findings.push({
+          rule: "no-margin",
+          level: "error",
+          line: m.line,
+          message: `margin "${m.value}" \u2014 space with \`gap\`/\`padding\` instead (HARD RULE #20: margin is invisible to the height math a measuring layout depends on).`
+        });
+      }
+      for (const f of findRawFontSize(css)) {
+        findings.push({
+          rule: "fs-token",
+          level: "error",
+          line: f.line,
+          message: `font-size "${f.value}" \u2014 use a \`--fs-*\` role token (HARD RULE #4: typography is the 12-token --fs-* system), e.g. var(--fs-body).`
+        });
+      }
       return { ok: findings.every((f) => f.level !== "error"), findings };
     }
     function gateComponent2({ name, css, manifest, skeleton } = {}, opts = {}) {
@@ -261,6 +299,8 @@ var require_gate = __commonJS({
       NAME_RE: NAME_RE2,
       findHexLiterals: findHexLiterals2,
       findCssExfil,
+      findMargins,
+      findRawFontSize,
       findUnscopedSelectors: findUnscopedSelectors2,
       validateManifest: validateManifest2,
       skeletonInvokes: skeletonInvokes2,
@@ -390,17 +430,16 @@ var require_starters = __commonJS({
           "  text-align: center; gap: var(--sp-md);",
           "}",
           "section.feature-band h2 {",
-          "  font-size: var(--fs-h1); color: var(--text-heading);",
-          "  max-width: 22ch; margin: 0;",
+          "  display: flex; flex-direction: column; align-items: center;",
+          "  gap: var(--sp-sm);",
+          "  font-size: var(--fs-h1); color: var(--text-heading); max-width: 22ch;",
           "}",
           "section.feature-band h2::after {",
-          '  content: ""; display: block;',
-          "  width: 3rem; height: 3px; margin: var(--sp-sm) auto 0;",
+          '  content: ""; width: 3rem; height: 3px;',
           "  background: var(--accent);",
           "}",
           "section.feature-band p {",
-          "  font-size: var(--fs-message); color: var(--text-body);",
-          "  max-width: 42ch; margin: 0;",
+          "  font-size: var(--fs-message); color: var(--text-body); max-width: 42ch;",
           "}"
         ].join("\n"),
         skeleton: [
@@ -419,14 +458,14 @@ var require_starters = __commonJS({
         form: "grid",
         substance: "structure",
         tags: ["inventory", "list", "two-column"],
-        description: "A flat list flowed into two balanced columns of bordered cards.",
+        description: "A flat list flowed into a two-column grid of bordered cards.",
         css: [
           "section.two-col-list ul {",
-          "  columns: 2; column-gap: var(--sp-lg);",
+          "  display: grid; grid-template-columns: 1fr 1fr;",
+          "  gap: var(--sp-sm) var(--sp-lg);",
           "  list-style: none; padding: 0; margin: 0;",
           "}",
           "section.two-col-list li {",
-          "  break-inside: avoid; margin: 0 0 var(--sp-sm);",
           "  background: var(--bg-alt); border: 1px solid var(--border);",
           "  border-radius: var(--radius-md);",
           "  padding: var(--sp-sm) var(--sp-md);",
@@ -551,11 +590,302 @@ var require_bridge = __commonJS({
   }
 });
 
+// lib/layout/ai.js
+var require_ai = __commonJS({
+  "lib/layout/ai.js"(exports, module) {
+    var { NAME_RE: NAME_RE2, FUNCTIONS: FUNCTIONS2, BUCKETS: BUCKETS2, FORMS: FORMS2, CSS_ONLY_SUBSTANCES: CSS_ONLY_SUBSTANCES2, findUnscopedSelectors: findUnscopedSelectors2 } = require_gate();
+    var ADAPT_MODES = ["native", "reflow", "single-orientation"];
+    var MAX_CSS_BYTES = 24 * 1024;
+    var COMPONENT_CANON2 = 'HOW A LATTICE COMPONENT IS BUILT (so your draft feels native, not generic CSS):\n\n\u2022 FORM VOCABULARY. A slide is a Frame divided into Cells; the content Cell hosts a Tile \u2014 your component. The Frame auto-supplies the chrome: the masthead band lifts the eyebrow + the `h2` title; the footer supplies running text, section progress, and the page number. NEVER re-implement chrome (no title bar, no page number, no progress rail). Your CSS targets ONLY the body, which lives under `section.<name> > .cell-stage` \u2014 a flex column.\n\n\u2022 ROOT. Always `section.<name> > .cell-stage { display:flex; flex-direction:column; }` plus `flex:1; min-height:0` on the list so rows distribute into the bounded stage (the stage clips + measures overflow \u2014 without `min-height:0` a dense deck overruns and clips).\n\n\u2022 CARDS ARE LIST ITEMS, never `<div>`s. Author markdown is `- Label` (one line) with an optional nested `  - body`. The list is `ul/ol > li` with `list-style:none; padding:0; margin:0`; the lead text AUTO-BOLDS via CSS \u2014 the author writes `- Signal custody`, NEVER `- **Signal custody.** body`. The body is a nested list that spans a full-width row below the header (`flex:0 0 100%`).\n\n\u2022 ZERO non-reset `margin`. A bare `margin:0` reset is the ONLY margin allowed; all real spacing is `gap` (between flex/grid children) or `padding` (inside a box), sized with `--sp-*`. Right-anchor a pill with `justify-content:space-between` or a `flex:1` spacer \u2014 NEVER `margin-left:auto` or `margin:auto`. (margin is invisible to the height math the stage depends on.)\n\n\u2022 COMPOSE ONLY FROM TOKENS \u2014 never invent a value. Color: `--bg`, `--bg-alt`, `--border`, `--text-heading`, `--text-body`, `--text-secondary`, `--text-muted`; accent `--accent`, `--accent-soft`, `--on-accent`, `--on-accent-soft`; state `--pass`, `--warn`, `--fail`; categorical `--cat-1-mark \u2026 --cat-12-mark`. ZERO hex. Type is the 12-token `--fs-*` ROLE system \u2014 pick by role, never a raw px/cqi/rem: `--fs-meta` (11pt chrome) \xB7 `--fs-body-compact` (13pt dense cells) \xB7 `--fs-body` (16pt default) \xB7 `--fs-message` (21pt statement) \xB7 `--fs-emphasis` (30pt lead); headings `--fs-h1 \u2026 --fs-h6` (`--fs-h2` 28pt = standard title); `--fs-hero` (86pt, the one monumental number). Spacing `--sp-3xs \u2026 --sp-2xl`; geometry in `cqi`/`cqh`; radius `--radius-sm/-md`; pills inherit the `--pill-*` family.\n\n\u2022 MULTI-COLUMN = real CSS grid OR the flex "matrix" idiom: `box-sizing:border-box; width:calc(50% - var(--sp-md)/2)` on the cards with `display:flex; flex-wrap:wrap; gap:var(--sp-md)` on the list. NEVER a flex-`basis` calc (proven unreliable).\n\n\u2022 BOX-LOCAL REFLOW for portrait/tall frames: `@container lattice (aspect-ratio <= 1.05) { \u2026 width:100% \u2026 }` to drop to a single column. Use the DOUBLED-CLASS specificity trick \u2014 `section.<name>.<name> > .cell-stage > ul > li` \u2014 so the reflow rule outranks the base grid rule. This is the single most error-prone idiom; copy it exactly.\n\n\u2022 THE SLOT VOCABULARY (auto-detected from markdown \u2014 author the CONTENT slots; NEVER re-draw a CHROME slot). CHROME (the Frame supplies these \u2014 do not style them): the masthead lifts the EYEBROW (`p > code:only-child` ABOVE the `h2`) + the TITLE (`h2`); the SUBTITLE is inline `code` just BELOW the heading; the FOOTER band carries running text, the PAGINATION (page number) and the PROGRESS mark; the LOGO is the author brand mark, top-right, from front-matter. CONTENT slots you DO author: the METADATA PILL (a trailing inline `code` on a card line \u2192 a chip), the KEY-INSIGHT (a trailing `blockquote`), the BELOW-NOTE (an em-dash `<p>`). RAIL IS NOT ONE SLOT \u2014 three things share the word, do not confuse them: (a) the PROGRESS rail = the footer\'s section-progress mark, auto-chrome you must NOT draw; (b) a SPLIT/SOVEREIGN rail = a dark side column only a `form: split` component owns; (c) an agenda-style `.rail` = a per-component variant class. A side rail is a split-form or a variant concern \u2014 never a universal slot you hand-author.\n\n\u2022 TAXONOMY \u2014 classify the component correctly (drives the manifest + dedup). The buckets and what each is FOR: anchor (title/section/closing covers) \xB7 statement (one big idea / KPI / quote) \xB7 INVENTORY (lists, cards, rosters, ledgers, glossaries \u2014 your home bucket) \xB7 comparison (two-or-more options side by side) \xB7 progression (steps/stages/phases over time) \xB7 evidence (proof: tables, stats, citations) \xB7 imagery (photo-led) \xB7 chart \xB7 diagram \xB7 math \xB7 code \xB7 legal. Pick the `function`/`form`/`substance` that matches; for a transform-free CSS component stay in inventory/comparison/evidence/legal (+ code/math prose).\n\n\u2022 RESTRAINT (the 10/10 rubric, checkable not vibes): one accent, reserved for the verdict \u2014 not decoration; SIX distinct hierarchy levels (if two adjacent levels look the same it is broken); cards never touch the stage edges (always `padding`); \u2264 ~6 cards, \u2264 ~40 words, \u2264 6 bullets; state carried by SHAPE + a state token, not color alone; categorical hues capped ~6\u20138 (Wong 2011); contrast checked against `--bg-alt`, not just `--bg`.\n\n\u2022 THE OTHER INVARIANTS (with the why): SCOPING (#7) \u2014 every selector starts `section.<name>` so styles can never leak onto another slide; the gate rejects a bare `ul`/`h2`. US ENGLISH (#21) \u2014 every word a human reads (class names, comments, copy) uses the US spelling (`color`, `gray`, `behavior`, `center`), never the British form. card-nesting (#5) \u2014 `- Title` / `  - body`, never inline `- **Title.** body` (the title is a structural slot the CSS bolds, not editorial `**`).\n\n\u2022 MANIFEST IS THE CONTRACT. Always declare `adapt` (how the component reflows \u2014 `{"mode":"native"}` when it relies on the universal cqi scaling + the `@container lattice` reflow above; `{"mode":"reflow"}` once it ships per-family layouts) and `capacity` (its legible ceiling \u2014 `{"sweet":4,"soft":6,"hard":8}`: the comfortable, the stretched, and the hard cap on cards/rows before it should escalate to a denser sibling). A component that never declares how it adapts will overflow a portrait frame \u2014 declare it.\n\n\u2022 DECLINE when out of scope. You author ONLY transform-free components \u2014 pure CSS over a native `ul>li`/prose DOM. If the request needs a chart, a Mermaid/flow diagram, generated code, a math render, or a non-`ul>li` structure (timeline, roadmap, journey), you CANNOT author it as CSS alone \u2014 return a decline (see the output contract) routing to a first-party build, NOT a broken fake.\n';
+    var EXAMPLE_CARDS = 'WORKED EXAMPLE A \u2014 a 2-up card grid ("a grid of capability cards, each a title and a one-line note").\nmanifest: {"name":"capability-cards","function":"inventory","form":"grid","substance":"structure","bucket":"inventory","tags":["cards","grid","capabilities"],"description":"A 2-up grid of capability cards \u2014 a title over a one-line note.","adapt":{"mode":"native"},"capacity":{"sweet":4,"soft":6,"hard":8}}\ncss:\nsection.capability-cards > .cell-stage { display:flex; flex-direction:column; }\nsection.capability-cards > .cell-stage > ul {\n  display:flex; flex-wrap:wrap; gap:var(--sp-md); flex:1; min-height:0;\n  list-style:none; padding:0; margin:0;\n}\nsection.capability-cards > .cell-stage > ul > li {\n  box-sizing:border-box; width:calc(50% - var(--sp-md) / 2);\n  background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius-md);\n  padding:var(--sp-sm) var(--sp-md);\n  font-size:var(--fs-body); font-weight:700; color:var(--text-heading); line-height:var(--lh-snug);\n}\nsection.capability-cards > .cell-stage > ul > li > ul {\n  list-style:none; padding:var(--sp-xs) 0 0 0; margin:0;\n  font-weight:400; color:var(--text-body); font-size:var(--fs-body-compact);\n}\n@container lattice (aspect-ratio <= 1.05) {\n  section.capability-cards.capability-cards > .cell-stage > ul > li { width:100%; }\n}\nskeleton:\n<!-- _class: capability-cards -->\n\n## What the platform does\n\n- Ingests any source\n  - CSV, API, or stream \u2014 no schema up front.\n- Scores in real time\n  - Sub-second decisions on every record.\n';
+    var EXAMPLE_LEDGER = 'WORKED EXAMPLE B \u2014 a responsibility ledger ("who owns what \u2014 a responsibility on the left, an owner chip on the right, a one-line note below").\nmanifest: {"name":"owner-ledger","function":"inventory","form":"ledger","substance":"structure","bucket":"inventory","tags":["ownership","roster","ledger"],"description":"A roster of responsibilities, each with an owner chip and a one-line note.","adapt":{"mode":"native"},"capacity":{"sweet":4,"soft":6,"hard":8}}\ncss:\nsection.owner-ledger > .cell-stage { display:flex; flex-direction:column; }\nsection.owner-ledger > .cell-stage > ul {\n  display:flex; flex-direction:column; gap:var(--sp-xs); flex:1; min-height:0;\n  list-style:none; padding:0; margin:0;\n}\nsection.owner-ledger > .cell-stage > ul > li {\n  display:flex; flex-wrap:wrap; align-items:center; column-gap:var(--sp-md); row-gap:var(--sp-xs);\n  flex:1; min-height:0;\n  background:var(--bg-alt); border:1px solid var(--border); border-left:3px solid var(--accent);\n  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-lg);\n}\n/* the lead text auto-lifts to <strong> because each card carries a nested body list */\nsection.owner-ledger > .cell-stage > ul > li > strong {\n  flex:1 1 auto; font-size:var(--fs-body); font-weight:700; color:var(--text-heading);\n}\nsection.owner-ledger > .cell-stage > ul > li > code {\n  flex:0 0 auto; font-size:var(--fs-meta); color:var(--text-body);\n}\nsection.owner-ledger > .cell-stage > ul > li > ul {\n  flex:0 0 100%; list-style:none; padding:0; margin:0;\n  font-size:var(--fs-body-compact); color:var(--text-body);\n}\nskeleton:\n<!-- _class: owner-ledger -->\n\n## Who owns what\n\n- Signal custody `Data lead`\n  - Owns intake quality and source diversity.\n- Scoring policy `Risk lead`\n  - Owns calibration cadence and version floors.\n';
+    var EXAMPLE_REUSE = 'WORKED EXAMPLE C \u2014 REUSE a near neighbor. When dedup surfaces a similar component (e.g. "capability-cards"), adapt ITS pattern rather than invent a new structure. Request: "status cards \u2014 each capability with a pass/warn/fail status". This reuses the SAME card-as-li matrix grid and adds ONLY a status accent (state carried by a left border + a state token, not a new layout).\nmanifest: {"name":"status-cards","function":"inventory","form":"grid","substance":"structure","bucket":"inventory","tags":["cards","status","grid"],"description":"A 2-up grid of capability cards, each carrying a pass/warn/fail status accent.","adapt":{"mode":"native"},"capacity":{"sweet":4,"soft":6,"hard":8}}\ncss:\nsection.status-cards > .cell-stage { display:flex; flex-direction:column; }\nsection.status-cards > .cell-stage > ul {\n  display:flex; flex-wrap:wrap; gap:var(--sp-md); flex:1; min-height:0;\n  list-style:none; padding:0; margin:0;\n}\nsection.status-cards > .cell-stage > ul > li {\n  box-sizing:border-box; width:calc(50% - var(--sp-md) / 2);\n  background:var(--bg-alt); border:1px solid var(--border); border-left:3px solid var(--text-muted);\n  border-radius:var(--radius-md); padding:var(--sp-sm) var(--sp-md);\n  font-size:var(--fs-body); font-weight:700; color:var(--text-heading);\n}\n/* status = SHAPE (the left border) + a state token, never color alone */\nsection.status-cards > .cell-stage > ul > li.pass { border-left-color:var(--pass); }\nsection.status-cards > .cell-stage > ul > li.warn { border-left-color:var(--warn); }\nsection.status-cards > .cell-stage > ul > li.fail { border-left-color:var(--fail); }\n@container lattice (aspect-ratio <= 1.05) {\n  section.status-cards.status-cards > .cell-stage > ul > li { width:100%; }\n}\nskeleton:\n<!-- _class: status-cards -->\n\n## Capability status\n\n- Ingest pipeline\n- Scoring engine\n- Audit trail\n';
+    var ASK_SYSTEM2 = "You are a component designer for the Lattice slide engine. Given a request, you propose ONE local component as a compact JSON object \u2014 a manifest + scoped CSS + a skeleton slide \u2014 that feels native to Lattice's boardroom-quality set.\n\n" + COMPONENT_CANON2 + "\n" + EXAMPLE_CARDS + "\n" + EXAMPLE_LEDGER + "\n" + EXAMPLE_REUSE + `
+
+OUTPUT CONTRACT. Return ONLY a compact JSON object \u2014 no prose, no markdown fences \u2014 with EXACTLY these keys:
+  "name": a short lowercase slug (a\u2013z, 0\u20139, hyphens; starts with a letter), evocative of the component \u2014 e.g. "verdict-grid".
+  "description": ONE sentence describing what it shows and when to use it.
+  "function": one of ${FUNCTIONS2.map((f) => `"${f}"`).join(", ")}.
+  "form": one of ${FORMS2.map((f) => `"${f}"`).join(", ")}.
+  "substance": one of ${CSS_ONLY_SUBSTANCES2.map((s) => `"${s}"`).join(", ")} (transform-free only).
+  "bucket": one of ${BUCKETS2.map((b) => `"${b}"`).join(", ")}.
+  "tags": 3 to 5 lowercase-slug tags.
+  "adapt": {"mode":"native"} (or {"mode":"reflow"} only if you ship per-family @container layouts).
+  "capacity": {"sweet":N,"soft":N,"hard":N} \u2014 the legible card/row counts (comfortable, stretched, hard cap), e.g. {"sweet":4,"soft":6,"hard":8}.
+  "css": the scoped stylesheet \u2014 every selector under \`section.<name>\`, palette-blind (var(--\u2026) tokens only, no hex), \`--fs-*\` type only, NO non-reset margin, the \`> .cell-stage\` root, cards as \`<li>\`.
+  "skeleton": a markdown slide that invokes \`<!-- _class: <name> -->\` and exercises the component (cards as \`- Title\` / \`  - body\`).
+If the request is OUT OF SCOPE (a chart, a diagram, generated code, a math render, or a non-\`ul>li\` structure), instead return \`{"decline": true, "reason": "<one sentence>", "route": "<chart|diagram|code|math|dsl>", "suggestion": "<an existing component or a first-party build>"}\`.`;
+    function askComponentMessages2(prompt, { similar = [] } = {}) {
+      const msgs = [{ role: "system", content: ASK_SYSTEM2 }];
+      if (similar.length) {
+        msgs.push({
+          role: "assistant",
+          content: "Near-neighbor components already in the set (reuse a pattern where it fits):\n" + similar.map((s) => `\u2022 ${s.name} (${s.bucket}) \u2014 ${s.description || ""}`).join("\n")
+        });
+      }
+      msgs.push({ role: "user", content: String(prompt || "").trim() || "a clean inventory component" });
+      return msgs;
+    }
+    function safeParse(s) {
+      try {
+        return JSON.parse(s);
+      } catch {
+        const m = String(s).match(/\{[\s\S]*\}/);
+        if (m) {
+          try {
+            return JSON.parse(m[0]);
+          } catch {
+          }
+        }
+        return null;
+      }
+    }
+    function slugifyName(text) {
+      const s = String(text || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").replace(/^[^a-z]+/, "");
+      return s.slice(0, 40).replace(/-+$/, "");
+    }
+    function snapEnum(value, allowed, fallback) {
+      const v = String(value || "").toLowerCase().trim();
+      return allowed.includes(v) ? v : fallback;
+    }
+    var clean = (t) => (typeof t === "string" ? t : "").replace(/\s+/g, " ").trim();
+    var asStr = (...cands) => {
+      for (const c of cands) if (typeof c === "string") return c;
+      return "";
+    };
+    function fixCardNesting(skeleton) {
+      const lines = String(skeleton || "").split("\n");
+      let fixed = false;
+      const out = [];
+      for (const line of lines) {
+        const m = line.match(/^(\s*)([-*+])\s+\*\*(.+?)\.?\*\*\.?\s+(.+)$/);
+        if (m) {
+          const [, indent, bullet, title, body] = m;
+          out.push(`${indent}${bullet} ${title.trim()}`);
+          out.push(`${indent}  - ${body.trim()}`);
+          fixed = true;
+        } else {
+          out.push(line);
+        }
+      }
+      return { skeleton: out.join("\n"), fixed };
+    }
+    function coerceAdapt(raw) {
+      const o = raw && typeof raw === "object" ? raw : {};
+      const adapt = { mode: snapEnum(o.mode, ADAPT_MODES, "native") };
+      if (Array.isArray(o.priority)) adapt.priority = o.priority.map(slugifyName).filter(Boolean);
+      return adapt;
+    }
+    function coerceCapacity(raw) {
+      const o = raw && typeof raw === "object" ? raw : {};
+      const num = (v) => typeof v === "number" && Number.isFinite(v) ? v : null;
+      const sweet = num(o.sweet), soft = num(o.soft), hard = num(o.hard);
+      if (sweet == null && soft == null && hard == null) return null;
+      const cap = {};
+      if (sweet != null) cap.sweet = sweet;
+      if (soft != null) cap.soft = soft;
+      if (hard != null) cap.hard = hard;
+      return cap;
+    }
+    function addScopePrefix2(css, name) {
+      if (!NAME_RE2.test(name || "") || !findUnscopedSelectors2(css, name).length) return { css, fixed: false };
+      const scope = `section.${name}`;
+      const scopedRe = new RegExp(`\\.${name.replace(/[-]/g, "\\$&")}(?![\\w-])`);
+      let ok = true;
+      const nextOpen = (s, from) => {
+        let str = null, com = false;
+        for (let i = from; i < s.length; i++) {
+          const c = s[i], n = s[i + 1];
+          if (com) {
+            if (c === "*" && n === "/") {
+              com = false;
+              i++;
+            }
+            continue;
+          }
+          if (str) {
+            if (c === "\\") {
+              i++;
+            } else if (c === str) str = null;
+            continue;
+          }
+          if (c === "/" && n === "*") {
+            com = true;
+            i++;
+            continue;
+          }
+          if (c === '"' || c === "'") {
+            str = c;
+            continue;
+          }
+          if (c === "{") return i;
+        }
+        return -1;
+      };
+      const matchClose = (s, open) => {
+        let depth = 0, str = null, com = false;
+        for (let i = open; i < s.length; i++) {
+          const c = s[i], n = s[i + 1];
+          if (com) {
+            if (c === "*" && n === "/") {
+              com = false;
+              i++;
+            }
+            continue;
+          }
+          if (str) {
+            if (c === "\\") {
+              i++;
+            } else if (c === str) str = null;
+            continue;
+          }
+          if (c === "/" && n === "*") {
+            com = true;
+            i++;
+            continue;
+          }
+          if (c === '"' || c === "'") {
+            str = c;
+            continue;
+          }
+          if (c === "{") depth++;
+          else if (c === "}" && --depth === 0) return i + 1;
+        }
+        return -1;
+      };
+      const rewrite = (str) => {
+        let res = "", pos = 0;
+        while (pos < str.length) {
+          const open = nextOpen(str, pos);
+          if (open < 0) {
+            res += str.slice(pos);
+            break;
+          }
+          const close = matchClose(str, open);
+          if (close < 0) {
+            ok = false;
+            return str;
+          }
+          const lead = str.slice(pos, open).match(/^\s*/)[0];
+          const prelude = str.slice(pos, open).trim();
+          const inner = str.slice(open + 1, close - 1);
+          if (prelude.startsWith("@")) {
+            const at = prelude.slice(1).split(/[\s({]/)[0].toLowerCase();
+            res += lead + prelude + " {" + (/keyframes|font-face/.test(at) ? inner : rewrite(inner)) + "}";
+          } else if (/["']/.test(prelude)) {
+            ok = false;
+            return str;
+          } else {
+            const parts = prelude.split(",").map((p) => p.trim()).filter(Boolean);
+            res += lead + parts.map((p) => scopedRe.test(p) ? p : `${scope} ${p}`).join(", ") + " {" + inner + "}";
+          }
+          pos = close;
+        }
+        return res;
+      };
+      const next = rewrite(css);
+      if (!ok || findUnscopedSelectors2(next, name).length) return { css, fixed: false };
+      return { css: next, fixed: true };
+    }
+    function auditComponentDesign2(manifest, css) {
+      const out = [];
+      const m = manifest && typeof manifest === "object" ? manifest : {};
+      if (!m.adapt || !ADAPT_MODES.includes(m.adapt.mode)) {
+        out.push({ level: "warn", rule: "adapt", message: 'No adapt mode declared \u2014 the component may not reflow on a portrait/tall frame. Add adapt:{mode:"native"}.' });
+      }
+      const cap = m.capacity;
+      if (!cap || cap.sweet == null && cap.soft == null && cap.hard == null) {
+        out.push({ level: "warn", rule: "capacity", message: "No capacity declared \u2014 state its legible ceiling, e.g. capacity:{sweet:4,soft:6,hard:8}." });
+      } else {
+        const rungs = [cap.sweet, cap.soft, cap.hard].filter((v) => v != null);
+        const climbs = rungs.every((v, i) => i === 0 || rungs[i - 1] <= v);
+        if (!climbs) out.push({ level: "warn", rule: "capacity", message: "capacity must climb sweet \u2264 soft \u2264 hard (comfortable \u2192 stretched \u2192 hard cap)." });
+      }
+      if (typeof css === "string" && css.length > MAX_CSS_BYTES) {
+        out.push({ level: "error", rule: "css-size", message: `Generated CSS is ${Math.round(css.length / 1024)}KB (cap ${MAX_CSS_BYTES / 1024}KB) \u2014 likely an embedded data: payload; trim it.` });
+      }
+      return out;
+    }
+    function coerceComponent2(raw) {
+      const obj = (typeof raw === "string" ? safeParse(raw) : raw) || {};
+      if (obj.decline === true || obj.decline === "true") {
+        return {
+          ok: false,
+          decline: {
+            reason: clean(obj.reason) || "This component needs behavior a transform-free CSS component can\u2019t provide.",
+            route: snapEnum(obj.route, ["chart", "diagram", "code", "math", "dsl"], "dsl"),
+            suggestion: clean(obj.suggestion)
+          },
+          manifest: null,
+          css: "",
+          skeleton: "",
+          fixes: []
+        };
+      }
+      const name = slugifyName(obj.name ?? obj.slug ?? obj.title);
+      const func = snapEnum(obj.function ?? obj.fn, FUNCTIONS2, "inventory");
+      const manifest = {
+        name,
+        function: func,
+        form: snapEnum(obj.form, FORMS2, "panel"),
+        substance: snapEnum(obj.substance, CSS_ONLY_SUBSTANCES2, "structure"),
+        bucket: snapEnum(obj.bucket, BUCKETS2, func),
+        tags: Array.isArray(obj.tags) ? obj.tags.map(slugifyName).filter(Boolean).slice(0, 5) : [],
+        description: clean(obj.description ?? obj.desc),
+        adapt: coerceAdapt(obj.adapt),
+        capacity: coerceCapacity(obj.capacity)
+      };
+      const fixes = [];
+      const { skeleton, fixed: nestFixed } = fixCardNesting(asStr(obj.skeleton, obj.markdown, obj.sample).trim());
+      if (nestFixed) fixes.push("card-nesting");
+      const { css, fixed: scopeFixed } = addScopePrefix2(asStr(obj.css, obj.styles).trim(), name);
+      if (scopeFixed) fixes.push("scope-prefix");
+      return {
+        ok: NAME_RE2.test(name) && !!css && !!skeleton,
+        decline: null,
+        manifest,
+        css,
+        skeleton,
+        fixes
+      };
+    }
+    function tokenize(text) {
+      return [...new Set(String(text || "").toLowerCase().match(/[a-z][a-z0-9]{2,}/g) || [])];
+    }
+    function rankSimilar2(prompt, catalog, { limit = 3 } = {}) {
+      const q = new Set(tokenize(prompt));
+      if (!q.size || !Array.isArray(catalog)) return [];
+      const scored = catalog.map((c) => {
+        const tags = Array.isArray(c.tags) ? c.tags : [];
+        const hay = tokenize(`${asStr(c.name)} ${asStr(c.description)} ${asStr(c.purpose)} ${tags.join(" ")}`);
+        let overlap = 0;
+        for (const t of hay) if (q.has(t)) overlap++;
+        const tagHit = tags.some((t) => q.has(String(t).toLowerCase())) ? 1 : 0;
+        return { name: c.name, bucket: c.bucket, description: c.description || "", score: overlap + tagHit };
+      });
+      return scored.filter((s) => s.score > 0).sort((a, b) => b.score - a.score || String(a.name).localeCompare(b.name)).slice(0, limit);
+    }
+    module.exports = {
+      ASK_SYSTEM: ASK_SYSTEM2,
+      COMPONENT_CANON: COMPONENT_CANON2,
+      askComponentMessages: askComponentMessages2,
+      coerceComponent: coerceComponent2,
+      rankSimilar: rankSimilar2,
+      auditComponentDesign: auditComponentDesign2,
+      addScopePrefix: addScopePrefix2,
+      slugifyName,
+      fixCardNesting,
+      MAX_CSS_BYTES
+    };
+  }
+});
+
 // lib/layout/layout-core.entry.js
 var import_gate = __toESM(require_gate());
 var import_scaffold = __toESM(require_scaffold());
 var import_starters = __toESM(require_starters());
 var import_bridge = __toESM(require_bridge());
+var import_ai = __toESM(require_ai());
 var {
   FUNCTIONS,
   BUCKETS,
@@ -587,8 +917,19 @@ var {
   stripEmbeddedComponents,
   collidesWithShipped
 } = import_bridge.default;
+var {
+  ASK_SYSTEM,
+  COMPONENT_CANON,
+  askComponentMessages,
+  coerceComponent,
+  rankSimilar,
+  auditComponentDesign,
+  addScopePrefix
+} = import_ai.default;
 export {
+  ASK_SYSTEM,
   BUCKETS,
+  COMPONENT_CANON,
   CSS_ONLY_SUBSTANCES,
   FORMS,
   FUNCTIONS,
@@ -596,6 +937,10 @@ export {
   NAME_RE,
   STARTERS,
   SUBSTANCES,
+  addScopePrefix,
+  askComponentMessages,
+  auditComponentDesign,
+  coerceComponent,
   collidesWithShipped,
   componentAsset,
   embedComponentsInMarkdown,
@@ -606,6 +951,7 @@ export {
   getStarter,
   manifestJson,
   manifestObject,
+  rankSimilar,
   referencedComponents,
   scaffoldDir,
   scaffoldFiles,

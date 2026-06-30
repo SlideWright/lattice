@@ -36,8 +36,13 @@ const RESTORE_GUARD = 'lattice-db-restored'; // one auto-reconnect attempt per t
 // buildChatMessages — the controls are useless until the chat actually consumes them.
 const OR_CACHE_KEY = 'lattice-db-or-cache'; // prompt-caching opt-out (default on)
 const OR_INSTR_KEY = 'lattice-db-architect-instructions'; // standing instructions
+const DEDUP_KEY = 'lattice-db-dedup'; // component-gen dedup suggestions (default on)
 const INSTR_MAX = 500; // word cap on standing instructions
 export const readCachingEnabled = () => { try { return localStorage.getItem(OR_CACHE_KEY) !== 'off'; } catch { return true; } };
+// When on (default), AI component generation suggests near-duplicate components
+// before generating, so the author reuses rather than bloats the catalog (§5/§8).
+export const readDedupEnabled = () => { try { return localStorage.getItem(DEDUP_KEY) !== 'off'; } catch { return true; } };
+export const writeDedupEnabled = (on) => { try { localStorage.setItem(DEDUP_KEY, on ? 'on' : 'off'); } catch { /* unavailable */ } };
 export const readStandingInstructions = () => { try { return localStorage.getItem(OR_INSTR_KEY) || ''; } catch { return ''; } };
 
 // Per-Lattice spend tally — accumulated locally from each reply's authoritative

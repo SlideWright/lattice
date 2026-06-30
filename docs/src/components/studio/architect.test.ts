@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { applyDeckEdit, architectSpend, estimateUsd, generateTheme, normalizeGeneration, refineSelection, requestFindingFix, runArchitect, setBudget } from './architect';
+import { applyDeckEdit, architectSpend, estimateUsd, generateComponent, generateTheme, normalizeGeneration, refineSelection, requestFindingFix, runArchitect, setBudget } from './architect';
 import { suggestFor } from './Editor';
 
 afterEach(() => {
@@ -105,6 +105,19 @@ describe('generateTheme — honest "describe a look"', () => {
 		// Same honesty contract as the deck bridges: no model → no theme, just a
 		// signal the UI can act on (point at Workspace), not a faked palette.
 		const out = await generateTheme({}, 'warm editorial, deep navy accent');
+		expect(out.status).toBe('offline');
+	});
+});
+
+describe('generateComponent — honest "describe a component"', () => {
+	it('returns `nochange` for an empty prompt without touching the model', async () => {
+		expect((await generateComponent('')).status).toBe('nochange');
+		expect((await generateComponent('   ')).status).toBe('nochange');
+	});
+	it('returns `offline` with no model connected — never a fabricated component', async () => {
+		// Same honesty contract as generateTheme: no model → no component, just a
+		// signal the UI can act on (point at Workspace), not a faked draft.
+		const out = await generateComponent('a grid of capability cards', []);
 		expect(out.status).toBe('offline');
 	});
 });

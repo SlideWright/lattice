@@ -1,12 +1,15 @@
-import * as React from 'react';
-import { applyEdit, diffLines, EDIT_PROTOCOL, numberSlides, parseEdits } from '@/playground/architect-edits.js';
-import { requestSlideFix } from '@/playground/architect-fix.js';
-import { buildRefinePrompt, cleanRewrite, REFINE_ACTIONS } from '@/playground/drawing-board-refine.js';
-import { budgetStatus, readBudgetCap, readBudgetFloor, readBudgetMode, readSpend, recordSpend } from '@/playground/drawing-board-settings.js';
 // Theme Studio kernel (lib/theme/*, bundled): the model PROPOSES an essential set
 // + a ramp strategy via askMessages; deriveTheme fans it into the full ~80-token
 // contract (AA-repaired both modes); auditBoth confirms. The model never authors
 // the derived tokens — so the delivered palette is always AA-clean.
+import Fuse from 'fuse.js';
+import * as React from 'react';
+import { applyEdit, diffLines, EDIT_PROTOCOL, numberSlides, parseEdits } from '@/playground/architect-edits.js';
+import { requestSlideFix } from '@/playground/architect-fix.js';
+import { cosineRank } from '@/playground/architect-retrieval.js';
+import { buildRefinePrompt, cleanRewrite, REFINE_ACTIONS } from '@/playground/drawing-board-refine.js';
+import { budgetStatus, readBudgetCap, readBudgetFloor, readBudgetMode, readDedupEnabled, readSpend, recordSpend } from '@/playground/drawing-board-settings.js';
+import { askComponentMessages, auditComponentDesign, coerceComponent, gateComponent, rankSimilar } from '@/playground/layout-core.generated.js';
 import { askMessages, auditBoth, coerceEssentials, deriveTheme, STARTERS } from '@/playground/theme-core.generated.js';
 
 // Re-export the canonical refine action list (Polish / Formalize / Elaborate /
@@ -75,6 +78,8 @@ export type TierProgress = { progress: number; text?: string; status?: string };
 
 type ArchitectModel = {
 	complete: (o: { messages: { role: string; content: string }[]; json?: boolean; fallback?: string; onUsage?: (u: Usage) => void; maxTokens?: number }) => Promise<string>;
+	// bge-small sentence embeddings (CDN, on-device) — null on Safari/mobile/no-CDN/model-off.
+	embed?: (texts: string | string[]) => Promise<number[][] | null>;
 	availability: () => ModelAvailability;
 	refreshAvailability?: () => Promise<unknown>;
 	beginOpenRouterAuth: (cb: string) => Promise<string | null>;
@@ -220,6 +225,8 @@ export type ThemeGenOutcome =
 			tokens: Record<string, string>;
 			audit: ThemeAudit;
 			applied: string[];
+			name: string; // model-suggested slug (editable; '' when none)
+			description: string; // model-suggested caption (editable; '' when none)
 	  }
 	| { status: 'offline' }
 	| { status: 'blocked'; note: string }
@@ -258,13 +265,149 @@ export async function generateTheme(current: ThemeEssentials, prompt: string): P
 	} catch {
 		return { status: 'offline' };
 	}
-	const { essentials, rampStrategy, applied, ok } = coerceEssentials(reply, fallback);
+	const { essentials, rampStrategy, name, description, applied, ok } = coerceEssentials(reply, fallback);
 	// A connected model that proposed nothing usable (e.g. the json:true floor
 	// echoing the fallback) → no-op, never a fabricated change.
 	if (!ok && applied.length === 0) return { status: 'nochange', note: 'The model returned no usable palette.' };
 	const tokens = deriveTheme(essentials, { rampStrategy }) as Record<string, string>;
 	const audit = auditBoth(tokens) as ThemeAudit;
-	return { status: 'ok', essentials, rampStrategy, tokens, audit, applied };
+	return { status: 'ok', essentials, rampStrategy, tokens, audit, applied, name, description };
+}
+
+// ── Component Studio: "Describe a component" ───────────────────────────────
+// The component analog of generateTheme, mirroring the same model-proposes /
+// deterministic-code-disposes shape (engineering/decisions/2026-06-29-ai-
+// component-generation.md): dedup-first → model proposes {manifest, css,
+// skeleton} grounded in the knowledge file → coerce + safe-fix → the gate
+// disposes. The gate is the SAME one the Component tab runs live, so a draft the
+// bridge returns and the editor re-checks always agree.
+export type ComponentSimilar = { name: string; bucket: string; description: string; score: number };
+export type ComponentFinding = { level: string; rule: string; line?: number; message: string };
+export type ComponentDraft = {
+	name: string;
+	description: string;
+	function: string;
+	form: string;
+	substance: string;
+	bucket: string;
+	tags: string[];
+	adapt: { mode: string };
+	capacity: { sweet?: number; soft?: number; hard?: number } | null;
+	css: string;
+	skeleton: string;
+};
+export type ComponentGenOutcome =
+	| { status: 'ok'; draft: ComponentDraft; findings: ComponentFinding[]; fixes: string[]; similar: ComponentSimilar[] }
+	| { status: 'declined'; reason: string; route: string; suggestion: string; similar: ComponentSimilar[] }
+	| { status: 'offline' }
+	| { status: 'blocked'; note: string }
+	| { status: 'nochange'; note: string };
+
+type DedupCatalog = { name: string; bucket?: string; description?: string; purpose?: string; tags?: string[] }[];
+// One docstring per component for the dedup signal — the TOP-LEVEL fields only
+// (`name` recurs on slots; using it would skew the vector). §5.
+const corpusText = (c: DedupCatalog[number]) => `${c.name} — ${c.description || ''} ${c.purpose || ''} ${(Array.isArray(c.tags) ? c.tags : []).join(' ')}`.trim();
+
+/**
+ * Dedup ranking (§5), best signal first: (1) bge-small EMBEDDINGS — embed the
+ * request + each component's docstring and cosine-rank (the real semantic signal);
+ * (2) the SHIPPED fuse.js lexical path when the embedder is unavailable
+ * (Safari/mobile/no-CDN/model-off); (3) the pure `rankSimilar` token-overlap as a
+ * final floor. Returns the top `limit` near neighbors. Never throws.
+ */
+async function dedupComponents(prompt: string, catalog: DedupCatalog, model: ArchitectModel, limit = 3): Promise<ComponentSimilar[]> {
+	if (!prompt.trim() || !catalog.length) return [];
+	const toSimilar = (c: DedupCatalog[number], score: number): ComponentSimilar => ({ name: c.name, bucket: c.bucket || '', description: c.description || '', score });
+	// 1. Embeddings — the primary signal.
+	try {
+		if (model.embed) {
+			const vecs = await model.embed([prompt, ...catalog.map(corpusText)]);
+			if (vecs && vecs.length === catalog.length + 1) {
+				const ranked = cosineRank(vecs[0], vecs.slice(1), { limit }) as { index: number; score: number }[];
+				const hits = ranked.filter((r) => r.score > 0.35).map((r) => toSimilar(catalog[r.index], r.score));
+				if (hits.length) return hits;
+			}
+		}
+	} catch {
+		/* embedder unavailable — fall through to lexical */
+	}
+	// 2. The shipped fuse.js lexical path.
+	try {
+		const fuse = new Fuse(catalog, { keys: ['name', 'description', 'tags'], threshold: 0.4, ignoreLocation: true });
+		const hits = fuse.search(prompt, { limit }).map((r) => toSimilar(r.item, 1 - (r.score ?? 0)));
+		if (hits.length) return hits;
+	} catch {
+		/* fall through to the pure floor */
+	}
+	// 3. Pure token-overlap floor (also the unit-tested path).
+	return rankSimilar(prompt, catalog, { limit }) as ComponentSimilar[];
+}
+
+/**
+ * Generate a local component from a "describe a component" prompt. The model
+ * PROPOSES a manifest + scoped CSS + skeleton grounded in the knowledge file; the
+ * deterministic gate disposes. `catalog` (the shipped + local component set) feeds
+ * the dedup pass — near neighbors are surfaced so the user reuses rather than
+ * duplicates, and threaded to the model as reuse hints. Honest like the deck
+ * bridges: `offline` with no model, `blocked` at the budget cap, `declined` when
+ * the request needs a transform (chart/diagram/code/non-`ul>li`) the CSS-only path
+ * can't author, `nochange` for an empty prompt or an unusable reply. A returned
+ * `ok` draft may still carry gate `findings` — they are SHOWN, never papered over.
+ */
+export async function generateComponent(
+	prompt: string,
+	catalog: { name: string; bucket?: string; description?: string; purpose?: string; tags?: string[] }[] = [],
+): Promise<ComponentGenOutcome> {
+	if (!prompt.trim()) return { status: 'nochange', note: 'Describe a component to generate one.' };
+	const model = await architectModel();
+	if (!model) return { status: 'offline' };
+	const generation = model.availability().generation;
+	if (generation === 'floor') return { status: 'offline' };
+	if (generation === 'openrouter') {
+		const blk = cloudBudgetBlock(model, prompt);
+		if (blk) return { status: 'blocked', note: blk };
+	}
+	// Dedup-first (§5/§8): unless the author turned it off, rank the request against
+	// the catalog (embeddings → fuse → lexical), surface near neighbors, and hand
+	// them to the model as reuse hints.
+	const similar = readDedupEnabled() ? await dedupComponents(prompt, catalog, model) : [];
+	let reply = '';
+	try {
+		reply = await model.complete({
+			messages: askComponentMessages(prompt, { similar }),
+			json: true,
+			fallback: '',
+			onUsage: (u) => recordSpend(u?.cost ?? 0, u?.total_tokens ?? (u?.prompt_tokens || 0) + (u?.completion_tokens || 0)),
+		});
+	} catch {
+		return { status: 'offline' };
+	}
+	const coerced = coerceComponent(reply) as {
+		ok: boolean;
+		decline: { reason: string; route: string; suggestion: string } | null;
+		manifest: Omit<ComponentDraft, 'css' | 'skeleton'> | null;
+		css: string;
+		skeleton: string;
+		fixes: string[];
+	};
+	if (coerced.decline) {
+		return { status: 'declined', reason: coerced.decline.reason, route: coerced.decline.route, suggestion: coerced.decline.suggestion, similar };
+	}
+	if (!coerced.ok || !coerced.manifest) {
+		return { status: 'nochange', note: 'The model returned no usable component.' };
+	}
+	const m = coerced.manifest;
+	const gate = gateComponent({ css: coerced.css, manifest: { ...m, skeleton: coerced.skeleton } }) as { ok: boolean; errors: ComponentFinding[] };
+	// The native-ness design audit (§6) — adapt/capacity coherence + the data: URI
+	// size cap — beyond the structural gate. Advisory + hard findings, both shown.
+	const design = auditComponentDesign(m, coerced.css) as ComponentFinding[];
+	const md = m as typeof m & { adapt: { mode: string }; capacity: { sweet?: number; soft?: number; hard?: number } | null };
+	const draft: ComponentDraft = {
+		name: m.name, description: m.description, function: m.function, form: m.form,
+		substance: m.substance, bucket: m.bucket, tags: m.tags, adapt: md.adapt, capacity: md.capacity,
+		css: coerced.css, skeleton: coerced.skeleton,
+	};
+	return { status: 'ok', draft, findings: [...(gate.errors ?? []), ...design], fixes: coerced.fixes, similar };
 }
 
 // A deterministic lint finding (the shape lint-core's `lintTextWith` returns) — a

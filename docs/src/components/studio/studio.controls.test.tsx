@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import StudioShell from './StudioShell';
@@ -188,14 +188,46 @@ describe('Studio — Fabricate + Present dock respond', () => {
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
 		await user.click(await screen.findByText('Fabricate'));
 		expect(await screen.findByPlaceholderText(/Describe a look/i)).toBeInTheDocument();
-		// Export theme (theme tab) confirms via toast.
-		await user.click(screen.getByRole('button', { name: /Export theme/ }));
+		// The shared header Export (theme tab) confirms via toast.
+		await user.click(screen.getByRole('button', { name: /Export/ }));
 		expect(await screen.findByText(/Exported/)).toBeInTheDocument();
-		// Switch to the Component tab — the REAL component studio appears (name + live
-		// gate), the theme studio leaves.
+		// Switch to the Component tab — the REAL component studio appears (the shared
+		// header now reads the component Name + the live gate), the theme studio leaves.
 		await user.click(screen.getByRole('button', { name: /Component/ }));
 		expect(await screen.findByLabelText('Component name')).toBeInTheDocument();
 		expect(screen.queryByPlaceholderText(/Describe a look/i)).not.toBeInTheDocument();
+	});
+
+	it('Component tab: the shared header Save + Export ride the real gate', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
+		await user.click(await screen.findByText('Fabricate'));
+		await user.click(screen.getByRole('button', { name: /Component/ }));
+		// The starter is gate-clean → the SAME header Save the theme tab uses is enabled.
+		expect(await screen.findByText(/Gate — all clear/)).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+		// A hex literal trips the real layout gate → finding shows + Save disables.
+		fireEvent.change(screen.getByLabelText('Component CSS'), { target: { value: 'section.callout { color: #ff0000; }' } });
+		expect(await screen.findByText(/use a palette token/i)).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+	});
+
+	it('Component tab: the Manifest JSON view two-way syncs and guards invalid JSON', async () => {
+		const user = setup();
+		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
+		await user.click(await screen.findByText('Fabricate'));
+		await user.click(screen.getByRole('button', { name: /Component/ }));
+		// Switch the manifest panel to the raw-JSON view.
+		await user.click(screen.getByRole('button', { name: 'JSON' }));
+		const json = await screen.findByLabelText('Manifest JSON');
+		// Invalid JSON → a finding surfaces and Save disables (can't silently save a broken edit).
+		fireEvent.change(json, { target: { value: '{ not json' } });
+		expect((await screen.findAllByText(/Manifest JSON is invalid/i)).length).toBeGreaterThan(0);
+		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+		// Valid JSON changing an axis → clean again, and the Fields view reflects it (two-way).
+		fireEvent.change(json, { target: { value: JSON.stringify({ name: 'callout', function: 'comparison', form: 'canvas', substance: 'prose', bucket: 'comparison', tags: ['a', 'b', 'c'], description: 'd', adapt: { mode: 'native' }, capacity: { sweet: 1, soft: 2, hard: 3 } }) } });
+		await user.click(screen.getByRole('button', { name: 'Fields' }));
+		expect((screen.getByLabelText('Bucket') as HTMLSelectElement).value).toBe('comparison');
 	});
 
 	it('Fabricate derives a REAL token contract + WCAG audit from the engine', async () => {

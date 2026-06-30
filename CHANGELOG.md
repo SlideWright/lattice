@@ -25,6 +25,23 @@ in patch versions.
 
 ## Unreleased
 
+### Changed
+
+- **Studio component gate now enforces margin discipline (#20) and token typography
+  (#4) — the design-audit (#610).** The local/AI component authoring gate
+  (`lib/layout/gate.js` `gateCss`) previously checked only hex/scope/exfil, so a draft
+  with a non-zero `margin` or a raw-length `font-size` (`18px`, `2cqi`) rendered anyway —
+  exactly the "non-native" tells the component-generation design
+  (`engineering/decisions/2026-06-29-ai-component-generation.md`) calls out. Two new
+  deterministic checks (`findMargins`, `findRawFontSize`) flag them as blocking errors,
+  steering authors to `gap`/`padding` and the `--fs-*` role tokens every shipped
+  component uses (`em`/`%`/`inherit` and `var(--fs-*)` stay allowed). The two Studio
+  starters that themselves violated #20 (`feature-band`'s centered divider, `two-col-list`'s
+  `columns` layout) are rebuilt margin-free (flex / grid with `gap`) so the templates model
+  the rule. The `> .cell-stage` root and `adapt`/`capacity` checks from the design are
+  deliberately deferred — the former is a *shipped*-component trait (local components scope
+  to `section.<name>` directly), the latter a graduation-path advisory.
+
 ### Security
 
 - **Untrusted-content XSS + CSS exfil hardened in the Studio preview (#616, #610).** Two
@@ -52,6 +69,53 @@ in patch versions.
   locked in a permanent XSS corpus test.
 
 ### Added
+
+- **Studio — AI component generation: "Describe a component" (#610).** The Component tab now
+  has the mirror of the Theme tab's "Describe a look" — describe a component and the model
+  proposes a manifest + scoped CSS + skeleton that feels native to Lattice's set, not generic
+  CSS. Same architecture as the Theme AI (#613): the model PROPOSES within a tight contract and
+  deterministic code DISPOSES. The contract is a concrete **knowledge file** (`lib/layout/ai.js`
+  `COMPONENT_CANON`, the analog of `THEME_CANON`) teaching the Form vocabulary (Frame/Cell/Tile,
+  the `section.<name> > .cell-stage` root), the full slot table (eyebrow/title/subtitle/pill/
+  key-insight/footer/pagination/logo + the three-way rail disambiguation), the token system (the
+  `--fs-*` type roles, palette, spacing — never an invented value), every hard invariant with its
+  *why* (no margin #20, var(--token) #3, `--fs-*` #4, card-nesting #5, scoping #7, US #21), the
+  12-bucket taxonomy, the 10/10 rubric, the `@container lattice` doubled-class reflow recipe, and
+  **three fully-worked, gate-verified examples**. **Dedup-first** (§5): before generating, near-
+  duplicate components are surfaced (bge-small embeddings → fuse.js lexical fallback) so you reuse
+  rather than bloat the catalog — default-on, with a **Workspace toggle**. **Guardrails** (§6/§7):
+  the draft runs the same `gateComponent` + `findCssExfil` + design-audit (margin/typography) the
+  Studio enforces, plus an **adapt/capacity coherence audit** and a **data:-URI size cap**;
+  spatially-neutral fixes (card-nesting, scope-prefix) auto-apply while every spatial violation is
+  *flagged, never silently mutated*. **Scope** (§9): transform-free components only — a request for
+  a chart, diagram, code, or non-`ul>li` structure is **declined and routed**, never faked.
+  Validated against a **frozen held-out adversarial prompt set** (`test/fixtures/component-gen-
+  prompts.json` + `tools/component-gen-eval.mjs`): 10/10 cases — gate-clean generation, dedup-route,
+  portrait-reflow, the off-contract-color trap, and four decline cases — pass with a real model.
+  The aesthetic 10/10 read still rests on human review (the Quality Bar) — there is no automated
+  aesthetic gate, by design. The component's **manifest is now first-class**: the AI-proposed
+  contract (bucket, function/form/substance, tags, `capacity`, `adapt`) lives in a right-side
+  **Manifest panel** on the Component tab with two synced views — a **Fields** form (hover hints
+  define each axis) and the raw **manifest.json in CodeMirror** with schema-aware completion (it
+  can only suggest a value the gate accepts). The gate validates it live (a bad axis / tag count /
+  invalid JSON is a finding), it's **persisted on Save**, and stamped into the export — so a saved
+  component stays classifiable (it dedups against future requests and graduates without a re-author)
+  instead of being captured then discarded. See
+  `engineering/decisions/2026-06-29-ai-component-generation.md`.
+
+- **Studio — one unified Theme + Component designer, with first-class names (#610).** The
+  Fabricate Theme and Component tabs now share ONE header and ONE Save/Export UX, so moving
+  between them is seamless instead of two private layouts. Naming is unified and made
+  first-class: a theme is named by a single author-owned **slug** in the header — exactly
+  like a component — retiring the old buried free-text label + hidden `slugify` "magic" the
+  author had to reason about (the human display title is just a titleized view of the slug).
+  A new **Description** disclosure (collapsed by default, on both tabs) captures a one-line
+  caption. When the AI generates a palette it now also **proposes an editable `name` +
+  `description`** (`lib/theme/ai.js` → `coerceEssentials`), seeded into those fields and
+  **stamped into the export** — the theme CSS header / README and the component manifest
+  `description`. Both tabs Export real drop-in files (a theme `<slug>.css`; a component's
+  manifest + styles + skeleton) and Save to the shared library. The model proposes; the
+  deterministic kernel still disposes (the slug is gate-validated, the palette AA-repaired).
 
 - **Theme Studio — AI delivers a full, AA-verified palette (#610).** The Theme Studio's
   "Describe a look" front door now returns a *finished, accessible* theme: the model

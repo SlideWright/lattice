@@ -2,6 +2,7 @@ import { Cloud, Cpu, Download, ExternalLink, FolderTree, KeyRound, MessageSquare
 import * as React from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
+import { readDedupEnabled, writeDedupEnabled } from '@/playground/drawing-board-settings.js';
 import { fmtPrice, fmtTokens, fmtUSD } from '@/playground/or-catalog.js';
 import { architectSpend, connectOpenRouter, disconnectOpenRouter, setBudget, setStudioTier, useArchitectStatus } from './architect';
 import { ModelPicker } from './ModelPicker';
@@ -26,6 +27,8 @@ function GroupLabel({ icon, children }: { icon: React.ReactNode; children: React
 
 export function WorkspaceSheet({ open, onOpenChange, notify }: { open: boolean; onOpenChange: (v: boolean) => void; notify: (msg: string) => void }) {
 	const [tab, setTab] = React.useState<Tab>('AI model');
+	const [dedup, setDedup] = React.useState(true);
+	React.useEffect(() => { setDedup(readDedupEnabled()); }, []);
 	// Bump on open so the live status (incl. the authoritative account spend) re-fetches.
 	const [pulse, setPulse] = React.useState(0);
 	const ai = useArchitectStatus(pulse);
@@ -228,6 +231,19 @@ export function WorkspaceSheet({ open, onOpenChange, notify }: { open: boolean; 
 								className="w-full resize-none rounded-xl border border-border bg-background p-3 text-[13px] leading-relaxed text-foreground outline-none focus:border-[var(--accent)]"
 							/>
 							<div className="mt-1 text-right font-mono text-[11px] text-muted-foreground">{instructions.length} chars · saved</div>
+
+							<div className="mt-5">
+								<GroupLabel icon={<Sparkles className="size-3.5" />}>Component generation</GroupLabel>
+								<label className="mt-2 flex cursor-pointer items-center gap-3 rounded-xl border border-border bg-background px-3 py-2.5">
+									<button type="button" role="switch" aria-checked={dedup} aria-label="Suggest similar components" onClick={() => { const next = !dedup; setDedup(next); writeDedupEnabled(next); }} className={cn('relative h-5 w-9 shrink-0 rounded-full transition-colors', dedup ? 'bg-[var(--accent)]' : 'bg-[color-mix(in_srgb,var(--text-muted)_40%,transparent)]')}>
+										<span className={cn('absolute top-0.5 size-4 rounded-full bg-white transition-transform', dedup ? 'translate-x-[18px]' : 'translate-x-0.5')} />
+									</button>
+									<span className="min-w-0">
+										<span className="block text-[12.5px] font-semibold text-[var(--text-heading)]">Suggest similar components</span>
+										<span className="block text-[11px] text-muted-foreground">Before generating, surface near-duplicate components so you can reuse instead of adding another.</span>
+									</span>
+								</label>
+							</div>
 						</div>
 					)}
 

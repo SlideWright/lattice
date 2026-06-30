@@ -278,6 +278,7 @@ harness the index can't infer, add it to `FRAMEWORKS` in the generator.
 | `tools/build-spec-docs.js` | Publish the owned LFM standards (spec/*.md) onto the docs website as |
 | `tools/build-standalone-core.js` | Bundle the standalone chart-SVG export core for the browser. |
 | `tools/check-fonts.js` | Font parity gate — keep the engine's self-hosted faces in sync across every |
+| `tools/component-gen-eval.mjs` | AI component-generation evaluator — runs the FROZEN, held-out adversarial prompt |
 | `tools/cvd-audit.js` | Colour-vision-deficiency (CVD) collapse audit for Lattice themes. |
 | `tools/export-chart-svg.js` | Export a deck's chart(s) as standalone image files — SVG for the vector |
 | `tools/export-marp.js` | export-marp — produce a portable, self-contained bundle of a Lattice deck for |

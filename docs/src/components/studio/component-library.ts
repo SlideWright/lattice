@@ -24,13 +24,34 @@ function toStudioComponent(a: ComponentAssetRecord): StudioComponent {
 	return { id: a.id, name: a.name, bucket: a.bucket ?? null, css: a.text || '', skeleton: a.skeleton || '' };
 }
 
+/** The full component contract the Studio captures (manifest minus name/skeleton). */
+export type ComponentMeta = {
+	function?: string;
+	form?: string;
+	substance?: string;
+	bucket?: string;
+	tags?: string[];
+	description?: string;
+	adapt?: { mode: string };
+	capacity?: { sweet?: number; soft?: number; hard?: number };
+};
+
 /**
  * Save a local component to the shared library. Re-saving the same name UPDATES
- * in place (asset-store keys on kind+name). Throws if the name isn't a valid slug
- * (componentAsset enforces it) or the store is unavailable.
+ * in place (asset-store keys on kind+name). The FULL manifest is persisted (not
+ * just name/bucket) so a saved component stays classifiable — it dedups against
+ * future requests, graduates into the gallery, and reloads with its axes intact.
+ * Throws if the name isn't a valid slug (componentAsset enforces it) or the store
+ * is unavailable.
  */
-export async function saveStudioComponent(input: { name: string; css: string; skeleton: string; bucket?: string }): Promise<StudioComponent> {
-	const manifest = input.bucket ? { name: input.name, bucket: input.bucket } : { name: input.name };
+export async function saveStudioComponent(input: { name: string; css: string; skeleton: string; meta?: ComponentMeta }): Promise<StudioComponent> {
+	const meta = input.meta || {};
+	const manifest: Record<string, unknown> = { name: input.name };
+	for (const k of ['function', 'form', 'substance', 'bucket', 'adapt', 'capacity'] as const) {
+		if (meta[k] != null) manifest[k] = meta[k];
+	}
+	if (Array.isArray(meta.tags) && meta.tags.length) manifest.tags = meta.tags;
+	if (meta.description?.trim()) manifest.description = meta.description.trim();
 	const asset = componentAsset({ name: input.name, css: input.css, skeleton: input.skeleton, manifest });
 	const stored = (await putAsset(asset)) as ComponentAssetRecord;
 	return toStudioComponent(stored);

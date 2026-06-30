@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: shipped
 summary: AI component generation that produces components which feel native to Lattice's 10/10 boardroom set — not generic CSS. The design has three pillars, mirroring the proven Theme-AI architecture (#613, model-proposes-within-a-contract / deterministic-code-disposes): (1) a CONCRETE knowledge file (the component analog of THEME_CANON) that teaches the model Lattice's whole design language — the Form vocabulary (Frame/Cell/Tile, the `section.X > .cell-stage` skeleton), the named slots (eyebrow/title/subtitle/pill/key-insight/footer/pagination/logo), THE TOKEN SYSTEM as the composition vocabulary (palette/surface/spacing/the 12-token --fs-* type roles/radius/pill/font/categorical/state — never an invented value), the hard invariants WITH their why (no margin #20, var(--token) #3, --fs-* #4, card-nesting #5, scoping #7, US #21), the 12-bucket taxonomy, the operationalized 10/10 rubric, the universal recipes (cards-as-`li`, grid-vs-flex-matrix, elevation, state-as-shape, `@container lattice` reflow), and — the make-or-break deliverable — 2–3 fully-worked examples (prompt → manifest+CSS+skeleton). (2) DEDUP-FIRST: before generating, embed the request (the architect model already ships a bge-small embedder) and rank it against the component catalog (dist/docs/components.json), SUGGEST the top similar components with a reuse nudge, then proceed (default-on, Workspace-configurable). (3) GUARDRAILS: gateComponent + findCssExfil + a new design-audit (margin/token/slot/--fs-*/scope/adapt-capacity). Repair is SPLIT by safety (red-team B2): deterministic auto-fix ONLY for spatially-neutral text/structure edits (strip **Title**, add scope); every SPATIAL fix (margin→padding, raw→token) is flagged and regenerated, never silently mutated, because margin→padding is not layout-neutral. HONESTY (red-team B1): the STRUCTURAL contract is gateable (most of "feels native"), but there is NO automated AESTHETIC gate — that residue rests on the knowledge file + model + human review (the Quality Bar); the design does not claim an auto-10/10 gate. SCOPE (red-team B3): transform-FREE components only (pure-CSS-over-native-DOM — most of inventory/comparison/legal/evidence/code/math); transform-bearing components (charts/journey/roadmap/diagram, which need codegen + 3-renderer parity) are the #618 DSL track, and the model must DECLINE + route those. Grounded in a profile of all 53 shipped components (what good looks like, derived not invented). This backbone lands BEFORE the #618 DSL (prerequisite). PROTOTYPE-FIRST: prove on inventory with a FROZEN, held-out, adversarial, blind-rated prompt set (incl. a dedup-route case, a portrait-reflow case, and a decline case) before widening.
 ---
 
@@ -370,3 +370,38 @@ easy, templated case and would pass on cherry-picked prompts, proving little):
 
 The worked examples (§4.8) are the make-or-break deliverable; the prototype is how
 we find out if they teach what we think they teach.
+
+## 11. Implementation status (what shipped, PR #621)
+
+All three pillars landed, faithful to the design above:
+
+- **§4 knowledge file** — `lib/layout/ai.js` `COMPONENT_CANON`: the Form vocabulary, the
+  full slot table + the three-way rail disambiguation, the token system, every hard
+  invariant *with its why* (incl. scoping #7 + US #21), the 12-bucket taxonomy with
+  what-each-is-for, the 10/10 rubric, the `@container lattice` doubled-class reflow recipe
+  written concretely, and **three fully-worked examples** (card-grid, ledger, and a REUSE
+  case) — each **gate-verified by a unit test** (`test/unit/layout/component-ai.test.js`).
+- **§5 dedup** — `dedupComponents` (`architect.ts`): bge-small **embeddings** (`model.embed`
+  → `cosineRank`) as the primary signal, the **shipped fuse.js** lexical path as the
+  fallback, and the pure `rankSimilar` token-overlap as the final floor. Suggest-then-proceed
+  in the UI; **default-on with a Workspace toggle** (§8, `readDedupEnabled`).
+- **§6/§7 guardrails** — `gateComponent` + `findCssExfil` + the margin/typography design-audit,
+  PLUS `auditComponentDesign` (adapt/capacity coherence) and a **data:-URI size cap**. Repair
+  is split by safety: card-nesting + scope-prefix auto-apply (spatially-neutral, the
+  scope-prefix self-verifies); every spatial violation is flagged, never mutated.
+- **§9 scope** — transform-free only; out-of-scope requests **decline + route**.
+- **§10 validation** — a **frozen held-out adversarial set** (`test/fixtures/component-gen-prompts.json`)
+  + harness (`tools/component-gen-eval.mjs`): **10/10** with a real model (gate-clean generation,
+  the dedup-route case, the portrait-reflow case, the off-contract trap, four decline cases).
+
+**Honest residue (unchanged from the design's stance):**
+- The **aesthetic 10/10 is not machine-gated** (§3 B1) — it rests on the knowledge file + the
+  model + human review (the Quality Bar). The structural contract is what's gated.
+- The worked examples + frozen set are **inventory/transform-free-centered** (§10 prototype-first);
+  widening the example set to the other transform-free buckets is the next increment.
+- **Embeddings need the on-device CDN** (Transformers.js); without it, dedup runs the fuse/lexical
+  fallback (noisier, by design — §5).
+- **Transform-bearing components** (charts/diagrams/journey/roadmap) remain out of scope here and
+  wait on the #618 DSL (§9) — the model declines them.
+- The flag-and-regenerate loop is **human-mediated** (findings shown in the editor; the author
+  re-runs), not an automatic model feedback loop — consistent with §7.1's human-review framing.

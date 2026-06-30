@@ -12,9 +12,10 @@ const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 
 const {
-  findHexLiterals, findCssExfil, findUnscopedSelectors, validateManifest,
-  skeletonInvokes, gateCss, gateComponent,
+  findHexLiterals, findCssExfil, findMargins, findRawFontSize, findUnscopedSelectors,
+  validateManifest, skeletonInvokes, gateCss, gateComponent,
 } = require('../../../lib/layout/gate.js');
+const { STARTERS } = require('../../../lib/layout/starters.js');
 const { scaffoldFiles, scaffoldDir, componentAsset, manifestObject } = require('../../../lib/layout/scaffold.js');
 
 const GOOD = {
@@ -75,6 +76,43 @@ describe('gate — CSS exfil (#616 T-CSS)', () => {
     assert.equal(r.ok, false);
     assert.ok(r.findings.some(f => f.rule === 'css-url-remote' && f.level === 'error'));
   });
+});
+
+describe('gate — design-audit: margins (#20) + typography (#4)', () => {
+  test('findMargins flags non-zero margins, allows bare 0 resets', () => {
+    assert.deepEqual(findMargins('a{margin:0}b{margin:0 0 0 0}c{padding:var(--sp-md)}').length, 0);
+    assert.deepEqual(
+      findMargins('a{margin:var(--sp-sm) auto 0}b{margin-top:8px}c{margin-left:-4px}').map(m => m.value),
+      ['var(--sp-sm) auto 0', '8px', '-4px'],
+    );
+  });
+  test('findMargins ignores scroll-margin and margin in comments', () => {
+    assert.equal(findMargins('a{scroll-margin:10px}').length, 0);
+    assert.equal(findMargins('/* margin: 8px */ a{gap:var(--sp-sm)}').length, 0);
+  });
+  test('findRawFontSize flags raw lengths, allows --fs-* tokens + em/%', () => {
+    assert.equal(findRawFontSize('a{font-size:var(--fs-body)}b{font-size:1.2em}c{font-size:100%}d{font-size:inherit}').length, 0);
+    assert.deepEqual(
+      findRawFontSize('a{font-size:18px}b{font-size:2cqi}c{font-size:1.5rem}').map(f => f.value),
+      ['18px', '2cqi', '1.5rem'],
+    );
+  });
+  test('gateCss blocks a non-zero margin and a raw font-size as errors', () => {
+    const r = gateCss('section.x{margin:8px;font-size:2cqi;color:var(--text-body)}', 'x');
+    assert.equal(r.ok, false);
+    const rules = new Set(r.findings.filter(f => f.level === 'error').map(f => f.rule));
+    assert.ok(rules.has('no-margin'));
+    assert.ok(rules.has('fs-token'));
+  });
+});
+
+describe('starters stay gate-clean under the strengthened gate', () => {
+  for (const s of STARTERS) {
+    test(`${s.name} passes gateComponent (no margin/fs-token/hex/scope errors)`, () => {
+      const r = gateComponent({ css: s.css, manifest: s, skeleton: s.skeleton });
+      assert.equal(r.ok, true, JSON.stringify(r.errors));
+    });
+  }
 });
 
 describe('gate — selector scoping', () => {
