@@ -49,11 +49,35 @@ export function metaFor(source: string): string {
 
 type IndexEntry = { id: string; title: string; builtin: boolean };
 
+// One-time flag: have we offered the welcome deck to a pre-existing user whose
+// saved index predates it? Set once the migration runs, so a user who then
+// deletes the welcome deck doesn't get it re-added on every load.
+const WELCOME_MIGRATED_LS = 'lattice-studio-welcome-migrated';
+
 /** The persisted deck index, seeded from the built-ins on first run. */
 function loadIndex(): IndexEntry[] {
 	const saved = read<IndexEntry[]>(INDEX_LS);
-	if (saved?.length) return saved;
+	if (saved?.length) return migrateWelcome(saved);
 	return DECKS.map((d) => ({ id: d.id, title: d.title, builtin: true }));
+}
+
+// Surface the welcome deck to returning users ONCE: a saved index created before
+// the welcome deck existed never lists it. Append it (don't prepend — that would
+// hijack the active deck, which is index[0], on their next load) and persist, then
+// set the flag so it's a one-time offer. Built-in source comes from DECKS, so a
+// stale title can't drift in.
+function migrateWelcome(saved: IndexEntry[]): IndexEntry[] {
+	try {
+		if (localStorage.getItem(WELCOME_MIGRATED_LS)) return saved;
+		localStorage.setItem(WELCOME_MIGRATED_LS, '1');
+		const welcome = DECKS.find((d) => d.id === 'welcome');
+		if (!welcome || saved.some((e) => e.id === welcome.id)) return saved;
+		const migrated = [...saved, { id: welcome.id, title: welcome.title, builtin: true }];
+		saveIndex(migrated);
+		return migrated;
+	} catch {
+		return saved;
+	}
 }
 function saveIndex(index: IndexEntry[]): void {
 	write(INDEX_LS, index);

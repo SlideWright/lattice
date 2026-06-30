@@ -121,6 +121,9 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const [welcomeOpen, setWelcomeOpen] = React.useState(() => !onboarded);
 	// First contextual reveal of the Architect fires once per session.
 	const firstEditRef = React.useRef(false);
+	// After the Coach reveals, a one-time gentle pulse on the Inspector toggle so a
+	// newcomer discovers it — no panel hijack; cleared the moment they open it.
+	const [inspectorPulse, setInspectorPulse] = React.useState(false);
 	// Focus mode — a transient "quiet the noise" posture (2026-06-30-studio-focus-mode.md):
 	// hides the Architect + Inspector columns and most of the topbar, leaving just
 	// Editor + Preview + slide nav. Nothing is removed — ⌘K stays live, so every
@@ -472,6 +475,9 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		if (onboardedRef.current || firstEditRef.current) return;
 		firstEditRef.current = true;
 		if (!compact) setArchitectOpen(true);
+		// Now that they're authoring, nudge them toward the deck Inspector (look,
+		// size, history) with a one-time pulse — gentler than auto-opening it.
+		setInspectorPulse(true);
 		notify('Your AI Coach reviews the deck as you write — it just opened on the left.');
 		graduate();
 	}, [compact, notify, graduate]);
@@ -1046,7 +1052,8 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 					<DropdownMenuContent align="start" className="w-60">
 						<DropdownMenuLabel className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Workspace</DropdownMenuLabel>
 						<DropdownMenuItem onSelect={() => setView('compose')}><Layers className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Decks</div><div className="text-[11px] text-muted-foreground">Your saved decks</div></div></DropdownMenuItem>
-						<DropdownMenuItem onSelect={() => setView('fabricate')}><PencilRuler className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Fabricate</div><div className="text-[11px] text-muted-foreground">Theme &amp; Component Studio</div></div></DropdownMenuItem>
+						{/* Fabricate is advanced (theme/component authoring) — hidden until a newcomer engages. */}
+						{onboarded && <DropdownMenuItem onSelect={() => setView('fabricate')}><PencilRuler className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Fabricate</div><div className="text-[11px] text-muted-foreground">Theme &amp; Component Studio</div></div></DropdownMenuItem>}
 						<DropdownMenuSeparator />
 						<DropdownMenuItem onSelect={() => newDeck()}><Plus className="size-4" />New deck</DropdownMenuItem>
 						<DropdownMenuItem onSelect={() => importInputRef.current?.click()}><Upload className="size-4" />Import deck…</DropdownMenuItem>
@@ -1105,13 +1112,14 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				<Button size="sm" onClick={() => setShareOpen(true)} className="gap-1.5 px-2 lg:px-3" title="Share"><Share2 className="size-4" /><span className="hidden lg:inline">Share</span></Button>
 
 				<span className="hidden h-5 w-px bg-border sm:block" />
-				{/* Focus — drop to Editor + Preview, hide the panels, quiet the noise (desktop only; tablet/mobile already collapse panels). */}
-				{!compact && <Button variant="ghost" size="icon-sm" onClick={() => setFocus(true)} aria-label="Enter focus mode" title="Focus — hide panels, just write (⌘.)"><Focus className="size-[18px]" /></Button>}
+				{/* Focus — drop to Editor + Preview, hide the panels, quiet the noise (desktop only; tablet/mobile already collapse panels). Advanced — revealed once a newcomer engages. */}
+				{!compact && onboarded && <Button variant="ghost" size="icon-sm" onClick={() => setFocus(true)} aria-label="Enter focus mode" title="Focus — hide panels, just write (⌘.)"><Focus className="size-[18px]" /></Button>}
 				{/* Semantic icons (not two identical panel glyphs): the AI Architect vs the deck Inspector. */}
 				<Button variant="ghost" size="icon-sm" aria-pressed={architectOpen} onClick={() => { graduate(); setArchitectOpen((v) => !v); }} aria-label="Toggle Architect" title="Architect — AI coach &amp; chat" className={cn(architectOpen && 'text-[var(--accent)]')}><Sparkles className="size-[18px]" /></Button>
-				<Button variant="ghost" size="icon-sm" aria-pressed={inspectorOpen} onClick={() => { graduate(); setInspectorOpen((v) => !v); }} aria-label="Toggle Deck inspector" title="Deck inspector — look, size, notes, history" className={cn(inspectorOpen && 'text-[var(--accent)]')}><SlidersHorizontal className="size-[18px]" /></Button>
-				<Button variant="ghost" size="icon-sm" onClick={() => setLibraryOpen(true)} aria-label="Open Library" title="Library — saved themes &amp; components"><FileBox className="size-[18px]" /></Button>
-				<Button variant="ghost" size="icon-sm" onClick={() => setWorkspaceOpen(true)} aria-label="Workspace settings" className="hidden sm:inline-flex"><Settings2 className="size-[18px]" /></Button>
+				<Button variant="ghost" size="icon-sm" aria-pressed={inspectorOpen} onClick={() => { graduate(); setInspectorPulse(false); setInspectorOpen((v) => !v); }} aria-label="Toggle Deck inspector" title="Deck inspector — look, size, notes, history" className={cn(inspectorOpen && 'text-[var(--accent)]', inspectorPulse && 'text-[var(--accent)] ring-2 ring-[var(--accent)] animate-pulse')}><SlidersHorizontal className="size-[18px]" /></Button>
+				{/* Library + Workspace are advanced surfaces — hidden until a newcomer engages (the Coach still opens Workspace on demand when an AI action needs a model). */}
+				{onboarded && <Button variant="ghost" size="icon-sm" onClick={() => setLibraryOpen(true)} aria-label="Open Library" title="Library — saved themes &amp; components"><FileBox className="size-[18px]" /></Button>}
+				{onboarded && <Button variant="ghost" size="icon-sm" onClick={() => setWorkspaceOpen(true)} aria-label="Workspace settings" className="hidden sm:inline-flex"><Settings2 className="size-[18px]" /></Button>}
 				<span className="hidden size-7 shrink-0 place-items-center rounded-full bg-[var(--surface-inverse)] text-[12px] font-bold text-white sm:grid">SA</span>
 			</header>
 			)}

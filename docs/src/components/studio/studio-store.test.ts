@@ -27,6 +27,20 @@ describe('studio-store — deck index', () => {
 		deleteDeck(d.id);
 		expect(loadDeckList().find((x) => x.id === d.id)).toBeUndefined();
 	});
+
+	it('offers the welcome deck to a returning user once — appended, and deletable', () => {
+		// A saved index from before the welcome deck existed (no `welcome`, no flag).
+		localStorage.setItem('lattice-studio-deck-index', JSON.stringify([
+			{ id: 'q3-board', title: 'Q3 Board Review', builtin: true },
+			{ id: 'product-strategy', title: 'FY26 Product Strategy', builtin: true },
+		]));
+		const ids = loadDeckList().map((d) => d.id);
+		// Welcome is appended (last) — it does not hijack index[0] (the active deck).
+		expect(ids).toEqual(['q3-board', 'product-strategy', 'welcome']);
+		// Deleting it sticks — the one-time migration doesn't re-add it.
+		deleteDeck('welcome');
+		expect(loadDeckList().map((d) => d.id)).toEqual(['q3-board', 'product-strategy']);
+	});
 });
 
 describe('studio-store — per-deck source', () => {
