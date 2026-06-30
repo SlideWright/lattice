@@ -8,6 +8,17 @@ import { CodeField } from './CodeField';
 // Exported so the unified Studio (Fabricate) can seed the component tab's state.
 export const STARTER_NAME = 'callout';
 export const STARTER_DESCRIPTION = 'A centered callout — a big accent headline over a supporting line.';
+// A complete, gate-valid default manifest so the manual starter (and the panel)
+// open with a coherent contract, not blank axes.
+export const STARTER_META = {
+	function: 'statement',
+	form: 'canvas',
+	substance: 'prose',
+	bucket: 'statement',
+	tags: ['callout', 'centered', 'accent'],
+	adapt: { mode: 'native' },
+	capacity: { sweet: 1, soft: 1, hard: 1 },
+};
 export const STARTER_CSS = `section.callout {
   display: grid;
   place-content: center;

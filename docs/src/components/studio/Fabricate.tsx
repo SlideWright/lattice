@@ -8,15 +8,15 @@ import { cn } from '@/lib/utils';
 // The REAL layout gate — the deterministic core the engine uses for components
 // (lib/layout/*, bundled). The Component tab's Name/Save/Export now live in this
 // shared header, so Fabricate owns the gate run that the body renders.
-import { gateCss, NAME_RE, scaffoldFiles, skeletonInvokes } from '@/playground/layout-core.generated.js';
+import { BUCKETS, CSS_ONLY_SUBSTANCES, FORMS, FUNCTIONS, gateCss, NAME_RE, scaffoldFiles, skeletonInvokes, validateManifest } from '@/playground/layout-core.generated.js';
 // The REAL theme engine — same maths as the Node tooling + the WCAG gate
 // (lib/theme/*, bundled browser-safe). deriveTheme → ~80 tokens (contrast-
 // repaired), auditBoth → live WCAG report, serializeTheme → a real themes/*.css.
 import { auditBoth, contrastRatio, deriveTheme, STARTERS, serializeTheme, validateEssentials } from '@/playground/theme-core.generated.js';
 import { type ComponentSimilar, connectOpenRouter, generateComponent, generateTheme, useArchitectStatus } from './architect';
-import { saveStudioComponent } from './component-library';
+import { type ComponentMeta, saveStudioComponent } from './component-library';
 import { downloadText } from './download';
-import { type Finding, LayoutStudio, STARTER_CSS, STARTER_DESCRIPTION, STARTER_NAME, STARTER_SKELETON } from './LayoutStudio';
+import { type Finding, LayoutStudio, STARTER_CSS, STARTER_DESCRIPTION, STARTER_META, STARTER_NAME, STARTER_SKELETON } from './LayoutStudio';
 import { saveStudioTheme } from './theme-library';
 import { useBreakpoint } from './use-breakpoint';
 
@@ -172,6 +172,13 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 	const [compDesc, setCompDesc] = React.useState(STARTER_DESCRIPTION);
 	const [compCss, setCompCss] = React.useState(STARTER_CSS);
 	const [compSkeleton, setCompSkeleton] = React.useState(STARTER_SKELETON);
+	// The component's MANIFEST — its contract (bucket/axes/tags/capacity). The AI
+	// generates it, the gate validates it, and it's persisted on Save + stamped into
+	// the export. Editable in the Manifest panel so the author can correct the
+	// classification (#610 manifest-visibility).
+	const [compMeta, setCompMeta] = React.useState<ComponentMeta>(() => ({ ...STARTER_META }));
+	const [metaOpen, setMetaOpen] = React.useState(false);
+	const setMeta = (patch: Partial<ComponentMeta>) => setCompMeta((m) => ({ ...m, ...patch }));
 	// Component-tab AI: "Describe a component" — the mirror of the Theme tab's
 	// "Describe a look". The model proposes a manifest + scoped CSS + skeleton
 	// grounded in the knowledge file; the SAME live gate below disposes. `compSimilar`
@@ -230,15 +237,20 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 
 	// The Component tab's live gate — the SAME bundled gate the body used to run
 	// internally, lifted here so the shared header's Save button and the body's
-	// findings panel agree. Name → CSS (no-hex + scope) → skeleton-invokes.
+	// findings panel agree. Name → CSS (no-hex + scope) → skeleton-invokes → the
+	// MANIFEST contract (axes/tags/capacity), so an under-specified component can't
+	// silently save.
 	const compNameOk = NAME_RE.test(compName);
+	const compManifest = React.useMemo(() => ({ name: compName, ...compMeta, description: compDesc, skeleton: compSkeleton }), [compName, compMeta, compDesc, compSkeleton]);
 	const compFindings = React.useMemo<Finding[]>(() => {
 		if (!compNameOk) return [{ level: 'error', rule: 'name', message: 'Component name must be a lowercase slug — a–z, 0–9, hyphen, starting with a letter.' }];
 		const out: Finding[] = [];
 		for (const f of gateCss(compCss, compName).findings as Finding[]) out.push(f);
 		if (!skeletonInvokes(compSkeleton, compName)) out.push({ level: 'error', rule: 'skeleton', message: `Skeleton must invoke <!-- _class: ${compName} --> so the preview applies your styles.` });
+		const man = validateManifest(compManifest) as { ok: boolean; errors: { field: string; message: string }[] };
+		for (const e of man.errors) out.push({ level: 'error', rule: `manifest:${e.field}`, message: e.message });
 		return out;
-	}, [compName, compCss, compSkeleton, compNameOk]);
+	}, [compName, compCss, compSkeleton, compNameOk, compManifest]);
 	const compOk = compFindings.every((f) => f.level !== 'error');
 
 	// Curated WCAG rows: one per role, worst ratio across modes.
@@ -303,6 +315,8 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 				setCompDesc(out.draft.description);
 				setCompCss(out.draft.css);
 				setCompSkeleton(out.draft.skeleton);
+				// Capture the FULL manifest the model proposed — not just name/css/skeleton.
+				setCompMeta({ function: out.draft.function, form: out.draft.form, substance: out.draft.substance, bucket: out.draft.bucket, tags: out.draft.tags, adapt: out.draft.adapt, capacity: out.draft.capacity ?? undefined });
 				setCompSimilar(out.similar);
 				setCompPrompt('');
 				const issues = out.findings.filter((f) => f.level === 'error').length;
@@ -352,7 +366,7 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 			notify(`Exported ${themeSlug}.css — a real theme token set.`);
 			return;
 		}
-		const manifest = { name: compName, ...(compDesc.trim() ? { description: compDesc.trim() } : {}) };
+		const manifest = { name: compName, ...compMeta, ...(compDesc.trim() ? { description: compDesc.trim() } : {}) };
 		const files = scaffoldFiles({ name: compName, css: compCss, skeleton: compSkeleton, manifest }) as Record<string, string>;
 		for (const [fname, text] of Object.entries(files)) downloadText(fname, text, fname.endsWith('.json') ? 'application/json' : fname.endsWith('.css') ? 'text/css' : 'text/markdown');
 		notify(`Exported ${compName} — manifest, styles & skeleton (drop into lib/components/).`);
@@ -371,7 +385,7 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 				const t = await saveStudioTheme({ name: themeName, label: titleize(themeName), essentials: core, css });
 				notify(`Saved “${t.label}” to your theme library — pick it from Look.`);
 			} else {
-				const c = await saveStudioComponent({ name: compName, css: compCss, skeleton: compSkeleton, description: compDesc });
+				const c = await saveStudioComponent({ name: compName, css: compCss, skeleton: compSkeleton, meta: { ...compMeta, description: compDesc } });
 				notify(`Saved “.${c.name}” to your component library.`);
 			}
 			onSaved?.();
@@ -633,9 +647,61 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 						!modelReady && <p className="text-[11px] leading-snug text-muted-foreground">Connect a model to generate a native-feeling component from a description — or author one by hand below.</p>
 					)}
 				</div>
+				{/* Manifest — the component's contract. Collapsed by default; the AI fills
+				    it, you can correct the classification before saving. Persisted on Save
+				    + stamped into the export. */}
+				<div className="shrink-0 border-b border-border bg-card">
+					<button type="button" onClick={() => setMetaOpen((v) => !v)} aria-expanded={metaOpen} className="flex w-full items-center gap-2 px-4 py-2 text-left hover:bg-[color-mix(in_srgb,var(--accent)_5%,transparent)]">
+						<ChevronRight className={cn('size-3.5 text-muted-foreground transition-transform', metaOpen && 'rotate-90')} />
+						<span className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Manifest</span>
+						<span className="truncate text-[11px] text-muted-foreground/70">{compMeta.bucket} · {compMeta.form} · {(compMeta.tags || []).join(', ')}</span>
+					</button>
+					{metaOpen && <ComponentManifest meta={compMeta} onChange={setMeta} />}
+				</div>
 				<LayoutStudio options={options} name={compName} css={compCss} skeleton={compSkeleton} onCss={setCompCss} onSkeleton={setCompSkeleton} findings={compFindings} nameOk={compNameOk} />
 			</div>
 			)}
+		</div>
+	);
+}
+
+// The editable Manifest panel — the component's contract. The AI fills it; the
+// author can correct the classification (the gate validates it live, so a bad
+// axis/tag count surfaces as a finding below). Persisted on Save + exported.
+function ComponentManifest({ meta, onChange }: { meta: ComponentMeta; onChange: (patch: Partial<ComponentMeta>) => void }) {
+	const sel = (label: string, value: string | undefined, opts: string[], onPick: (v: string) => void) => (
+		<label className="flex flex-col gap-1">
+			<span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
+			<select value={value ?? ''} onChange={(e) => onPick(e.target.value)} aria-label={label} className="rounded-md border border-border bg-background px-2 py-1 text-[12.5px] text-[var(--text-heading)] outline-none focus:border-[var(--accent)]">
+				{opts.map((o) => <option key={o} value={o}>{o}</option>)}
+			</select>
+		</label>
+	);
+	const cap = meta.capacity || {};
+	const num = (label: string, v: number | undefined, onN: (n: number) => void) => (
+		<label className="flex flex-col gap-1">
+			<span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>
+			<input type="number" min={1} value={v ?? ''} onChange={(e) => onN(Math.max(1, Number(e.target.value) || 1))} aria-label={`Capacity ${label}`} className="w-full rounded-md border border-border bg-background px-2 py-1 text-[12.5px] text-[var(--text-heading)] outline-none focus:border-[var(--accent)]" />
+		</label>
+	);
+	return (
+		<div className="grid grid-cols-2 gap-2.5 px-4 pb-3.5 sm:grid-cols-4">
+			{sel('Bucket', meta.bucket, BUCKETS as string[], (v) => onChange({ bucket: v }))}
+			{sel('Function', meta.function, FUNCTIONS as string[], (v) => onChange({ function: v }))}
+			{sel('Form', meta.form, FORMS as string[], (v) => onChange({ form: v }))}
+			{sel('Substance', meta.substance, CSS_ONLY_SUBSTANCES as string[], (v) => onChange({ substance: v }))}
+			<label className="col-span-2 flex flex-col gap-1 sm:col-span-4">
+				<span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Tags <span className="normal-case text-muted-foreground/70">— 3–5, comma-separated</span></span>
+				<input value={(meta.tags || []).join(', ')} onChange={(e) => onChange({ tags: e.target.value.split(',').map((t) => t.trim().toLowerCase().replace(/[^a-z0-9-]/g, '')).filter(Boolean) })} aria-label="Tags" spellCheck={false} className="rounded-md border border-border bg-background px-2 py-1 font-mono text-[12px] text-[var(--text-heading)] outline-none focus:border-[var(--accent)]" />
+			</label>
+			<div className="col-span-2 flex flex-col gap-1 sm:col-span-4">
+				<span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Capacity <span className="normal-case text-muted-foreground/70">— legible card/row counts</span></span>
+				<div className="grid grid-cols-3 gap-2">
+					{num('sweet', cap.sweet, (n) => onChange({ capacity: { ...cap, sweet: n } }))}
+					{num('soft', cap.soft, (n) => onChange({ capacity: { ...cap, soft: n } }))}
+					{num('hard', cap.hard, (n) => onChange({ capacity: { ...cap, hard: n } }))}
+				</div>
+			</div>
 		</div>
 	);
 }

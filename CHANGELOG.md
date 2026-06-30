@@ -93,7 +93,12 @@ in patch versions.
   prompts.json` + `tools/component-gen-eval.mjs`): 10/10 cases — gate-clean generation, dedup-route,
   portrait-reflow, the off-contract-color trap, and four decline cases — pass with a real model.
   The aesthetic 10/10 read still rests on human review (the Quality Bar) — there is no automated
-  aesthetic gate, by design. See `engineering/decisions/2026-06-29-ai-component-generation.md`.
+  aesthetic gate, by design. The component's **manifest is now first-class**: the AI-proposed
+  contract (bucket, function/form/substance, tags, `capacity`, `adapt`) is shown in an editable
+  **Manifest panel** on the Component tab, validated live by the gate, **persisted on Save**, and
+  stamped into the export — so a saved component stays classifiable (it dedups against future
+  requests and graduates without a re-author) instead of being captured then discarded. See
+  `engineering/decisions/2026-06-29-ai-component-generation.md`.
 
 - **Studio — one unified Theme + Component designer, with first-class names (#610).** The
   Fabricate Theme and Component tabs now share ONE header and ONE Save/Export UX, so moving
