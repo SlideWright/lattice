@@ -21,6 +21,7 @@ import { addSlideAfter, deleteSlide, duplicateSlide, moveSlide, replaceSlide } f
 import { DECKS, deckSource, type StudioDeck } from './decks';
 import { Editor, type EditorHandle } from './Editor';
 import { Fabricate } from './Fabricate';
+import { activeFinishLabel, FinishMenuItems } from './FinishPicker';
 import { frontMatterBlock, getFrontMatter, setFrontMatter, stripFrontMatter } from './front-matter';
 import { type ComponentEntry, InsertComponent } from './InsertComponent';
 import { IntentTag } from './IntentTag';
@@ -277,6 +278,8 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const pageNumbers = getFrontMatter(source, 'paginate') === 'true';
 	const headerFooter = getFrontMatter(source, 'header') != null;
 	// …and WRITE to it (the editor + every export update in lock-step).
+	const finish = getFrontMatter(source, 'finish') || 'boardroom';
+	const setFinish = (value: string) => setSource((s) => setFrontMatter(s, 'finish', value === 'boardroom' ? null : value));
 	const setDeckSize = (value: string) => setSource((s) => setFrontMatter(s, 'size', value));
 	const togglePageNumbers = () => setSource((s) => setFrontMatter(s, 'paginate', pageNumbers ? null : 'true'));
 	const toggleHeaderFooter = () => setSource((s) => setFrontMatter(s, 'header', getFrontMatter(s, 'header') != null ? null : deck.title));
@@ -363,6 +366,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	// Saved (Fabricated) themes shaped for the grouped picker.
 	const savedMenu = React.useMemo(() => savedThemes.map((t) => ({ id: t.id, name: t.name, label: t.label, accent: t.essentials?.accent })), [savedThemes]);
 	const activePalette = React.useMemo(() => activePaletteLabel(palette, savedMenu), [palette, savedMenu]);
+	const activeFin = React.useMemo(() => activeFinishLabel(finish), [finish]);
 	// Light/dark toggle — flips the shared `data-mode` (engine `light-dark()` resolves
 	// off it); the data-mode observer below pulls the new value into `mode` and the
 	// preview re-renders. Persisted via site-chrome so it survives a reload.
@@ -802,7 +806,17 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</Field>
-				<Field label="Page numbers"><Toggle label="Page numbers" on={pageNumbers} onClick={togglePageNumbers} /></Field>
+				<Field label="Finish">
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Control aria-label="Choose finish"><span className="flex min-w-0 items-center gap-2"><span className="size-3.5 shrink-0 rounded-[3px] border border-[color-mix(in_srgb,var(--text-heading)_18%,transparent)]" style={{ background: activeFin.swatch, backgroundSize: activeFin.backgroundSize }} /><span className="truncate">{activeFin.label}</span></span> <ChevronDown className="size-3.5" /></Control>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end" className="max-h-[60vh] w-56 overflow-y-auto">
+								<FinishMenuItems finish={finish} onPick={setFinish} />
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</Field>
+					<Field label="Page numbers"><Toggle label="Page numbers" on={pageNumbers} onClick={togglePageNumbers} /></Field>
 				<Field label="Running header"><Toggle label="Running header" on={headerFooter} onClick={toggleHeaderFooter} /></Field>
 			</InspGroup>
 			<InspGroup icon={<Wand2 className="size-3.5" />} label="Authoring">

@@ -8,7 +8,10 @@
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const {
+  FINISH_REGISTER,
   FINISH_NAMES,
   readFrontMatterFinish,
   isKnownFinish,
@@ -72,6 +75,39 @@ describe('resolve-finish', () => {
     const md = '---\nmarp: true\ntheme: carta\nfinish: sketch\n---\n\n# H\n\n`finish: not-this` in body\n';
     assert.equal(readFrontMatterFinish(md), 'sketch');
     assert.equal(finishClassesFromSource(md), 'sketch');
+  });
+
+  // The catalog rot-guard (decision doc: "finish→primitive map is a single gated
+  // source of truth — every finish resolves to a live class, every shipped
+  // backdrop class is reachable from a finish"). FINISH_REGISTER is that source;
+  // this test is the gate keeping it in sync with base.backdrops.css.
+  test('every backdrop finish class resolves to a real CSS rule, and vice versa', () => {
+    const css = fs.readFileSync(
+      path.join(__dirname, '../../../lib/base/base.backdrops.css'),
+      'utf8',
+    );
+    // The backdrop-* classes the register maps to.
+    const registered = new Set();
+    for (const tokens of Object.values(FINISH_REGISTER)) {
+      for (const cls of tokens.split(/\s+/).filter(Boolean)) {
+        if (cls.startsWith('backdrop-')) registered.add(cls);
+      }
+    }
+    // The backdrop-* classes the CSS actually defines (section.backdrop-x rules).
+    const defined = new Set(
+      [...css.matchAll(/section\.(backdrop-[\w-]+)\b/g)].map((m) => m[1]),
+    );
+    // Every registered class must have a rule.
+    for (const cls of registered) {
+      assert.ok(defined.has(cls), `finish maps to .${cls} but base.backdrops.css has no rule`);
+    }
+    // Every defined class must be reachable from a finish, EXCEPT the documented
+    // per-slide-only escape `backdrop-none` (not a deck finish).
+    const escapes = new Set(['backdrop-none']);
+    for (const cls of defined) {
+      if (escapes.has(cls)) continue;
+      assert.ok(registered.has(cls), `.${cls} defined but unreachable from any finish (rot)`);
+    }
   });
 
   test('readFrontMatterFinish accepts quotes and returns null when absent', () => {
