@@ -85,6 +85,42 @@ describe('lattice-engine: contract', () => {
     assert.doesNotMatch(secs[1], /--paginate:false/);
   });
 
+  // NB: plain render() is the EXPORT path — it strips data-debug (preview-only). The
+  // previewers render with `{ preview: true }` to keep the flag; these tests do too.
+  const previewRender = (eng, md) => eng.render(md, 'lattice', { preview: true }).html;
+
+  test('debug: front matter stamps data-debug on every section; no --debug prop', () => {
+    const md = '---\ndebug: on\n---\n\n# A\n\n---\n\n# B\n';
+    const secs = previewRender(makeEngine(), md).match(/<section[^>]*>/g);
+    assert.match(secs[0], /data-debug="on"/);
+    assert.match(secs[1], /data-debug="on"/);
+    // Preview-only flag: never a CSS custom property (nothing reads it; export strips
+    // the data-attr, and we don't want a --debug leaking into inline style either).
+    assert.doesNotMatch(secs[0], /--debug/);
+  });
+
+  test('debug: bare `_debug` flag stamps data-debug=""; `_debug: off` overrides deck-wide on', () => {
+    const md = '---\ndebug: on\n---\n\n<!-- _debug -->\n\n# A\n\n---\n\n<!-- _debug: off -->\n\n# B\n';
+    const secs = previewRender(makeEngine(), md).match(/<section[^>]*>/g);
+    assert.match(secs[0], /data-debug=""/); // bare flag → default profile
+    assert.match(secs[1], /data-debug="off"/); // spot mutes this slide
+  });
+
+  test('debug: a facet list passes through verbatim; a deck without debug has none', () => {
+    const on = previewRender(makeEngine(), '<!-- _debug: identity size -->\n\n# A\n');
+    assert.match(on, /data-debug="identity size"/);
+    const off = previewRender(makeEngine(), '# A\n');
+    assert.doesNotMatch(off, /data-debug/);
+  });
+
+  test('debug: EXPORT render (no preview flag) strips data-debug → bytes identical to no-debug', () => {
+    const eng = makeEngine();
+    const withDebug = eng.render('---\ndebug: on\n---\n\n# A\n\n---\n\n<!-- _debug: size -->\n\n# B\n', 'lattice').html;
+    const without = eng.render('# A\n\n---\n\n# B\n', 'lattice').html;
+    assert.doesNotMatch(withDebug, /data-debug/); // preview-only flag never exported
+    assert.equal(withDebug, without); // section tags byte-identical
+  });
+
   test('composes the real plugins: verdict-grid state marker → badge span', () => {
     const md = '<!-- _class: verdict-grid -->\n\n# V\n\n- Tier\n  - [x] included\n';
     const { html } = makeEngine().render(md, 'lattice');
