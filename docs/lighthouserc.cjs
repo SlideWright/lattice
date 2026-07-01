@@ -15,7 +15,12 @@
 // in scripts/perf-regression.mjs, not here.
 //
 // Surfaces measured: the migrated React-island pages (landing, components,
-// playground) + a Starlight baseline (getting-started), median of 3, desktop.
+// playground) + a Starlight baseline (getting-started) + the three interactive
+// app surfaces (studio, drawing-board, workbench — the heavy CodeMirror + live
+// engine shells a user actually authors in), median of 3, desktop.
+//
+// URLs are ROOT-based ('/…'): the site serves at base '/' in every environment
+// (the /lattice project-page base was retired 2026-06-28 — see astro.config.mjs).
 module.exports = {
 	ci: {
 		collect: {
@@ -23,10 +28,13 @@ module.exports = {
 			startServerCommand: 'npx astro preview --port 4399',
 			startServerReadyPattern: 'localhost:4399',
 			url: [
-				'http://localhost:4399/lattice/',
-				'http://localhost:4399/lattice/components/',
-				'http://localhost:4399/lattice/playground/',
-				'http://localhost:4399/lattice/getting-started/',
+				'http://localhost:4399/',
+				'http://localhost:4399/components/',
+				'http://localhost:4399/playground/',
+				'http://localhost:4399/getting-started/',
+				'http://localhost:4399/studio/',
+				'http://localhost:4399/drawing-board/',
+				'http://localhost:4399/workbench/',
 			],
 			numberOfRuns: 3,
 			settings: {

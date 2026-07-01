@@ -261,6 +261,17 @@ in patch versions.
 
 ### Fixed
 
+- **The nightly perf watch measures the site again — and now covers the Studio.**
+  When the docs site retired its `/lattice` project-page base for the root base
+  (`/`) on 2026-06-28, the two Lighthouse collection configs (`lighthouserc.cjs`,
+  `lighthouserc.mobile.cjs`) still pointed at `/lattice/…` URLs, so `lhci collect`
+  404'd and the nightly `perf-nightly.yml` HEAD collection failed outright — the
+  watch had been measuring nothing since. The URLs are corrected to the root base,
+  and the list gains the three interactive app surfaces (`/studio/`,
+  `/drawing-board/`, `/workbench/` — the heavy CodeMirror + live-engine shells a
+  user actually authors in) so the surface most likely to regress on a mid-tier
+  phone is finally under standing coverage. See
+  `engineering/decisions/2026-06-15-docs-perf-gating-policy.md`.
 - **Finish glyph-marks no longer paint a baked placeholder on every slide.** A
   glyph-mark (the ghost monogram / numeral) is now **author-personalized and never
   appears in a finish by default** — a deck-wide `finish:` register (or a per-slide

@@ -16,16 +16,23 @@
 // `lhci collect` ignores any `assert` block, so this file is COLLECTION-ONLY:
 // the url list, run count, and the mobile profile (Moto-G4-class CPU 4×,
 // Slow-4G). Edit the tolerances/metrics in scripts/perf-regression.mjs.
+//
+// URLs mirror lighthouserc.cjs: ROOT-based ('/…', the /lattice base was retired
+// 2026-06-28) and including the three interactive app surfaces (studio,
+// drawing-board, workbench), which stress the mobile profile hardest.
 module.exports = {
 	ci: {
 		collect: {
 			startServerCommand: 'npx astro preview --port 4399',
 			startServerReadyPattern: 'localhost:4399',
 			url: [
-				'http://localhost:4399/lattice/',
-				'http://localhost:4399/lattice/components/',
-				'http://localhost:4399/lattice/playground/',
-				'http://localhost:4399/lattice/getting-started/',
+				'http://localhost:4399/',
+				'http://localhost:4399/components/',
+				'http://localhost:4399/playground/',
+				'http://localhost:4399/getting-started/',
+				'http://localhost:4399/studio/',
+				'http://localhost:4399/drawing-board/',
+				'http://localhost:4399/workbench/',
 			],
 			numberOfRuns: 3,
 			settings: {
