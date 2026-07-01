@@ -1,11 +1,35 @@
 ---
-status: proposed
+status: shipped
 summary: The Studio topbar packs up to ~15 controls into one 54px row; on a portrait phone (~390px) it's visibly cramped. This designs the bar's information architecture — (1) group theme + light/dark into one "Appearance" control, and (2) fold the genuinely-secondary controls (Appearance, Library, Workspace, Search) into a single "⋯ More" dropdown on compact widths (≤1099px) while desktop keeps the full bar. After a Munger-inversion red team + an independent checker, the original per-tier split was dropped for ONE compact rule that keeps Present/Share and the Architect/Inspector toggles primary at every width — which also deletes the #635 pulse-mirror problem, the landscape-phone "middle case," and the aria-pressed→menu-item accessibility trap. Reuses ThemeMenuItems + Radix DropdownMenu + the ⌘K CommandPalette (#15). Sequencing: land #635 first, then build this on top.
 ---
 
 # Studio topbar information architecture — appearance grouping + responsive overflow
 
-*2026-06-30 · status: proposed (design only; no code until confirmed) · revised after red-team + checker*
+*2026-06-30 · status: shipped · revised after red-team + checker*
+
+> **Implemented** (`StudioShell.tsx`) — built on top of merged #635 per the sequencing
+> below. Owner confirmed scope **1(a) + 2(a)**: full Appearance grouping + the one-rule
+> `⋯` overflow, with the light/dark toggle kept a standalone 1-tap icon on compact.
+> Desktop (≥1100) renders the Appearance **segment** (theme + mode in one bordered group),
+> the ⌘K pill, and the full bar; compact (≤1099) keeps Present · Share · Architect ·
+> Inspector · mode primary and folds theme · Library · Workspace · Search into a single
+> controlled `⋯` menu that resets on every breakpoint flip (H4). Verified at **390 / 844 /
+> 820 / 1440, light + dark** — the compact bar is legible (the M-b check passes), so `⋯`
+> earns its keep. Unit coverage: the new `StudioShell — topbar information architecture`
+> suite (desktop full bar, compact fold, `⋯` membership, Search→palette, open→resize→close).
+>
+> **Device-test correction (theme = inline, NOT a side submenu).** The first cut used a
+> Radix `DropdownMenuSub` for the theme picker inside `⋯`. On a real phone that flyout
+> opens to the *side* and, with no room on a ≤844px screen, renders **off the left edge
+> (clipped)**; in landscape it also truncated the long theme list with **no "more below"
+> affordance**. Fix: drop the submenu and render `ThemeMenuItems` **inline** in the one
+> `⋯` `DropdownMenuContent`, actions first — so the menu stays anchored on-screen.
+> Because the OS hides native scrollbars on touch and Radix `DropdownMenu` has **no**
+> scroll buttons, a clipped row alone was too subtle (device feedback) — so the scroll
+> region is wrapped in a `ScrollFade` that shows a **bottom fade + ⌄ chevron while more
+> sits below the fold**, clearing once you reach the end. Lesson logged for #18: nested
+> menus are a desktop-hover pattern, and "the row clips" is not a scroll affordance on
+> touch — verify the *expanded + scrolled* state on a real narrow viewport.
 
 ## Problem
 

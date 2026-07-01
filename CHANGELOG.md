@@ -207,6 +207,19 @@ in patch versions.
 
 ### Changed
 
+- **Studio topbar information architecture — appearance grouping + one responsive `⋯` overflow.**
+  The topbar no longer crowds ~15 controls into one 54px row on a phone. On **desktop (≥1100)**
+  the theme picker and light/dark toggle are grouped into one bordered **Appearance segment**
+  (the mode toggle kept a direct 1-tap button), and the bar stays full. On **compact (≤1099 —
+  portrait + landscape phone + tablet)** the genuinely-secondary controls — theme picker,
+  Library, Workspace settings, and a "Search / commands" row (the touch path to the ⌘K palette)
+  — fold into a single trailing `⋯` overflow menu, while **Present, Share, Architect, Inspector,
+  and the light/dark toggle stay primary** (one-tap, never buried). The desktop ⌘K pill is gated
+  to ≥1100 so it never doubles the in-`⋯` Search row; the `⋯` menu resets on every breakpoint
+  change. Reuses `ThemeMenuItems` + the Radix `DropdownMenu`/sub primitives + the existing
+  CommandPalette (no new widgets). Verified at 390 / 844 / 820 / 1440 in light and dark. Design:
+  `engineering/decisions/2026-06-30-studio-topbar-ia.md`.
+
 - **Studio AI calls now cache the static system prefix — ~85% off input on a fan-out (#610).**
   Profiling showed every component-generation call re-ships a byte-identical ~7.3K-token system
   prompt (the authoring canon + worked examples), re-billed in full each time. `withCachedSystem`

@@ -1,6 +1,6 @@
 import {
 	AlertTriangle, ArrowLeftToLine, ArrowRightToLine, Check, ChevronDown, ChevronLeft,
-	Copy, Eye, FileBox, FileText, Focus, History, Layers, LayoutGrid, ListChecks, Minimize2, Moon, Palette, PencilLine, PencilRuler, Play, Plus, Save, Search, Settings2, Share2, SlidersHorizontal, Sparkles, StickyNote, Sun, Trash2, Upload, Volume2, Wand2, X,
+	Copy, Eye, FileBox, FileText, Focus, History, Layers, LayoutGrid, ListChecks, Minimize2, Moon, MoreHorizontal, Palette, PencilLine, PencilRuler, Play, Plus, Save, Search, Settings2, Share2, SlidersHorizontal, Sparkles, StickyNote, Sun, Trash2, Upload, Volume2, Wand2, X,
 } from 'lucide-react';
 import * as React from 'react';
 import DeckPreview from '@/components/DeckPreview';
@@ -136,6 +136,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const [libraryOpen, setLibraryOpen] = React.useState(false);
 	const [presentOpen, setPresentOpen] = React.useState(false);
 	const [cmdOpen, setCmdOpen] = React.useState(false);
+	const [moreOpen, setMoreOpen] = React.useState(false); // the compact "⋯ More" overflow menu
 	const [insertOpen, setInsertOpen] = React.useState(false);
 	const [architectTab, setArchitectTab] = React.useState<'coach' | 'chat'>('coach');
 	const [checkpoints, setCheckpoints] = React.useState<Checkpoint[]>(() => loadCheckpoints((loadDeckList()[0] ?? DECKS[0]).id));
@@ -261,6 +262,10 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	React.useEffect(() => {
 		if (compact) { setArchitectOpen(false); setInspectorOpen(false); }
 		else { setArchitectOpen(onboardedRef.current); setInspectorOpen(false); }
+		// The "⋯ More" overflow only exists on compact; close it across any tier flip
+		// so a menu opened on a phone doesn't strand open after a resize to desktop
+		// (where its trigger unmounts) — red-team H4.
+		setMoreOpen(false);
 	}, [compact]);
 
 	// Graduate a newcomer to the full-density shell — one-time, persisted. Called
@@ -1093,34 +1098,76 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 
 				<div className="flex-1" />
 
-				<button type="button" onClick={() => setCmdOpen(true)} className="hidden items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-[13px] text-muted-foreground hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))] lg:flex" aria-label="Search or run a command">
-					<Search className="size-4" />Search or run…
-					<span className="ml-2 rounded border border-border bg-background px-1.5 font-mono text-[11px]">⌘K</span>
-				</button>
+				{/* ⌘K pill — desktop only (≥1100). On compact the "Search / commands" row
+				    inside ⋯ is the search affordance; the ⌘K shortcut stays always-bound. */}
+				{!compact && (
+					<button type="button" onClick={() => setCmdOpen(true)} className="hidden items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-[13px] text-muted-foreground hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))] lg:flex" aria-label="Search or run a command">
+						<Search className="size-4" />Search or run…
+						<span className="ml-2 rounded border border-border bg-background px-1.5 font-mono text-[11px]">⌘K</span>
+					</button>
+				)}
 
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="ghost" size="icon-sm" aria-label="Theme"><Palette className="size-[18px]" /></Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end" className="max-h-[70vh] w-52 overflow-y-auto">
-						<ThemeMenuItems palette={palette} onPick={applyPalette} saved={savedMenu} />
-					</DropdownMenuContent>
-				</DropdownMenu>
-				<Button variant="ghost" size="icon-sm" aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} onClick={toggleMode}>{mode === 'dark' ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}</Button>
+				{/* Appearance — desktop groups theme + light/dark into one bordered segment,
+				    the mode toggle kept a direct 1-tap button. On compact the theme picker
+				    folds into ⋯ and the mode toggle stands alone (below) — both stay 1-tap. */}
+				{!compact && (
+					<div className="flex items-center rounded-md border border-border bg-background p-0.5">
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button variant="ghost" size="icon-sm" aria-label="Theme"><Palette className="size-[18px]" /></Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end" className="max-h-[70vh] w-52 overflow-y-auto">
+								<ThemeMenuItems palette={palette} onPick={applyPalette} saved={savedMenu} />
+							</DropdownMenuContent>
+						</DropdownMenu>
+						<Button variant="ghost" size="icon-sm" aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} onClick={toggleMode}>{mode === 'dark' ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}</Button>
+					</div>
+				)}
 
+				{/* Present + Share — deliverable verbs, primary at every width. */}
 				<Button variant="outline" size="sm" onClick={() => setPresentOpen(true)} className="gap-1.5 px-2 lg:px-3" title="Present"><Play className="size-4" /><span className="hidden lg:inline">Present</span></Button>
 				<Button size="sm" onClick={() => setShareOpen(true)} className="gap-1.5 px-2 lg:px-3" title="Share"><Share2 className="size-4" /><span className="hidden lg:inline">Share</span></Button>
 
 				<span className="hidden h-5 w-px bg-border sm:block" />
 				{/* Focus — drop to Editor + Preview, hide the panels, quiet the noise (desktop only; tablet/mobile already collapse panels). Advanced — revealed once a newcomer engages. */}
 				{!compact && onboarded && <Button variant="ghost" size="icon-sm" onClick={() => setFocus(true)} aria-label="Enter focus mode" title="Focus — hide panels, just write (⌘.)"><Focus className="size-[18px]" /></Button>}
-				{/* Semantic icons (not two identical panel glyphs): the AI Architect vs the deck Inspector. */}
+				{/* Architect + Inspector — the working-panel toggles stay primary at EVERY width
+				    (never folded into ⋯): one-tap reach, visible aria-pressed/active color, and
+				    the #635 first-edit Inspector pulse always lands directly on the bar. */}
 				<Button variant="ghost" size="icon-sm" aria-pressed={architectOpen} onClick={() => { graduate(); setArchitectOpen((v) => !v); }} aria-label="Toggle Architect" title="Architect — AI coach &amp; chat" className={cn(architectOpen && 'text-[var(--accent)]')}><Sparkles className="size-[18px]" /></Button>
 				<Button variant="ghost" size="icon-sm" aria-pressed={inspectorOpen} onClick={() => { graduate(); setInspectorPulse(false); setInspectorOpen((v) => !v); }} aria-label="Toggle Deck inspector" title="Deck inspector — look, size, notes, history" className={cn(inspectorOpen && 'text-[var(--accent)]', inspectorPulse && 'text-[var(--accent)] ring-2 ring-[var(--accent)] animate-pulse')}><SlidersHorizontal className="size-[18px]" /></Button>
-				{/* Library + Workspace are advanced surfaces — hidden until a newcomer engages (the Coach still opens Workspace on demand when an AI action needs a model). */}
-				{onboarded && <Button variant="ghost" size="icon-sm" onClick={() => setLibraryOpen(true)} aria-label="Open Library" title="Library — saved themes &amp; components"><FileBox className="size-[18px]" /></Button>}
-				{onboarded && <Button variant="ghost" size="icon-sm" onClick={() => setWorkspaceOpen(true)} aria-label="Workspace settings" className="hidden sm:inline-flex"><Settings2 className="size-[18px]" /></Button>}
-				<span className="hidden size-7 shrink-0 place-items-center rounded-full bg-[var(--surface-inverse)] text-[12px] font-bold text-white sm:grid">SA</span>
+
+				{/* Compact (≤1099): mode toggle stands alone (1-tap), then ONE ⋯ overflow holds
+				    the genuinely-secondary controls — theme picker, Library, Workspace, and a
+				    Search/commands row (the touch path to the ⌘K palette). */}
+				{compact && <Button variant="ghost" size="icon-sm" aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} onClick={toggleMode}>{mode === 'dark' ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}</Button>}
+				{compact && (
+					<DropdownMenu open={moreOpen} onOpenChange={setMoreOpen}>
+						<DropdownMenuTrigger asChild>
+							<Button variant="ghost" size="icon-sm" aria-label="More controls"><MoreHorizontal className="size-[18px]" /></Button>
+						</DropdownMenuTrigger>
+						{/* Inline, scrollable content — NOT a side-opening submenu. A nested
+						    Radix submenu flies out to the side, which on a phone overflows the
+						    viewport (clips off-screen) and hides that the theme list scrolls.
+						    Actions sit first; the theme picker fills the rest as one scroll
+						    region so a clipped row signals "more below". */}
+						<DropdownMenuContent align="end" className="w-56 overflow-hidden p-0">
+							<ScrollFade className="max-h-[70vh] overflow-y-auto p-1">
+								{onboarded && <DropdownMenuItem onSelect={() => setLibraryOpen(true)}><FileBox className="size-4" />Library</DropdownMenuItem>}
+								{onboarded && <DropdownMenuItem onSelect={() => setWorkspaceOpen(true)}><Settings2 className="size-4" />Workspace settings</DropdownMenuItem>}
+								<DropdownMenuItem onSelect={() => setCmdOpen(true)}><Search className="size-4" />Search / commands<span className="ml-auto rounded border border-border bg-background px-1.5 font-mono text-[10px]">⌘K</span></DropdownMenuItem>
+								<DropdownMenuSeparator />
+								<ThemeMenuItems palette={palette} onPick={applyPalette} saved={savedMenu} />
+							</ScrollFade>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				)}
+
+				{/* Library + Workspace + avatar — desktop primary; on compact they live in ⋯
+				    (above). Advanced surfaces — hidden until a newcomer engages. */}
+				{!compact && onboarded && <Button variant="ghost" size="icon-sm" onClick={() => setLibraryOpen(true)} aria-label="Open Library" title="Library — saved themes &amp; components"><FileBox className="size-[18px]" /></Button>}
+				{!compact && onboarded && <Button variant="ghost" size="icon-sm" onClick={() => setWorkspaceOpen(true)} aria-label="Workspace settings"><Settings2 className="size-[18px]" /></Button>}
+				{!compact && <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[var(--surface-inverse)] text-[12px] font-bold text-white">SA</span>}
 			</header>
 			)}
 
@@ -1294,6 +1341,38 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 }
 
 // ── small local building blocks ─────────────────────────────────────────
+// A scroll container that shows a bottom fade + chevron WHILE more content sits
+// below the fold — the only reliable "there's more" cue for a long menu on touch,
+// where the OS hides native scrollbars and Radix DropdownMenu has no scroll
+// buttons. The cue clears once you reach the bottom. `pointer-events-none` so it
+// never eats a tap on the row beneath it.
+function ScrollFade({ children, className }: { children: React.ReactNode; className?: string }) {
+	const ref = React.useRef<HTMLDivElement>(null);
+	const [more, setMore] = React.useState(false);
+	const check = React.useCallback(() => {
+		const el = ref.current;
+		if (el) setMore(el.scrollHeight - el.scrollTop - el.clientHeight > 4);
+	}, []);
+	React.useLayoutEffect(() => {
+		const el = ref.current;
+		if (!el) return;
+		// ResizeObserver fires once on observe — catching the settled height after the
+		// menu's open animation, when scrollHeight/clientHeight are finally valid.
+		const ro = new ResizeObserver(check);
+		ro.observe(el);
+		return () => ro.disconnect();
+	}, [check]);
+	return (
+		<div className="relative">
+			<div ref={ref} onScroll={check} className={className}>{children}</div>
+			{more && (
+				<div className="pointer-events-none absolute inset-x-0 bottom-0 flex h-8 items-end justify-center bg-gradient-to-t from-popover via-popover/80 to-transparent">
+					<ChevronDown className="size-4 translate-y-[-2px] text-muted-foreground" />
+				</div>
+			)}
+		</div>
+	);
+}
 function PaneBtn({ active, onClick, icon, children }: { active: boolean; onClick: () => void; icon: React.ReactNode; children: React.ReactNode }) {
 	return (
 		<button type="button" onClick={onClick} className={cn('inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-[13px] font-semibold', active ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}>{icon}{children}</button>
