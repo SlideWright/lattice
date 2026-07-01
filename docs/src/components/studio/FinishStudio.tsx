@@ -20,15 +20,21 @@ import {
 	EDGE_TYPES,
 	type FinishRecipe,
 	generateFinishCss,
+	MARK_ANGLE,
+	MARK_SCALE,
 	MARK_TYPES,
 	PLACEMENTS,
 	type Placement,
 	PRESET_RECIPES,
+	placementXY,
 	safeFinishSlug,
 	TEXTURE_TYPES,
+	WASH_SPREAD,
 	WASH_TYPES,
+	washHasHotspot,
 } from './finish-generate';
 import { saveStudioFinish } from './finish-library';
+import { Joystick } from './Joystick';
 
 // The Finish faculty — the third Fabricate workbench (beside Theme + Component),
 // now a real RIGHT-PANEL DESIGNER that mirrors them: a live preview specimen in
@@ -47,6 +53,7 @@ const EDGE_LABEL: Record<string, string> = { none: 'None', vignette: 'Vignette',
 const PLACEMENT_LABEL: Record<Placement, string> = { 'top-left': 'Top left', 'top-right': 'Top right', 'bottom-left': 'Bottom left', 'bottom-right': 'Bottom right', center: 'Center', left: 'Left edge' };
 const PRESETS = ['atrium', 'meridian', 'strata', 'halo', 'ledger', 'nimbus', 'loom', 'savile', 'gallery'] as const;
 const PRESET_LABEL: Record<string, string> = { atrium: 'Atrium', meridian: 'Meridian', strata: 'Strata', halo: 'Halo', ledger: 'Ledger', nimbus: 'Nimbus', loom: 'Loom', savile: 'Savile', gallery: 'Gallery' };
+const clampPct = (n: number): number => Math.max(0, Math.min(100, Math.round(n)));
 
 // A stable preview class so the generated rule (section.finish.finish-<slug>) lands
 // on the specimen section. The specimen carries `finish finish-preview` via _class.
@@ -90,6 +97,28 @@ export function FinishStudio({
 	// never drift out of the closed vocabulary.
 	const patch = (next: Partial<FinishRecipe>) => setRecipe((r) => coerceRecipe({ ...r, ...next }));
 	const startFromPreset = (p: string) => { setRecipe(coerceRecipe(PRESET_RECIPES[p])); notify(`Started from ${PRESET_LABEL[p]} — tweak any layer.`); };
+
+	// Which layers carry a freely placeable element (the joystick / drag handles act on
+	// these). A TEXT mark (monogram/numeral) and a single-source wash both have an x/y.
+	const markPlaceable = recipe.mark.type === 'monogram' || recipe.mark.type === 'numeral';
+	const washPlaceable = washHasHotspot(recipe.wash.type);
+
+	// Position writers. The joystick's onNudge accumulates a STEP per call (per frame
+	// while dragging, once per arrow press); drag-on-canvas sets x/y absolutely. Both
+	// use the functional updater so a burst of rAF nudges reads the LATEST value, not a
+	// stale render closure.
+	const STEP_POS = 1.4; // % of slide per nudge call
+	const nudgeMark = (dx: number, dy: number) => setRecipe((r) => coerceRecipe({ ...r, mark: { ...r.mark, x: clampPct((r.mark.x ?? 50) + dx * STEP_POS), y: clampPct((r.mark.y ?? 50) + dy * STEP_POS) } }));
+	const nudgeWash = (dx: number, dy: number) => setRecipe((r) => coerceRecipe({ ...r, wash: { ...r.wash, x: clampPct((r.wash.x ?? 50) + dx * STEP_POS), y: clampPct((r.wash.y ?? 50) + dy * STEP_POS) } }));
+	const setMarkXY = (x: number, y: number) => setRecipe((r) => coerceRecipe({ ...r, mark: { ...r.mark, x: clampPct(x), y: clampPct(y) } }));
+	const setWashXY = (x: number, y: number) => setRecipe((r) => coerceRecipe({ ...r, wash: { ...r.wash, x: clampPct(x), y: clampPct(y) } }));
+
+	// Drag-on-canvas handles over the live preview — one per placeable element that's
+	// actually rendering (a mark needs a glyph to show; a hotspot needs a single-source
+	// wash). Reads x/y for position; dragging writes absolute x/y.
+	const canvasHandles: CanvasHandleSpec[] = [];
+	if (markPlaceable && recipe.mark.glyph?.trim()) canvasHandles.push({ key: 'mark', label: 'Mark', x: recipe.mark.x ?? 50, y: recipe.mark.y ?? 50, tone: 'accent', onMove: setMarkXY });
+	if (washPlaceable) canvasHandles.push({ key: 'wash', label: 'Wash hotspot', x: recipe.wash.x ?? 50, y: recipe.wash.y ?? 50, tone: 'ink', onMove: setWashXY });
 
 	const exportCss = () => {
 		const cls = `finish finish-${slug}`;
@@ -214,16 +243,19 @@ export function FinishStudio({
 							</div>
 						</div>
 					</div>
-					<DeckPreview
-						options={options}
-						sample={specimen(exporting)}
-						mermaid={false}
-						modeOverride={mode}
-						extraCss={previewCss}
-						debounceMs={140}
-						className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-background shadow-[0_6px_18px_rgba(10,22,40,.10)]"
-						aria-label="Finish specimen"
-					/>
+					<div className="relative">
+						<DeckPreview
+							options={options}
+							sample={specimen(exporting)}
+							mermaid={false}
+							modeOverride={mode}
+							extraCss={previewCss}
+							debounceMs={140}
+							className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-background shadow-[0_6px_18px_rgba(10,22,40,.10)]"
+							aria-label="Finish specimen"
+						/>
+						{canvasHandles.length > 0 && <CanvasHandles handles={canvasHandles} />}
+					</div>
 					{exporting && (
 						<p className="text-[11.5px] leading-relaxed text-[var(--accent)]">Showing the export face — finishes render slightly flatter in baked PDF/PPTX exports.</p>
 					)}
@@ -252,6 +284,18 @@ export function FinishStudio({
 							<Tuned label="Intensity" value={`${recipe.wash.intensity}%`}>
 								<Slider aria-label="Wash intensity" min={3} max={20} value={recipe.wash.intensity} onValueChange={(v) => patch({ wash: { ...recipe.wash, intensity: v } })} />
 							</Tuned>
+						)}
+						{/* Movable hotspot — only single-source washes (corner-glow, spotlight) have one. */}
+						{washPlaceable && (
+							<PlaceControl
+								joystickLabel="Move wash hotspot"
+								x={recipe.wash.x ?? 50}
+								y={recipe.wash.y ?? 50}
+								onNudge={nudgeWash}
+								onSetX={(x) => setWashXY(x, recipe.wash.y ?? 50)}
+								onSetY={(y) => setWashXY(recipe.wash.x ?? 50, y)}
+								size={{ label: 'Spread', value: recipe.wash.spread ?? WASH_SPREAD.default, min: WASH_SPREAD.min, max: WASH_SPREAD.max, suffix: '%', onChange: (v) => patch({ wash: { ...recipe.wash, spread: v } }) }}
+							/>
 						)}
 					</LayerGroup>
 
@@ -292,8 +336,23 @@ export function FinishStudio({
 						)}
 						{recipe.mark.type !== 'none' && recipe.mark.type !== 'bar' && (
 							<Tuned label="Placement">
-								<LayerSelect aria-label="Mark placement" value={recipe.mark.placement} options={PLACEMENTS} labels={PLACEMENT_LABEL} onChange={(v) => patch({ mark: { ...recipe.mark, placement: v as Placement } })} />
+								{/* Coarse quick-place; it ALSO seeds x/y so the joystick/drag start from there. */}
+								<LayerSelect aria-label="Mark placement" value={recipe.mark.placement} options={PLACEMENTS} labels={PLACEMENT_LABEL} onChange={(v) => patch({ mark: { ...recipe.mark, placement: v as Placement, ...placementXY(v as Placement) } })} />
 							</Tuned>
+						)}
+						{/* Free placement — joystick to fling it around, drag the handle on the canvas,
+						    or type exact numbers. Only for the big TEXT glyph (the "huge" thing). */}
+						{markPlaceable && (
+							<PlaceControl
+								joystickLabel="Move mark"
+								x={recipe.mark.x ?? 50}
+								y={recipe.mark.y ?? 50}
+								onNudge={nudgeMark}
+								onSetX={(x) => setMarkXY(x, recipe.mark.y ?? 50)}
+								onSetY={(y) => setMarkXY(recipe.mark.x ?? 50, y)}
+								size={{ label: 'Size', value: recipe.mark.scale ?? MARK_SCALE.default, min: MARK_SCALE.min, max: MARK_SCALE.max, suffix: '%', onChange: (v) => patch({ mark: { ...recipe.mark, scale: v } }) }}
+								angle={{ label: 'Tilt', value: recipe.mark.angle ?? MARK_ANGLE.default, min: MARK_ANGLE.min, max: MARK_ANGLE.max, suffix: '°', onChange: (v) => patch({ mark: { ...recipe.mark, angle: v } }) }}
+							/>
 						)}
 					</LayerGroup>
 
@@ -365,5 +424,130 @@ function LayerSelect({
 				))}
 			</SelectContent>
 		</Select>
+	);
+}
+
+// A numeric scalar spec (size / tilt / spread) — value + range + writer.
+type NumSpec = { label: string; value: number; min: number; max: number; suffix: string; onChange: (v: number) => void };
+
+// A tiny labeled number field (the EXACT, accessible backstop for a transform axis).
+function NumberField({ label, value, min, max, suffix, onChange }: { label: string; value: number; min: number; max: number; suffix: string; onChange: (v: number) => void }) {
+	return (
+		<label className="flex items-center gap-1 rounded-md border border-border bg-card px-1.5 py-1 focus-within:border-[var(--accent)]">
+			<span className="shrink-0 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">{label}</span>
+			<input
+				type="number"
+				value={value}
+				min={min}
+				max={max}
+				onChange={(e) => onChange(Number(e.target.value))}
+				aria-label={`${label} — ${suffix === '°' ? 'degrees' : 'percent'}`}
+				className="w-full min-w-0 bg-transparent text-right font-mono text-[12px] text-foreground outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+			/>
+			<span className="shrink-0 font-mono text-[10px] text-muted-foreground">{suffix}</span>
+		</label>
+	);
+}
+
+// A slider + live value row for a scalar axis (size / tilt / spread).
+function SliderRow({ label, value, min, max, suffix, onChange }: NumSpec) {
+	return (
+		<Tuned label={label} value={`${value}${suffix}`}>
+			<Slider aria-label={label} min={min} max={max} value={value} onValueChange={onChange} />
+		</Tuned>
+	);
+}
+
+// The PLACE control — the hero: a 3D joystick to fling the element around (drag-on-
+// canvas is the other half, in the preview overlay), exact X/Y numeric fields, and a
+// size (+ optional tilt) slider. The joystick is the delight; the numbers are the
+// accessible, deterministic backstop (#15 reuse: Slider + the shared primitives).
+function PlaceControl({
+	joystickLabel,
+	x,
+	y,
+	onNudge,
+	onSetX,
+	onSetY,
+	size,
+	angle,
+}: {
+	joystickLabel: string;
+	x: number;
+	y: number;
+	onNudge: (dx: number, dy: number) => void;
+	onSetX: (x: number) => void;
+	onSetY: (y: number) => void;
+	size: NumSpec;
+	angle?: NumSpec;
+}) {
+	return (
+		<div className="space-y-2.5 rounded-lg border border-border bg-[color-mix(in_srgb,var(--bg)_60%,var(--bg-alt))] p-2.5">
+			<div className="flex items-start gap-3">
+				<Joystick label={joystickLabel} onNudge={onNudge} size={82} />
+				<div className="min-w-0 flex-1 space-y-2">
+					<div className="grid grid-cols-2 gap-1.5">
+						<NumberField label="X" value={x} min={0} max={100} suffix="%" onChange={onSetX} />
+						<NumberField label="Y" value={y} min={0} max={100} suffix="%" onChange={onSetY} />
+					</div>
+					<SliderRow {...size} />
+					{angle && <SliderRow {...angle} />}
+				</div>
+			</div>
+			<p className="text-[10.5px] leading-snug text-muted-foreground">Push the stick to fling it (faster the further you push), drag the dot on the canvas, or type exact values.</p>
+		</div>
+	);
+}
+
+// One draggable placement HANDLE rendered over the live preview — drag-on-canvas. The
+// overlay is pointer-transparent except the handles, so the preview underneath stays
+// interactive. Position is read from x/y (% of slide); dragging writes back absolute
+// x/y from the pointer position within the preview box.
+type CanvasHandleSpec = { key: string; label: string; x: number; y: number; tone: 'accent' | 'ink'; onMove: (x: number, y: number) => void };
+
+function CanvasHandles({ handles }: { handles: CanvasHandleSpec[] }) {
+	const boxRef = React.useRef<HTMLDivElement>(null);
+	const draggingRef = React.useRef<CanvasHandleSpec | null>(null);
+
+	const fromPointer = (clientX: number, clientY: number, h: CanvasHandleSpec) => {
+		const box = boxRef.current;
+		if (!box) return;
+		const r = box.getBoundingClientRect();
+		if (r.width === 0 || r.height === 0) return;
+		h.onMove(((clientX - r.left) / r.width) * 100, ((clientY - r.top) / r.height) * 100);
+	};
+
+	return (
+		<div ref={boxRef} className="pointer-events-none absolute inset-0 z-10">
+			{handles.map((h) => (
+				<button
+					type="button"
+					key={h.key}
+					aria-label={`${h.label} — drag to place`}
+					onPointerDown={(e) => {
+						e.preventDefault();
+						draggingRef.current = h;
+						(e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+					}}
+					onPointerMove={(e) => {
+						if (draggingRef.current?.key === h.key) fromPointer(e.clientX, e.clientY, h);
+					}}
+					onPointerUp={(e) => {
+						draggingRef.current = null;
+						(e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+					}}
+					onPointerCancel={() => {
+						draggingRef.current = null;
+					}}
+					className={cn(
+						'pointer-events-auto absolute grid size-6 -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none place-items-center rounded-full border-2 bg-card/80 shadow-[0_2px_8px_rgba(8,18,38,.35)] backdrop-blur-sm active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]',
+						h.tone === 'accent' ? 'border-[var(--accent)]' : 'border-[color-mix(in_srgb,var(--ink,var(--accent))_70%,var(--border))]',
+					)}
+					style={{ left: `${h.x}%`, top: `${h.y}%` }}
+				>
+					<span className={cn('size-1.5 rounded-full', h.tone === 'accent' ? 'bg-[var(--accent)]' : 'bg-[color-mix(in_srgb,var(--ink,var(--accent))_70%,var(--border))]')} />
+				</button>
+			))}
+		</div>
 	);
 }
