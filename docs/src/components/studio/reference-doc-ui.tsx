@@ -60,7 +60,8 @@ export function useReferenceDoc(notify?: (msg: string) => void, onManage?: () =>
 			const d = await readReferenceDoc(file);
 			const rec = await saveRefDoc(d, Date.now()); // persist to the shared library
 			// Add to the active set (carry the record id so toggle/remove match by identity).
-			setDocs((cur) => (cur.some((x) => x.id === rec.id) ? cur : [...cur, { ...d, id: rec.id }]));
+			// The cap is re-checked INSIDE the updater so concurrent adds can't race past it.
+			setDocs((cur) => (cur.some((x) => x.id === rec.id) || cur.length >= MAX_GROUND_DOCS ? cur : [...cur, { ...d, id: rec.id }]));
 			refresh();
 			notify?.(`Attached “${d.name}” — saved to your library and grounding the next generation (billed each run).`);
 		} catch (e) {
