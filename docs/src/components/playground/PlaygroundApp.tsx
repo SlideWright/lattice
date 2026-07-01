@@ -242,12 +242,19 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 		[setSource, saveSource, syncPickers, freshRender],
 	);
 
+	// Picking a component / variant swaps the deck AND switches to Preview, the same
+	// as a gallery load (applyDeck's `toPreview`). Without it, on the mobile single-
+	// pane layout the pick renders into the still-hidden (display:none, zero-width)
+	// Edit pane, so the deck scales against a 0-width iframe and the FIT gate leaves
+	// it blank until you manually toggle to Preview — and even then the reveal races
+	// a browser-dependent ResizeObserver (blank on iOS Safari). Auto-switching routes
+	// the pick through the same proven reveal path galleries already use.
 	const onPickComponent = React.useCallback(
 		(name: string) => {
 			if (!catalog[name]) return;
 			setCurrentName(name);
 			setVariant('default');
-			applyDeck(catalog[name].sample);
+			applyDeck(catalog[name].sample, { toPreview: true });
 		},
 		[catalog, applyDeck],
 	);
@@ -255,7 +262,7 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 	const onVariantChange = React.useCallback(
 		(key: string) => {
 			setVariant(key);
-			if (currentName) applyDeck(variantSource(catalog, currentName, key));
+			if (currentName) applyDeck(variantSource(catalog, currentName, key), { toPreview: true });
 		},
 		[catalog, currentName, applyDeck],
 	);
@@ -328,6 +335,15 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 	// click Edit then Preview to fix it" report).
 	React.useEffect(() => {
 		document.body.setAttribute('data-pane', pane);
+		// Reveal a deck that was rendered while this pane was display:none (0-width):
+		// on mobile the inactive pane is hidden, so a component/variant pick renders
+		// the deck into a zero-width iframe and the FIT gate keeps `.lattice` hidden
+		// (it can't scale a 0-width box). This effect runs AFTER the attribute above
+		// makes the pane visible, so re-running the in-iframe FIT agent now measures
+		// the real width and flips the deck visible. Direct (not a re-render) so it
+		// can't race the fresh srcdoc write on a gallery/pick load. Mirrors the
+		// Drawing Board, whose setPane sets data-pane THEN renders (drawing-board-pane.js).
+		if (pane === 'preview') frameRef.current?.contentWindow?.__latticeFit?.();
 	}, [pane]);
 	React.useEffect(() => () => document.body.removeAttribute('data-pane'), []);
 
