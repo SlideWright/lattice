@@ -287,7 +287,7 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 		if (!p || gen === 'working') return;
 		setGen('working');
 		try {
-			const out = await generateTheme(core, p, themeDoc.doc);
+			const out = await generateTheme(core, p, themeDoc.docs);
 			if (out.status === 'ok') {
 				setCore(out.essentials as Record<EssKey, string>);
 				setRampStrategy(out.rampStrategy);
@@ -323,7 +323,7 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 		if (!p || compGen === 'working') return;
 		setCompGen('working');
 		try {
-			const out = await generateComponent(p, catalog, compDoc.doc);
+			const out = await generateComponent(p, catalog, compDoc.docs);
 			if (out.status === 'ok') {
 				compDoc.clear();
 				setCompName(out.draft.name);

@@ -37,7 +37,7 @@ export function ArchitectChat({ deckId, source, aiReady, onApply, onConnect, onM
 		setBusy(true);
 		try {
 			const turns: ChatTurn[] = history.map((m) => ({ role: m.role, content: m.content }));
-			const out = await chatComplete(turns, source, refDoc.doc);
+			const out = await chatComplete(turns, source, refDoc.docs);
 			if (out.status === 'offline') {
 				setMessages([...history, { role: 'assistant', content: 'Connect a model in Workspace → AI model and I can answer and edit your deck. Until then I can’t generate a reply.' }]);
 				onConnect();

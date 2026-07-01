@@ -12,7 +12,7 @@ import * as React from 'react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { formatBytes, REF_DOC_ACCEPT, type ReferenceDoc, readReferenceDoc } from './reference-doc';
+import { formatBytes, MAX_GROUND_DOCS, REF_DOC_ACCEPT, type ReferenceDoc, readReferenceDoc } from './reference-doc';
 import { deleteRefDoc, listRefDocs, type RefDocRecord, recordToDoc, saveRefDoc } from './reference-doc-store';
 
 /** A short uppercase type label from the filename (PDF / MD / TXT), for the row badge. */
@@ -39,7 +39,9 @@ function fmtAdded(ts: number): string {
  * `onManage`, when given, adds a "Manage in Library" link to the picker footer.
  */
 export function useReferenceDoc(notify?: (msg: string) => void, onManage?: () => void) {
-	const [doc, setDoc] = React.useState<ReferenceDoc | null>(null);
+	// Multiple docs can ground ONE generation (#656). `docs` is the active set the
+	// caller feeds to generate*/chatComplete; the picker toggles membership.
+	const [docs, setDocs] = React.useState<ReferenceDoc[]>([]);
 	const [saved, setSaved] = React.useState<RefDocRecord[]>([]);
 	const [open, setOpen] = React.useState(false);
 	const inputRef = React.useRef<HTMLInputElement>(null);
@@ -49,23 +51,32 @@ export function useReferenceDoc(notify?: (msg: string) => void, onManage?: () =>
 	}, []);
 	React.useEffect(() => refresh(), [refresh]);
 
+	const capReached = () => { if (docs.length >= MAX_GROUND_DOCS) { notify?.(`You can ground up to ${MAX_GROUND_DOCS} docs at once — remove one first.`); return true; } return false; };
+
 	const onFile = async (file?: File | null) => {
 		if (!file) return;
+		if (capReached()) return;
 		try {
 			const d = await readReferenceDoc(file);
 			const rec = await saveRefDoc(d, Date.now()); // persist to the shared library
-			setDoc({ ...d, id: rec.id }); // carry the record id so delete-by-id can match it
+			// Add to the active set (carry the record id so toggle/remove match by identity).
+			setDocs((cur) => (cur.some((x) => x.id === rec.id) ? cur : [...cur, { ...d, id: rec.id }]));
 			refresh();
-			notify?.(`Attached “${d.name}” — saved to your reference library and grounding the next generation (its tokens are billed each run).`);
+			notify?.(`Attached “${d.name}” — saved to your library and grounding the next generation (billed each run).`);
 		} catch (e) {
 			notify?.((e as Error)?.message || 'Could not read that file.');
 		}
 		if (inputRef.current) inputRef.current.value = ''; // allow re-picking the same file
 	};
 
-	const pickSaved = (rec: RefDocRecord) => {
-		setDoc(recordToDoc(rec));
-		notify?.(`Grounding in “${rec.name}”.`);
+	// Toggle a saved doc in/out of the grounding set; the popover stays open so you
+	// can pick several.
+	const toggleSaved = (rec: RefDocRecord) => {
+		setDocs((cur) => {
+			if (cur.some((d) => d.id === rec.id)) return cur.filter((d) => d.id !== rec.id);
+			if (cur.length >= MAX_GROUND_DOCS) { notify?.(`You can ground up to ${MAX_GROUND_DOCS} docs at once — remove one first.`); return cur; }
+			return [...cur, recordToDoc(rec)];
+		});
 	};
 
 	const removeSaved = async (rec: RefDocRecord, e: React.MouseEvent) => {
@@ -73,7 +84,7 @@ export function useReferenceDoc(notify?: (msg: string) => void, onManage?: () =>
 		e.stopPropagation();
 		await deleteRefDoc(rec.id);
 		refresh();
-		if (doc?.id === rec.id) setDoc(null); // clear the active doc only if it IS the deleted one
+		setDocs((cur) => cur.filter((d) => d.id !== rec.id)); // also drop from the active set
 	};
 
 	const attachButton = (
@@ -88,7 +99,7 @@ export function useReferenceDoc(notify?: (msg: string) => void, onManage?: () =>
 						title="Attach or reuse a reference doc (.txt, .md, .pdf) to ground generation"
 						className={cn(
 							'grid size-7 shrink-0 place-items-center rounded-md hover:bg-[color-mix(in_srgb,var(--accent)_10%,transparent)]',
-							doc ? 'text-[var(--accent)]' : 'text-muted-foreground',
+							docs.length ? 'text-[var(--accent)]' : 'text-muted-foreground',
 						)}
 					>
 						<Paperclip className="size-4" />
@@ -116,11 +127,12 @@ export function useReferenceDoc(notify?: (msg: string) => void, onManage?: () =>
 									<CommandEmpty className="px-3 py-4 text-center text-[11.5px] text-muted-foreground">No docs match your search.</CommandEmpty>
 									<CommandGroup>
 										{saved.map((rec) => {
-											const active = doc?.id === rec.id;
+											const active = docs.some((d) => d.id === rec.id);
 											return (
 												// value = unique id, keywords = name → cmdk selection identity can't collide on
-												// same-named docs, while search still matches the filename.
-												<CommandItem key={rec.id} value={rec.id} keywords={[rec.name]} onSelect={() => { pickSaved(rec); setOpen(false); }} className="group gap-2.5">
+												// same-named docs, while search still matches the filename. onSelect TOGGLES
+												// membership (multi-select) and keeps the popover open.
+												<CommandItem key={rec.id} value={rec.id} keywords={[rec.name]} onSelect={() => toggleSaved(rec)} className="group gap-2.5">
 													<span className={cn('grid size-6 shrink-0 place-items-center rounded-md border border-border bg-card font-mono text-[8.5px] font-bold', rec.docKind === 'pdf' ? 'text-[var(--chart-3,#2e6f00)]' : 'text-[var(--accent)]')}>{typeLabel(rec)}</span>
 													<span className="min-w-0 flex-1">
 														<span className="block truncate text-[12.5px] font-medium text-[var(--text-heading)]">{rec.name}</span>
@@ -152,18 +164,23 @@ export function useReferenceDoc(notify?: (msg: string) => void, onManage?: () =>
 		</>
 	);
 
-	const chip = doc ? (
-		<div className="flex items-center gap-1.5 self-start rounded-full border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[var(--accent-soft)] px-2 py-0.5 text-[11px] text-[var(--text-heading)]">
-			<Paperclip className="size-3 shrink-0 text-[var(--accent)]" />
-			<span className="max-w-[14rem] truncate font-medium">{doc.name}</span>
-			<span className="shrink-0 text-muted-foreground">
-				{doc.kind === 'pdf' ? 'PDF' : 'text'} · {formatBytes(doc.bytes)} · billed each run
-			</span>
-			<button type="button" onClick={() => setDoc(null)} aria-label="Remove reference document" className="ml-0.5 shrink-0 rounded-full p-0.5 text-muted-foreground hover:text-foreground">
-				<X className="size-3" />
-			</button>
+	// One chip per grounding doc (removable), plus an honest combined "billed each run"
+	// note when more than one is attached.
+	const chip = docs.length ? (
+		<div className="flex flex-wrap items-center gap-1.5">
+			{docs.map((d) => (
+				<span key={d.id ?? d.name} className="flex items-center gap-1.5 rounded-full border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[var(--accent-soft)] px-2 py-0.5 text-[11px] text-[var(--text-heading)]">
+					<Paperclip className="size-3 shrink-0 text-[var(--accent)]" />
+					<span className="max-w-[11rem] truncate font-medium">{d.name}</span>
+					<span className="shrink-0 text-muted-foreground">{d.kind === 'pdf' ? 'PDF' : 'text'} · {formatBytes(d.bytes)}</span>
+					<button type="button" onClick={() => setDocs((cur) => cur.filter((x) => x.id !== d.id))} aria-label={`Remove ${d.name}`} className="ml-0.5 shrink-0 rounded-full p-0.5 text-muted-foreground hover:text-foreground">
+						<X className="size-3" />
+					</button>
+				</span>
+			))}
+			<span className="text-[10px] text-muted-foreground">{docs.length > 1 ? `${docs.length} docs · ` : ''}billed each run</span>
 		</div>
 	) : null;
 
-	return { doc, clear: () => setDoc(null), attachButton, chip };
+	return { docs, clear: () => setDocs([]), attachButton, chip };
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sanitizeSlideHtml } from '@/lib/sanitize-slide-html.js';
-import { DOC_PREAMBLE, formatBytes, type GroundMsg, groundMessages, type ReferenceDoc, refDocTokens, sanitizeDocText } from './reference-doc';
+import { DOC_PREAMBLE, formatBytes, type GroundMsg, groundMessages, MAX_GROUND_DOCS, type ReferenceDoc, refDocsTokens, refDocTokens, sanitizeDocText } from './reference-doc';
 
 // #640 — user reference docs ground AI generation. These lock the UNTRUSTED-INPUT
 // threat model (HARD RULE #22): the doc is framed as DATA not instructions, it only
@@ -13,6 +13,7 @@ const base = (): GroundMsg[] => [
 ];
 const textDoc = (text: string): ReferenceDoc => ({ name: 'brand.md', kind: 'text', text, bytes: text.length });
 const pdfDoc = (): ReferenceDoc => ({ name: 'deck.pdf', kind: 'pdf', dataUrl: 'data:application/pdf;base64,AAAA', bytes: 4096 });
+const named = (name: string, text: string): ReferenceDoc => ({ name, kind: 'text', text, bytes: text.length });
 
 describe('sanitizeDocText', () => {
 	it('strips control chars but keeps tab/newline/CR', () => {
@@ -66,6 +67,49 @@ describe('groundMessages — PDF', () => {
 		expect(typeof user).toBe('string');
 		expect(user).toContain('deck.pdf');
 		expect(user).toContain('cloud model');
+	});
+});
+
+describe('groundMessages — multiple docs (#656)', () => {
+	it('inlines several text docs under ONE preamble, each labeled by filename', () => {
+		const { messages, plugins } = groundMessages(base(), [named('brand.md', 'cobalt'), named('voice.md', 'terse')], true);
+		expect(plugins).toBeUndefined();
+		const user = messages[1].content as string;
+		expect((user.match(new RegExp(DOC_PREAMBLE.slice(0, 20), 'g')) || []).length).toBe(1); // preamble once
+		expect(user).toContain('brand.md');
+		expect(user).toContain('cobalt');
+		expect(user).toContain('voice.md');
+		expect(user).toContain('terse');
+		expect(user.endsWith('make a capabilities component')).toBe(true); // request last
+	});
+	it('mixes text + PDF: text inlined in the framed block, each PDF a file part, plugin requested', () => {
+		const { messages, plugins } = groundMessages(base(), [named('brand.md', 'cobalt'), pdfDoc()], true);
+		expect(Array.isArray(plugins)).toBe(true);
+		const parts = messages[1].content as Array<{ type: string; text?: string; file?: { filename: string } }>;
+		expect(parts[0].type).toBe('text');
+		expect(parts[0].text).toContain('cobalt');
+		expect(parts.filter((p) => p.type === 'file')).toHaveLength(1);
+		expect(parts.find((p) => p.type === 'file')?.file?.filename).toBe('deck.pdf');
+	});
+	it('caps the grounding set at MAX_GROUND_DOCS', () => {
+		const many = Array.from({ length: MAX_GROUND_DOCS + 3 }, (_, i) => named(`d${i}.md`, `body${i}`));
+		const { messages } = groundMessages(base(), many, true);
+		const user = messages[1].content as string;
+		expect(user).toContain('body0');
+		expect(user).toContain(`body${MAX_GROUND_DOCS - 1}`);
+		expect(user).not.toContain(`body${MAX_GROUND_DOCS}`); // the over-cap docs are dropped
+	});
+	it('a single doc still works (array-or-scalar accepted)', () => {
+		const { messages } = groundMessages(base(), textDoc('cobalt'), true);
+		expect(messages[1].content as string).toContain('cobalt');
+	});
+});
+
+describe('refDocsTokens', () => {
+	it('sums the per-doc estimate across the set', () => {
+		expect(refDocsTokens([named('a', 'x'.repeat(400)), named('b', 'x'.repeat(400))])).toBe(200);
+		expect(refDocsTokens([])).toBe(0);
+		expect(refDocsTokens(null)).toBe(0);
 	});
 });
 
