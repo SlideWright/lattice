@@ -35,6 +35,21 @@ Final slide. Dark canvas mirror of title.
 
 ---
 
+<!-- _class: closing qr -->
+<!-- _footer: "QR — scan to take the deck · closing qr" -->
+
+`Q3 Board Review`
+
+## Take the deck with you.
+
+Every slide, the appendix, and the workbook — before you go.
+
+- https://slidewright.dev/decks/q3
+- Scan to open `caption`
+
+
+---
+
 <!-- _class: closing silent compact -->
 <!-- _footer: "Composition: compact · closing compact" -->
 

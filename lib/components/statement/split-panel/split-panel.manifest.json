@@ -24,7 +24,12 @@
   "function": "statement",
   "form": "panel",
   "substance": "structure",
-  "density": { "axis": "item", "soft": 16, "hard": 24, "note": "one finding per row, a sentence" },
+  "density": {
+    "axis": "item",
+    "soft": 16,
+    "hard": 24,
+    "note": "one finding per row, a sentence"
+  },
   "bucket": "statement",
   "tags": [
     "summary",
@@ -40,7 +45,8 @@
     "pullquote",
     "steps",
     "watermark",
-    "mirror"
+    "mirror",
+    "qr"
   ],
   "slots": {
     "eyebrow": {
@@ -138,6 +144,11 @@
       "label": "Mirror — swap left and right",
       "caption": "Flips the featured panel to the right and the supporting zone to the left. Use when the deck's reading rhythm wants the panel on the trailing side.",
       "sample": "<!-- _class: split-panel mirror -->\n\n`Eyebrow context`\n\n## Headline on the right-hand panel.\n\nOne-sentence framing paragraph.\n\n- First point\n  - Supporting detail.\n- Second point\n  - Supporting detail.\n"
+    },
+    "qr": {
+      "label": "QR — companion: claim beside a scannable code",
+      "caption": "The `qr` variant adds a scannable code from a payload bullet — a bare URL auto-resolves, or force a non-URL with `` `qr` ``; an optional `` `caption` `` bullet labels it. Reuses the shared QR encoder; the code is a fixed light-paper/dark-ink tile so it scans on any ground.",
+      "sample": "<!-- _class: split-panel qr -->\n\n`Revenue model`\n\n## The full build is in the workbook.\n\nEvery line traces to a driver you can open — three scenarios off one shared set of assumptions.\n\n- https://slidewright.dev/appendix/revenue-model `qr`\n- Scan for the live model `caption`\n"
     }
   }
 }

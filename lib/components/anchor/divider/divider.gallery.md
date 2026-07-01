@@ -45,6 +45,19 @@ Section boundary slide. Dark canvas with a single heading.
 
 ---
 
+<!-- _class: divider qr -->
+<!-- _footer: "QR — scan-to call to action · divider qr" -->
+
+`Next step`
+
+## Begin the pilot.
+
+- https://slidewright.dev/pilot/start
+- Scan to begin `caption`
+
+
+---
+
 <!-- _class: divider silent compact -->
 <!-- _footer: "Composition: compact · divider compact" -->
 

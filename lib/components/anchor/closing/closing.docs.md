@@ -70,6 +70,23 @@ Stamps an auto-incrementing closing number, independent of the divider section c
 `Closing 04`
 ```
 
+### `qr` — QR — scan to take the deck
+
+The `qr` variant adds a scannable code from a payload bullet — a bare URL auto-resolves, or force a non-URL with `` `qr` ``; an optional `` `caption` `` bullet labels it. Reuses the shared QR encoder; the code is a fixed light-paper/dark-ink tile so it scans on any ground.
+
+```markdown
+<!-- _class: closing qr -->
+
+`Q3 Board Review`
+
+## Take the deck with you.
+
+Every slide, the appendix, and the workbook — before you go.
+
+- https://slidewright.dev/decks/q3
+- Scan to open `caption`
+```
+
 ## Universal modifiers
 
 This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.

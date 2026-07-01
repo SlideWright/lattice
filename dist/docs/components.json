@@ -1527,7 +1527,8 @@
       "description": "Final slide. Dark canvas mirror of title.",
       "purpose": "Last slide of every deck. Restates the takeaway or call-to-action. Like title, suppresses header/footer/pagination — the dark canvas signals \"we're done.\"",
       "variants": [
-        "numbered"
+        "numbered",
+        "qr"
       ],
       "effectiveVariants": [
         "accent",
@@ -1548,6 +1549,7 @@
         "no-progress",
         "numbered",
         "pinned",
+        "qr",
         "redacted",
         "revised",
         "safe",
@@ -2795,7 +2797,8 @@
       "purpose": "Marks the start of a major section. Use sparingly — every divider is a context switch for the audience. A 30-slide deck typically has 3-5 dividers; more becomes navigation noise.",
       "variants": [
         "numbered",
-        "light"
+        "light",
+        "qr"
       ],
       "effectiveVariants": [
         "accent",
@@ -2817,6 +2820,7 @@
         "no-progress",
         "numbered",
         "pinned",
+        "qr",
         "redacted",
         "revised",
         "safe",
@@ -7455,7 +7459,8 @@
         "pullquote",
         "steps",
         "watermark",
-        "mirror"
+        "mirror",
+        "qr"
       ],
       "effectiveVariants": [
         "accent",
@@ -7478,6 +7483,7 @@
         "no-progress",
         "pinned",
         "pullquote",
+        "qr",
         "redacted",
         "revised",
         "safe",

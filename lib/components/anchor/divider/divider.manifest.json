@@ -1,16 +1,27 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "divider",
-  "adapt": { "mode": "native", "priority": ["heading", "eyebrow"] },
+  "adapt": {
+    "mode": "native",
+    "priority": [
+      "heading",
+      "eyebrow"
+    ]
+  },
   "function": "anchor",
   "form": "divider",
   "substance": "prose",
-  "tags": ["section-break", "agenda-setting", "walkthrough"],
+  "tags": [
+    "section-break",
+    "agenda-setting",
+    "walkthrough"
+  ],
   "description": "Section boundary slide. Dark canvas with a single heading.",
   "purpose": "Marks the start of a major section. Use sparingly — every divider is a context switch for the audience. A 30-slide deck typically has 3-5 dividers; more becomes navigation noise.",
   "variants": [
     "numbered",
-    "light"
+    "light",
+    "qr"
   ],
   "slots": {
     "heading": {
@@ -79,7 +90,14 @@
       "label": "Light — bright-canvas sub-section break",
       "caption": "Drops the dark canvas for the standard bright body-slide background, centers the heading, and shrinks it to h2 weight. Use for mid-section orientation that shouldn't carry the full context-switch weight of a dark divider. Absorbed the standalone `subtopic` component on 2026-06-07.",
       "sample": "<!-- _class: divider light -->\n\n`The Framework · Component 02`\n\n## Before we can score a signal, we have to agree on what one is.\n"
+    },
+    "qr": {
+      "label": "QR — scan-to call to action",
+      "caption": "The `qr` variant adds a scannable code from a payload bullet — a bare URL auto-resolves, or force a non-URL with `` `qr` ``; an optional `` `caption` `` bullet labels it. Reuses the shared QR encoder; the code is a fixed light-paper/dark-ink tile so it scans on any ground.",
+      "sample": "<!-- _class: divider qr -->\n\n`Next step`\n\n## Begin the pilot.\n\n- https://slidewright.dev/pilot/start\n- Scan to begin `caption`\n"
     }
   },
-  "showcase": { "featured": true }
+  "showcase": {
+    "featured": true
+  }
 }

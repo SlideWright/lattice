@@ -45,6 +45,16 @@ in patch versions.
 
 ### Added
 
+- **General `qr` variant — a scannable code on closing / divider / split-panel.**
+  Add `qr` to a host's class and a payload bullet, and the slide gains a QR: a bare
+  URL auto-resolves (`- https://…`), or force any string with the `qr` key
+  (`- WIFI:… `qr``); an optional `- <text> `caption`` labels it. The host owns the
+  layout — `closing qr` / `divider qr` center the code as a CTA, `split-panel qr` is
+  the companion (claim beside the code). Reuses the shared rendered-HTML parse kernel
+  and `qrSvg` encoder (HARD RULE #1); `<a href>` links encode the href, not the text;
+  three lint guards catch missing / empty / duplicate payloads. See `examples/qr.md`
+  and `engineering/decisions/2026-07-01-qr-authoring-grammar.md`.
+
 - **Reference docs are now searchable to pick and manageable in the Library (#651).** The
   chat/Fabricate paperclip picker is now a **searchable** popover (search box + scroll), so a
   reference library of any size stays usable instead of a flat dropdown — rows show honest

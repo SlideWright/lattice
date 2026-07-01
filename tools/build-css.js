@@ -112,6 +112,7 @@ const SYNTAX_HIGHLIGHT_SOURCE = 'lib/integrations/highlight-js/highlight-js.css'
 // Lives in the chart bucket under an underscore-prefixed folder
 // (skipped by the component loader and the bucket-wide CSS walker).
 const CHART_FAMILY_SOURCE = 'lib/components/chart/_chart-family/chart-family.css';
+const QR_GENERAL_SOURCE = 'lib/components/connect/_qr-card/qr-general.css';
 // 27 utility classes (12 tints + 11 marks + treatment-none reset) for
 // peripheral atmospheric accents. All palette-blind via var(--accent).
 const TREATMENTS_SOURCE = 'lib/base/base.treatments.css';
@@ -478,6 +479,11 @@ function bundle() {
   if (chartFamily) {
     parts.push(`/* === ${CHART_FAMILY_SOURCE} === */`);
     parts.push(chartFamily);
+  }
+  const qrGeneral = readIfExists(QR_GENERAL_SOURCE);
+  if (qrGeneral) {
+    parts.push(`/* === ${QR_GENERAL_SOURCE} === */`);
+    parts.push(qrGeneral);
   }
   const treatments = readIfExists(TREATMENTS_SOURCE);
   if (treatments) {

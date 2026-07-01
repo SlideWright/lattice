@@ -151,6 +151,23 @@ Stamps an auto-incrementing closing number, independent of the divider section c
 `Closing 04`
 ```
 
+##### `qr` — QR — scan to take the deck
+
+The `qr` variant adds a scannable code from a payload bullet — a bare URL auto-resolves, or force a non-URL with `` `qr` ``; an optional `` `caption` `` bullet labels it. Reuses the shared QR encoder; the code is a fixed light-paper/dark-ink tile so it scans on any ground.
+
+```markdown
+<!-- _class: closing qr -->
+
+`Q3 Board Review`
+
+## Take the deck with you.
+
+Every slide, the appendix, and the workbook — before you go.
+
+- https://slidewright.dev/decks/q3
+- Scan to open `caption`
+```
+
 #### Universal modifiers
 
 This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.
@@ -247,6 +264,21 @@ Drops the dark canvas for the standard bright body-slide background, centers the
 `The Framework · Component 02`
 
 ## Before we can score a signal, we have to agree on what one is.
+```
+
+##### `qr` — QR — scan-to call to action
+
+The `qr` variant adds a scannable code from a payload bullet — a bare URL auto-resolves, or force a non-URL with `` `qr` ``; an optional `` `caption` `` bullet labels it. Reuses the shared QR encoder; the code is a fixed light-paper/dark-ink tile so it scans on any ground.
+
+```markdown
+<!-- _class: divider qr -->
+
+`Next step`
+
+## Begin the pilot.
+
+- https://slidewright.dev/pilot/start
+- Scan to begin `caption`
 ```
 
 #### Universal modifiers
@@ -714,6 +746,23 @@ One-sentence framing paragraph.
   - Supporting detail.
 - Second point
   - Supporting detail.
+```
+
+##### `qr` — QR — companion: claim beside a scannable code
+
+The `qr` variant adds a scannable code from a payload bullet — a bare URL auto-resolves, or force a non-URL with `` `qr` ``; an optional `` `caption` `` bullet labels it. Reuses the shared QR encoder; the code is a fixed light-paper/dark-ink tile so it scans on any ground.
+
+```markdown
+<!-- _class: split-panel qr -->
+
+`Revenue model`
+
+## The full build is in the workbook.
+
+Every line traces to a driver you can open — three scenarios off one shared set of assumptions.
+
+- https://slidewright.dev/appendix/revenue-model `qr`
+- Scan for the live model `caption`
 ```
 
 #### Universal modifiers
