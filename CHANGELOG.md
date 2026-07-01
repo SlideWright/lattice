@@ -308,6 +308,15 @@ in patch versions.
 
 ### Changed
 
+- **The Studio's Fabricate studio is code-split out of the initial load.** Fabricate
+  — the theme / component / finish fabrication workspace, its FinishStudio and
+  LayoutStudio subtrees, and its own large icon set — is reached only via the
+  Fabricate tab, so it now loads on first open (`React.lazy`) instead of riding in
+  the main Studio island. That trims **~74 KB uncompressed (~19 KB gzipped)** off
+  the payload every Studio visitor downloads up front — the heaviest thing a
+  mobile user waits on — with no change to Fabricate itself beyond a one-tick
+  "Loading…" on first open. The interactive app surfaces are now under the nightly
+  perf watch (see Fixed), so this stays measured.
 - **Studio AI component canon now teaches odd/fixed-aspect shapes to fill the stage, not float or overflow (#610, #643 spike).**
   Live validation (#639) found the "design for fit" canon reasons about element *count* and *monumentality* but not about how a
   non-rectangular or fixed-aspect shape (hexagon, disc, stamp, film frame) distributes into the 16:9 stage — so hexagon tiles
