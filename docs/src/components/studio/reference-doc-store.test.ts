@@ -22,7 +22,7 @@ beforeEach(() => {
 describe('recordToDoc', () => {
 	it('rehydrates the in-memory ReferenceDoc a call consumes', () => {
 		const rec: RefDocRecord = { id: 'r_1', kind: 'refdoc', name: 'brand.pdf', docKind: 'pdf', dataUrl: 'data:application/pdf;base64,AA', bytes: 2048, addedAt: 5 };
-		expect(recordToDoc(rec)).toEqual({ name: 'brand.pdf', kind: 'pdf', text: undefined, dataUrl: 'data:application/pdf;base64,AA', bytes: 2048 });
+		expect(recordToDoc(rec)).toEqual({ id: 'r_1', name: 'brand.pdf', kind: 'pdf', text: undefined, dataUrl: 'data:application/pdf;base64,AA', bytes: 2048 });
 	});
 });
 

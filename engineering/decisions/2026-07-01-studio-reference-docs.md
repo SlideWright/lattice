@@ -1,7 +1,7 @@
 ---
 date: 2026-07-01
 issue: 640
-status: accepted
+status: shipped
 summary: >
   Studio gains user-supplied reference docs that GROUND AI generation (theme /
   component / deck chat) — a brand guide, an existing deck, a brief. A live probe

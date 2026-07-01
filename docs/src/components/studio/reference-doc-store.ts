@@ -23,9 +23,10 @@ export type RefDocRecord = {
 
 const REFDOC_KIND = 'refdoc';
 
-/** Rehydrate the in-memory ReferenceDoc a generation call consumes from a record. */
+/** Rehydrate the in-memory ReferenceDoc a generation call consumes from a record.
+ *  Carries the record `id` so the UI can match the active doc by identity. */
 export function recordToDoc(rec: RefDocRecord): ReferenceDoc {
-	return { name: rec.name, kind: rec.docKind, text: rec.text, dataUrl: rec.dataUrl, bytes: rec.bytes };
+	return { id: rec.id, name: rec.name, kind: rec.docKind, text: rec.text, dataUrl: rec.dataUrl, bytes: rec.bytes };
 }
 
 /** Persist a doc to the shared library (dedups by name — re-adding replaces in

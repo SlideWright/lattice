@@ -42,6 +42,9 @@ export type ReferenceDoc = {
 	dataUrl?: string;
 	/** Raw file size in bytes — for the honest size/cost readout. */
 	bytes: number;
+	/** The library-record id once persisted — lets the UI compare the active doc to a
+	 *  saved record by identity (not name), so deleting a same-named row can't clear it. */
+	id?: string;
 };
 
 // Accept list for the file picker + a hard size ceiling. PDFs inline as base64 in
@@ -83,15 +86,16 @@ export function sanitizeDocText(raw: string): string {
 	return t;
 }
 
-/** A cheap token estimate (~4 chars/token) of what the doc ADDS to a call, for the
- *  pre-send budget guard. Text is exact-ish; a PDF's extracted length is unknown
- *  client-side, so estimate conservatively from byte size (over-estimating cost is
- *  the safe direction for a guard — the authoritative number rides back post-call). */
+/** A rough token estimate of what the doc ADDS to a call, for the pre-send budget
+ *  guard only. Text is exact-ish (~4 chars/token). A PDF's server-EXTRACTED length
+ *  is unknown client-side, so we approximate from byte size (~1 token / 6 bytes) —
+ *  a heuristic, NOT a hard ceiling: a dense text PDF can bill more per byte than
+ *  this assumes. That's acceptable because this only feeds the pre-send estimate;
+ *  the authoritative per-call cost still rides back via `usage.cost` post-call, so
+ *  the worst case is one call that slips past the cap, never runaway spend. */
 export function refDocTokens(doc: ReferenceDoc | null | undefined): number {
 	if (!doc) return 0;
 	if (doc.kind === 'text') return Math.ceil((doc.text?.length ?? 0) / 4);
-	// A text PDF extracts to far fewer chars than its byte size; ~1 token / 6 bytes
-	// is a deliberate over-estimate that still won't wildly overshoot a small guide.
 	return Math.ceil(doc.bytes / 6);
 }
 

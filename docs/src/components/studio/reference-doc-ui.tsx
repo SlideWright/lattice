@@ -32,8 +32,8 @@ export function useReferenceDoc(notify?: (msg: string) => void) {
 		if (!file) return;
 		try {
 			const d = await readReferenceDoc(file);
-			setDoc(d);
-			await saveRefDoc(d, Date.now()); // persist to the shared library
+			const rec = await saveRefDoc(d, Date.now()); // persist to the shared library
+			setDoc({ ...d, id: rec.id }); // carry the record id so delete-by-id can match it
 			refresh();
 			notify?.(`Attached “${d.name}” — saved to your reference library and grounding the next generation (its tokens are billed each run).`);
 		} catch (e) {
@@ -52,12 +52,14 @@ export function useReferenceDoc(notify?: (msg: string) => void) {
 		e.stopPropagation();
 		await deleteRefDoc(rec.id);
 		refresh();
-		if (doc?.name === rec.name) setDoc(null);
+		if (doc?.id === rec.id) setDoc(null); // clear the active doc only if it IS the deleted one
 	};
 
 	const attachButton = (
 		<>
-			<DropdownMenu>
+			{/* Re-read the shared library each time the picker opens, so a doc saved (or
+			    deleted) from another surface's picker shows up here without a remount. */}
+			<DropdownMenu onOpenChange={(open) => open && refresh()}>
 				<DropdownMenuTrigger asChild>
 					<button
 						type="button"
