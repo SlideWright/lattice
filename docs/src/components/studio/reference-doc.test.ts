@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sanitizeSlideHtml } from '@/lib/sanitize-slide-html.js';
-import { DOC_PREAMBLE, type GroundMsg, groundMessages, type ReferenceDoc, refDocTokens, sanitizeDocText } from './reference-doc';
+import { DOC_PREAMBLE, formatBytes, type GroundMsg, groundMessages, type ReferenceDoc, refDocTokens, sanitizeDocText } from './reference-doc';
 
 // #640 — user reference docs ground AI generation. These lock the UNTRUSTED-INPUT
 // threat model (HARD RULE #22): the doc is framed as DATA not instructions, it only
@@ -85,6 +85,15 @@ describe('threat model (#22)', () => {
 		const clean = sanitizeSlideHtml(dirty);
 		expect(clean).toContain('On-brand copy');
 		expect(clean).not.toContain('<script');
+	});
+});
+
+describe('formatBytes', () => {
+	it('shows B under 1 KB (a tiny brief is not "0 KB"), KB, then MB', () => {
+		expect(formatBytes(71)).toBe('71 B');
+		expect(formatBytes(2048)).toBe('2.0 KB');
+		expect(formatBytes(144_713)).toBe('141 KB');
+		expect(formatBytes(3 * 1024 * 1024)).toBe('3.0 MB');
 	});
 });
 

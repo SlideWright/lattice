@@ -9,7 +9,7 @@ import { Paperclip, Plus, Trash2, X } from 'lucide-react';
 import * as React from 'react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
-import { REF_DOC_ACCEPT, type ReferenceDoc, readReferenceDoc } from './reference-doc';
+import { formatBytes, REF_DOC_ACCEPT, type ReferenceDoc, readReferenceDoc } from './reference-doc';
 import { deleteRefDoc, listRefDocs, type RefDocRecord, recordToDoc, saveRefDoc } from './reference-doc-store';
 
 /**
@@ -105,7 +105,7 @@ export function useReferenceDoc(notify?: (msg: string) => void) {
 			<Paperclip className="size-3 shrink-0 text-[var(--accent)]" />
 			<span className="max-w-[14rem] truncate font-medium">{doc.name}</span>
 			<span className="shrink-0 text-muted-foreground">
-				{doc.kind === 'pdf' ? 'PDF' : 'text'} · {(doc.bytes / 1024).toFixed(0)} KB · billed each run
+				{doc.kind === 'pdf' ? 'PDF' : 'text'} · {formatBytes(doc.bytes)} · billed each run
 			</span>
 			<button type="button" onClick={() => setDoc(null)} aria-label="Remove reference document" className="ml-0.5 shrink-0 rounded-full p-0.5 text-muted-foreground hover:text-foreground">
 				<X className="size-3" />

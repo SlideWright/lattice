@@ -95,6 +95,14 @@ export function refDocTokens(doc: ReferenceDoc | null | undefined): number {
 	return Math.ceil(doc.bytes / 6);
 }
 
+/** Human-readable file size — B under 1 KB (so a 71-byte brief isn't "0 KB"),
+ *  KB up to 1 MB, else MB. */
+export function formatBytes(n: number): string {
+	if (n < 1024) return `${n} B`;
+	if (n < 1024 * 1024) return `${(n / 1024).toFixed(n < 10 * 1024 ? 1 : 0)} KB`;
+	return `${(n / 1024 / 1024).toFixed(1)} MB`;
+}
+
 const readAs = (file: File, how: 'text' | 'dataURL'): Promise<string> =>
 	new Promise((resolve, reject) => {
 		const r = new FileReader();
