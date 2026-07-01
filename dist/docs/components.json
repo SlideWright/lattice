@@ -42,7 +42,8 @@
       "diagram",
       "math",
       "code",
-      "legal"
+      "legal",
+      "connect"
     ],
     "tags": {
       "idiom": [
@@ -167,7 +168,7 @@
       ]
     }
   },
-  "count": 53,
+  "count": 55,
   "components": [
     {
       "name": "actors",
@@ -2220,6 +2221,116 @@
         }
       ],
       "galleryHref": "../../lib/components/comparison/compare-table/compare-table.gallery.light.pdf"
+    },
+    {
+      "name": "contact",
+      "bucket": "connect",
+      "function": "statement",
+      "form": "panel",
+      "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
+      "adapt": {
+        "mode": "native",
+        "priority": [
+          "fields",
+          "title"
+        ]
+      },
+      "tags": [
+        "reference",
+        "onboarding",
+        "kickoff"
+      ],
+      "description": "An identity card that encodes a vCard: name, title and contact lines beside a QR that saves the presenter to a phone.",
+      "purpose": "Use as the \"scan to add me\" close or a speaker-intro slide. The QR encodes a vCard the audience saves in one tap; the card shows the name as hero with title/org and a contact ledger. Author the fields as a postfix-key list.",
+      "variants": [],
+      "effectiveVariants": [
+        "accent",
+        "archived",
+        "compact",
+        "confidential",
+        "dark",
+        "draft",
+        "form",
+        "loose",
+        "mark-orbit",
+        "mark-threads",
+        "no-footer",
+        "no-form",
+        "no-header",
+        "no-paginate",
+        "no-period",
+        "no-progress",
+        "pinned",
+        "redacted",
+        "revised",
+        "safe",
+        "scale-2xl",
+        "scale-l",
+        "scale-xl",
+        "silent",
+        "tbd",
+        "tint-corner at-tl",
+        "tint-edge at-right",
+        "tint-vignette",
+        "tone-fail",
+        "tone-pass",
+        "tone-skip",
+        "tone-warn",
+        "treatment-none",
+        "wip",
+        "with-period"
+      ],
+      "familyModifiers": [],
+      "slots": {
+        "title": {
+          "selector": "h2",
+          "required": false,
+          "description": "Optional framing heading; the person's name is the visual hero, drawn from the `name` field."
+        },
+        "fields": {
+          "selector": "ul > li",
+          "required": true,
+          "description": "One field per bullet in postfix-key form — value first, trailing inline-code names the field: `- Sharmarke Aden `name``. Keys: name (required), title|role, org|company, email, phone|tel, url|web."
+        }
+      },
+      "skeleton": "<!-- _class: contact -->\n\n## Add me.\n\n- Full Name `name`\n- Title `title`\n- Organization `org`\n- name@example.com `email`\n",
+      "whenToUse": [
+        {
+          "title": "The scan-to-add-me close",
+          "body": "End a pitch or intro with a code the audience scans to save your contact, instead of trading business cards."
+        },
+        {
+          "title": "Show what you choose, encode the rest",
+          "body": "Every non-empty field goes into the vCard; the card foregrounds the name, title and org and lists email/phone/url beneath."
+        }
+      ],
+      "antiPatterns": [
+        {
+          "title": "Not a team roster",
+          "body": "One card is one person. For a set of people use an inventory layout; a contact card is a single identity."
+        },
+        {
+          "title": "Don't bold the field values",
+          "body": "The value leads and the key is a trailing inline-code tag — `- Sharmarke Aden `name``. Don't write `- **Name:** Sharmarke Aden`; the transform reads the postfix key, not a bold label."
+        }
+      ],
+      "related": [
+        {
+          "name": "wifi",
+          "when": "the card is a network to join rather than a person"
+        }
+      ],
+      "galleryHref": "../../lib/components/connect/contact/contact.gallery.light.pdf"
     },
     {
       "name": "content",
@@ -8411,6 +8522,116 @@
         }
       ],
       "galleryHref": "../../lib/components/comparison/verdict-grid/verdict-grid.gallery.light.pdf"
+    },
+    {
+      "name": "wifi",
+      "bucket": "connect",
+      "function": "statement",
+      "form": "panel",
+      "substance": "structure",
+      "orientation": [
+        "landscape",
+        "portrait"
+      ],
+      "families": [
+        "wide",
+        "square",
+        "tall",
+        "strip"
+      ],
+      "adapt": {
+        "mode": "native",
+        "priority": [
+          "fields",
+          "title"
+        ]
+      },
+      "tags": [
+        "reference",
+        "onboarding",
+        "kickoff"
+      ],
+      "description": "A network join card: readable Wi-Fi credentials beside a QR a phone scans to connect in one tap.",
+      "purpose": "Use to get a room onto the Wi-Fi without reading a password aloud. The QR encodes the standard WIFI: payload; the same details render legibly for anyone typing them by hand. Author the fields as a postfix-key list.",
+      "variants": [],
+      "effectiveVariants": [
+        "accent",
+        "archived",
+        "compact",
+        "confidential",
+        "dark",
+        "draft",
+        "form",
+        "loose",
+        "mark-orbit",
+        "mark-threads",
+        "no-footer",
+        "no-form",
+        "no-header",
+        "no-paginate",
+        "no-period",
+        "no-progress",
+        "pinned",
+        "redacted",
+        "revised",
+        "safe",
+        "scale-2xl",
+        "scale-l",
+        "scale-xl",
+        "silent",
+        "tbd",
+        "tint-corner at-tl",
+        "tint-edge at-right",
+        "tint-vignette",
+        "tone-fail",
+        "tone-pass",
+        "tone-skip",
+        "tone-warn",
+        "treatment-none",
+        "wip",
+        "with-period"
+      ],
+      "familyModifiers": [],
+      "slots": {
+        "title": {
+          "selector": "h2",
+          "required": true,
+          "description": "The card heading (e.g. \"Join the room.\")."
+        },
+        "fields": {
+          "selector": "ul > li",
+          "required": true,
+          "description": "One field per bullet in postfix-key form — value first, trailing inline-code names the field: `- Offsite-Guest `ssid``. Keys: ssid|network (required), password|pass, security|auth. Omit the password for an open network."
+        }
+      },
+      "skeleton": "<!-- _class: wifi -->\n\n## Join the room.\n\n- Network-Name `ssid`\n- network-password `password`\n- WPA2 `security`\n",
+      "whenToUse": [
+        {
+          "title": "Get the room connected",
+          "body": "Guests scan to join instead of squinting at a password on the slide — the credentials are still shown for anyone who prefers to type."
+        },
+        {
+          "title": "Open networks are one field short",
+          "body": "Drop the password bullet and the card renders an open network; the QR encodes it as `nopass`."
+        }
+      ],
+      "antiPatterns": [
+        {
+          "title": "Not for secrets that outlive the room",
+          "body": "A rendered deck is persistent and shareable. Use it for guest/offsite networks, not for credentials that must not leak."
+        },
+        {
+          "title": "Don't bold the field values",
+          "body": "The value leads and the key is a trailing inline-code tag — `- Offsite-Guest `ssid``. Don't write `- **SSID:** Offsite-Guest`; the transform reads the postfix key, not a bold label."
+        }
+      ],
+      "related": [
+        {
+          "name": "contact",
+          "when": "the card is a person's identity rather than a network"
+        }
+      ],
+      "galleryHref": "../../lib/components/connect/wifi/wifi.gallery.light.pdf"
     },
     {
       "name": "word-cloud",

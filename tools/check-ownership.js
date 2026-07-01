@@ -1225,6 +1225,9 @@ const SANCTIONED_DENSITY_EXEMPT = {
   math: 'figural — typeset equation',
   image: 'figural — picture',
   'logo-wall': 'figural — logos',
+  // connect — QR cards; fields are credentials/identity values (ssid, email), not prose.
+  wifi: 'connect — Wi-Fi credentials, not prose',
+  contact: 'connect — vCard identity fields, not prose',
   // data grids — [x]/checkmark cells / feature matrices; word-counting mis-fires.
   'obligation-matrix': 'data grid — [x] cells, not prose',
   pricing: 'data grid — feature checklist, terse labels',

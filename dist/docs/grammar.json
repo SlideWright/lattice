@@ -55,7 +55,7 @@
       "degradesTo": "code-block"
     }
   },
-  "count": 53,
+  "count": 55,
   "components": [
     {
       "name": "actors",
@@ -890,6 +890,67 @@
       "requiredSlots": [
         "title",
         "table"
+      ],
+      "modifiers": [
+        "accent",
+        "archived",
+        "compact",
+        "confidential",
+        "dark",
+        "draft",
+        "form",
+        "loose",
+        "mark-orbit",
+        "mark-threads",
+        "no-footer",
+        "no-form",
+        "no-header",
+        "no-paginate",
+        "no-period",
+        "no-progress",
+        "pinned",
+        "redacted",
+        "revised",
+        "safe",
+        "scale-2xl",
+        "scale-l",
+        "scale-xl",
+        "silent",
+        "tbd",
+        "tint-corner at-tl",
+        "tint-edge at-right",
+        "tint-vignette",
+        "tone-fail",
+        "tone-pass",
+        "tone-skip",
+        "tone-warn",
+        "treatment-none",
+        "wip",
+        "with-period"
+      ],
+      "familyModifiers": [],
+      "readsStateMarkers": false
+    },
+    {
+      "name": "contact",
+      "classToken": "contact",
+      "bucket": "connect",
+      "substance": "structure",
+      "skeleton": "<!-- _class: contact -->\n\n## Add me.\n\n- Full Name `name`\n- Title `title`\n- Organization `org`\n- name@example.com `email`\n",
+      "slots": {
+        "title": {
+          "selector": "h2",
+          "required": false,
+          "description": "Optional framing heading; the person's name is the visual hero, drawn from the `name` field."
+        },
+        "fields": {
+          "selector": "ul > li",
+          "required": true,
+          "description": "One field per bullet in postfix-key form — value first, trailing inline-code names the field: `- Sharmarke Aden `name``. Keys: name (required), title|role, org|company, email, phone|tel, url|web."
+        }
+      },
+      "requiredSlots": [
+        "fields"
       ],
       "modifiers": [
         "accent",
@@ -3685,6 +3746,68 @@
         "heat"
       ],
       "readsStateMarkers": true
+    },
+    {
+      "name": "wifi",
+      "classToken": "wifi",
+      "bucket": "connect",
+      "substance": "structure",
+      "skeleton": "<!-- _class: wifi -->\n\n## Join the room.\n\n- Network-Name `ssid`\n- network-password `password`\n- WPA2 `security`\n",
+      "slots": {
+        "title": {
+          "selector": "h2",
+          "required": true,
+          "description": "The card heading (e.g. \"Join the room.\")."
+        },
+        "fields": {
+          "selector": "ul > li",
+          "required": true,
+          "description": "One field per bullet in postfix-key form — value first, trailing inline-code names the field: `- Offsite-Guest `ssid``. Keys: ssid|network (required), password|pass, security|auth. Omit the password for an open network."
+        }
+      },
+      "requiredSlots": [
+        "title",
+        "fields"
+      ],
+      "modifiers": [
+        "accent",
+        "archived",
+        "compact",
+        "confidential",
+        "dark",
+        "draft",
+        "form",
+        "loose",
+        "mark-orbit",
+        "mark-threads",
+        "no-footer",
+        "no-form",
+        "no-header",
+        "no-paginate",
+        "no-period",
+        "no-progress",
+        "pinned",
+        "redacted",
+        "revised",
+        "safe",
+        "scale-2xl",
+        "scale-l",
+        "scale-xl",
+        "silent",
+        "tbd",
+        "tint-corner at-tl",
+        "tint-edge at-right",
+        "tint-vignette",
+        "tone-fail",
+        "tone-pass",
+        "tone-skip",
+        "tone-warn",
+        "treatment-none",
+        "wip",
+        "with-period"
+      ],
+      "familyModifiers": [],
+      "readsStateMarkers": false
     },
     {
       "name": "word-cloud",

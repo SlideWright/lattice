@@ -668,9 +668,9 @@ describe('component-manifest', () => {
       assert.deepEqual(validate(m), []);
     });
 
-    test('BUCKETS is FUNCTIONS plus chart, diagram, math, code, and legal', () => {
+    test('BUCKETS is FUNCTIONS plus chart, diagram, math, code, legal, and connect', () => {
       assert.deepEqual([...BUCKETS].sort(), [
-        'anchor', 'chart', 'code', 'comparison', 'diagram', 'evidence',
+        'anchor', 'chart', 'code', 'comparison', 'connect', 'diagram', 'evidence',
         'imagery', 'inventory', 'legal', 'math', 'progression', 'statement',
       ]);
       for (const fn of FUNCTIONS) assert.ok(BUCKETS.includes(fn));
