@@ -149,6 +149,50 @@ describe('overflow-probe', () => {
     }
   });
 
+  test('section base: an OUT-OF-FLOW decorative child that bleeds is NOT counted (moved logo / finish mark)', () => {
+    // A finish mark (::before, not even a child) or a moved/scaled deck-logo bleeds past
+    // the slide edge; raw scrollHeight/scrollWidth count it, false-tripping the ring. The
+    // section base now measures FLOWED children only, so the decorative bleed is ignored
+    // even though the raw dims are inflated.
+    const prev = global.getComputedStyle;
+    global.getComputedStyle = (el) => ({ position: el._position || 'static' });
+    try {
+      const s = {
+        scrollHeight: 900, clientHeight: 700, scrollWidth: 1500, clientWidth: 1280, // raw INFLATED by the bleed
+        getBoundingClientRect: () => ({ top: 0, bottom: 700, left: 0, right: 1280 }),
+        children: [
+          { _position: 'absolute', getBoundingClientRect: () => ({ top: -40, bottom: 900, left: 1100, right: 1500, width: 400, height: 940 }) }, // bleeding decorative layer
+          { getBoundingClientRect: () => ({ top: 20, bottom: 680, left: 0, right: 1280, width: 1280, height: 660 }) }, // real content, fits
+        ],
+        querySelectorAll: () => [],
+      };
+      assert.equal(probeSectionOverflow(s, CLIP_CELL_SELECTOR, TOL).over, false, 'decorative bleed must not trip the ring');
+    } finally {
+      global.getComputedStyle = prev;
+    }
+  });
+
+  test('section base: a real IN-FLOW spill IS still counted', () => {
+    const prev = global.getComputedStyle;
+    global.getComputedStyle = (el) => ({ position: el._position || 'static' });
+    try {
+      const s = {
+        scrollHeight: 700, clientHeight: 700, scrollWidth: 1280, clientWidth: 1280,
+        getBoundingClientRect: () => ({ top: 0, bottom: 700, left: 0, right: 1280 }),
+        children: [
+          { getBoundingClientRect: () => ({ top: 20, bottom: 820, left: 0, right: 1280, width: 1280, height: 800 }) }, // spills 120 below
+        ],
+        querySelectorAll: () => [],
+      };
+      const r = probeSectionOverflow(s, CLIP_CELL_SELECTOR, TOL);
+      assert.equal(r.over, true);
+      assert.equal(r.vOver, true);
+      assert.equal(r.scrollH, 700 + 120);
+    } finally {
+      global.getComputedStyle = prev;
+    }
+  });
+
   test('CLIP_CELL_SELECTOR names the current bounded content cells', () => {
     assert.match(CLIP_CELL_SELECTOR, /\.cell-stage/);
     assert.match(CLIP_CELL_SELECTOR, /\.panel-right/);
