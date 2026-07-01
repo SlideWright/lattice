@@ -51,6 +51,25 @@ describe('lint-core: isKnownModifier', () => {
   });
 });
 
+describe('lint-core: unknown-debug-facet', () => {
+  const facetTokens = (src) =>
+    core.lintTextWith(src, vocab).filter((f) => f.rule === 'unknown-debug-facet').map((f) => f.classToken);
+
+  test('valid profiles + facet lists do not warn', () => {
+    for (const v of ['on', 'off', 'all', 'identity size', 'class, box']) {
+      assert.deepEqual(facetTokens(`---\ndebug: ${v}\n---\n\n# A\n`), [], `\`debug: ${v}\` should be clean`);
+    }
+  });
+
+  test('a typo in a facet list warns with the bad token(s)', () => {
+    assert.deepEqual(facetTokens('---\ndebug: sixe layout\n---\n\n# A\n'), ['sixe']);
+  });
+
+  test('a per-slide `<!-- _debug: … -->` facet typo warns too', () => {
+    assert.deepEqual(facetTokens('# A\n\n<!-- _debug: bogus -->\n'), ['bogus']);
+  });
+});
+
 describe('lint-core: capacity-overflow ↔ autosplit', () => {
   const capVocab = {
     names: new Set(['checklist']),

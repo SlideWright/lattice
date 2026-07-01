@@ -29,8 +29,8 @@ describe('resolveFacets', () => {
 		assert.equal(resolveFacets(null, null), null); // no attribute
 		assert.equal(resolveFacets('off', null), null);
 		assert.equal(resolveFacets('false', null), null);
-		assert.deepEqual(resolveFacets('on', null), ['identity', 'size', 'layout']);
-		assert.deepEqual(resolveFacets('', null), ['identity', 'size', 'layout']); // bare _debug
+		assert.deepEqual(resolveFacets('on', null), ['identity', 'layout', 'size']);
+		assert.deepEqual(resolveFacets('', null), ['identity', 'layout', 'size']); // bare _debug
 	});
 
 	test('a facet list is intersected with the known levers, in canonical order', async () => {
@@ -39,14 +39,14 @@ describe('resolveFacets', () => {
 		assert.deepEqual(resolveFacets('class, box', null), ['class', 'box']);
 		assert.deepEqual(resolveFacets('all', null), ['identity', 'layout', 'size', 'class', 'box']);
 		// unknown-only falls back to the default profile (lint warns on the typo separately)
-		assert.deepEqual(resolveFacets('bogus', null), ['identity', 'size', 'layout']);
+		assert.deepEqual(resolveFacets('bogus', null), ['identity', 'layout', 'size']);
 	});
 
 	test('session override wins: force off mutes a debugging deck; force on lights a plain one', async () => {
 		const { resolveFacets } = await load();
 		assert.equal(resolveFacets('on', 'off'), null);
 		assert.equal(resolveFacets('identity size', 'off'), null);
-		assert.deepEqual(resolveFacets(null, 'on'), ['identity', 'size', 'layout']);
+		assert.deepEqual(resolveFacets(null, 'on'), ['identity', 'layout', 'size']);
 		assert.deepEqual(resolveFacets('class', 'on'), ['class']); // deck's own facets kept
 	});
 });
@@ -56,7 +56,7 @@ describe('facetLabel', () => {
 
 	test('default profile → identity · layout(+gap) · size', async () => {
 		const { facetLabel } = await load();
-		assert.equal(facetLabel(info, ['identity', 'size', 'layout']), 'verdict-grid · 720×360 · grid gap:16');
+		assert.equal(facetLabel(info, ['identity', 'layout', 'size']), 'verdict-grid · grid gap:16 · 720×360');
 	});
 
 	test('layout drops the gap suffix when there is none; class/box are opt-in', async () => {

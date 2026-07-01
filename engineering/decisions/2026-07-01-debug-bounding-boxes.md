@@ -208,9 +208,16 @@ Outline hue encodes **layout mode**, the single most useful fact for layout debu
 3. **Debug overlay agent** — config parse, layout-mode AA/CVD palette, corner-label
    overlay (zero flow), depth gating + hover-isolate. Extend
    `bbox-overlay.test.js` for the CSS/DOM contract and config parser.
-4. **Wire the surfaces** — `deck-preview.js` (Playground + Drawing Board) and
-   `single-slide-render.ts` (Studio) first (the three named), then
-   `presenter-window.js`, `drawing-board-practice.js`, `drawing-board-focus.js`.
+4. **Wire the surfaces** — the three AUTHORING previews:
+   `PlaygroundApp.tsx` + `drawing-board-render.js` (both via the shared
+   `deck-preview.js` filmstrip) and `single-slide-render.ts` (Studio). Each calls
+   `applyDebug(frame, {force})` after a render/patch and on the fresh-frame load.
+   **Presentation/rehearsal frames (`presenter-window.js`,
+   `drawing-board-practice.js`, `drawing-board-focus.js`) are deliberately OUT of
+   scope** — you don't debug layout mid-present, and outlines there would be a
+   distraction, not an aid. The filmstrip surfaces honour the shared session
+   override; the single-slide path strictly follows the deck (so a landing/showcase
+   specimen can't inherit a viewer's Studio/Playground override).
 5. **Toggle = session override** — front-matter default; toolbar/localStorage overrides
    for the session. Update DeckSetupSheet + Studio settings copy.
 6. **Docs + changelog + demo** — this doc, an engineering page section, `CHANGELOG`
@@ -227,3 +234,30 @@ Outline hue encodes **layout mode**, the single most useful fact for layout debu
   Heuristic — refine if names read poorly.
 - **Perf on huge decks:** only label *rendered* sections (the filmstrip already
   lazy-renders via `content-visibility`); the agent must not walk off-screen slides.
+
+---
+
+## Status (2026-07-01) — shipped in this branch
+
+- **Slices 1–2 (engine):** `debug` directive recognized + applied; `render()`
+  strips `data-debug` unless `{preview:true}` (export choke point turned out to be
+  the shared engine `render()`, not `marp-bundle.js`). Unit-tested, byte-identical
+  exports.
+- **Slice 3 (agent):** `docs/src/playground/debug-overlay.js` — layout-mode outlines
+  (Okabe-Ito AA/CVD palette), configurable levers (default `identity · layout · size`;
+  `debug: all` adds `class` + `box`), zero-flow corner labels via a fixed
+  `pointer-events:none` overlay (position from `getBoundingClientRect`, size from
+  `offsetWidth/Height`), de-overlap cascade, hover-isolate. Labels are gated to the
+  slide + grid/flex containers + grid cells (not flex leaf content) so a dense grid
+  stays readable.
+- **Slice 4 (surfaces):** wired into Playground, Drawing Board, and Studio (see §8);
+  presentation/rehearsal frames intentionally excluded.
+- **Slice 5 (toggle):** `debug-prefs.js` session override ('on'/'off'/follow); the
+  Playground toolbar toggle + Deck-setup switch drive it; Studio follows the deck.
+- **Slice 6:** `debug:` facet lint warning (`unknown-debug-facet`), `examples/debug.md`
+  demo, this doc, CHANGELOG. Verified in dark + light.
+
+**#9 (demo PDF) note:** debug is preview-only and stripped from export, so a committed
+demo PDF would be byte-identical to a non-debug deck. `examples/debug.md` ships without
+a committed `.pdf` for that reason — the demo's value is the *preview*, and the visual
+evidence is the review screenshots.

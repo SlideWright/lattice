@@ -37,10 +37,12 @@ export function setDebugOverride(val) {
 	}
 }
 
-/** Subscribe to same-page changes. Returns an unsubscribe fn. */
+/** Subscribe to same-page changes. Returns an unsubscribe fn (void). */
 export function onDebugOverrideChange(fn) {
 	listeners.add(fn);
-	return () => listeners.delete(fn);
+	return () => {
+		listeners.delete(fn);
+	};
 }
 
 /**

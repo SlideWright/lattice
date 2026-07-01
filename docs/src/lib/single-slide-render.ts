@@ -23,6 +23,7 @@
 // pulls bundled .woff2 that Node can't load, so a static import would break this
 // module in a Node/SSR context — the lazy import keeps construction Node-safe.
 
+import { applyDebug } from '../playground/debug-overlay.js';
 import { DEFAULT_H, DEFAULT_W, singleSlideFrame } from '../playground/frame-css.js';
 import { ensureEngine } from './load-engine';
 import { sanitizeSlideHtml } from './sanitize-slide-html.js';
@@ -234,7 +235,15 @@ export function createSingleSlideRenderer(opts: SingleSlideOptions) {
 						new ResizeObserver(() => scaleFrame(host)).observe(host);
 					}
 				}
-				fr.onload = () => scaleFrame(host);
+				// After the frame loads: fit it, then draw the layout debug overlay if the
+				// deck opted in (`data-debug`, stamped from `debug:` front matter). This
+				// single-slide path strictly FOLLOWS THE DECK (force:null) — it never reads
+				// the toolbar override, so a specimen on the landing/showcase pages can't
+				// inherit a debug flag a viewer flipped in the Studio/Playground.
+				fr.onload = () => {
+					scaleFrame(host);
+					applyDebug(fr, { force: null });
+				};
 				fr.srcdoc = srcdoc(out.html, out.css, mode, mermaid, geom, extraCss);
 				scaleFrame(host);
 				host.classList.add('is-live');

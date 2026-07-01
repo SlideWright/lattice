@@ -49,6 +49,22 @@ in patch versions.
   preamble and attaches each PDF as its own file part — the #22 threat model is unchanged (every
   doc is framed as data; generated HTML still crosses the sanitizer).
 
+- **`debug:` front matter turns on the layout debug overlay in every authoring
+  preview.** Set `debug: on` (deck-wide) or `<!-- _debug -->` (one slide) and the
+  Playground, Drawing Board, and Studio previews outline each box by its **layout
+  mode** — grid (blue), flex (vermillion), flow (grey), an Okabe-Ito CVD-safe palette
+  that clears WCAG-AA over both preview backgrounds — and label the structural boxes
+  (the slide, grid/flex containers, grid cells) with a configurable set of levers:
+  `identity · layout · size` by default, plus opt-in `class` and `box` (`debug: all`
+  shows everything). Labels ride in a `pointer-events:none` overlay with **zero
+  layout impact**, de-overlapped so a container and its first cell don't collide, with
+  hover-to-isolate for dense grids. It is **preview-only**: the engine strips
+  `data-debug` from every export, so exported PDF/PPTX/HTML bytes are identical whether
+  a deck says `debug: on` or not. A Playground toolbar toggle + Deck-setup switch give
+  a per-session override (`on`/`off`/follow-the-deck). Demo: `examples/debug.md`;
+  design: `engineering/decisions/2026-07-01-debug-bounding-boxes.md`. (Replaces the
+  former Playground-only "bounding boxes" viewer toggle.)
+
 ### Fixed
 
 - **The reference-doc picker's delete is now reachable on touch and by keyboard (#651
@@ -76,16 +92,6 @@ in patch versions.
   and the deck-lint validates both keys.
 
 ### Added
-
-- **General `qr` variant — a scannable code on closing / divider / split-panel.**
-  Add `qr` to a host's class and a payload bullet, and the slide gains a QR: a bare
-  URL auto-resolves (`- https://…`), or force any string with the `qr` key
-  (`- WIFI:… `qr``); an optional `- <text> `caption`` labels it. The host owns the
-  layout — `closing qr` / `divider qr` center the code as a CTA, `split-panel qr` is
-  the companion (claim beside the code). Reuses the shared rendered-HTML parse kernel
-  and `qrSvg` encoder (HARD RULE #1); `<a href>` links encode the href, not the text;
-  three lint guards catch missing / empty / duplicate payloads. See `examples/qr.md`
-  and `engineering/decisions/2026-07-01-qr-authoring-grammar.md`.
 
 - **Reference docs are now searchable to pick and manageable in the Library (#651).** The
   chat/Fabricate paperclip picker is now a **searchable** popover (search box + scroll), so a
@@ -325,27 +331,6 @@ in patch versions.
 
 ### Fixed
 
-- **The Workbench no longer jumps as it loads (mobile CLS 0.18 → 0).** The Theme
-  Studio's control panel ships its "Start from" starters and "Essentials" color
-  fields as empty containers that the engine fills imperatively once it boots — so
-  on a throttled connection the shell painted them at 0px, then the fill shoved
-  every block below down in one lurch (a ~0.18 Cumulative Layout Shift on a phone,
-  0.058 on desktop — the page's only shift, now surfaced by the perf watch that
-  finally measures it). The two containers now reserve their populated height up
-  front (the same `min-height` idiom the live-preview host already uses), so the
-  fill lands in place: measured CLS drops to 0 on mobile and 0.01 on desktop, with
-  no change to the settled layout at any width.
-- **The nightly perf watch measures the site again — and now covers the Studio.**
-  When the docs site retired its `/lattice` project-page base for the root base
-  (`/`) on 2026-06-28, the two Lighthouse collection configs (`lighthouserc.cjs`,
-  `lighthouserc.mobile.cjs`) still pointed at `/lattice/…` URLs, so `lhci collect`
-  404'd and the nightly `perf-nightly.yml` HEAD collection failed outright — the
-  watch had been measuring nothing since. The URLs are corrected to the root base,
-  and the list gains the three interactive app surfaces (`/studio/`,
-  `/drawing-board/`, `/workbench/` — the heavy CodeMirror + live-engine shells a
-  user actually authors in) so the surface most likely to regress on a mid-tier
-  phone is finally under standing coverage. See
-  `engineering/decisions/2026-06-15-docs-perf-gating-policy.md`.
 - **Finish glyph-marks no longer paint a baked placeholder on every slide.** A
   glyph-mark (the ghost monogram / numeral) is now **author-personalized and never
   appears in a finish by default** — a deck-wide `finish:` register (or a per-slide
@@ -372,18 +357,6 @@ in patch versions.
 
 ### Changed
 
-- **The Studio's Fabricate studio is code-split out of the initial load.** Fabricate
-  — the theme / component / finish fabrication workspace, its FinishStudio and
-  LayoutStudio subtrees, and its own large icon set — is reached only via the
-  Fabricate tab, so it now loads on first open (`React.lazy`) instead of riding in
-  the main Studio island. Deferring it pulls its whole subtree out of the initial
-  static JS graph, which drops from **1365 KB → 783 KB uncompressed (460 KB → 269 KB
-  gzipped; ~272 KB brotli as Cloudflare serves it) — a ~41% cut** to the JS every
-  Studio visitor downloads up front, the heaviest thing a mobile user waits on. No
-  change to Fabricate itself beyond a one-tick "Loading…" on first open. Measured
-  on the live Cloudflare deployment (branch preview vs `main`) and corroborated by
-  an identical-tooling local build; the interactive app surfaces are now under the
-  nightly perf watch (see Fixed), so this stays measured.
 - **Studio AI component canon now teaches odd/fixed-aspect shapes to fill the stage, not float or overflow (#610, #643 spike).**
   Live validation (#639) found the "design for fit" canon reasons about element *count* and *monumentality* but not about how a
   non-rectangular or fixed-aspect shape (hexagon, disc, stamp, film frame) distributes into the 16:9 stage — so hexagon tiles

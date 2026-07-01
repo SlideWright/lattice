@@ -32,6 +32,8 @@
 // so either ordering is handled.
 
 import { createThemeFetcher } from '../lib/theme-fetch.ts';
+import { applyDebug } from './debug-overlay.js';
+import { getDebugOverride } from './debug-prefs.js';
 import { createChartInteract } from './drawing-board-chart-interact.js';
 import { createPaneTabs, DB_PANE_KEY } from './drawing-board-pane.js';
 
@@ -222,6 +224,10 @@ export function createRenderController(data) {
 				});
 				previewState = r.state;
 				totalSlides = r.count;
+				// Debug overlay: follow the deck's `debug:` (the shared session override
+				// can force it). Re-applies here for the section-PATCH path (live doc); a
+				// full srcdoc rewrite re-applies on `db-frame-ready` below.
+				applyDebug(frame, { force: getDebugOverride() });
 				recomputeStarts();
 				setSlideStatus();
 			} catch (e) {
@@ -320,6 +326,7 @@ export function createRenderController(data) {
 			// A srcdoc rewrite replaced the iframe document — re-bind the hover layer
 			// to the new doc (its old listeners + section refs died with the old one).
 			if (chartInteract) chartInteract.rebind();
+			applyDebug(frame, { force: getDebugOverride() });
 		}
 	});
 	function wireEditor() {

@@ -1,4 +1,4 @@
-// debug-overlay.js — the layout DEBUG overlay for the live preview. Colour-codes
+// debug-overlay.js — the layout DEBUG overlay for the live preview. Color-codes
 // every box by its LAYOUT MODE (grid / flex / flow) and draws an inside-corner
 // LABEL on each structural box (the slide, every grid/flex container, and their
 // cells/tiles) reading a configurable set of "levers": identity · layout · size
@@ -31,20 +31,20 @@ export const DEBUG_OVERLAY_ID = 'lattice-debug-overlay';
 // The levers. `identity size layout` is the default profile (`debug: on`); `class`
 // and `box` are opt-in. Order here is the render order on the chip.
 export const FACETS = ['identity', 'layout', 'size', 'class', 'box'];
-const DEFAULT_FACETS = ['identity', 'size', 'layout'];
+const DEFAULT_FACETS = ['identity', 'layout', 'size'];
 const OFF_VALUES = new Set(['off', 'false', 'no', '0']);
 const ON_VALUES = new Set(['', 'on', 'true', 'yes', '1']);
 
-// Layout-mode → outline hue. Okabe-Ito CVD-safe blue/vermillion + a neutral grey
+// Layout-mode → outline hue. Okabe-Ito CVD-safe blue/vermillion + a neutral gray
 // for ordinary flow (deliberately low-emphasis so grid/flex containers pop). Every
 // hue clears WCAG AA non-text contrast (>=3:1) over BOTH preview backgrounds
 // (near-black #0c0c0c and light #e7e7ea) — verified in
 // test/unit/playground/debug-overlay.test.js. The mode WORD also rides on the
-// label, so the encoding is never colour-only (CVD redundancy, #16-06 CVD doc).
+// label, so the encoding is never color-only (CVD redundancy, #16-06 CVD doc).
 export const LAYOUT_COLORS = Object.freeze({
 	grid: '#0072b2', //   grid containers — blue
 	flex: '#d55e00', //   flex containers — vermillion
-	flow: '#6e6e6e', //   normal block/inline flow — neutral grey
+	flow: '#6e6e6e', //   normal block/inline flow — neutral gray
 });
 
 /**
@@ -92,7 +92,7 @@ export function resolveFacets(value, force) {
 	return parseFacetList(norm);
 }
 
-// A space/comma list of facet tokens → the known subset (order normalised to
+// A space/comma list of facet tokens → the known subset (order normalized to
 // FACETS). `all` expands to every facet. An empty/unknown-only list falls back to
 // the default profile so a typo still shows something useful (the lint gate warns
 // on unknown tokens separately).
@@ -120,7 +120,7 @@ export function facetLabel(info, facets) {
 	return parts.join(' · ');
 }
 
-// The static stylesheet: outline colour keyed on the `data-dbg-layout` the agent
+// The static stylesheet: outline color keyed on the `data-dbg-layout` the agent
 // stamps, plus the label-chip + hover-isolate rules. Outline-only (never border),
 // `outline-offset:-1px` so a child's line never bleeds past its parent.
 export function debugCss() {
@@ -139,7 +139,7 @@ export function debugCss() {
 		`#${DEBUG_OVERLAY_ID} .dbg-chip[data-dbg-layout="grid"]{border-left-color:${LAYOUT_COLORS.grid};}`,
 		`#${DEBUG_OVERLAY_ID} .dbg-chip[data-dbg-layout="flex"]{border-left-color:${LAYOUT_COLORS.flex};}`,
 		`#${DEBUG_OVERLAY_ID} .dbg-chip[data-dbg-layout="flow"]{border-left-color:${LAYOUT_COLORS.flow};}`,
-		// Hover-isolate: when the pointer is over a labelled box, the agent adds
+		// Hover-isolate: when the pointer is over a labeled box, the agent adds
 		// `.dbg-isolating` to the overlay and `.dbg-hot` to that box's chip. Everything
 		// else dims so a dense grid stays readable. No pointer-events needed — the
 		// agent hit-tests via elementFromPoint on the underlying document.
@@ -208,7 +208,7 @@ export function applyDebug(frame, opts = {}) {
 	const getStyle = (el) => (win?.getComputedStyle ? win.getComputedStyle(el) : {});
 	for (const { sec, i, facets } of enabled) {
 		// Walk the section + descendants; stamp the layout mode (drives the outline
-		// colour) and label the structural boxes.
+		// color) and label the structural boxes.
 		const els = [sec, ...sec.querySelectorAll('*')];
 		for (const el of els) {
 			if (!el.getAttribute) continue;

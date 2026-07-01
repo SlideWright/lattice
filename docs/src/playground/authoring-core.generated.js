@@ -603,6 +603,7 @@ ${indent}   - ${body.trim()}`;
       if (vocab.modeNames) findings.push(...findUnknownMode(source, vocab.modeNames));
       findings.push(...findBackdropIssues(source));
       if (vocab.splitNames) findings.push(...findUnknownSplit(source, vocab.splitNames));
+      findings.push(...findBadDebugFacets(source));
       findings.push(...findGanttIssues(source));
       findings.push(...findAutosplitOrientationMismatch(source));
       return findings;
@@ -931,6 +932,35 @@ ${indent}   - ${body.trim()}`;
         message: `'${value}' is not a known split mode \u2014 the deck would silently fall back to 'rule' (split on ---)`,
         fix: `Set front-matter \`split:\` to one of: ${[...splitNames].join(", ")}.`
       }];
+    }
+    var DEBUG_FACETS = /* @__PURE__ */ new Set(["identity", "layout", "size", "class", "box"]);
+    var DEBUG_KEYWORDS = /* @__PURE__ */ new Set(["on", "off", "true", "false", "yes", "no", "0", "1", "all"]);
+    function findBadDebugFacets(source) {
+      const out = [];
+      const seen = /* @__PURE__ */ new Map();
+      const fmBlock = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+      if (fmBlock) {
+        const m = fmBlock[1].match(/^\s*debug:\s*(.*)$/m);
+        if (m) seen.set(m[1], m[0].trim());
+      }
+      for (const c of source.matchAll(/<!--\s*_?debug\s*:\s*([^>]*?)\s*-->/g)) seen.set(c[1], c[0].trim());
+      for (const [rawValue, line] of seen) {
+        const value = rawValue.trim().replace(/^["']|["']$/g, "");
+        if (value === "") continue;
+        const tokens = value.toLowerCase().split(/[\s,]+/).filter(Boolean);
+        const bad = tokens.filter((t) => !DEBUG_FACETS.has(t) && !(tokens.length === 1 && DEBUG_KEYWORDS.has(t)));
+        if (!bad.length) continue;
+        out.push({
+          slide: 0,
+          rule: "unknown-debug-facet",
+          severity: "warning",
+          classToken: bad.join(" "),
+          line,
+          message: `'${bad.join("', '")}' ${bad.length > 1 ? "are not known debug levers" : "is not a known debug lever"} \u2014 the overlay falls back to the default profile`,
+          fix: `Use \`debug: on\`/\`off\`/\`all\`, or a list of: ${[...DEBUG_FACETS].join(", ")}.`
+        });
+      }
+      return out;
     }
     module.exports = {
       CLASS_DIRECTIVE,
