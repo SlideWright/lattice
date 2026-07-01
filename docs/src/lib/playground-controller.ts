@@ -85,3 +85,18 @@ export function resolveThemeName(palette: string, mode: 'light' | 'dark', hasDar
 export function renderSig(theme: string, mode: string, w: number, h: number): string {
 	return `${theme}|${mode}|${w}x${h}`;
 }
+
+/**
+ * Keep the render on a palette the engine can actually theme. `lattice-docs-palette`
+ * is persisted across sessions and seeded onto `data-palette` before hydration; a
+ * value that names a retired/renamed theme would 404 its theme CSS and blank the
+ * preview (the "blank in my browser, fine in private browsing" report). Returns the
+ * palette unchanged when it is still registered, else a safe default (`indaco` when
+ * present, else the first known palette). An empty vocabulary (the test harness, or
+ * before the palette list loads) is a pass-through — we can't judge validity, so we
+ * don't override.
+ */
+export function sanitizePalette(palette: string, valid: string[]): string {
+	if (!valid.length || valid.includes(palette)) return palette;
+	return valid.includes('indaco') ? 'indaco' : valid[0];
+}

@@ -134,12 +134,18 @@ const pgData = {
 		<title>Lattice playground — try it in the browser</title>
 		<meta name="description" content="Write Lattice Markdown and watch it render to boardroom slides live in your browser. Start from any component template." />
 		<link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
-		<script is:inline>
+		<script is:inline define:vars={{ validPalettes: palettes }}>
 			(function () {
 				var r = document.documentElement;
 				try {
 					var p = localStorage.getItem('lattice-docs-palette');
-					if (p) r.setAttribute('data-palette', p);
+					// Only adopt a persisted palette that is still a registered theme. A
+					// retired/renamed palette from an earlier session would 404 its theme
+					// CSS and blank the live preview (the "blank in my browser, fine in
+					// private browsing" report); drop it so we keep the default data-palette
+					// and it self-heals instead of failing every render.
+					if (p && validPalettes.indexOf(p) !== -1) r.setAttribute('data-palette', p);
+					else if (p) localStorage.removeItem('lattice-docs-palette');
 					var m = localStorage.getItem('lattice-docs-mode');
 					if (m === 'light' || m === 'dark') r.setAttribute('data-mode', m);
 					else if (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) r.setAttribute('data-mode', 'dark');
