@@ -36,10 +36,10 @@ const DEFAULT_FACETS = ['identity', 'layout', 'size'];
 //   hover  (default) → chips hold back until you point at a box, then that box +
 //                      its containers reveal the FULL detail. Keeps a dense slide
 //                      clean; you pull information in only where you look.
-//   always            → every structural box's chip is pinned on at once (a full
+//   always / pinned  → every structural box's chip is pinned on at once (a full
 //                      static map). Hover still enriches the box you point at.
-// Written as a token in the same `debug:` list (`debug: always`, `debug: hover class`).
-const REVEAL_MODES = new Set(['hover', 'always', 'pinned']);
+// Written as a token in the same `debug:` list (`debug: always`, `debug: hover class`),
+// classified out from facets in parseConfig().
 const OFF_VALUES = new Set(['off', 'false', 'no', '0']);
 const ON_VALUES = new Set(['', 'on', 'true', 'yes', '1']);
 
