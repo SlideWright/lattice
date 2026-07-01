@@ -45,6 +45,7 @@ export function Joystick({ onNudge, label, axis = 'both', disabled = false, size
 	// Live, ref-held push vector so the rAF loop reads the latest without re-subscribing.
 	const vecRef = React.useRef({ x: 0, y: 0 });
 	const rafRef = React.useRef<number | null>(null);
+	const kbTimerRef = React.useRef<number | null>(null); // keyboard flick settle timer
 	const onNudgeRef = React.useRef(onNudge);
 	onNudgeRef.current = onNudge;
 	// `active` drives the visual (raised, accent ring); the vector drives the math.
@@ -76,6 +77,7 @@ export function Joystick({ onNudge, label, axis = 'both', disabled = false, size
 			const el = baseRef.current;
 			if (!el) return;
 			const r = el.getBoundingClientRect();
+			if (r.width === 0 || r.height === 0) return; // not laid out yet — avoid 0/0 → NaN
 			const cx = r.left + r.width / 2;
 			const cy = r.top + r.height / 2;
 			const radius = r.width / 2;
@@ -123,12 +125,24 @@ export function Joystick({ onNudge, label, axis = 'both', disabled = false, size
 		if (dx === 0 && dy === 0) return;
 		e.preventDefault();
 		onNudgeRef.current(dx, dy);
-		// A brief visual flick toward the key, then settle.
+		// A brief visual flick toward the key, then settle (timer cleared on unmount).
 		setKnob({ x: dx * 0.6, y: dy * 0.6 });
-		window.setTimeout(() => setKnob({ x: 0, y: 0 }), 110);
+		if (kbTimerRef.current !== null) clearTimeout(kbTimerRef.current);
+		kbTimerRef.current = window.setTimeout(() => setKnob({ x: 0, y: 0 }), 110);
 	};
 
-	React.useEffect(() => stopLoop, [stopLoop]); // tear down the loop on unmount
+	// Tear down the loop + settle timer on unmount.
+	React.useEffect(
+		() => () => {
+			stopLoop();
+			if (kbTimerRef.current !== null) clearTimeout(kbTimerRef.current);
+		},
+		[stopLoop],
+	);
+	// If the control is disabled mid-drag, abandon the loop so onNudge stops firing.
+	React.useEffect(() => {
+		if (disabled) release();
+	}, [disabled, release]);
 
 	// 3D visual. The plate sits in a perspective box; the inner assembly tilts toward
 	// the push (rotateY by x, rotateX by -y), and the knob slides + lifts. A reduced-
