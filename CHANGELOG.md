@@ -57,8 +57,9 @@ in patch versions.
   (the slide, grid/flex containers, grid cells) with a configurable set of levers:
   `identity · layout · size` by default, plus opt-in `class` and `box` (`debug: all`
   shows everything). Labels default to **hover reveal**: at rest you see only the
-  color-coded outlines, and pointing at a box reveals its label — and its container
-  chain — in full detail, so a dense grid never becomes a wall of chips (`debug:
+  color-coded outlines, and pointing at a box (or **tapping** it on touch) reveals its
+  label — and its container chain — in full detail, so a dense grid never becomes a
+  wall of chips (`debug:
   always` pins every chip on at once for a static map). Labels ride in a
   `pointer-events:none` overlay with **zero layout impact**, de-overlapped so a
   container and its first cell don't collide. It is **preview-only**: the engine strips

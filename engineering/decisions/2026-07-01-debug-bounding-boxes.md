@@ -109,7 +109,9 @@ color-coded outlines; pointing at a box reveals its chip *and its container chai
 enriched to the full lever set. `debug: always` pins every chip on at once (the old
 behavior) for a static map. Reveal is a token in the same list, classified out from
 facets: `debug: always`, `debug: hover class box`. Default is `hover`. This is what
-kills the wall-of-chips density — you pull detail in only where you look.
+kills the wall-of-chips density — you pull detail in only where you look. **Touch has
+no hover**, so a **tap** reveals a box's chain (tap it again, or tap empty space, to
+dismiss) via a `pointerdown` handler; mouse keeps its hover behavior.
 
 Unknown facet tokens are a lint **warning** (not an error), listed by
 `lint-core.js`, mirroring how `finish` / `mode` / `split` vocab is validated.

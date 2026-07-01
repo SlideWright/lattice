@@ -77,8 +77,9 @@ everywhere else; a spot directive just overrides the box it sits on.
 `<!-- _debug: off -->` silences the overlay on one slide even while the deck is
 debugging — handy once a layout is settled and the boxes are just noise.
 
-Because labels are hover-summoned by default, a busy grid never becomes a wall of
-chips: you pull detail in only where you point, one box (and its containers) at a time.
+Because labels are summoned by default, a busy grid never becomes a wall of chips:
+you pull detail in only where you look — **hover** on desktop, **tap** on touch —
+one box (and its containers) at a time.
 
 ---
 

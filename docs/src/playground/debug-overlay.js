@@ -269,7 +269,7 @@ export function applyDebug(frame, opts = {}) {
 		win.addEventListener('resize', redraw);
 		win.addEventListener('scroll', redraw, { passive: true });
 		doc.__dbgResize = redraw;
-		// Hover: track the box under the pointer; renderChips reveals it (+ its
+		// Hover (mouse): track the box under the pointer; renderChips reveals it (+ its
 		// containers) and, in `hover` mode, hides everything else.
 		const move = (e) => {
 			doc.__dbgHot = hitBox(doc, overlay, e);
@@ -279,10 +279,20 @@ export function applyDebug(frame, opts = {}) {
 			doc.__dbgHot = null;
 			renderChips(doc, win);
 		};
+		// Touch has no hover, so a TAP reveals a box's label (tap it again, or tap empty
+		// space, to dismiss); mouse clicks just set the box (hover keeps updating after).
+		const down = (e) => {
+			const hit = hitBox(doc, overlay, e);
+			const touch = e.pointerType && e.pointerType !== 'mouse';
+			doc.__dbgHot = touch && hit && hit === doc.__dbgHot ? null : hit;
+			renderChips(doc, win);
+		};
 		doc.addEventListener('mousemove', move);
 		doc.addEventListener('mouseleave', leave);
+		doc.addEventListener('pointerdown', down);
 		doc.__dbgMove = move;
 		doc.__dbgLeave = leave;
+		doc.__dbgDown = down;
 	}
 	if (win?.setTimeout) {
 		for (const t of [80, 320, 1200]) win.setTimeout(redraw, t);
@@ -396,7 +406,8 @@ function teardown(doc, win) {
 	}
 	if (doc.__dbgMove) doc.removeEventListener('mousemove', doc.__dbgMove);
 	if (doc.__dbgLeave) doc.removeEventListener('mouseleave', doc.__dbgLeave);
-	doc.__dbgResize = doc.__dbgMove = doc.__dbgLeave = doc.__dbgHot = null;
+	if (doc.__dbgDown) doc.removeEventListener('pointerdown', doc.__dbgDown);
+	doc.__dbgResize = doc.__dbgMove = doc.__dbgLeave = doc.__dbgDown = doc.__dbgHot = null;
 	// Drop the per-element stamps so a toggled-off pass leaves the DOM pristine.
 	if (doc.querySelectorAll) {
 		for (const el of Array.from(doc.querySelectorAll('[data-dbg-layout]'))) el.removeAttribute('data-dbg-layout');

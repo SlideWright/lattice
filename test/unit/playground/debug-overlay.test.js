@@ -172,4 +172,19 @@ describe('applyDebug — lifecycle', () => {
 		applyDebug(frame, { force: 'on' });
 		assert.ok(frame.contentDocument.getElementById(DEBUG_OVERLAY_ID), 'overlay injected by override');
 	});
+
+	test('touch: a tap reveals a box (no hover on touch); a second tap dismisses', async () => {
+		const { applyDebug } = await load();
+		const frame = frameWith(deck('on'));
+		const doc = frame.contentDocument;
+		applyDebug(frame, { force: null });
+		const section = doc.querySelector('section');
+		doc.elementFromPoint = () => section; // jsdom has no layout hit-testing
+		assert.equal(typeof doc.__dbgDown, 'function', 'a pointerdown handler is wired');
+		const tap = () => doc.__dbgDown({ pointerType: 'touch', clientX: 1, clientY: 1 });
+		tap();
+		assert.equal(doc.__dbgHot, section, 'first tap reveals the tapped box');
+		tap();
+		assert.equal(doc.__dbgHot, null, 'a second tap on the same box dismisses it');
+	});
 });
