@@ -121,6 +121,7 @@ export function Library({ open, onOpenChange, options, activePalette, activeFini
 	// lattice assets), so refdoc cards carry no selection checkbox.
 	function downloadDoc(d: RefDocRecord) {
 		try {
+			if (d.docKind === 'pdf' && !d.dataUrl) { notify('Could not download that doc.'); return; } // don't ship a 0-byte .pdf
 			const blob = d.docKind === 'pdf' && d.dataUrl ? dataUrlToBlob(d.dataUrl) : new Blob([d.text ?? ''], { type: 'text/plain' });
 			download(blob, d.name);
 		} catch {

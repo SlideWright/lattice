@@ -108,29 +108,35 @@ export function useReferenceDoc(notify?: (msg: string) => void, onManage?: () =>
 							<Plus className="size-4 shrink-0" />Add a file…
 						</button>
 						<CommandList>
-							<CommandEmpty className="px-3 py-4 text-center text-[11.5px] text-muted-foreground">No matching docs.</CommandEmpty>
-							{saved.length > 0 && (
-								<CommandGroup>
-									{saved.map((rec) => {
-										const active = doc?.id === rec.id;
-										return (
-											<CommandItem key={rec.id} value={rec.name} onSelect={() => { pickSaved(rec); setOpen(false); }} className="group gap-2.5">
-												<span className={cn('grid size-6 shrink-0 place-items-center rounded-md border border-border bg-card font-mono text-[8.5px] font-bold', rec.docKind === 'pdf' ? 'text-[var(--chart-3,#2e6f00)]' : 'text-[var(--accent)]')}>{typeLabel(rec)}</span>
-												<span className="min-w-0 flex-1">
-													<span className="block truncate text-[12.5px] font-medium text-[var(--text-heading)]">{rec.name}</span>
-													<span className="block font-mono text-[10px] text-muted-foreground">{rec.docKind === 'pdf' ? 'pdf' : 'text'} · {formatBytes(rec.bytes)} · {fmtAdded(rec.addedAt)}</span>
-												</span>
-												{active ? (
-													<Check className="size-4 shrink-0 text-[var(--accent)]" />
-												) : (
-													<button type="button" aria-label={`Delete ${rec.name}`} onClick={(e) => removeSaved(rec, e)} className="shrink-0 rounded p-0.5 text-muted-foreground opacity-0 hover:text-[var(--fail,#b3261e)] group-hover:opacity-100">
+							{saved.length === 0 ? (
+								// Empty LIBRARY (not an empty search) — keep the onboarding hint.
+								<div className="px-3 py-4 text-center text-[11.5px] leading-snug text-muted-foreground">No saved docs yet — add a brand guide, deck, or brief above. Shared across all your decks.</div>
+							) : (
+								<>
+									<CommandEmpty className="px-3 py-4 text-center text-[11.5px] text-muted-foreground">No docs match your search.</CommandEmpty>
+									<CommandGroup>
+										{saved.map((rec) => {
+											const active = doc?.id === rec.id;
+											return (
+												// value = unique id, keywords = name → cmdk selection identity can't collide on
+												// same-named docs, while search still matches the filename.
+												<CommandItem key={rec.id} value={rec.id} keywords={[rec.name]} onSelect={() => { pickSaved(rec); setOpen(false); }} className="group gap-2.5">
+													<span className={cn('grid size-6 shrink-0 place-items-center rounded-md border border-border bg-card font-mono text-[8.5px] font-bold', rec.docKind === 'pdf' ? 'text-[var(--chart-3,#2e6f00)]' : 'text-[var(--accent)]')}>{typeLabel(rec)}</span>
+													<span className="min-w-0 flex-1">
+														<span className="block truncate text-[12.5px] font-medium text-[var(--text-heading)]">{rec.name}</span>
+														<span className="block font-mono text-[10px] text-muted-foreground">{rec.docKind === 'pdf' ? 'pdf' : 'text'} · {formatBytes(rec.bytes)} · {fmtAdded(rec.addedAt)}</span>
+													</span>
+													{active && <Check className="size-4 shrink-0 text-[var(--accent)] group-hover:hidden" />}
+													{/* Delete stays reachable for the ACTIVE doc too (reveals on hover over the
+													    check); always visible on touch (no hover) so it isn't a dead-end. */}
+													<button type="button" aria-label={`Delete ${rec.name}`} onClick={(e) => removeSaved(rec, e)} className={cn('shrink-0 rounded p-0.5 text-muted-foreground hover:text-[var(--fail,#b3261e)] focus-visible:opacity-100 group-hover:opacity-100 max-sm:opacity-100', active ? 'hidden group-hover:inline-flex' : 'opacity-0')}>
 														<Trash2 className="size-3.5" />
 													</button>
-												)}
-											</CommandItem>
-										);
-									})}
-								</CommandGroup>
+												</CommandItem>
+											);
+										})}
+									</CommandGroup>
+								</>
 							)}
 						</CommandList>
 						<div className="flex items-center gap-2 border-t border-border px-3 py-1.5 text-[10px] text-muted-foreground">
