@@ -193,6 +193,32 @@ describe('overflow-probe', () => {
     }
   });
 
+  test('section base: a flowed child whose BOX fits but whose CONTENT overflows internally IS caught', () => {
+    // The regression guard: a height-constrained body (flex:1 / min-height:0, overflow
+    // visible) — e.g. a STAGE_DEFERRED chart/gantt body with no clip cell — keeps its box
+    // inside the section while its descendant content spills. Child LAYOUT rects alone
+    // would miss it; folding in the child's own scrollHeight−clientHeight restores it.
+    const prev = global.getComputedStyle;
+    global.getComputedStyle = (el) => ({ position: el._position || 'static' });
+    try {
+      const s = {
+        scrollHeight: 700, clientHeight: 700, scrollWidth: 1280, clientWidth: 1280,
+        getBoundingClientRect: () => ({ top: 0, bottom: 700, left: 0, right: 1280 }),
+        children: [
+          // box fits the section (bottom 690 < 700) BUT its content is 900 tall → +210 internal
+          { scrollHeight: 900, clientHeight: 690, scrollWidth: 1280, clientWidth: 1280, getBoundingClientRect: () => ({ top: 10, bottom: 690, left: 0, right: 1280, width: 1280, height: 680 }) },
+        ],
+        querySelectorAll: () => [],
+      };
+      const r = probeSectionOverflow(s, CLIP_CELL_SELECTOR, TOL);
+      assert.equal(r.over, true, 'internal descendant overflow of a fitting child must be caught');
+      assert.equal(r.vOver, true);
+      assert.equal(r.scrollH, 700 + 200, 'content bottom 690+210=900 → spill 200 past the section');
+    } finally {
+      global.getComputedStyle = prev;
+    }
+  });
+
   test('CLIP_CELL_SELECTOR names the current bounded content cells', () => {
     assert.match(CLIP_CELL_SELECTOR, /\.cell-stage/);
     assert.match(CLIP_CELL_SELECTOR, /\.panel-right/);
