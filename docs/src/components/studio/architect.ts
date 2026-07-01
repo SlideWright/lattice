@@ -11,7 +11,7 @@ import { buildRefinePrompt, cleanRewrite, REFINE_ACTIONS } from '@/playground/dr
 import { budgetStatus, readBudgetCap, readBudgetFloor, readBudgetMode, readDedupEnabled, readSpend, recordSpend } from '@/playground/drawing-board-settings.js';
 import { askComponentMessages, auditComponentDesign, coerceComponent, gateComponent, rankSimilar } from '@/playground/layout-core.generated.js';
 import { askMessages, auditBoth, coerceEssentials, deriveTheme, STARTERS } from '@/playground/theme-core.generated.js';
-import { type GroundMsg, groundMessages, type MsgContent, type ReferenceDoc, refDocTokens } from './reference-doc';
+import { type GroundMsg, groundMessages, type MsgContent, type ReferenceDoc, refDocsTokens } from './reference-doc';
 import { languageDirective } from './studio-language';
 import { loadInstructions, loadSettings } from './studio-store';
 
@@ -178,7 +178,7 @@ export type ArchitectOutcome =
  * hard budget cap (mode: 'stop') is reached on the cloud tier — so the UI degrades
  * honestly and never spends real credit past the guardrail.
  */
-export async function runArchitect(source: string, instruction: string, doc?: ReferenceDoc | null): Promise<ArchitectOutcome> {
+export async function runArchitect(source: string, instruction: string, docs?: ReferenceDoc[]): Promise<ArchitectOutcome> {
 	const model = await architectModel();
 	if (!model) return { status: 'offline' };
 	const generation = model.availability().generation;
@@ -186,7 +186,7 @@ export async function runArchitect(source: string, instruction: string, doc?: Re
 	// Respect the budget on the paid cloud tier — blocks when over, and (hard-stop mode)
 	// refuses a call whose estimate would breach the cap. Local tiers are free.
 	if (generation === 'openrouter') {
-		const blk = cloudBudgetBlock(model, `${instruction}\n${source}`, refDocTokens(doc));
+		const blk = cloudBudgetBlock(model, `${instruction}\n${source}`, refDocsTokens(docs));
 		if (blk) return { status: 'blocked', note: blk };
 	}
 	// Ground in the user's reference doc (#640) — e.g. "rewrite this in the style of
@@ -194,7 +194,7 @@ export async function runArchitect(source: string, instruction: string, doc?: Re
 	const ground = groundMessages(withStudioVoice([
 		{ role: 'system', content: SYSTEM },
 		{ role: 'user', content: `${instruction}\n\nThe deck — address slides by their [slide N] markers, and never include a marker in an edit body:\n\n${numberSlides(source)}` },
-	]), doc, generation === 'openrouter');
+	]), docs, generation === 'openrouter');
 	let reply = '';
 	try {
 		reply = await model.complete({
@@ -292,19 +292,19 @@ export type ThemeGenOutcome =
  * so a connected model that returns nonsense degrades to the fallback essentials,
  * still AA-clean.
  */
-export async function generateTheme(current: ThemeEssentials, prompt: string, doc?: ReferenceDoc | null): Promise<ThemeGenOutcome> {
+export async function generateTheme(current: ThemeEssentials, prompt: string, docs?: ReferenceDoc[]): Promise<ThemeGenOutcome> {
 	if (!prompt.trim()) return { status: 'nochange', note: 'Describe a look to generate a theme.' };
 	const model = await architectModel();
 	if (!model) return { status: 'offline' };
 	const generation = model.availability().generation;
 	if (generation === 'floor') return { status: 'offline' };
 	if (generation === 'openrouter') {
-		const blk = cloudBudgetBlock(model, prompt, refDocTokens(doc));
+		const blk = cloudBudgetBlock(model, prompt, refDocsTokens(docs));
 		if (blk) return { status: 'blocked', note: blk };
 	}
 	const fallback: ThemeEssentials = current && Object.keys(current).length ? current : (STARTERS[0].essentials as ThemeEssentials);
 	// Ground in the user's reference doc (#640) — e.g. "match this brand guide".
-	const ground = groundMessages(askMessages(fallback, prompt), doc, generation === 'openrouter');
+	const ground = groundMessages(askMessages(fallback, prompt), docs, generation === 'openrouter');
 	let reply = '';
 	try {
 		reply = await model.complete({
@@ -513,7 +513,7 @@ async function dedupComponents(prompt: string, catalog: DedupCatalog, model: Arc
 export async function generateComponent(
 	prompt: string,
 	catalog: { name: string; bucket?: string; description?: string; purpose?: string; tags?: string[] }[] = [],
-	doc?: ReferenceDoc | null,
+	docs?: ReferenceDoc[],
 ): Promise<ComponentGenOutcome> {
 	if (!prompt.trim()) return { status: 'nochange', note: 'Describe a component to generate one.' };
 	const model = await architectModel();
@@ -521,7 +521,7 @@ export async function generateComponent(
 	const generation = model.availability().generation;
 	if (generation === 'floor') return { status: 'offline' };
 	if (generation === 'openrouter') {
-		const blk = cloudBudgetBlock(model, prompt, refDocTokens(doc));
+		const blk = cloudBudgetBlock(model, prompt, refDocsTokens(docs));
 		if (blk) return { status: 'blocked', note: blk };
 	}
 	// Dedup-first (§5/§8): unless the author turned it off, rank the request against
@@ -530,7 +530,7 @@ export async function generateComponent(
 	const similar = readDedupEnabled() ? await dedupComponents(prompt, catalog, model) : [];
 	// Ground in the user's reference doc (#640) — prepended to the user turn as
 	// untrusted DATA; a PDF rides as an inlined file-part + the parser plugin.
-	const ground = groundMessages(askComponentMessages(prompt, { similar }), doc, generation === 'openrouter');
+	const ground = groundMessages(askComponentMessages(prompt, { similar }), docs, generation === 'openrouter');
 	let reply = '';
 	try {
 		reply = await model.complete({
@@ -636,14 +636,14 @@ export type ChatResult =
  * resulting source + a line diff for a review-then-apply card (nothing is applied
  * here). Degrades to `offline`/`blocked` honestly — never a fabricated answer.
  */
-export async function chatComplete(history: ChatTurn[], source: string, doc?: ReferenceDoc | null): Promise<ChatResult> {
+export async function chatComplete(history: ChatTurn[], source: string, docs?: ReferenceDoc[]): Promise<ChatResult> {
 	const model = await architectModel();
 	if (!model) return { status: 'offline' };
 	const generation = model.availability().generation;
 	if (generation === 'floor') return { status: 'offline' };
 	const last = history[history.length - 1];
 	if (generation === 'openrouter') {
-		const blk = cloudBudgetBlock(model, `${last?.content ?? ''}\n${source}`, refDocTokens(doc));
+		const blk = cloudBudgetBlock(model, `${last?.content ?? ''}\n${source}`, refDocsTokens(docs));
 		if (blk) return { status: 'blocked', reply: blk };
 	}
 	// Ground the final user turn in the reference doc (#640).
@@ -651,7 +651,7 @@ export async function chatComplete(history: ChatTurn[], source: string, doc?: Re
 		{ role: 'system', content: `${SYSTEM}\n\nConverse with the author. Answer questions directly. Only emit edit blocks when they actually want a change to the deck.` },
 		...history.slice(0, -1),
 		{ role: 'user', content: `${last?.content ?? ''}\n\nThe current deck — address slides by their [slide N] markers, never include a marker in an edit body:\n\n${numberSlides(source)}` },
-	]), doc, generation === 'openrouter');
+	]), docs, generation === 'openrouter');
 	let reply = '';
 	try {
 		reply = await model.complete({
