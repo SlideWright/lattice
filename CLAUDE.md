@@ -117,6 +117,8 @@ of excellent without being told. For a *large* sweep (whole gallery, a theme
 across all components, a responsive pass over many pages), **fan out parallel
 reviewer agents**, each viewing *whole* slides — see `engineering/visual-review.md`.
 If a tool genuinely can't run here, **say so**; never claim quality you didn't verify.
+A claim of "verified" names its surface and carries an artifact from *that* surface —
+emulation, a synthetic harness, and "CI green" are **not** verification (HARD RULE #23).
 
 **Website / responsive UI** ships to desktop (~1440px), tablet (~820px), and
 mobile (~390px) — all first-class. Keep one visual language across them; favour
@@ -274,6 +276,20 @@ lint/test catches a violation, *discipline* = no automated gate, so it's on you)
   the gate fails on an un-listed builder, a builder that drops the call, AND a stale
   entry. *(gated — `checkPreviewHtmlSinks` + `SANCTIONED_PREVIEW_BUILDERS` in
   `tools/check-ownership.js`, via `build:check`; `engineering/gotchas.md`.)*
+- **#23 — A verification claim names its surface and carries an artifact from it.**
+  "Verified" / "works" / "done" is a claim about a specific running surface — the
+  real Playground, the real export, the actual device — and it needs proof from
+  *that* surface. A synthetic harness passing, a jsdom/unit test, mobile *emulation*,
+  and **"CI green" are not verification** of real behavior — they confirm only what
+  they actually exercise (CI runs unit/build/lint; it never touches real touch,
+  iframe layout, or iOS). Drive the real surface a human uses — build the docs and
+  tap the actual Playground, render the real artifact, click the real UI — not a
+  stand-in. Interaction behavior (touch, gesture, scroll, focus, drag) *especially*
+  must be exercised on the real surface, not a harness. When a surface can't be
+  reached from here (e.g. iOS Safari in a headless sandbox), say so and mark it
+  **UNVERIFIED** — never turn "couldn't test" into "tested." *(discipline — no
+  automated gate; the test is whether every "verified" in a PR or report can point
+  at the surface + artifact behind it. Sharpens the QUALITY BAR.)*
 
 ---
 
