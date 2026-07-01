@@ -43,6 +43,7 @@ const previewDeploy = isPreviewDeploy({
 const require = createRequire(import.meta.url);
 const { loadAll } = require(join(process.cwd(), '..', 'lib/components', 'index.js'));
 const { FINISH_NAMES } = require(join(process.cwd(), '..', 'lib/core', 'resolve-finish.js'));
+const { MODE_NAMES } = require(join(process.cwd(), '..', 'lib/core', 'resolve-mode.js'));
 const shippedNames = loadAll().map((m) => m.name);
 
 // The config payload the React island hands to both studios at boot.
@@ -52,6 +53,7 @@ const wbData = {
 	engineUrl: url(pg + 'lattice-playground.js'),
 	shippedNames,
 	finishes: FINISH_NAMES,
+	modes: MODE_NAMES,
 };
 
 // The same palette vocabulary every site picker uses (incl. the a11y themes) —

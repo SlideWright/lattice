@@ -111,10 +111,10 @@ describe('markdown-it-plugins', () => {
     assert.ok(cls.includes('cards-grid'));
   });
 
-  test('deckClassPropagate: front-matter `finish: sketch` propagates the mapped class to every section', () => {
+  test('deckClassPropagate: front-matter `mode: sketch` propagates the mapped class to every section', () => {
     const m = makeMarp(plugins.deckClassPropagate);
     const md = [
-      '---', 'finish: sketch', '---', '',
+      '---', 'mode: sketch', '---', '',
       '# Slide 1', '',
       '---', '',
       '<!-- _class: cards-grid -->',
@@ -128,22 +128,41 @@ describe('markdown-it-plugins', () => {
     assert.ok(sections[1].includes('cards-grid'), `slide 2 lost 'cards-grid'; got [${sections[1].join(', ')}]`);
   });
 
-  test('deckClassPropagate: `finish: sketch-clean` maps to both the sketch + clean-body tokens', () => {
+  test('deckClassPropagate: `mode: sketch-clean` maps to both the sketch + clean-body tokens', () => {
     const m = makeMarp(plugins.deckClassPropagate);
-    const md = ['---', 'finish: sketch-clean', '---', '', '# Slide'].join('\n');
+    const md = ['---', 'mode: sketch-clean', '---', '', '# Slide'].join('\n');
     const { html } = m.render(md);
     const cls = html.match(/<section[^>]*class="([^"]*)"/)[1].split(/\s+/).filter(Boolean);
     assert.ok(cls.includes('sketch'));
     assert.ok(cls.includes('sketch-clean-body'));
   });
 
-  test('deckClassPropagate: `class:` and `finish:` compose on every section', () => {
+  test('deckClassPropagate: `mode:` (mode) and `finish:` (backdrop) COMPOSE on every section', () => {
     const m = makeMarp(plugins.deckClassPropagate);
-    const md = ['---', 'class: numbered', 'finish: sketch', '---', '', '# Slide'].join('\n');
+    const md = ['---', 'class: numbered', 'mode: sketch', 'finish: atrium', '---', '', '# Slide'].join('\n');
     const { html } = m.render(md);
     const cls = html.match(/<section[^>]*class="([^"]*)"/)[1].split(/\s+/).filter(Boolean);
-    assert.ok(cls.includes('numbered'));
-    assert.ok(cls.includes('sketch'));
+    assert.ok(cls.includes('numbered'), `lost class:; got [${cls.join(', ')}]`);
+    assert.ok(cls.includes('sketch'), `lost mode:; got [${cls.join(', ')}]`);
+    assert.ok(cls.includes('finish'), `lost finish base; got [${cls.join(', ')}]`);
+    assert.ok(cls.includes('finish-atrium'), `lost finish preset; got [${cls.join(', ')}]`);
+  });
+
+  test('deckClassPropagate: a per-slide `boardroom` opts one slide OUT of the deck-wide style', () => {
+    const m = makeMarp(plugins.deckClassPropagate);
+    const md = [
+      '---', 'mode: sketch', 'finish: atrium', '---', '',
+      '# Slide 1 (gets the deck sketch)', '',
+      '---', '',
+      '<!-- _class: boardroom -->',
+      '# Slide 2 (clean, but keeps the backdrop)',
+    ].join('\n');
+    const { html } = m.render(md);
+    const sections = [...html.matchAll(/<section[^>]*class="([^"]*)"/g)].map(x => x[1].split(/\s+/).filter(Boolean));
+    assert.ok(sections[0].includes('sketch'), `slide 1 should be sketch; got [${sections[0].join(', ')}]`);
+    assert.ok(!sections[1].includes('sketch'), `slide 2 opted out; should NOT be sketch; got [${sections[1].join(', ')}]`);
+    // …but the deck-wide finish backdrop still applies to the opted-out slide.
+    assert.ok(sections[1].includes('finish-atrium'), `slide 2 should keep the backdrop; got [${sections[1].join(', ')}]`);
   });
 
   test('deckClassPropagate: an unknown `finish:` value maps to no class (silent baseline)', () => {

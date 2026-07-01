@@ -552,6 +552,7 @@ ${indent}   - ${body.trim()}`;
       });
       if (vocab.mapRegions) findings.push(...findUnknownMapRegions(source, vocab.mapRegions));
       if (vocab.finishNames) findings.push(...findUnknownFinish(source, vocab.finishNames));
+      if (vocab.modeNames) findings.push(...findUnknownMode(source, vocab.modeNames));
       if (vocab.splitNames) findings.push(...findUnknownSplit(source, vocab.splitNames));
       findings.push(...findGanttIssues(source));
       findings.push(...findAutosplitOrientationMismatch(source));
@@ -794,8 +795,26 @@ ${indent}   - ${body.trim()}`;
         severity: "warning",
         classToken: value,
         line: fmFinish[0].trim(),
-        message: `'${value}' is not a known finish register \u2014 the deck would silently render the boardroom baseline`,
+        message: `'${value}' is not a known finish register \u2014 the deck would silently render no backdrop (was 'sketch'/'boardroom' a finish? those moved to \`mode:\`)`,
         fix: `Set front-matter \`finish:\` to one of: ${[...finishNames].join(", ")}.`
+      }];
+    }
+    function findUnknownMode(source, modeNames) {
+      const fmBlock = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+      if (!fmBlock) return [];
+      const fmMode = fmBlock[1].match(/^\s*mode:\s*["']?([A-Za-z0-9_-]+)["']?\s*$/m);
+      if (!fmMode) return [];
+      const value = fmMode[1].trim();
+      const known = new Set([...modeNames].map((n) => String(n).toLowerCase()));
+      if (known.has(value.toLowerCase())) return [];
+      return [{
+        slide: 0,
+        rule: "unknown-mode",
+        severity: "warning",
+        classToken: value,
+        line: fmMode[0].trim(),
+        message: `'${value}' is not a known mode register \u2014 the deck would silently render the boardroom baseline`,
+        fix: `Set front-matter \`mode:\` to one of: ${[...modeNames].join(", ")}.`
       }];
     }
     function findUnknownSplit(source, splitNames) {
@@ -837,6 +856,7 @@ ${indent}   - ${body.trim()}`;
       findUnknownMapRegions,
       findAutosplitOrientationMismatch,
       findUnknownFinish,
+      findUnknownMode,
       nearestRegion,
       editDistance,
       isKnownModifier,

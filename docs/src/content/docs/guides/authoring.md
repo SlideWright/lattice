@@ -149,19 +149,21 @@ split: rule    # separators only; headings never split
 misspelling is caught by the deck linter (`unknown-split`) rather than silently
 falling back to the default.
 
-## The `finish:` key — a hand-drawn deck
+## The `mode:` key — a hand-drawn deck
 
-A **finish** is the deck's type-and-geometry voice, separate from its
-palette. Set it once in front matter and every slide inherits it:
+A deck's **mode** is how the content itself is drawn — its type-and-geometry
+hand — separate from its palette (`theme:`) and its backdrop (`finish:`). Set it
+once in front matter and every slide inherits it:
 
 ```markdown
 ---
 theme: carta        # palette — still owns the colours
-finish: sketch      # finish — the whole-deck voice
+mode: sketch      # rendering hand — the whole-deck mode
 ---
 ```
 
-`finish:` takes one of three values:
+(The key is `mode:`, not `style:` — Marp already uses `style:` for inline-CSS
+injection.) `mode:` takes one of three values:
 
 - **`boardroom`** — the clean baseline. The default when you omit the key.
 - **`sketch`** — a hand-drawn register: felt-tip headings, a hand-sans for
@@ -169,11 +171,16 @@ finish: sketch      # finish — the whole-deck voice
 - **`sketch-clean`** — hand headings and boxes, but a clean body font for
   text-dense slides.
 
-The finish is **palette-blind** — it wobbles type and geometry, never
-colour, so it pairs with any theme. It also **composes** with per-slide
-components: `finish: sketch` plus `<!-- _class: cards-grid -->` renders a
-hand-drawn grid with no extra markup. A misspelled value (`finish: sketchh`)
-is caught by the deck linter rather than silently rendering the baseline.
+The mode is **palette-blind** — it wobbles type and geometry, never colour, so
+it pairs with any theme. It **composes** with per-slide components (`mode:
+sketch` plus `<!-- _class: cards-grid -->` renders a hand-drawn grid) and with a
+`finish:` **backdrop** (`mode: sketch` + `finish: atrium` is a hand-drawn deck on
+an atrium backdrop — the two are orthogonal axes). Add `<!-- _class: boardroom -->`
+to opt one slide back to clean. A misspelled value (`mode: sketchh`) is caught by
+the deck linter rather than silently rendering the baseline.
+
+> **Moved in a recent release:** `sketch`/`boardroom` used to be `finish:` values.
+> They're now `mode:` — `finish:` is backdrops only (`none` / `atrium` … `gallery`).
 
 ## Autocomplete in the Drawing Board
 
@@ -184,9 +191,12 @@ reference and the linter use. Every suggestion is deterministic and offline;
 
 - **`theme:` in front matter** — the registered palette names. An unknown one
   renders an unstyled white deck, so the name stays valid.
-- **`finish:` in front matter** — the finish-register names (`boardroom`,
-  `sketch`, `sketch-clean`), the same set the linter validates, so a typo can't
-  slip through. The **Deck setup** drawer also exposes Finish as a picker.
+- **`finish:` in front matter** — the backdrop-register names (`none`, `atrium`
+  … `gallery`), the same set the linter validates, so a typo can't slip through.
+  The **Deck setup** drawer also exposes Finish as a picker.
+- **`mode:` in front matter** — the rendering-mode names (`boardroom`,
+  `sketch`, `sketch-clean`), linter-validated. The **Deck setup** drawer exposes
+  Mode as a picker beside Finish.
 - **`split:` in front matter** — the two split modes (`rule`, `headings`), again
   linter-validated. The **Deck setup** drawer exposes it as the Slide-splitting
   picker.

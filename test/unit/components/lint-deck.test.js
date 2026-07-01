@@ -143,19 +143,37 @@ describe('deck linter', () => {
     assert.equal(f.slide, 2);
   });
 
-  test('warns on an unrecognized front-matter `finish:` register value (warning)', () => {
-    const src = '---\nmarp: true\ntheme: indaco\nfinish: sketchh\n---\n\n## H.\n';
+  test('warns on an unrecognized front-matter `finish:` (backdrop) register value (warning)', () => {
+    const src = '---\nmarp: true\ntheme: indaco\nfinish: atriumm\n---\n\n## H.\n';
     const f = lintText(src, { vocab }).find((x) => x.rule === 'unknown-finish');
     assert.ok(f, JSON.stringify(lintText(src, { vocab })));
     assert.equal(f.severity, 'warning');
-    assert.equal(f.classToken, 'sketchh');
-    assert.match(f.fix, /boardroom, sketch, sketch-clean/);
+    assert.equal(f.classToken, 'atriumm');
+    assert.match(f.fix, /none, atrium/);
   });
 
-  test('accepts the known finish register values (boardroom / sketch / sketch-clean)', () => {
-    for (const v of ['boardroom', 'sketch', 'sketch-clean', 'SKETCH']) {
+  test('a former finish (sketch/boardroom) is now an UNKNOWN finish — it moved to `mode:`', () => {
+    for (const v of ['sketch', 'boardroom', 'sketch-clean']) {
+      const src = `---\nmarp: true\ntheme: indaco\nfinish: ${v}\n---\n\n## H.\n`;
+      assert.equal(lintText(src, { vocab }).filter((x) => x.rule === 'unknown-finish').length, 1, `finish: ${v} should now be flagged`);
+    }
+  });
+
+  test('accepts the known finish register values (none + backdrops)', () => {
+    for (const v of ['none', 'atrium', 'gallery', 'ATRIUM']) {
       const src = `---\nmarp: true\ntheme: indaco\nfinish: ${v}\n---\n\n## H.\n`;
       assert.equal(lintText(src, { vocab }).filter((x) => x.rule === 'unknown-finish').length, 0, v);
+    }
+  });
+
+  test('warns on an unrecognized `mode:` value; accepts boardroom/sketch/sketch-clean', () => {
+    const bad = lintText('---\ntheme: indaco\nmode: sketchh\n---\n\n## H.\n', { vocab }).find((x) => x.rule === 'unknown-mode');
+    assert.ok(bad, 'unknown mode should warn');
+    assert.equal(bad.classToken, 'sketchh');
+    assert.match(bad.fix, /boardroom, sketch, sketch-clean/);
+    for (const v of ['boardroom', 'sketch', 'sketch-clean', 'SKETCH']) {
+      const src = `---\ntheme: indaco\nmode: ${v}\n---\n\n## H.\n`;
+      assert.equal(lintText(src, { vocab }).filter((x) => x.rule === 'unknown-mode').length, 0, v);
     }
   });
 

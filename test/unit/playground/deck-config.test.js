@@ -204,16 +204,27 @@ describe('writeFrontMatter', () => {
     assert.equal(writeFrontMatter(CLEAN, 'math', ''), CLEAN);
   });
 
-  test('finish: sketch / sketch-clean are written; boardroom + empty are the baseline and omitted', async () => {
+  test('finish (backdrop): atrium is written; none + empty are the baseline and omitted', async () => {
     const { writeFrontMatter, readFrontMatter } = await import(MOD);
-    assert.ok(writeFrontMatter(CLEAN, 'finish', 'sketch').includes('finish: sketch'));
-    assert.ok(writeFrontMatter(CLEAN, 'finish', 'sketch-clean').includes('finish: sketch-clean'));
-    assert.equal(writeFrontMatter(CLEAN, 'finish', 'boardroom'), CLEAN, 'boardroom is the baseline → no key');
+    assert.ok(writeFrontMatter(CLEAN, 'finish', 'atrium').includes('finish: atrium'));
+    assert.ok(writeFrontMatter(CLEAN, 'finish', 'gallery').includes('finish: gallery'));
+    assert.equal(writeFrontMatter(CLEAN, 'finish', 'none'), CLEAN, 'none is the baseline → no key');
     assert.equal(writeFrontMatter(CLEAN, 'finish', ''), CLEAN);
-    // round-trips, and selecting boardroom over an existing sketch clears it.
-    const sketched = writeFrontMatter(CLEAN, 'finish', 'sketch');
-    assert.equal(readFrontMatter(sketched).finish, 'sketch');
-    assert.equal(writeFrontMatter(sketched, 'finish', 'boardroom'), CLEAN);
+    // round-trips, and selecting none over an existing backdrop clears it.
+    const atrium = writeFrontMatter(CLEAN, 'finish', 'atrium');
+    assert.equal(readFrontMatter(atrium).finish, 'atrium');
+    assert.equal(writeFrontMatter(atrium, 'finish', 'none'), CLEAN);
+  });
+
+  test('mode (rendering hand): sketch / sketch-clean are written; boardroom + empty omitted', async () => {
+    const { writeFrontMatter, readFrontMatter } = await import(MOD);
+    assert.ok(writeFrontMatter(CLEAN, 'mode', 'sketch').includes('mode: sketch'));
+    assert.ok(writeFrontMatter(CLEAN, 'mode', 'sketch-clean').includes('mode: sketch-clean'));
+    assert.equal(writeFrontMatter(CLEAN, 'mode', 'boardroom'), CLEAN, 'boardroom is the baseline → no key');
+    assert.equal(writeFrontMatter(CLEAN, 'mode', ''), CLEAN);
+    const sketched = writeFrontMatter(CLEAN, 'mode', 'sketch');
+    assert.equal(readFrontMatter(sketched).mode, 'sketch');
+    assert.equal(writeFrontMatter(sketched, 'mode', 'boardroom'), CLEAN);
   });
 
   test('split: rule is written; headings (the default) is omitted/cleared', async () => {
@@ -232,16 +243,19 @@ describe('writeFrontMatter', () => {
   test('finish is emitted right after theme, before size', async () => {
     const { writeFrontMatter } = await import(MOD);
     let src = writeFrontMatter(CLEAN, 'size', '4K');
-    src = writeFrontMatter(src, 'finish', 'sketch');
+    src = writeFrontMatter(src, 'finish', 'atrium');
     const block = src.slice(0, src.indexOf('\n---', 4));
-    assert.ok(block.indexOf('finish: sketch') < block.indexOf('size: 4K'), block);
+    assert.ok(block.indexOf('finish: atrium') < block.indexOf('size: 4K'), block);
   });
 
-  test('a sketch finish counts as "configured" (lights the setup chip)', async () => {
+  test('a bespoke finish/mode counts as "configured"; the baselines do not', async () => {
     const { readFrontMatter } = await import(MOD);
-    assert.equal(readFrontMatter('---\nmarp: true\nfinish: sketch\n---\n\n# Deck\n').configured, true);
-    assert.equal(readFrontMatter('---\nmarp: true\nfinish: boardroom\n---\n\n# Deck\n').configured, false,
-      'boardroom is the baseline — not a bespoke-setup signal');
+    assert.equal(readFrontMatter('---\nmarp: true\nfinish: atrium\n---\n\n# Deck\n').configured, true);
+    assert.equal(readFrontMatter('---\nmarp: true\nmode: sketch\n---\n\n# Deck\n').configured, true);
+    assert.equal(readFrontMatter('---\nmarp: true\nfinish: none\n---\n\n# Deck\n').configured, false,
+      'none is the finish baseline — not a bespoke-setup signal');
+    assert.equal(readFrontMatter('---\nmarp: true\nmode: boardroom\n---\n\n# Deck\n').configured, false,
+      'boardroom is the mode baseline — not a bespoke-setup signal');
   });
 
   test('preserves unmanaged keys (style, backgroundColor) on write-back', async () => {
@@ -403,7 +417,7 @@ describe('createConfigPanel (DOM)', () => {
         host, trigger: document.createElement('button'),
         getSource: () => source, setSource: (next) => { source = next; },
         palettes: ['indaco', 'cuoio'], getDefaultTheme: () => 'indaco',
-        finishes: ['boardroom', 'sketch', 'sketch-clean'], fields, ...extra,
+        finishes: ['none', 'atrium', 'gallery'], fields, ...extra,
       });
       return { panel, host, get: () => source };
     });
@@ -437,8 +451,8 @@ describe('createConfigPanel (DOM)', () => {
     panel.render();
     assert.ok(host.querySelector('.db-settings-note').textContent.includes('Behind the scenes.'));
     const sel = host.querySelector('select[aria-label="Finish"]');
-    sel.value = 'sketch';
+    sel.value = 'atrium';
     sel.dispatchEvent(new dom.window.Event('change'));
-    assert.ok(get().includes('finish: sketch'));
+    assert.ok(get().includes('finish: atrium'));
   });
 });

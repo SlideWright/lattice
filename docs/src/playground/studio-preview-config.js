@@ -18,7 +18,7 @@ import { CONFIG_PROFILES, createConfigPanel } from './deck-config.js';
 // blank line(s) so `block + body` reconstructs the deck verbatim.
 const FENCE = /^---\n[\s\S]*?\n---\n+/;
 
-export function mountStudioPreviewConfig({ root, body, onChange, finishes = [], storageKey, note }) {
+export function mountStudioPreviewConfig({ root, body, onChange, finishes = [], modes = [], storageKey, note }) {
   const trigger = root.querySelector('[data-preview-setup]');
   const host = root.querySelector('.studio-preview-config');
   if (!trigger || !host || typeof body !== 'function') return { composed: body || (() => '') };
@@ -39,6 +39,7 @@ export function mountStudioPreviewConfig({ root, body, onChange, finishes = [], 
       if (onChange) onChange();
     },
     finishes,
+    modes,
     fields: CONFIG_PROFILES.preview,
     note: note || 'Preview-only — applied to the specimen so you can audit your work under a finish, size, or the Form model. It isn’t saved with your theme/component.',
   });

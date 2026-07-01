@@ -60,6 +60,7 @@ try {
 		modifiers: [...v.modifiers],
 		mapRegions: Object.fromEntries(Object.entries(v.mapRegions || {}).map(([k, mv]) => [k, { valid: [...mv.valid], names: mv.names }])),
 		finishNames: v.finishNames || [],
+		modeNames: v.modeNames || [],
 		splitNames: v.splitNames || [],
 		capacity: v.capacity || {},
 	};

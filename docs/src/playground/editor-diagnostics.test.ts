@@ -29,14 +29,19 @@ describe('buildVocabSets', () => {
 			names: ['title', 'kpi'],
 			modifiers: ['compact'],
 			mapRegions: { us: { valid: ['CA'], names: ['California'] } },
-			finishNames: ['boardroom'],
+			finishNames: ['none', 'atrium'],
+			modeNames: ['boardroom', 'sketch'],
 			capacity: { kpi: { axis: 'item', hard: 4 } },
 		});
 		expect(sets.names instanceof Set).toBe(true);
 		expect(sets.names.has('kpi')).toBe(true);
 		expect(sets.modifiers.has('compact')).toBe(true);
 		expect(sets.mapRegions?.us.valid.has('CA')).toBe(true);
-		expect(sets.finishNames).toEqual(['boardroom']);
+		expect(sets.finishNames).toEqual(['none', 'atrium']);
+		// The `mode:` validator must survive rehydration too — without this forward
+		// the browser/Drawing Board unknown-mode rule is silently dead (only the CLI
+		// catches a typo). Regression guard for the maker-checker #3 finding.
+		expect(sets.modeNames).toEqual(['boardroom', 'sketch']);
 		expect(sets.capacity?.kpi.hard).toBe(4);
 	});
 

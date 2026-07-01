@@ -43,9 +43,13 @@ const FIELD_DEFAULTS = {
   // (Accessibility / colour-vision-deficiency is no longer a separate front-matter
   // key — the a11y-* palettes are plain themes now, written through `theme:` like
   // any other. There is no `accessibility:` axis.)
-  // `finish` is the deck-wide finish register (lib/core/resolve-finish.js):
-  // '' / 'boardroom' is the baseline (omitted), 'sketch' / 'sketch-clean' opt in.
+  // `finish` is the deck-wide BACKDROP register (lib/core/resolve-finish.js):
+  // '' / 'none' is the baseline (omitted), 'atrium' … 'gallery' opt in a backdrop.
   finish: '',
+  // `mode` is the deck-wide rendering-MODE register (lib/core/resolve-mode.js):
+  // '' / 'boardroom' is the baseline (omitted), 'sketch' / 'sketch-clean' opt in.
+  // Orthogonal to `finish:` — the two compose.
+  mode: '',
   // (The `tokens:` directive + its Drawing-Board A/B toggle were retired once the
   // universal-token canonical flip completed — there is one vocabulary now.)
   // `split` is how the body divides into slides (lib/core/resolve-split.js):
@@ -81,10 +85,15 @@ const FIELD_DEFAULTS = {
 };
 const MANAGED = Object.keys(FIELD_DEFAULTS);
 
-// Human labels for the finish-register options (the names themselves come from
-// the resolve-finish handoff, so an added finish still appears — titleCased —
-// without touching this map).
+// Human labels for the finish-register (backdrop) options (the names themselves
+// come from the resolve-finish handoff, so an added finish still appears —
+// titleCased — without touching this map).
 const FINISH_LABELS = {
+  none: 'None — no backdrop',
+};
+
+// Human labels for the mode-register (rendering-mode) options.
+const MODE_LABELS = {
   boardroom: 'Boardroom — clean baseline',
   sketch: 'Sketch — hand-drawn',
   'sketch-clean': 'Sketch · clean body',
@@ -92,7 +101,7 @@ const FINISH_LABELS = {
 
 // Emit order for known keys; any unmanaged keys we preserved trail in their
 // original order. `marp` leads (it's what tells marp-cli to render the deck).
-const EMIT_ORDER = ['marp', 'theme', 'finish', 'split', 'autosplit', 'size', 'paginate', 'header', 'footer', 'class', 'form', 'validate', 'math', 'lang'];
+const EMIT_ORDER = ['marp', 'theme', 'mode', 'finish', 'split', 'autosplit', 'size', 'paginate', 'header', 'footer', 'class', 'form', 'validate', 'math', 'lang'];
 
 // Field PROFILES per surface — the `fields` allow-list createConfigPanel takes.
 //   author  — every field (the Drawing Board: full set, theme three-way synced).
@@ -104,12 +113,12 @@ const EMIT_ORDER = ['marp', 'theme', 'finish', 'split', 'autosplit', 'size', 'pa
 //             with no deck chrome and no theme, which the studio itself owns).
 export const CONFIG_PROFILES = Object.freeze({
   author: null,
-  noTheme: ['finish', 'split', 'autosplit', 'size', 'paginate', 'header', 'footer', 'class', 'form', 'validate', 'math', 'lang'],
+  noTheme: ['mode', 'finish', 'split', 'autosplit', 'size', 'paginate', 'header', 'footer', 'class', 'form', 'validate', 'math', 'lang'],
   // `autosplit` is a deck-AUTHORING concern (does my over-capacity content
   // divide?), not a theme/component PREVIEW register — so it's deliberately out
   // of the preview profile (a fixed specimen never overflows). It rides the full
   // author set + the Playground (noTheme) only.
-  preview: ['finish', 'size', 'paginate', 'form'],
+  preview: ['mode', 'finish', 'size', 'paginate', 'form'],
 });
 
 const TRUEY = /^(true|yes|on|1)$/i;
@@ -158,6 +167,7 @@ export function readFrontMatter(source) {
   for (const [k, v] of entries) map[k] = stripQuotes(v);
   return {
     theme: map.theme || '',
+    mode: map.mode || '',
     finish: map.finish || '',
     split: (map.split || 'headings').trim().toLowerCase() === 'rule' ? 'rule' : 'headings',
     // `autosplit` is binary — surfaced as a boolean (like paginate) for the switch.
@@ -193,9 +203,11 @@ function isDefault(key, value) {
   // `form` defaults to 'standard' (on) — that's the omitted value; only `off` /
   // `minimal` are written into the block.
   if (key === 'form') return formMode(value) === 'standard';
-  // 'boardroom' is the named baseline — the same no-class result as omitting
+  // 'none' is the named backdrop baseline — the same no-class result as omitting
   // finish, so it's treated as the default and dropped from the block.
-  if (key === 'finish') { const f = (value == null ? '' : String(value)).trim().toLowerCase(); return f === '' || f === 'boardroom'; }
+  if (key === 'finish') { const f = (value == null ? '' : String(value)).trim().toLowerCase(); return f === '' || f === 'none'; }
+  // 'boardroom' is the named style (mode) baseline — dropped from the block.
+  if (key === 'mode') { const s = (value == null ? '' : String(value)).trim().toLowerCase(); return s === '' || s === 'boardroom'; }
   // 'headings' is the default — same render as omitting split, so it's dropped
   // from the block; only the explicit 'rule' opt-out is written.
   if (key === 'split') { const s = (value == null ? '' : String(value)).trim().toLowerCase(); return s === '' || s === 'headings'; }
@@ -217,8 +229,10 @@ function normalize(key, value) {
   if (key === 'math') return v === '' || v === 'katex' ? null : v;
   // `form`: standard (the default) omits the key; off / minimal are written.
   if (key === 'form') { const m = formMode(v); return m === 'standard' ? null : m; }
-  // boardroom = baseline → omit (same no-class render as no key at all).
-  if (key === 'finish') { const f = v.toLowerCase(); return f === '' || f === 'boardroom' ? null : f; }
+  // none = backdrop baseline → omit (same no-class render as no key at all).
+  if (key === 'finish') { const f = v.toLowerCase(); return f === '' || f === 'none' ? null : f; }
+  // boardroom = style (mode) baseline → omit.
+  if (key === 'mode') { const s = v.toLowerCase(); return s === '' || s === 'boardroom' ? null : s; }
   if (key === 'split') { return v.toLowerCase() === 'rule' ? 'rule' : null; }
   if (v === '' || v === FIELD_DEFAULTS[key]) return null;
   return v;
@@ -293,12 +307,13 @@ export function writeFrontMatter(source, key, value) {
  *   setSource?: (next: string) => void,
  *   palettes?: string[],
  *   finishes?: string[],
+ *   modes?: string[],
  *   getDefaultTheme?: () => string,
  *   fields?: string[] | null,
  *   note?: string,
  * }} [opts]
  */
-export function createConfigPanel({ host, trigger, getSource, setSource, palettes = [], finishes = [], getDefaultTheme = () => '', fields = null, note } = {}) {
+export function createConfigPanel({ host, trigger, getSource, setSource, palettes = [], finishes = [], modes = [], getDefaultTheme = () => '', fields = null, note } = {}) {
   if (!host || typeof getSource !== 'function' || typeof setSource !== 'function') {
     return { render() {}, syncTrigger() {}, writeFrontMatter };
   }
@@ -418,13 +433,23 @@ export function createConfigPanel({ host, trigger, getSource, setSource, palette
       }
     }
 
-    // Finish — the deck-wide type/geometry register (boardroom / sketch /
-    // sketch-clean), orthogonal to the palette. Boardroom is the baseline, so
-    // picking it clears the key (a clean deck carries no finish:).
+    // Mode — the deck-wide rendering MODE (boardroom / sketch / sketch-clean),
+    // orthogonal to the palette AND the backdrop. Boardroom is the baseline, so
+    // picking it clears the key (a clean deck carries no mode:).
+    if (show('mode') && modes.length) {
+      const current = fm.mode && modes.includes(fm.mode) ? fm.mode : 'boardroom';
+      host.append(selectRow('mode', 'Mode',
+        'The rendering hand — clean or sketch — applies to the whole deck',
+        modes.map((s) => [s, MODE_LABELS[s] || titleCase(s)]), current));
+    }
+
+    // Finish — the deck-wide BACKDROP register (none / atrium … gallery), the
+    // palette-blind layer stack painted behind content; composes with the mode. None
+    // is the baseline, so picking it clears the key (a deck with no backdrop).
     if (show('finish') && finishes.length) {
-      const current = fm.finish && finishes.includes(fm.finish) ? fm.finish : 'boardroom';
+      const current = fm.finish && finishes.includes(fm.finish) ? fm.finish : 'none';
       host.append(selectRow('finish', 'Finish',
-        'Hand-drawn or clean — applies to the whole deck',
+        'A palette-blind backdrop behind content — applies to the whole deck',
         finishes.map((f) => [f, FINISH_LABELS[f] || titleCase(f)]), current));
     }
 

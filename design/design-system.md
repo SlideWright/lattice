@@ -102,14 +102,28 @@ system register and speaks in the human register.
 | **Function** | **Purpose** | "what's the point of this slide?" | *(rarely changed — it's the intent)* |
 | **Form** | **Layout** | "how is it laid out?" | "show it as cards / steps / a list" |
 | **Substance** | **Content** | "what goes on it?" | "write / paste this" |
-| **Finish** | **Style** | "what should it feel like?" | "make it formal / sketchy / dark" |
+| **Finish** | **Finish** | "what should it feel like?" | "make it formal / sketchy / dark" |
+
+**The Finish axis is surfaced through THREE composable author registers, each
+its own front-matter key — no single key does two jobs:**
+
+| Register (human) | Key | What it sets |
+|---|---|---|
+| **Theme** | `theme:` | the palette (color) |
+| **Mode** | `mode:` | the rendering *mode* — the typographic hand: `boardroom` (clean default) / `sketch` / `sketch-clean` |
+| **Backdrop** | `finish:` | the layer stack painted *behind* content: `none` / `atrium` … `gallery` |
+
+They compose: `theme: indaco` + `mode: sketch` + `finish: atrium` is a
+hand-drawn deck in indaco's blue on an atrium backdrop. *(The key is `mode:`,
+not `style:` — Marp already owns `style:` for inline-CSS injection — and the
+Finish axis's human word is just "Finish.")*
 
 **The one word we legislate against: "look."** It is ambiguous — it means
-**Layout** (Form) *or* **Style** (Finish), the only collision in the model. It
-is never a canonical term; resolving "make it look different" into *Layout* vs
-*Style* is an explicit interpretation step (the AI asks or infers). Any word
-outside these two columns is a convenience term, not a concept, and is scoped
-or retired rather than allowed to drift.
+**Layout** (Form) *or* the **Mode/Finish** feel, the only collision in the
+model. It is never a canonical term; resolving "make it look different" into
+*Layout* vs *Mode* is an explicit interpretation step (the AI asks or infers).
+Any word outside the canonical columns is a convenience term, not a concept, and
+is scoped or retired rather than allowed to drift.
 
 **Form is now the composition *system*, axis included.** `design/forms.md`
 ratified the slide-scale model (Form = Frame + Cell + Tile) and *promotes* the

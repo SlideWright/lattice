@@ -25,6 +25,24 @@ in patch versions.
 
 ## Unreleased
 
+### Changed
+
+- **Breaking: `boardroom` and `sketch` moved off `finish:` onto a new `mode:` axis.**
+  They were never backdrops — they're the deck's *rendering mode* (its typographic
+  hand), so they now live on their own front-matter register: `mode: boardroom`
+  (the clean default), `mode: sketch`, `mode: sketch-clean`. `finish:` keeps only
+  the backdrops (`atrium` … `gallery`) plus a named `none` baseline. The two axes
+  **compose** — `mode: sketch` + `finish: atrium` is a hand-drawn deck on an atrium
+  backdrop — with no more one-register-does-two-jobs magic. A per-slide `_class:
+  boardroom` opts one slide out of a deck-wide mode. (The key is `mode:`, not
+  `style:` — Marp already owns `style:` for inline-CSS injection, so the axis is named
+  for the *rendering hand* it selects.) **Migration:** change `finish: sketch` →
+  `mode: sketch` and `finish: boardroom` → remove it (or `mode: boardroom`);
+  `finish: sketch`/`boardroom` now lint-warn as unknown finishes and nudge to
+  `mode:`. (`class: sketch` still works — it's the raw-class route.) The Studio
+  Inspector splits its one Finish dropdown into a **Mode** row and a **Finish** row,
+  and the deck-lint validates both keys.
+
 ### Added
 
 - **Studio AI can now be grounded in your own reference document (#640).** Attach a
