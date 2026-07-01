@@ -54,9 +54,20 @@ Reserved keys:
 |---|---|---|
 | `ssid` `password` `security` (+ aliases) | Wi-Fi fields | `wifi` |
 | `name` `title` `org` `email` `phone` `url` (+ aliases) | vCard fields | `contact` |
+| `caption` | the optional call-to-action under the QR | **whole family** |
 | `qr` | force this bullet to be the QR payload | general `qr` |
-| `caption` | the optional text under the QR | general `qr` |
 | *(any other key)* | a metric: `value` + `label` | `split-panel qr` |
+
+The eyebrow is authored the Lattice-standard way — an **optional inline-code-only
+first line** (`` `Room Wi-Fi` ``) — not a bullet.
+
+**No unauthored text (load-bearing).** A QR card renders *only* what the author
+wrote. Every visible string is an authored field: the eyebrow and `caption` are
+optional (omit them → they don't render); field rows (e.g. wifi's Security) show
+the authored value verbatim — no appended hints, no editorial defaults, no
+"type it if you prefer". The only fixed chrome is the field *labels* derived from
+the keys the author did write (NETWORK ← `ssid`, etc.). This was a real defect in
+the first shipped cut and is now the contract.
 
 ### 2.1 Per-variant
 

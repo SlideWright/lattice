@@ -5,8 +5,18 @@
   "bucket": "connect",
   "form": "panel",
   "substance": "structure",
-  "adapt": { "mode": "native", "priority": ["fields", "title"] },
-  "tags": ["reference", "onboarding", "kickoff"],
+  "adapt": {
+    "mode": "native",
+    "priority": [
+      "fields",
+      "title"
+    ]
+  },
+  "tags": [
+    "reference",
+    "onboarding",
+    "kickoff"
+  ],
   "description": "An identity card that encodes a vCard: name, title and contact lines beside a QR that saves the presenter to a phone.",
   "purpose": "Use as the \"scan to add me\" close or a speaker-intro slide. The QR encodes a vCard the audience saves in one tap; the card shows the name as hero with title/org and a contact ledger. Author the fields as a postfix-key list.",
   "slots": {
@@ -18,11 +28,16 @@
     "fields": {
       "selector": "ul > li",
       "required": true,
-      "description": "One field per bullet in postfix-key form — value first, trailing inline-code names the field: `- Sharmarke Aden `name``. Keys: name (required), title|role, org|company, email, phone|tel, url|web."
+      "description": "One field per bullet in postfix-key form — value first, trailing inline-code names the field: `- Sharmarke Aden `name``. Keys: name (required), title|role, org|company, email, phone|tel, url|web. Optional key: `caption` (CTA under the QR)."
+    },
+    "caption": {
+      "selector": "ul > li",
+      "required": false,
+      "description": "Optional call-to-action under the QR, as a postfix-key bullet: ``- Scan to add me `caption` ``."
     }
   },
-  "skeleton": "<!-- _class: contact -->\n\n## Add me.\n\n- Full Name `name`\n- Title `title`\n- Organization `org`\n- name@example.com `email`\n",
-  "sample": "<!-- _class: contact -->\n\n## Add me.\n\n- Sharmarke Aden `name`\n- Founder & CEO `title`\n- SlideWright `org`\n- sharmarke@slidewright.dev `email`\n- +1-555-0142 `phone`\n- slidewright.dev `url`\n",
+  "skeleton": "<!-- _class: contact -->\n\n## Add me.\n\n- Full Name `name`\n- Title `title`\n- Organization `org`\n- name@example.com `email`\n- Scan to add me `caption`\n",
+  "sample": "<!-- _class: contact -->\n\n## Add me.\n\n- Sharmarke Aden `name`\n- Founder & CEO `title`\n- SlideWright `org`\n- sharmarke@slidewright.dev `email`\n- +1-555-0142 `phone`\n- slidewright.dev `url`\n- Scan to add me `caption`\n",
   "whenToUse": [
     {
       "title": "The scan-to-add-me close",
@@ -44,6 +59,9 @@
     }
   ],
   "related": [
-    { "name": "wifi", "when": "the card is a network to join rather than a person" }
+    {
+      "name": "wifi",
+      "when": "the card is a network to join rather than a person"
+    }
   ]
 }

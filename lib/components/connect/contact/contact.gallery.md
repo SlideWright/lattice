@@ -26,6 +26,7 @@ An identity card that encodes a vCard: name, title and contact lines beside a QR
 - sharmarke@slidewright.dev `email`
 - +1-555-0142 `phone`
 - slidewright.dev `url`
+- Scan to add me `caption`
 
 
 ---
@@ -41,6 +42,7 @@ An identity card that encodes a vCard: name, title and contact lines beside a QR
 - sharmarke@slidewright.dev `email`
 - +1-555-0142 `phone`
 - slidewright.dev `url`
+- Scan to add me `caption`
 
 
 ---
@@ -56,6 +58,7 @@ An identity card that encodes a vCard: name, title and contact lines beside a QR
 - sharmarke@slidewright.dev `email`
 - +1-555-0142 `phone`
 - slidewright.dev `url`
+- Scan to add me `caption`
 
 
 ---
@@ -71,6 +74,7 @@ An identity card that encodes a vCard: name, title and contact lines beside a QR
 - sharmarke@slidewright.dev `email`
 - +1-555-0142 `phone`
 - slidewright.dev `url`
+- Scan to add me `caption`
 
 
 ---

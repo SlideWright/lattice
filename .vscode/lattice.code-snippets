@@ -226,7 +226,8 @@
       "- Full Name `name`",
       "- Title `title`",
       "- Organization `org`",
-      "- name@example.com `email`"
+      "- name@example.com `email`",
+      "- Scan to add me `caption`"
     ],
     "description": "An identity card that encodes a vCard: name, title and contact lines beside a QR that saves the presenter to a phone."
   },
@@ -955,11 +956,14 @@
     "body": [
       "<!-- _class: wifi -->",
       "",
+      "`Room Wi-Fi`",
+      "",
       "## Join the room.",
       "",
       "- Network-Name `ssid`",
       "- network-password `password`",
-      "- WPA2 `security`"
+      "- WPA2 `security`",
+      "- Scan to connect `caption`"
     ],
     "description": "A network join card: readable Wi-Fi credentials beside a QR a phone scans to connect in one tap."
   },

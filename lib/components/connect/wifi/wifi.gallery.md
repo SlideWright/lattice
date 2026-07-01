@@ -18,11 +18,14 @@ A network join card: readable Wi-Fi credentials beside a QR a phone scans to con
 <!-- _class: wifi -->
 <!-- _footer: "Default · wifi" -->
 
+`Room Wi-Fi`
+
 ## Join the room.
 
 - Offsite-Guest `ssid`
 - boardroom2026 `password`
 - WPA2 `security`
+- Scan to connect `caption`
 
 
 ---
@@ -30,11 +33,14 @@ A network join card: readable Wi-Fi credentials beside a QR a phone scans to con
 <!-- _class: wifi dark -->
 <!-- _footer: "Composition: dark · wifi dark" -->
 
+`Room Wi-Fi`
+
 ## Join the room.
 
 - Offsite-Guest `ssid`
 - boardroom2026 `password`
 - WPA2 `security`
+- Scan to connect `caption`
 
 
 ---
@@ -42,11 +48,14 @@ A network join card: readable Wi-Fi credentials beside a QR a phone scans to con
 <!-- _class: wifi compact -->
 <!-- _footer: "Composition: compact · wifi compact" -->
 
+`Room Wi-Fi`
+
 ## Join the room.
 
 - Offsite-Guest `ssid`
 - boardroom2026 `password`
 - WPA2 `security`
+- Scan to connect `caption`
 
 
 ---
@@ -54,11 +63,14 @@ A network join card: readable Wi-Fi credentials beside a QR a phone scans to con
 <!-- _class: wifi accent -->
 <!-- _footer: "Composition: accent · wifi accent" -->
 
+`Room Wi-Fi`
+
 ## Join the room.
 
 - Offsite-Guest `ssid`
 - boardroom2026 `password`
 - WPA2 `security`
+- Scan to connect `caption`
 
 
 ---

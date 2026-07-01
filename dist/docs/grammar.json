@@ -936,7 +936,7 @@
       "classToken": "contact",
       "bucket": "connect",
       "substance": "structure",
-      "skeleton": "<!-- _class: contact -->\n\n## Add me.\n\n- Full Name `name`\n- Title `title`\n- Organization `org`\n- name@example.com `email`\n",
+      "skeleton": "<!-- _class: contact -->\n\n## Add me.\n\n- Full Name `name`\n- Title `title`\n- Organization `org`\n- name@example.com `email`\n- Scan to add me `caption`\n",
       "slots": {
         "title": {
           "selector": "h2",
@@ -946,7 +946,12 @@
         "fields": {
           "selector": "ul > li",
           "required": true,
-          "description": "One field per bullet in postfix-key form — value first, trailing inline-code names the field: `- Sharmarke Aden `name``. Keys: name (required), title|role, org|company, email, phone|tel, url|web."
+          "description": "One field per bullet in postfix-key form — value first, trailing inline-code names the field: `- Sharmarke Aden `name``. Keys: name (required), title|role, org|company, email, phone|tel, url|web. Optional key: `caption` (CTA under the QR)."
+        },
+        "caption": {
+          "selector": "ul > li",
+          "required": false,
+          "description": "Optional call-to-action under the QR, as a postfix-key bullet: ``- Scan to add me `caption` ``."
         }
       },
       "requiredSlots": [
@@ -3752,7 +3757,7 @@
       "classToken": "wifi",
       "bucket": "connect",
       "substance": "structure",
-      "skeleton": "<!-- _class: wifi -->\n\n## Join the room.\n\n- Network-Name `ssid`\n- network-password `password`\n- WPA2 `security`\n",
+      "skeleton": "<!-- _class: wifi -->\n\n`Room Wi-Fi`\n\n## Join the room.\n\n- Network-Name `ssid`\n- network-password `password`\n- WPA2 `security`\n- Scan to connect `caption`\n",
       "slots": {
         "title": {
           "selector": "h2",
@@ -3762,7 +3767,17 @@
         "fields": {
           "selector": "ul > li",
           "required": true,
-          "description": "One field per bullet in postfix-key form — value first, trailing inline-code names the field: `- Offsite-Guest `ssid``. Keys: ssid|network (required), password|pass, security|auth. Omit the password for an open network."
+          "description": "One field per bullet in postfix-key form — value first, trailing inline-code names the field: `- Offsite-Guest `ssid``. Keys: ssid|network (required), password|pass, security|auth. Omit the password for an open network. Optional keys: `caption` (CTA under the QR); the security row shows exactly what you write."
+        },
+        "eyebrow": {
+          "selector": "p:first-child > code",
+          "required": false,
+          "description": "Optional kicker above the heading, authored as an inline-code first line: `` `Room Wi-Fi` ``."
+        },
+        "caption": {
+          "selector": "ul > li",
+          "required": false,
+          "description": "Optional call-to-action under the QR, as a postfix-key bullet: ``- Scan to connect `caption` ``."
         }
       },
       "requiredSlots": [
