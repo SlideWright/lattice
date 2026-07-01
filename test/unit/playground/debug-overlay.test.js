@@ -173,18 +173,31 @@ describe('applyDebug — lifecycle', () => {
 		assert.ok(frame.contentDocument.getElementById(DEBUG_OVERLAY_ID), 'overlay injected by override');
 	});
 
-	test('touch: a tap reveals a box (no hover on touch); a second tap dismisses', async () => {
+	test('touch: a genuine TAP reveals then dismisses; a SWIPE reveals nothing (scroll passes through)', async () => {
 		const { applyDebug } = await load();
 		const frame = frameWith(deck('on'));
 		const doc = frame.contentDocument;
 		applyDebug(frame, { force: null });
 		const section = doc.querySelector('section');
 		doc.elementFromPoint = () => section; // jsdom has no layout hit-testing
-		assert.equal(typeof doc.__dbgDown, 'function', 'a pointerdown handler is wired');
-		const tap = () => doc.__dbgDown({ pointerType: 'touch', clientX: 1, clientY: 1 });
+		assert.equal(typeof doc.__dbgUp, 'function', 'pointer tap handlers are wired');
+		const tap = (x = 5, y = 5) => {
+			doc.__dbgDown({ pointerType: 'touch', clientX: x, clientY: y });
+			doc.__dbgUp({ pointerType: 'touch', clientX: x, clientY: y });
+		};
 		tap();
-		assert.equal(doc.__dbgHot, section, 'first tap reveals the tapped box');
+		assert.equal(doc.__dbgHot, section, 'a tap reveals the tapped box');
 		tap();
 		assert.equal(doc.__dbgHot, null, 'a second tap on the same box dismisses it');
+		// A swipe: down → move past threshold → up. It must NOT reveal (the surface scrolls).
+		doc.__dbgDown({ pointerType: 'touch', clientX: 5, clientY: 5 });
+		doc.__dbgTMove({ pointerType: 'touch', clientX: 5, clientY: 80 });
+		doc.__dbgUp({ pointerType: 'touch', clientX: 5, clientY: 80 });
+		assert.equal(doc.__dbgHot, null, 'a swipe leaves the overlay alone');
+		// A pointercancel (browser claims the gesture for scroll) also aborts the tap.
+		doc.__dbgDown({ pointerType: 'touch', clientX: 5, clientY: 5 });
+		doc.__dbgCancel();
+		doc.__dbgUp({ pointerType: 'touch', clientX: 5, clientY: 5 });
+		assert.equal(doc.__dbgHot, null, 'a cancelled gesture reveals nothing');
 	});
 });

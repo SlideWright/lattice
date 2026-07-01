@@ -280,19 +280,41 @@ export function applyDebug(frame, opts = {}) {
 			renderChips(doc, win);
 		};
 		// Touch has no hover, so a TAP reveals a box's label (tap it again, or tap empty
-		// space, to dismiss); mouse clicks just set the box (hover keeps updating after).
+		// space, to dismiss). But the preview iframe ALSO owns swipe/scroll, which starts
+		// with the same finger-down — so we must NOT reveal on down. Instead we watch for
+		// a genuine tap: down → up with no meaningful move (and no pointercancel, which
+		// fires the moment the browser claims the gesture for scrolling). A swipe moves or
+		// cancels → no reveal, and the scroll passes through untouched. Mouse keeps hover.
+		let tap = null;
 		const down = (e) => {
+			tap = e.pointerType === 'mouse' ? null : { x: e.clientX, y: e.clientY, moved: false };
+		};
+		const tmove = (e) => {
+			if (tap && (Math.abs(e.clientX - tap.x) > 10 || Math.abs(e.clientY - tap.y) > 10)) tap.moved = true;
+		};
+		const up = (e) => {
+			const wasTap = tap && !tap.moved;
+			tap = null;
+			if (!wasTap) return; // a swipe/scroll (or a mouse event) — reveal nothing
 			const hit = hitBox(doc, overlay, e);
-			const touch = e.pointerType && e.pointerType !== 'mouse';
-			doc.__dbgHot = touch && hit && hit === doc.__dbgHot ? null : hit;
+			doc.__dbgHot = hit && hit === doc.__dbgHot ? null : hit; // tap again / tap empty → dismiss
 			renderChips(doc, win);
+		};
+		const cancel = () => {
+			tap = null;
 		};
 		doc.addEventListener('mousemove', move);
 		doc.addEventListener('mouseleave', leave);
 		doc.addEventListener('pointerdown', down);
+		doc.addEventListener('pointermove', tmove);
+		doc.addEventListener('pointerup', up);
+		doc.addEventListener('pointercancel', cancel);
 		doc.__dbgMove = move;
 		doc.__dbgLeave = leave;
 		doc.__dbgDown = down;
+		doc.__dbgTMove = tmove;
+		doc.__dbgUp = up;
+		doc.__dbgCancel = cancel;
 	}
 	if (win?.setTimeout) {
 		for (const t of [80, 320, 1200]) win.setTimeout(redraw, t);
@@ -407,7 +429,11 @@ function teardown(doc, win) {
 	if (doc.__dbgMove) doc.removeEventListener('mousemove', doc.__dbgMove);
 	if (doc.__dbgLeave) doc.removeEventListener('mouseleave', doc.__dbgLeave);
 	if (doc.__dbgDown) doc.removeEventListener('pointerdown', doc.__dbgDown);
-	doc.__dbgResize = doc.__dbgMove = doc.__dbgLeave = doc.__dbgDown = doc.__dbgHot = null;
+	if (doc.__dbgTMove) doc.removeEventListener('pointermove', doc.__dbgTMove);
+	if (doc.__dbgUp) doc.removeEventListener('pointerup', doc.__dbgUp);
+	if (doc.__dbgCancel) doc.removeEventListener('pointercancel', doc.__dbgCancel);
+	doc.__dbgResize = doc.__dbgMove = doc.__dbgLeave = doc.__dbgHot = null;
+	doc.__dbgDown = doc.__dbgTMove = doc.__dbgUp = doc.__dbgCancel = null;
 	// Drop the per-element stamps so a toggled-off pass leaves the DOM pristine.
 	if (doc.querySelectorAll) {
 		for (const el of Array.from(doc.querySelectorAll('[data-dbg-layout]'))) el.removeAttribute('data-dbg-layout');

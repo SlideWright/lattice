@@ -111,7 +111,10 @@ behavior) for a static map. Reveal is a token in the same list, classified out f
 facets: `debug: always`, `debug: hover class box`. Default is `hover`. This is what
 kills the wall-of-chips density — you pull detail in only where you look. **Touch has
 no hover**, so a **tap** reveals a box's chain (tap it again, or tap empty space, to
-dismiss) via a `pointerdown` handler; mouse keeps its hover behavior.
+dismiss); mouse keeps its hover behavior. The preview iframe also owns swipe/scroll,
+which starts with the same finger-down — so reveal fires only on a *genuine tap*
+(pointer down→up with no meaningful move, and no `pointercancel`); a swipe moves or
+cancels and passes straight through to scroll, leaving no stray label.
 
 Unknown facet tokens are a lint **warning** (not an error), listed by
 `lint-core.js`, mirroring how `finish` / `mode` / `split` vocab is validated.
