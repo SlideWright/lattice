@@ -16,13 +16,7 @@
 // callers share one <script> and one Promise; if the engine is already present
 // (e.g. another surface, or a re-mount) it resolves immediately.
 
-type PG = unknown;
-
-declare global {
-	interface Window {
-		LatticePlayground?: PG;
-	}
-}
+// `window.LatticePlayground` is declared once, canonically, in playground-global.d.ts.
 
 // One in-flight/settled promise per engine URL (URLs are content-hashed, so a
 // single page only ever sees one). Survives React StrictMode double-mounts and

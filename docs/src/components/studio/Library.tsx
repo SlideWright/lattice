@@ -150,7 +150,7 @@ export function Library({ open, onOpenChange, options, activePalette, activeFini
 			for (const f of Array.from(files)) {
 				const { themes: ts, components: cs, finishes: fs } = await unpackBundle(f);
 				for (const t of ts) { await saveStudioTheme({ name: t.name, label: t.label, essentials: t.essentials ?? {}, css: t.css }); nThemes++; }
-				for (const c of cs) { await saveStudioComponent({ name: c.name, css: c.css, skeleton: c.skeleton, bucket: c.bucket || undefined }); nComps++; }
+				for (const c of cs) { await saveStudioComponent({ name: c.name, css: c.css, skeleton: c.skeleton, meta: { bucket: c.bucket || undefined } }); nComps++; }
 				// Symmetric unpack — a shared finish lands in the finish library, pickable
 				// from the Inspector Finish menu (the same consumption loop a saved finish uses).
 				for (const fin of fs) { await saveStudioFinish({ name: fin.name, label: fin.label, css: fin.css, recipe: fin.recipe }); nFinishes++; }

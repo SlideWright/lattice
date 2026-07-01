@@ -388,6 +388,9 @@ jobs:
       - name: Install docs deps
         run: npm ci
         working-directory: docs
+      - name: Typecheck docs (astro sync + tsc --noEmit)
+        run: npm run typecheck
+        working-directory: docs
       - name: Test docs React islands (Vitest + RTL)
         run: npm test
         working-directory: docs

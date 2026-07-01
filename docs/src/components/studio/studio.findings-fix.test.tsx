@@ -18,7 +18,7 @@ const FINDING = { slide: 2, rule: 'wall-of-text', severity: 'warning', message: 
 vi.mock('./studio-lint', () => ({ listFindings: vi.fn(async () => [FINDING]) }));
 
 const fixSpy = vi.hoisted(() => vi.fn(async () => ({ status: 'ok', before: 'old line', after: 'new tightened line', edit: { action: 'replace', slide: 2, body: 'new' } })));
-const statusSpy = vi.hoisted(() => vi.fn(() => ({ ready: true, generation: 'openrouter', modelName: 'test', remaining: null })));
+const statusSpy = vi.hoisted(() => vi.fn((): { ready: boolean; generation: string; modelName: string | null; remaining: number | null } => ({ ready: true, generation: 'openrouter', modelName: 'test', remaining: null })));
 const applySpy = vi.hoisted(() => vi.fn((_src: string, _edit: unknown) => 'EDITED DECK SOURCE'));
 vi.mock('./architect', () => ({
 	requestFindingFix: fixSpy,

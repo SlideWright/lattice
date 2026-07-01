@@ -59,7 +59,7 @@ vi.mock('./Editor', async () => {
 // The architect layer — the model is the unit under integration here; mock it so we
 // control the outcome (ready model, a real rewrite) without a backend.
 const refineSpy = vi.hoisted(() => vi.fn(async () => ({ status: 'ok', text: 'REFINED COPY' })));
-const statusSpy = vi.hoisted(() => vi.fn(() => ({ ready: true, generation: 'openrouter', modelName: 'test', remaining: null })));
+const statusSpy = vi.hoisted(() => vi.fn((): { ready: boolean; generation: string; modelName: string | null; remaining: number | null } => ({ ready: true, generation: 'openrouter', modelName: 'test', remaining: null })));
 vi.mock('./architect', () => ({
 	refineSelection: refineSpy,
 	REFINE_ACTIONS: [

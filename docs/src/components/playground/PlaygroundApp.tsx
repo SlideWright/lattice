@@ -36,6 +36,7 @@ export type PlaygroundData = {
 	galleryGroups: GalleryGroup[];
 	themeBase: string;
 	runtimeUrl: string;
+	engineUrl: string;
 	palettes: string[];
 	finishes: string[];
 	// Deck-grammar lint vocabulary for the editor's inline validation (optional so
@@ -114,7 +115,10 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 	bboxOnRef.current = bboxOn;
 	React.useEffect(() => {
 		setBboxOn(bboxEnabled());
-		return onBboxEnabledChange(setBboxOn);
+		const unsubscribe = onBboxEnabledChange(setBboxOn);
+		return () => {
+			unsubscribe();
+		};
 	}, []);
 	React.useEffect(() => {
 		applyBbox(frameRef.current, bboxOn);
@@ -184,7 +188,7 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 		const frame = frameRef.current;
 		const stage = frame?.parentElement;
 		if (!frame || !stage) return;
-		const ci = createChartInteract({ stage, getFrame: () => frameRef.current, hoverAny: true });
+		const ci = createChartInteract({ stage, getFrame: () => frameRef.current ?? frame, hoverAny: true });
 		chartInteractRef.current = ci;
 		return () => {
 			ci.destroy();

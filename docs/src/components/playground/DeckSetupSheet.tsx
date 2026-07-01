@@ -102,7 +102,12 @@ export function DeckSetupSheet({
  */
 function BboxPrefRow() {
 	const [on, setOn] = React.useState(() => bboxEnabled());
-	React.useEffect(() => onBboxEnabledChange(setOn), []);
+	React.useEffect(() => {
+		const unsubscribe = onBboxEnabledChange(setOn);
+		return () => {
+			unsubscribe();
+		};
+	}, []);
 	return (
 		<label className="db-or-switch">
 			<span className="db-pref-text">

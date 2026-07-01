@@ -82,7 +82,7 @@ describe('findingsToDiagnostics', () => {
 				{ slide: 1, rule: 'a', severity: 'error', line: '- **A.** body', message: 'm', autofixable: true },
 				{ slide: 1, rule: 'b', severity: 'warning', line: '## Title', message: 'm' },
 			],
-			{ onFix: (_v, f) => calls.push(f) },
+			{ onFix: (_v: unknown, f: unknown) => calls.push(f) },
 		);
 		// Results are returned sorted by position: '## Title' (line 3) before
 		// '- **A.** body' (line 5).

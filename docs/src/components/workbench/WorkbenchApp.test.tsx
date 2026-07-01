@@ -10,7 +10,7 @@ vi.mock('@/playground/component-studio.js', () => ({ initLayoutStudio: vi.fn() }
 
 import { WorkbenchApp } from './WorkbenchApp';
 
-const data = { themeBase: '/themes/', runtimeUrl: '/runtime.js', shippedNames: [], finishes: [] };
+const data = { themeBase: '/themes/', runtimeUrl: '/runtime.js', engineUrl: '/engine.js', shippedNames: [], finishes: [] };
 
 afterEach(cleanup);
 

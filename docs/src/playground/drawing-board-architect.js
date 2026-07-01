@@ -503,6 +503,7 @@ const ARCHETYPES = {
 };
 
 // Flat list for fuzzy search (fuse.js) — preserves group order for grouping.
+/** @type {Array<{ name: string; group: string; spine: string[]; exemplar: string }>} */
 const ARCHETYPE_LIST = [];
 for (const [group, items] of Object.entries(ARCHETYPES)) {
 	for (const [name, entry] of Object.entries(items)) {

@@ -4,7 +4,19 @@ import DeckPreview from './DeckPreview';
 
 // A shared renderInto spy so we can assert what the component asked the renderer
 // to draw across re-renders. The engine itself is never involved.
-const { renderInto } = vi.hoisted(() => ({ renderInto: vi.fn(() => Promise.resolve({ ok: true, slides: 1, error: null })) }));
+const { renderInto } = vi.hoisted(() => ({
+	renderInto: vi.fn(
+		(
+			_host: HTMLElement,
+			_markdown: string,
+			_mermaid: boolean,
+			_paletteOverride?: string,
+			_extra?: { name: string; css: string },
+			_modeOverride?: 'light' | 'dark',
+			_extraCss?: string,
+		) => Promise.resolve({ ok: true, slides: 1, error: null }),
+	),
+}));
 vi.mock('@/lib/single-slide-render', () => ({
 	createSingleSlideRenderer: () => ({
 		renderInto,

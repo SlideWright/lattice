@@ -12,6 +12,7 @@
     "build": "npm run showcase:check && npm run sync:portal && npm run sync:playground && astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "typecheck": "astro sync && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "perf": "node scripts/perf-collect.mjs --out .perf/local && node scripts/perf-regression.mjs --report .perf/local",
@@ -73,6 +74,7 @@
     "fast-check": "^4.8.0",
     "jsdom": "^25.0.1",
     "puppeteer-core": "^25.1.0",
+    "typescript": "^6.0.3",
     "vitest": "^3.2.6"
   }
 }

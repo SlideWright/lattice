@@ -30,17 +30,7 @@ import { createThemeFetcher } from './theme-fetch';
 
 const MERMAID = 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js';
 
-type PG = {
-	render: (source: string, theme: string, opts?: { baseUrl?: string }) => { html: string; css: string; width?: number; height?: number };
-	addThemes: (css: string[]) => void;
-	hasTheme: (name: string) => boolean;
-};
-
-declare global {
-	interface Window {
-		LatticePlayground?: PG;
-	}
-}
+// `window.LatticePlayground` is declared once, canonically, in playground-global.d.ts.
 
 export type Geom = { width: number; height: number };
 export type RenderStatus = { ok: boolean; slides: number; error: string | null };

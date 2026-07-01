@@ -285,6 +285,19 @@ export function writeFrontMatter(source, key, value) {
 // matter, and writes each change straight back into the editor source (which
 // re-renders + autosaves via the controller's onEdit). DOM-only; called when the
 // drawer opens.
+/**
+ * @param {{
+ *   host?: HTMLElement | null,
+ *   trigger?: HTMLElement | null,
+ *   getSource?: () => string,
+ *   setSource?: (next: string) => void,
+ *   palettes?: string[],
+ *   finishes?: string[],
+ *   getDefaultTheme?: () => string,
+ *   fields?: string[] | null,
+ *   note?: string,
+ * }} [opts]
+ */
 export function createConfigPanel({ host, trigger, getSource, setSource, palettes = [], finishes = [], getDefaultTheme = () => '', fields = null, note } = {}) {
   if (!host || typeof getSource !== 'function' || typeof setSource !== 'function') {
     return { render() {}, syncTrigger() {}, writeFrontMatter };

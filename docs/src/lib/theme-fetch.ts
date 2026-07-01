@@ -20,16 +20,7 @@
 // Touches window/fetch, so it lives outside the React tree. Callers that render
 // must guarantee window.LatticePlayground exists first (whenReady / load-engine).
 
-type PG = {
-	addThemes: (css: string[]) => void;
-	hasTheme: (name: string) => boolean;
-};
-
-declare global {
-	interface Window {
-		LatticePlayground?: PG;
-	}
-}
+// `window.LatticePlayground` is declared once, canonically, in playground-global.d.ts.
 
 /**
  * The theme-name `@import` targets a stylesheet declares — the ONE place this
