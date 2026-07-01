@@ -954,10 +954,18 @@ section:not(.overflow) > .overflow-tab { display: none; }
  * ──────────────────────────────────────────────────────────────────── */
 img.deck-logo {
   position: absolute;
-  top: var(--frame-inset-y);
-  right: var(--frame-inset-x);
-  width: 6.25cqi;
-  height: 4cqi;
+  /* Default: the top-right corner via frame insets. An author can MOVE + SIZE the
+   * mark with `logo-x`/`logo-y` (0–100, the logo CENTER as a % of the slide) and
+   * `logo-scale` (a multiplier). When x/y are set the injector also flips
+   * --logo-anchor-right to auto and --logo-nudge to translate(-50%,-50%), so the
+   * logo centers on its point instead of hugging the corner. All defaults reproduce
+   * the original placement, so untouched decks are unchanged. */
+  top: var(--logo-y, var(--frame-inset-y));
+  right: var(--logo-anchor-right, var(--frame-inset-x));
+  left: var(--logo-x, auto);
+  width: calc(6.25cqi * var(--logo-scale, 1));
+  height: calc(4cqi * var(--logo-scale, 1));
+  transform: var(--logo-nudge, none);
   object-fit: contain;
   pointer-events: none;
   user-select: none;

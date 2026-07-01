@@ -36,6 +36,12 @@ in patch versions.
   recipe, stay export-safe (face-invariant transform, no new sinks), and the default
   ghost size dropped from ~40cqi to a tasteful 30cqi. Authored in the Finish Studio
   via a 3D joystick, drag-on-canvas handles, and numeric fields.
+- **The brand logo can be moved and resized.** New `logo-x` / `logo-y` (0–100, the
+  logo center as a % of the slide) and `logo-scale` (a multiplier) front-matter
+  directives place the deck logo anywhere at any size — it defaults to the original
+  top-right corner, so existing decks are unchanged. Honored identically across all
+  three render paths (engine HTML, the runtime, the emulator); values are clamped and
+  numeric-only, so a crafted value can't inject a style.
 - **The Library now manages saved finishes too.** A fabricated finish saved to your
   library appears in the Library shelf (new **Finish** filter) with Apply · Share · Delete,
   mirroring themes and components — Share exports it as a `kind:"finish"` lattice-asset zip
