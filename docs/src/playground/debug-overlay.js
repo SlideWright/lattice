@@ -32,6 +32,14 @@ export const DEBUG_OVERLAY_ID = 'lattice-debug-overlay';
 // and `box` are opt-in. Order here is the render order on the chip.
 export const FACETS = ['identity', 'layout', 'size', 'class', 'box'];
 const DEFAULT_FACETS = ['identity', 'layout', 'size'];
+// Reveal mode — how the LABELS show (outlines are always on either way):
+//   hover  (default) → chips hold back until you point at a box, then that box +
+//                      its containers reveal the FULL detail. Keeps a dense slide
+//                      clean; you pull information in only where you look.
+//   always            → every structural box's chip is pinned on at once (a full
+//                      static map). Hover still enriches the box you point at.
+// Written as a token in the same `debug:` list (`debug: always`, `debug: hover class`).
+const REVEAL_MODES = new Set(['hover', 'always', 'pinned']);
 const OFF_VALUES = new Set(['off', 'false', 'no', '0']);
 const ON_VALUES = new Set(['', 'on', 'true', 'yes', '1']);
 
@@ -71,36 +79,43 @@ export function layoutMode(display) {
 }
 
 /**
- * Resolve a section's `data-debug` value (+ a session override) to the facet set
- * to show, or null when debug is off for this box.
+ * Resolve a section's `data-debug` value (+ a session override) to a config
+ * `{ facets, reveal }`, or null when debug is off for this box.
  *   force==='off'          → always off.
- *   force==='on'           → on; use the deck's facets if it named any, else default.
+ *   force==='on'           → on; use the deck's config if it named one, else default.
  *   force==null (follow)   → the deck's value decides (absent attr → off).
- * A `value` of null means the attribute is absent.
+ * A `value` of null means the attribute is absent. Default reveal is `hover`.
  */
-export function resolveFacets(value, force) {
+export function resolveConfig(value, force) {
 	if (force === 'off') return null;
 	const has = value !== null && value !== undefined;
 	const norm = has ? String(value).trim().toLowerCase() : null;
+	const dflt = () => ({ facets: DEFAULT_FACETS.slice(), reveal: 'hover' });
 	if (force === 'on') {
-		if (!has || ON_VALUES.has(norm) || OFF_VALUES.has(norm)) return DEFAULT_FACETS.slice();
-		return parseFacetList(norm);
+		if (!has || ON_VALUES.has(norm) || OFF_VALUES.has(norm)) return dflt();
+		return parseConfig(norm);
 	}
 	// follow the deck
 	if (!has || OFF_VALUES.has(norm)) return null;
-	if (ON_VALUES.has(norm)) return DEFAULT_FACETS.slice();
-	return parseFacetList(norm);
+	if (ON_VALUES.has(norm)) return dflt();
+	return parseConfig(norm);
 }
 
-// A space/comma list of facet tokens → the known subset (order normalized to
-// FACETS). `all` expands to every facet. An empty/unknown-only list falls back to
-// the default profile so a typo still shows something useful (the lint gate warns
-// on unknown tokens separately).
-function parseFacetList(norm) {
-	if (norm === 'all') return FACETS.slice();
-	const asked = new Set(norm.split(/[\s,]+/).filter(Boolean));
-	const picked = FACETS.filter((f) => asked.has(f));
-	return picked.length ? picked : DEFAULT_FACETS.slice();
+// A space/comma list → `{ facets, reveal }`. Tokens are classified: facet tokens
+// (identity/layout/size/class/box, or `all` for every facet) and reveal tokens
+// (hover/always/pinned). No facet token → the default profile; no reveal token →
+// hover. An all-unknown list still yields the default profile so a typo shows
+// something useful (the lint gate warns on unknown tokens separately).
+function parseConfig(norm) {
+	const tokens = norm.split(/[\s,]+/).filter(Boolean);
+	const facetToks = tokens.filter((t) => FACETS.includes(t));
+	const facets = tokens.includes('all')
+		? FACETS.slice()
+		: facetToks.length
+			? FACETS.filter((f) => facetToks.includes(f))
+			: DEFAULT_FACETS.slice();
+	const reveal = tokens.some((t) => t === 'always' || t === 'pinned') ? 'always' : 'hover';
+	return { facets, reveal };
 }
 
 /**
@@ -196,8 +211,8 @@ export function applyDebug(frame, opts = {}) {
 
 	const sections = Array.from(doc.querySelectorAll('.lattice > section'));
 	const enabled = sections
-		.map((sec, i) => ({ sec, i, facets: resolveFacets(sec.getAttribute('data-debug'), force) }))
-		.filter((s) => s.facets);
+		.map((sec, i) => ({ sec, i, cfg: resolveConfig(sec.getAttribute('data-debug'), force) }))
+		.filter((s) => s.cfg);
 	if (!enabled.length) return;
 
 	injectStyle(doc);
@@ -206,7 +221,7 @@ export function applyDebug(frame, opts = {}) {
 	(doc.body || doc.documentElement).appendChild(overlay);
 
 	const getStyle = (el) => (win?.getComputedStyle ? win.getComputedStyle(el) : {});
-	for (const { sec, i, facets } of enabled) {
+	for (const { sec, i, cfg } of enabled) {
 		// Walk the section + descendants; stamp the layout mode (drives the outline
 		// color) and label the structural boxes.
 		const els = [sec, ...sec.querySelectorAll('*')];
@@ -228,17 +243,21 @@ export function applyDebug(frame, opts = {}) {
 				className: el.tagName === 'SECTION' ? '' : el.getAttribute('class') || '',
 				padding: shortPadding(cs),
 			};
-			const text = facetLabel(info, facets);
-			if (!text) continue;
-			overlay.appendChild(makeChip(doc, el, mode, text, win));
+			// Two label strings: the configured (lean) set shown at rest in `always`
+			// mode, and the FULL detail shown on hover (and always, for `hover` mode).
+			const fullText = facetLabel(info, FACETS);
+			if (!fullText) continue;
+			overlay.appendChild(makeChip(doc, el, mode, cfg.reveal, facetLabel(info, cfg.facets), fullText));
 		}
 	}
-	deoverlap(overlay);
+	// Initial paint at rest (no box hovered): hover-mode chips hide, always-mode show.
+	doc.__dbgHot = null;
+	renderChips(doc, win);
 
-	// Reposition on relayout (async Mermaid/KaTeX, resize) and a couple of backstop
+	// Redraw on relayout (async Mermaid/KaTeX, resize) and a couple of backstop
 	// timers — the same belt-and-braces the FIT agent uses. Store the observer so the
-	// next applyDebug/ teardown disconnects it.
-	const redraw = () => reposition(doc, win);
+	// next applyDebug / teardown disconnects it.
+	const redraw = () => renderChips(doc, win);
 	if (win?.ResizeObserver) {
 		const ro = new win.ResizeObserver(redraw);
 		ro.observe(doc.documentElement);
@@ -250,9 +269,16 @@ export function applyDebug(frame, opts = {}) {
 		win.addEventListener('resize', redraw);
 		win.addEventListener('scroll', redraw, { passive: true });
 		doc.__dbgResize = redraw;
-		// Hover-isolate: hit-test the box under the pointer, light its chip, dim the rest.
-		const move = (e) => isolate(doc, overlay, e);
-		const leave = () => overlay.classList.remove('dbg-isolating');
+		// Hover: track the box under the pointer; renderChips reveals it (+ its
+		// containers) and, in `hover` mode, hides everything else.
+		const move = (e) => {
+			doc.__dbgHot = hitBox(doc, overlay, e);
+			renderChips(doc, win);
+		};
+		const leave = () => {
+			doc.__dbgHot = null;
+			renderChips(doc, win);
+		};
 		doc.addEventListener('mousemove', move);
 		doc.addEventListener('mouseleave', leave);
 		doc.__dbgMove = move;
@@ -271,34 +297,64 @@ function injectStyle(doc) {
 	(doc.head || doc.documentElement).appendChild(style);
 }
 
-function makeChip(doc, el, mode, text, win) {
+function makeChip(doc, el, mode, reveal, restText, fullText) {
 	const chip = doc.createElement('div');
 	chip.className = 'dbg-chip';
 	chip.setAttribute('data-dbg-layout', mode);
-	chip.textContent = text; // trusted first-party text, set as textContent (never HTML) — #22
-	placeChip(chip, el, win);
 	chip.__dbgEl = el;
+	chip.__dbgReveal = reveal;
+	// A `hover` chip is only ever seen while revealed, so it shows the full detail
+	// then; an `always` chip shows the configured (lean) set at rest, full on hover.
+	chip.__dbgRest = reveal === 'hover' ? fullText : restText;
+	chip.__dbgFull = fullText;
+	chip.textContent = chip.__dbgRest; // trusted first-party text, never innerHTML — #22
 	return chip;
 }
 
-// Position a chip at the box's inside top-left corner, in viewport space (the
-// overlay is position:fixed, so getBoundingClientRect coords map straight across).
-function placeChip(chip, el, win) {
-	if (!el.getBoundingClientRect) return;
-	const r = el.getBoundingClientRect();
-	const top = Math.max(0, r.top);
-	chip.style.left = `${Math.max(0, r.left)}px`;
-	chip.style.top = `${top}px`;
-	// Nudge a chip that would sit above the viewport back into view.
-	chip.style.visibility = r.bottom < 0 || r.top > (win?.innerHeight ? win.innerHeight : 1e9) ? 'hidden' : 'visible';
+// Hit-test the box under the pointer → the nearest element that owns a chip, or
+// null. Walks up from elementFromPoint since the overlay itself is pointer-events:none.
+function hitBox(doc, overlay, e) {
+	const owned = new Set(Array.from(overlay.children).map((c) => c.__dbgEl));
+	let node = doc.elementFromPoint ? doc.elementFromPoint(e.clientX, e.clientY) : null;
+	while (node && node !== doc.body) {
+		if (owned.has(node)) return node;
+		node = node.parentElement;
+	}
+	return null;
 }
 
-function reposition(doc, win) {
-	const overlay = doc.getElementById(DEBUG_OVERLAY_ID);
+// Draw every chip for the current hover state (doc.__dbgHot). The hovered box and
+// its container ancestors form the "chain": those chips reveal, enriched to full
+// detail. In `hover` mode everything OUTSIDE the chain hides (outlines only at
+// rest); in `always` mode it stays visible but dims while a box is isolated.
+// Positions come from getBoundingClientRect each call (transform-safe), then the
+// visible chips are de-overlapped.
+function renderChips(doc, win) {
+	const overlay = doc.getElementById?.(DEBUG_OVERLAY_ID);
 	if (!overlay) return;
-	for (const chip of Array.from(overlay.children)) {
-		if (chip.__dbgEl) placeChip(chip, chip.__dbgEl, win);
+	const chips = Array.from(overlay.children);
+	const owned = new Map(chips.map((c) => [c.__dbgEl, c]));
+	const chain = new Set();
+	for (let n = doc.__dbgHot || null; n; n = n.parentElement) if (owned.has(n)) chain.add(n);
+	const winH = win?.innerHeight || 1e9;
+	for (const chip of chips) {
+		const el = chip.__dbgEl;
+		const hot = chain.has(el);
+		const wantText = hot ? chip.__dbgFull : chip.__dbgRest;
+		if (chip.textContent !== wantText) chip.textContent = wantText;
+		chip.classList.toggle('dbg-hot', hot);
+		let onscreen = false;
+		if (el?.getBoundingClientRect) {
+			const r = el.getBoundingClientRect();
+			chip.style.left = `${Math.max(0, r.left)}px`;
+			chip.style.top = `${Math.max(0, r.top)}px`;
+			onscreen = r.bottom > 0 && r.top < winH;
+		}
+		// hover-mode chips only show while in the chain; always-mode chips always show.
+		const show = onscreen && (chip.__dbgReveal !== 'hover' || hot);
+		chip.style.visibility = show ? 'visible' : 'hidden';
 	}
+	overlay.classList.toggle('dbg-isolating', chain.size > 0);
 	deoverlap(overlay);
 }
 
@@ -325,29 +381,6 @@ function deoverlap(overlay) {
 
 const num = (v) => Number.parseFloat(v) || 0;
 
-function isolate(doc, overlay, e) {
-	const chips = Array.from(overlay.children);
-	const owned = new Set(chips.map((c) => c.__dbgEl));
-	// Walk up from the box under the pointer to the nearest one that owns a chip.
-	let node = doc.elementFromPoint ? doc.elementFromPoint(e.clientX, e.clientY) : null;
-	let hotEl = null;
-	while (node && node !== doc.body) {
-		if (owned.has(node)) {
-			hotEl = node;
-			break;
-		}
-		node = node.parentElement;
-	}
-	if (!hotEl) {
-		overlay.classList.remove('dbg-isolating');
-		return;
-	}
-	overlay.classList.add('dbg-isolating');
-	for (const chip of Array.from(overlay.children)) {
-		chip.classList.toggle('dbg-hot', chip.__dbgEl === hotEl);
-	}
-}
-
 function teardown(doc, win) {
 	const style = doc.getElementById?.(DEBUG_STYLE_ID);
 	if (style) style.remove();
@@ -363,7 +396,7 @@ function teardown(doc, win) {
 	}
 	if (doc.__dbgMove) doc.removeEventListener('mousemove', doc.__dbgMove);
 	if (doc.__dbgLeave) doc.removeEventListener('mouseleave', doc.__dbgLeave);
-	doc.__dbgResize = doc.__dbgMove = doc.__dbgLeave = null;
+	doc.__dbgResize = doc.__dbgMove = doc.__dbgLeave = doc.__dbgHot = null;
 	// Drop the per-element stamps so a toggled-off pass leaves the DOM pristine.
 	if (doc.querySelectorAll) {
 		for (const el of Array.from(doc.querySelectorAll('[data-dbg-layout]'))) el.removeAttribute('data-dbg-layout');
@@ -384,4 +417,4 @@ function shortPadding(cs) {
 	return t === r && r === b && b === l ? String(t) : `${t} ${r} ${b} ${l}`;
 }
 
-export default { applyDebug, debugCss, resolveFacets, facetLabel, layoutMode, FACETS, LAYOUT_COLORS };
+export default { applyDebug, debugCss, resolveConfig, facetLabel, layoutMode, FACETS, LAYOUT_COLORS };

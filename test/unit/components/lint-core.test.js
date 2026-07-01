@@ -55,8 +55,8 @@ describe('lint-core: unknown-debug-facet', () => {
   const facetTokens = (src) =>
     core.lintTextWith(src, vocab).filter((f) => f.rule === 'unknown-debug-facet').map((f) => f.classToken);
 
-  test('valid profiles + facet lists do not warn', () => {
-    for (const v of ['on', 'off', 'all', 'identity size', 'class, box']) {
+  test('valid profiles + facet lists + reveal modes do not warn', () => {
+    for (const v of ['on', 'off', 'all', 'identity size', 'class, box', 'always', 'hover', 'always class box']) {
       assert.deepEqual(facetTokens(`---\ndebug: ${v}\n---\n\n# A\n`), [], `\`debug: ${v}\` should be clean`);
     }
   });

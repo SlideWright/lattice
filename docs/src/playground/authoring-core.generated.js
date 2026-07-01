@@ -934,6 +934,7 @@ ${indent}   - ${body.trim()}`;
       }];
     }
     var DEBUG_FACETS = /* @__PURE__ */ new Set(["identity", "layout", "size", "class", "box"]);
+    var DEBUG_REVEAL = /* @__PURE__ */ new Set(["hover", "always", "pinned"]);
     var DEBUG_KEYWORDS = /* @__PURE__ */ new Set(["on", "off", "true", "false", "yes", "no", "0", "1", "all"]);
     function findBadDebugFacets(source) {
       const out = [];
@@ -948,7 +949,9 @@ ${indent}   - ${body.trim()}`;
         const value = rawValue.trim().replace(/^["']|["']$/g, "");
         if (value === "") continue;
         const tokens = value.toLowerCase().split(/[\s,]+/).filter(Boolean);
-        const bad = tokens.filter((t) => !DEBUG_FACETS.has(t) && !(tokens.length === 1 && DEBUG_KEYWORDS.has(t)));
+        const bad = tokens.filter(
+          (t) => !DEBUG_FACETS.has(t) && !DEBUG_REVEAL.has(t) && !(tokens.length === 1 && DEBUG_KEYWORDS.has(t))
+        );
         if (!bad.length) continue;
         out.push({
           slide: 0,
@@ -957,7 +960,7 @@ ${indent}   - ${body.trim()}`;
           classToken: bad.join(" "),
           line,
           message: `'${bad.join("', '")}' ${bad.length > 1 ? "are not known debug levers" : "is not a known debug lever"} \u2014 the overlay falls back to the default profile`,
-          fix: `Use \`debug: on\`/\`off\`/\`all\`, or a list of: ${[...DEBUG_FACETS].join(", ")}.`
+          fix: `Use \`debug: on\`/\`off\`/\`all\`/\`always\`, or a list of levers: ${[...DEBUG_FACETS].join(", ")}.`
         });
       }
       return out;

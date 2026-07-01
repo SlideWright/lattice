@@ -103,6 +103,14 @@ box is, *how* it arranges children, *how big* it is). **`all` = everything.**
 
 Example label: `comparison-grid · grid · 720×360`.
 
+**Reveal mode (added post-review — the resting default was too dense).** Outlines
+are always on, but the LABELS default to **`hover`**: at rest you see only the
+color-coded outlines; pointing at a box reveals its chip *and its container chain*,
+enriched to the full lever set. `debug: always` pins every chip on at once (the old
+behavior) for a static map. Reveal is a token in the same list, classified out from
+facets: `debug: always`, `debug: hover class box`. Default is `hover`. This is what
+kills the wall-of-chips density — you pull detail in only where you look.
+
 Unknown facet tokens are a lint **warning** (not an error), listed by
 `lint-core.js`, mirroring how `finish` / `mode` / `split` vocab is validated.
 

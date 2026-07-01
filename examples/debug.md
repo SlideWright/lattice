@@ -13,7 +13,7 @@ debug: on
 # See the boxes your layout is made of.
 
 Set `debug: on` in the front matter and every preview — Playground, Drawing Board,
-Studio — outlines each box by its **layout mode** and labels the structural ones.
+Studio — outlines each box by its **layout mode**; **hover** one to read its label.
 It travels with the deck, and it is **stripped from every export**, so a boardroom
 PDF is byte-identical whether debug is on or off.
 
@@ -21,9 +21,10 @@ PDF is byte-identical whether debug is on or off.
 
 ## Read the grid at a glance.
 
-The overlay colors each box by how it lays its children out — **grid** (blue),
-**flex** (vermillion), **flow** (gray) — and labels the slide, every grid/flex
-container, and each grid cell with `identity · layout · size`.
+At rest you see only the outlines — each box colored by how it lays its children
+out: **grid** (blue), **flex** (vermillion), **flow** (gray). **Hover** any box to
+reveal its label (and its containers') in full detail. Want the whole map pinned on
+at once instead? Use `debug: always`.
 
 - Tool A · Chorus
   - [x] Speed
@@ -76,8 +77,8 @@ everywhere else; a spot directive just overrides the box it sits on.
 `<!-- _debug: off -->` silences the overlay on one slide even while the deck is
 debugging — handy once a layout is settled and the boxes are just noise.
 
-Hover any labeled box to **isolate** it: its chip lights up and the rest dim, so
-even a busy grid stays readable while you inspect one cell.
+Because labels are hover-summoned by default, a busy grid never becomes a wall of
+chips: you pull detail in only where you point, one box (and its containers) at a time.
 
 ---
 
