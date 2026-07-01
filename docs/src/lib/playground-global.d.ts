@@ -34,5 +34,11 @@ declare global {
 	interface Window {
 		LatticePlayground?: LatticePlaygroundEngine;
 		LatticeDeckPreview?: LatticeDeckPreviewController;
+		// Injected INSIDE the preview iframe by deck-preview.js's FIT agent: rescale
+		// every slide to the iframe width and flip `.lattice` visible. A host reads
+		// it off `iframe.contentWindow` to re-reveal a deck that was rendered while
+		// its pane was `display:none` (0-width) — the FIT gate can't scale a 0-width
+		// iframe, so the reveal has to be re-triggered once the pane is laid out.
+		__latticeFit?: () => void;
 	}
 }

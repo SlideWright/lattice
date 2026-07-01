@@ -99,6 +99,29 @@ async function loadFirstGallery(page) {
 	return label;
 }
 
+// Pick a component from the toolbar while in Edit. Like a gallery load, a pick must
+// SWITCH to Preview (applyDeck's `toPreview`) so the deck renders into a laid-out
+// (non-zero-width) pane and the FIT gate can reveal it. The bug this guards: picks
+// did NOT auto-switch, so on the mobile single-pane layout the deck rendered into
+// the still-hidden Edit pane (zero-width) and stayed blank — the shared assertion
+// below (tab AND body[data-pane] must both read "preview", deck painted + scaled)
+// fails when the pick leaves you stranded in Edit.
+async function pickComponent(page) {
+	await page.waitForSelector('#pg-template-trigger', { timeout: 20000 });
+	await page.click('#pg-template-trigger');
+	await page.waitForSelector('input[placeholder*="Search components"]', { timeout: 5000 });
+	await page.type('input[placeholder*="Search components"]', 'kpi');
+	await new Promise((r) => setTimeout(r, 400));
+	const picked = await page.evaluate(() => {
+		const items = [...document.querySelectorAll('[cmdk-item]')];
+		const t = items.find((i) => /kpi/i.test(i.textContent || '')) || items[0];
+		t?.click();
+		return t ? (t.textContent || '').trim() : null;
+	});
+	if (!picked) throw new Error('no component item found in the picker');
+	return `${picked} component pick`;
+}
+
 // Poll the preview iframe until the deck reveals (or time out).
 async function waitForDeck(page) {
 	const deadline = Date.now() + REVEAL_TIMEOUT;
@@ -134,13 +157,23 @@ const paneState = (page) =>
 	}));
 
 // A human-readable, copy-pasteable reproduction for the filed issue.
-function reproSteps(bp, w, h) {
+function reproSteps(bp, w, h, scenario = 'gallery') {
+	const action =
+		scenario === 'pick'
+			? [
+					'3. Pick a **component** (top-bar Component picker), then tap **Preview**.',
+					'4. **Expected:** the deck renders (slides visible).',
+					'5. **Actual (bug):** the tab reads "Preview" but the pane is blank — the deck was rendered into the hidden (zero-width) pane and never revealed.',
+				]
+			: [
+					'3. Open the **Galleries** sheet (top-bar grid icon) and pick the first deck.',
+					'4. **Expected:** the view switches to **Preview** and the deck renders (slides visible).',
+					'5. **Actual (bug):** the tab flips to "Preview" but the pane still shows the editor / a blank preview — the deck only appears after manually toggling Edit → Preview.',
+				];
 	return [
 		`1. Open the docs site **Playground** (\`/playground/\`) in a ${bp} viewport (${w}×${h}).`,
 		'2. Stay in **Edit** view (the default).',
-		'3. Open the **Galleries** sheet (top-bar grid icon) and pick the first deck.',
-		'4. **Expected:** the view switches to **Preview** and the deck renders (slides visible).',
-		'5. **Actual (bug):** the tab flips to "Preview" but the pane still shows the editor / a blank preview — the deck only appears after manually toggling Edit → Preview.',
+		...action,
 	].join('\n');
 }
 
@@ -159,36 +192,48 @@ async function main() {
 	const browser = await puppeteer.launch({ executablePath: exe, args: ['--no-sandbox', '--disable-dev-shm-usage', '--hide-scrollbars'] });
 	const results = [];
 
+	// Two ways a deck reaches the preview from Edit view. The gallery load runs on
+	// both viewports; the component pick (which does NOT auto-switch panes) is the
+	// mobile-only regression — on desktop both panes are always visible, so there is
+	// no hidden-pane render to guard.
+	const SCENARIOS = [
+		{ key: 'gallery', label: 'gallery load', load: loadFirstGallery, viewports: ['mobile', 'desktop'] },
+		{ key: 'pick', label: 'component pick', load: pickComponent, viewports: ['mobile'] },
+	];
+
 	for (const [bp, w, h] of VIEWPORTS) {
-		const page = await browser.newPage();
-		await page.setViewport({ width: w, height: h, deviceScaleFactor: 1 });
-		await stubExternals(page);
-		const r = { bp, w, h, ok: false, deck: null, pane: null, deck_state: null, error: null, shot: `${bp}.png` };
-		try {
-			await page.goto(`http://127.0.0.1:${PORT}/lattice/playground/`, { waitUntil: 'networkidle0', timeout: 45000 });
-			await new Promise((res) => setTimeout(res, 3500)); // chrome hydrate + engine load
-			r.deck = await loadFirstGallery(page);
-			r.pane = await paneState(page);
-			r.deck_state = await waitForDeck(page);
-			const paneOk = r.pane.tab === 'preview' && r.pane.body === 'preview';
-			const painted = !!(r.deck_state?.visible && r.deck_state.sections > 0);
-			const scaledOk = !!r.deck_state?.scaled;
-			r.ok = paneOk && painted && scaledOk;
-			if (!paneOk) r.error = `pane desync — tab="${r.pane.tab}" body[data-pane]="${r.pane.body}" (both must be "preview")`;
-			else if (!painted) r.error = `the preview never revealed — ${JSON.stringify(r.deck_state)} (the deck is rendered into a hidden / zero-width pane)`;
-			else if (!scaledOk) r.error = `revealed but slides weren't scaled to fit — ${JSON.stringify(r.deck_state)}`;
-		} catch (e) {
-			r.error = e.message;
+		for (const sc of SCENARIOS) {
+			if (!sc.viewports.includes(bp)) continue;
+			const page = await browser.newPage();
+			await page.setViewport({ width: w, height: h, deviceScaleFactor: 1 });
+			await stubExternals(page);
+			const r = { bp, w, h, scenario: sc.key, ok: false, deck: null, pane: null, deck_state: null, error: null, shot: `${bp}-${sc.key}.png` };
+			try {
+				await page.goto(`http://127.0.0.1:${PORT}/lattice/playground/`, { waitUntil: 'networkidle0', timeout: 45000 });
+				await new Promise((res) => setTimeout(res, 3500)); // chrome hydrate + engine load
+				r.deck = await sc.load(page);
+				r.pane = await paneState(page);
+				r.deck_state = await waitForDeck(page);
+				const paneOk = r.pane.tab === 'preview' && r.pane.body === 'preview';
+				const painted = !!(r.deck_state?.visible && r.deck_state.sections > 0);
+				const scaledOk = !!r.deck_state?.scaled;
+				r.ok = paneOk && painted && scaledOk;
+				if (!paneOk) r.error = `pane desync — tab="${r.pane.tab}" body[data-pane]="${r.pane.body}" (both must be "preview")`;
+				else if (!painted) r.error = `the preview never revealed — ${JSON.stringify(r.deck_state)} (the deck is rendered into a hidden / zero-width pane)`;
+				else if (!scaledOk) r.error = `revealed but slides weren't scaled to fit — ${JSON.stringify(r.deck_state)}`;
+			} catch (e) {
+				r.error = e.message;
+			}
+			// Always screenshot — pass for evidence, fail for the issue.
+			try {
+				await page.screenshot({ path: path.join(OUT, r.shot), fullPage: false });
+			} catch {
+				/* screenshot best-effort */
+			}
+			results.push(r);
+			console.log(`${r.ok ? '✓' : '✗'} ${bp} (${sc.label}): ${r.ok ? `"${r.deck}" rendered (${r.deck_state.sections} slides)` : r.error}`);
+			await page.close();
 		}
-		// Always screenshot — pass for evidence, fail for the issue.
-		try {
-			await page.screenshot({ path: path.join(OUT, r.shot), fullPage: false });
-		} catch {
-			/* screenshot best-effort */
-		}
-		results.push(r);
-		console.log(`${r.ok ? '✓' : '✗'} ${bp}: ${r.ok ? `"${r.deck}" rendered (${r.deck_state.sections} slides)` : r.error}`);
-		await page.close();
 	}
 
 	await browser.close();
@@ -201,19 +246,19 @@ async function main() {
 
 	if (failed.length) {
 		const md = [
-			'## Playground gallery preview does not render',
+			'## Playground preview does not render',
 			'',
-			`The nightly browser e2e found **${failed.length} of ${results.length}** viewport(s) where loading a gallery from Edit view fails to show the rendered deck.`,
+			`The nightly browser e2e found **${failed.length} of ${results.length}** case(s) where a deck reaching the preview from Edit view fails to show the rendered deck.`,
 			'',
 			...failed.flatMap((r) => [
-				`### ${r.bp} (${r.w}×${r.h}) — ❌`,
+				`### ${r.bp} (${r.w}×${r.h}) — ${r.scenario} — ❌`,
 				'',
 				`- **Problem:** ${r.error}`,
-				`- **Observed:** tab=\`${r.pane?.tab}\`, body[data-pane]=\`${r.pane?.body}\`, iframe=\`${JSON.stringify(r.deck_state)}\`, gallery=\`${r.deck}\``,
+				`- **Observed:** tab=\`${r.pane?.tab}\`, body[data-pane]=\`${r.pane?.body}\`, iframe=\`${JSON.stringify(r.deck_state)}\`, deck=\`${r.deck}\``,
 				'',
 				'**Steps to reproduce**',
 				'',
-				reproSteps(r.bp, r.w, r.h),
+				reproSteps(r.bp, r.w, r.h, r.scenario),
 				'',
 				`_Screenshot: \`${r.shot}\`_`,
 				'',
@@ -228,7 +273,7 @@ async function main() {
 		process.exit(1);
 	}
 
-	console.log(`\n✓ playground gallery preview renders — ${results.length} viewport(s) load a gallery, switch to Preview, and paint the deck.`);
+	console.log(`\n✓ playground preview renders — ${results.length} case(s) reach Preview from Edit (gallery load + component pick) and paint the deck.`);
 }
 
 main().catch((e) => {
