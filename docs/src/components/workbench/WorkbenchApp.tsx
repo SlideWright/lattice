@@ -15,6 +15,7 @@ export type WorkbenchData = {
 	engineUrl: string;
 	shippedNames: string[];
 	finishes: string[];
+	modes: string[];
 };
 
 /**

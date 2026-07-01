@@ -50,6 +50,7 @@ export function chunkStartLines(src) {
  * @property {Set<string>} modifiers
  * @property {Record<string, { valid: Set<string>; names: string[] }>} [mapRegions]
  * @property {string[]} [finishNames]
+ * @property {string[]} [modeNames]
  * @property {string[]} [splitNames]
  * @property {Record<string, { axis: string; hard: number }>} [capacity]
  */
@@ -70,6 +71,7 @@ export function buildVocabSets(vocab) {
 		}
 	}
 	if (v.finishNames) sets.finishNames = v.finishNames; // deck-wide `finish:` validator
+	if (v.modeNames) sets.modeNames = v.modeNames; // deck-wide `mode:` validator
 	if (v.splitNames) sets.splitNames = v.splitNames; // deck-wide `split:` validator
 	if (v.capacity) sets.capacity = v.capacity; // per-layout content-capacity contract
 	return sets;

@@ -20,10 +20,19 @@ const {
 } = require('../../../lib/core/resolve-finish');
 
 describe('resolve-finish', () => {
-  test('register maps each name to its class tokens', () => {
-    assert.equal(finishClasses('sketch'), 'sketch');
-    assert.equal(finishClasses('sketch-clean'), 'sketch sketch-clean-body');
-    assert.equal(finishClasses('boardroom'), '', 'boardroom is the no-class baseline');
+  test('finish is BACKDROP-only — the rendering mode (boardroom/sketch) moved to `style:`', () => {
+    // Clean break: these are no longer finishes; they resolve to no classes here
+    // (and the deck-lint flags them as unknown finish values).
+    assert.equal(finishClasses('sketch'), '', 'sketch is a mode, not a finish');
+    assert.equal(finishClasses('boardroom'), '', 'boardroom is a mode, not a finish');
+    assert.equal(finishClasses('sketch-clean'), '');
+    assert.ok(!isKnownFinish('sketch'));
+    assert.ok(!isKnownFinish('boardroom'));
+  });
+
+  test('none is the no-backdrop baseline', () => {
+    assert.equal(finishClasses('none'), '', 'none is the no-class baseline');
+    assert.ok(isKnownFinish('none'));
   });
 
   test('finish presets map to the finish base class + their preset variant', () => {
@@ -45,40 +54,41 @@ describe('resolve-finish', () => {
     }
   });
 
-  test('boardroom / omitted / unrecognized all resolve to no classes', () => {
-    assert.equal(finishClasses('boardroom'), '');
+  test('none / omitted / unrecognized all resolve to no classes', () => {
+    assert.equal(finishClasses('none'), '');
     assert.equal(finishClasses(''), '');
     assert.equal(finishClasses('   '), '');
-    assert.equal(finishClasses('sketchh'), '', 'typo → no classes (deck-lint flags it)');
+    assert.equal(finishClasses('atriumm'), '', 'typo → no classes (deck-lint flags it)');
     assert.equal(finishClasses(undefined), '');
     assert.equal(finishClasses(null), '');
   });
 
   test('value is case- and whitespace-insensitive', () => {
-    assert.equal(finishClasses('  Sketch  '), 'sketch');
-    assert.equal(finishClasses('SKETCH-CLEAN'), 'sketch sketch-clean-body');
+    assert.equal(finishClasses('  Atrium  '), 'finish finish-atrium');
+    assert.equal(finishClasses('MERIDIAN'), 'finish finish-meridian');
   });
 
   test('isKnownFinish recognizes the register names only', () => {
-    assert.ok(isKnownFinish('sketch'));
-    assert.ok(isKnownFinish('sketch-clean'));
-    assert.ok(isKnownFinish('boardroom'));
-    assert.ok(!isKnownFinish('sketchh'));
+    assert.ok(isKnownFinish('atrium'));
+    assert.ok(isKnownFinish('gallery'));
+    assert.ok(isKnownFinish('none'));
+    assert.ok(!isKnownFinish('sketch'), 'sketch is a mode now, not a finish');
+    assert.ok(!isKnownFinish('atriumm'));
     assert.ok(!isKnownFinish(''));
     assert.ok(!isKnownFinish(undefined));
   });
 
-  test('FINISH_NAMES lists exactly the registered names', () => {
+  test('FINISH_NAMES lists exactly the registered names (backdrops + none)', () => {
     assert.deepEqual(
       [...FINISH_NAMES].sort(),
-      ['atrium', 'boardroom', 'gallery', 'halo', 'ledger', 'loom', 'meridian', 'nimbus', 'savile', 'sketch', 'sketch-clean', 'strata'],
+      ['atrium', 'gallery', 'halo', 'ledger', 'loom', 'meridian', 'nimbus', 'none', 'savile', 'strata'],
     );
   });
 
   test('readFrontMatterFinish extracts the value from the front-matter block only', () => {
-    const md = '---\nmarp: true\ntheme: carta\nfinish: sketch\n---\n\n# H\n\n`finish: not-this` in body\n';
-    assert.equal(readFrontMatterFinish(md), 'sketch');
-    assert.equal(finishClassesFromSource(md), 'sketch');
+    const md = '---\nmarp: true\ntheme: carta\nfinish: atrium\n---\n\n# H\n\n`finish: not-this` in body\n';
+    assert.equal(readFrontMatterFinish(md), 'atrium');
+    assert.equal(finishClassesFromSource(md), 'finish finish-atrium');
   });
 
   // The catalog rot-guard (decision doc: "finish→primitive map is a single gated
@@ -115,8 +125,8 @@ describe('resolve-finish', () => {
   });
 
   test('readFrontMatterFinish accepts quotes and returns null when absent', () => {
-    assert.equal(readFrontMatterFinish('---\nfinish: "sketch-clean"\n---\n'), 'sketch-clean');
-    assert.equal(readFrontMatterFinish("---\nfinish: 'boardroom'\n---\n"), 'boardroom');
+    assert.equal(readFrontMatterFinish('---\nfinish: "meridian"\n---\n'), 'meridian');
+    assert.equal(readFrontMatterFinish("---\nfinish: 'none'\n---\n"), 'none');
     assert.equal(readFrontMatterFinish('---\ntheme: carta\n---\n'), null);
     assert.equal(readFrontMatterFinish(''), null);
     assert.equal(readFrontMatterFinish('# no front matter'), null);

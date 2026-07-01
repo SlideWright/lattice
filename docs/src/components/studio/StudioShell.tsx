@@ -29,6 +29,7 @@ import { type ComponentEntry, InsertComponent } from './InsertComponent';
 import { IntentTag } from './IntentTag';
 import { Library } from './Library';
 import { type PresentLens, presentationSet, scoreDeck, slideClass, splitSlides, unknownComponents, usedComponents } from './lint';
+import { activeModeLabel, ModeMenuItems } from './ModePicker';
 import { PresentOverlay } from './PresentOverlay';
 import { ShareSheet } from './ShareSheet';
 import { getNote, setNote } from './slide-notes';
@@ -297,8 +298,13 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const pageNumbers = getFrontMatter(source, 'paginate') === 'true';
 	const headerFooter = getFrontMatter(source, 'header') != null;
 	// …and WRITE to it (the editor + every export update in lock-step).
-	const finish = getFrontMatter(source, 'finish') || 'boardroom';
-	const setFinish = (value: string) => setSource((s) => setFrontMatter(s, 'finish', value === 'boardroom' ? null : value));
+	const finish = getFrontMatter(source, 'finish') || 'none';
+	const setFinish = (value: string) => setSource((s) => setFrontMatter(s, 'finish', value === 'none' ? null : value));
+	// The `mode:` axis (rendering mode — boardroom / sketch), a sibling of finish.
+	// (The key can't be `style:` — that's Marp's built-in inline-CSS directive.)
+	// Named `renderMode` locally to avoid clashing with the light/dark `mode` below.
+	const renderMode = getFrontMatter(source, 'mode') || 'boardroom';
+	const setRenderMode = (value: string) => setSource((s) => setFrontMatter(s, 'mode', value === 'boardroom' ? null : value));
 	// The saved finishes, shaped for the picker (slug + label + a chip swatch).
 	const savedFinishMenu = React.useMemo<SavedFinishMenuEntry[]>(
 		() => savedFinishes.map((f) => ({ id: f.id, name: f.name, label: f.label, swatch: finishSwatch(f.recipe) })),
@@ -311,7 +317,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	function removeFinish(f: StudioFinish) {
 		deleteStudioFinish(f.id).then(() => {
 			refreshFinishes();
-			if (finish === f.name) setFinish('boardroom');
+			if (finish === f.name) setFinish('none');
 			notify(`Removed “${f.label}” from your finish library.`);
 		});
 	}
@@ -429,6 +435,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const savedMenu = React.useMemo(() => savedThemes.map((t) => ({ id: t.id, name: t.name, label: t.label, accent: t.essentials?.accent })), [savedThemes]);
 	const activePalette = React.useMemo(() => activePaletteLabel(palette, savedMenu), [palette, savedMenu]);
 	const activeFin = React.useMemo(() => activeFinishLabel(finish, savedFinishMenu), [finish, savedFinishMenu]);
+	const activeMan = React.useMemo(() => activeModeLabel(renderMode), [renderMode]);
 	// Light/dark toggle — flips the shared `data-mode` (engine `light-dark()` resolves
 	// off it); the data-mode observer below pulls the new value into `mode` and the
 	// preview re-renders. Persisted via site-chrome so it survives a reload.
@@ -858,7 +865,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 						</div>
 					)}
 				</Field>
-				<Field label="Mode"><Control onClick={toggleMode} aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>{mode === 'dark' ? 'Dark' : 'Light'} {mode === 'dark' ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />}</Control></Field>
+				<Field label="Appearance"><Control onClick={toggleMode} aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>{mode === 'dark' ? 'Dark' : 'Light'} {mode === 'dark' ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />}</Control></Field>
 				<Field label="Size">
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
@@ -871,6 +878,19 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</Field>
+				<Field label="Mode">
+						{/* The rendering MODE (boardroom / sketch) — a separate axis from Finish
+						    (the backdrop). The two compose. Front-matter key `mode:` (Marp already
+						    owns `style:` for inline CSS, so the axis is named "mode"). */}
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Control aria-label="Choose mode"><span className="flex min-w-0 items-center gap-2"><span className="size-3.5 shrink-0 rounded-[3px] border border-[color-mix(in_srgb,var(--text-heading)_18%,transparent)]" style={{ background: activeMan.swatch, backgroundSize: activeMan.backgroundSize }} /><span className="truncate">{activeMan.label}</span></span> <ChevronDown className="size-3.5" /></Control>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end" className="w-56">
+								<ModeMenuItems mode={renderMode} onPick={setRenderMode} />
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</Field>
 				<Field label="Finish">
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>

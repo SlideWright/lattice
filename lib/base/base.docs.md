@@ -13,7 +13,7 @@ that any component can opt into.
 | `base.modifiers.css` | Auto-detected chrome — eyebrow, subtitle, key-insight panel, below-note, annotation. Triggered by markdown patterns the author writes (no class needed). |
 | `base.variants.css` | Universal opt-in variants — `dark`, `mirror`, `numbered`, `silent`, state markers, tone tokens. Composed via `_class:`. |
 | `base.treatments.css` | 27 treatment utility classes — 12 tints (`tint-corner at-tl`, `tint-vignette`, etc.) and 11 marks (`mark-orbit`, `mark-seeds`, etc.) plus `treatment-none` — for peripheral atmospheric accents. |
-| `base.sketch.css` | The `sketch` finish modifier — a deck-wide hand-drawn skin (handwriting type + drawn boxes). Palette-blind; composed via `class:` / `_class:`. |
+| `base.sketch.css` | The `sketch` **mode** (rendering hand) — a deck-wide hand-drawn skin (handwriting type + drawn boxes). Palette-blind; set via `mode:` or `class:` / `_class:`. |
 | `base.finish.css` | The `field` zone of the Finish family — 9 premium **stacked-layer** finish presets (`finish-atrium/meridian/strata/halo/ledger/nimbus/loom/savile/gallery`) on a per-role custom-property compositor (`--fin-wash`/`--fin-texture`/`--fin-mark`/`--fin-edge`), so layers combine by z-index instead of being either/or. `finish-none` (or back-compat `backdrop-none`) opts a slide out. **Rich-on-screen / safe-on-export:** each preset's slot DEFAULT is the richer "dissolving" screen look (directional fades to `transparent` — alpha the browser composites cleanly), with an `--fin-*-opaque` mirror holding the PDF-clean opaque value (every full-bleed fade ends on `var(--bg)`). One guarded block flips the slots to the opaque mirror for BOTH export paths — `@media print` (CLI vector PDF) and `.lattice-exporting` (the Studio html-to-image raster tags each section before capture) — so the screen is rich while every PDF/PPTX stays opaque-clean (an alpha area-fade bakes to a gray cloud in print-to-PDF). Both faces are palette-blind (`color-mix(var(--accent)/var(--bg))`), no masks, no `url()`; only the screen face uses alpha. Selected deck-wide via the `finish:` register or per-slide via `_class: finish finish-<name>`. See `engineering/decisions/2026-06-30-finish-the-surface-layer.md`. |
 
 ---
@@ -473,39 +473,52 @@ emphasis, links, and any stray prose follow without enumeration; and label
 pills/badges ride the `--pill-font` seam. Only real inline `code`, `pre`, and
 the `math` component stay monospace, so data can't be misread.
 
-It is a **Finish-layer** modifier in the Function · Form · Substance ·
-Finish model: it changes type and box geometry, never colour. Every
-stroke resolves through a palette token, so the finish is **palette-blind**
-— pair it with any theme and that theme colours it. The curated `carta`
-paper-and-ink palette is the blessed pairing.
+It is the **`mode:` axis** — the deck's rendering *mode* (its typographic
+hand), a sibling of the `finish:` backdrop within the Function · Form · Substance
+· Finish model: it changes type and box geometry, never colour. Every stroke
+resolves through a palette token, so the style is **palette-blind** — pair it
+with any theme and that theme colours it. The curated `carta` paper-and-ink
+palette is the blessed pairing.
 
 ```yaml
 ---
 theme: carta      # paper + ink; any palette works
-finish: sketch    # deck-wide register — propagates to every slide
+mode: sketch     # deck-wide rendering mode — propagates to every slide
 ---
 ```
 
 Or per slide: `<!-- _class: cards-grid sketch -->`.
 
-#### The `finish:` front-matter register
+#### The `mode:` front-matter register (rendering mode)
 
-`finish:` is the **deck-wide finish selector** — a Lattice front-matter
-extension (Marpit has no native key) that names the whole-deck finish in one
-readable token, orthogonal to `theme:`. It resolves to the same CSS classes
-you'd otherwise hand-spell on `class:`, and **composes** with any per-slide
-`_class:` (the same append-not-replace semantic as the deck-wide `class:`
-directive), so `finish: sketch` + `<!-- _class: cards-grid -->` renders
-`class="cards-grid sketch"`. Use `finish:` rather than `class: sketch` when the
-intent is "this whole deck is sketch" — it reads as a register, not a layout
-class, and a typo is caught by the deck linter instead of silently rendering
-the baseline.
+`mode:` is the **deck-wide rendering-mode selector** — a Lattice front-matter
+extension (Marpit has no native key) that names the whole-deck hand in one
+readable token, orthogonal to `theme:` (palette) and `finish:` (backdrop). It
+resolves to the same CSS classes you'd otherwise hand-spell on `class:`, and
+**composes** with any per-slide `_class:` (the same append-not-replace semantic
+as the deck-wide `class:` directive), so `mode: sketch` + `<!-- _class:
+cards-grid -->` renders `class="cards-grid sketch"`. A per-slide `<!-- _class:
+boardroom -->` opts one slide back to clean. Use `mode:` rather than `class:
+sketch` when the intent is "this whole deck is sketch" — it reads as a register,
+and a typo is caught by the deck linter (`unknown-mode`).
+
+| `mode:` value | Resolves to | Effect |
+|---|---|---|
+| `boardroom` | *(no class)* | The baseline — clean type, square boxes. The default when `mode:` is omitted. |
+| `sketch` | `sketch` | Full handwriting (headings **and** body) + drawn boxes. |
+| `sketch-clean` | `sketch sketch-clean-body` | Keep hand headings + boxes; return prose to the clean `--font-body` for text-dense slides. |
+
+#### The `finish:` front-matter register (backdrop)
+
+`finish:` is the sibling **backdrop selector** — the palette-blind gradient layer
+stack painted *behind* content. It composes with `mode:` and `theme:`
+(`mode: sketch` + `finish: atrium` = a hand-drawn deck on an atrium backdrop).
+`none` is the baseline (omitting the key renders it); a typo is caught as
+`unknown-finish`.
 
 | `finish:` value | Resolves to | Effect |
 |---|---|---|
-| `boardroom` | *(no class)* | The baseline — clean type, square boxes. The default when `finish:` is omitted. |
-| `sketch` | `sketch` | Full handwriting (headings **and** body) + drawn boxes. |
-| `sketch-clean` | `sketch sketch-clean-body` | Keep hand headings + boxes; return prose to the clean `--font-body` for text-dense slides. |
+| `none` | *(no class)* | No backdrop — the baseline. The default when `finish:` is omitted. |
 | `atrium` | `finish finish-atrium` | Corner glow + a fine grid + a left margin rule. |
 | `meridian` | `finish finish-meridian` | Diagonal duotone wash + contour lines + an (author-set) oversized ghost numeral. |
 | `strata` | `finish finish-strata` | Soft horizontal bands + a dot-matrix + a top hairline & corner tick. |
@@ -547,10 +560,11 @@ interpolate toward transparent-black → a gray cloud (the browser hides it, the
 PDF does not). Patterns are therefore uniform and faint (thin opaque lines with
 `transparent` gaps), not directionally faded.
 
-The register is **open** (defined in `lib/core/resolve-finish.js`) and read by
-all three render paths. An unrecognized value (e.g. `finish: sketchh`) resolves
-to no classes — so it would silently ship the boardroom baseline — which is why
-`npm run lint:deck` flags it as an `unknown-finish` warning.
+Both registers are **open** (`lib/core/resolve-finish.js` for backdrops,
+`lib/core/resolve-mode.js` for the mode) and read by all three render paths.
+An unrecognized value (e.g. `finish: atriumm` or `mode: sketchh`) resolves to no
+classes — so it would silently ship the baseline — which is why `npm run
+lint:deck` flags it (`unknown-finish` / `unknown-mode`).
 
 **Reserved finish classes — do not author by hand.** `lattice-exporting` is an
 **engine-reserved class**: the Studio raster export (`drawing-board-export.js`)

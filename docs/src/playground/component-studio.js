@@ -44,7 +44,7 @@ function slugify(name, fallback = 'component') {
 }
 
 export function initLayoutStudio(config) {
-  const { themeBase, runtimeUrl, shippedNames = [], finishes = [] } = config;
+  const { themeBase, runtimeUrl, shippedNames = [], finishes = [], modes = [] } = config;
   const root = document.querySelector('.studio-layout');
   if (!root) return;
 
@@ -92,6 +92,7 @@ export function initLayoutStudio(config) {
     body: () => state.skeleton,
     onChange: () => run(),
     finishes,
+    modes,
     storageKey: 'lattice-wb-layout-preview-fm',
   });
 

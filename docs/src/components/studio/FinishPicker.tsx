@@ -47,16 +47,17 @@ const LABEL = 'font-mono text-[10px] uppercase tracking-wider text-muted-foregro
 export type SavedFinishMenuEntry = { id: string; name: string; label: string; swatch?: { background: string; backgroundSize?: string } };
 
 /**
- * The grouped finish list, rendered inside any `<DropdownMenuContent>`:
- * Plain (boardroom / sketch) → Finishes (the layered field presets) → Saved (your
- * Fabricated finishes). `finish` is the active selection — a register name for a
+ * The finish (BACKDROP) list, rendered inside any `<DropdownMenuContent>`:
+ * None → Finishes (the layered field presets) → Saved (your Fabricated finishes).
+ * The rendering MODE (boardroom / sketch) is a SEPARATE control now — the `mode:`
+ * picker (ModeMenuItems). `finish` is the active selection — a register name for a
  * built-in, or a saved finish's slug. Picking a saved one renders it in the deck
  * preview (StudioShell injects its CSS + applies its class).
  */
 export function FinishMenuItems({
 	finish, onPick, saved = [],
 }: { finish: string; onPick: (name: string) => void; saved?: SavedFinishMenuEntry[] }) {
-	const plain = FINISHES.filter((f) => f.group === 'plain');
+	const none = FINISHES.filter((f) => f.group === 'plain'); // the sole `none` baseline
 	const presets = FINISHES.filter((f) => f.group === 'finish');
 	// A saved finish is active when the selection matches its slug (and isn't a
 	// built-in register name).
@@ -64,8 +65,7 @@ export function FinishMenuItems({
 	const savedActive = !FINISHES.some((f) => f.name === finish) && finish;
 	return (
 		<>
-			<DropdownMenuLabel className={LABEL}>Plain</DropdownMenuLabel>
-			{plain.map((f) => <FinishItem key={f.name} entry={f} active={!savedActive && f.name === builtin} onPick={onPick} />)}
+			{none.map((f) => <FinishItem key={f.name} entry={f} active={!savedActive && f.name === builtin} onPick={onPick} />)}
 			<DropdownMenuSeparator />
 			<DropdownMenuLabel className={LABEL}>Finishes</DropdownMenuLabel>
 			{presets.map((f) => <FinishItem key={f.name} entry={f} active={!savedActive && f.name === builtin} onPick={onPick} />)}

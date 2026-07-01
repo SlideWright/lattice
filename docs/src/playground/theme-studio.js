@@ -135,7 +135,7 @@ function slugify(name, fallback = 'studio') {
 }
 
 export function initThemeStudio(config) {
-  const { themeBase, runtimeUrl, finishes = [] } = config;
+  const { themeBase, runtimeUrl, finishes = [], modes = [] } = config;
   const root = document.querySelector('.studio');
   if (!root) return;
 
@@ -178,6 +178,7 @@ export function initThemeStudio(config) {
     body: () => SPECIMEN,
     onChange: () => run(),
     finishes,
+    modes,
     storageKey: 'lattice-wb-theme-preview-fm',
   });
 

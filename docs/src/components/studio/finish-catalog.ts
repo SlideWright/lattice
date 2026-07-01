@@ -29,25 +29,17 @@ export type FinishEntry = {
 
 const A = (pct: number) => `color-mix(in srgb, var(--accent) ${pct}%, transparent)`;
 
-// Ordered as the picker shows them. `boardroom` is the named baseline (omitting
-// the key renders it). Each finish preset is a STACK of layers in the engine; the
-// chip shows a single representative layer, intentionally a touch more saturated
-// than the real (deliberately subtle) finish so the motif reads at 16px.
+// Ordered as the picker shows them. `none` is the named baseline (no backdrop;
+// omitting the key renders it). The rendering MODE — boardroom / sketch — is a
+// SEPARATE axis now (mode-catalog.ts / the `style:` register), so it no longer
+// lives here. Each finish preset is a STACK of layers in the engine; the chip
+// shows a single representative layer, intentionally a touch more saturated than
+// the real (deliberately subtle) finish so the motif reads at 16px.
 export const FINISHES: FinishEntry[] = [
 	{
-		name: 'boardroom', label: 'Boardroom', group: 'plain', nature: 'typographic', zone: 'none',
-		blurb: 'The clean baseline — no surface treatment.',
+		name: 'none', label: 'None', group: 'plain', nature: 'parametric', zone: 'none',
+		blurb: 'No backdrop — just the content over the theme canvas.',
 		swatch: { background: 'var(--bg)' },
-	},
-	{
-		name: 'sketch', label: 'Sketch', group: 'plain', nature: 'typographic', zone: 'none',
-		blurb: 'Hand-drawn skin — handwriting type and drawn boxes.',
-		swatch: { background: `repeating-linear-gradient(8deg, ${A(34)} 0 1.5px, transparent 1.5px 5px)` },
-	},
-	{
-		name: 'sketch-clean', label: 'Sketch · clean body', group: 'plain', nature: 'typographic', zone: 'none',
-		blurb: 'Hand-drawn headings and boxes; clean body text.',
-		swatch: { background: `repeating-linear-gradient(8deg, ${A(28)} 0 1.5px, transparent 1.5px 7px)` },
 	},
 	{
 		name: 'atrium', label: 'Atrium', group: 'finish', nature: 'parametric', zone: 'field',
@@ -138,8 +130,8 @@ export const FINISH_BY_NAME: Record<string, FinishEntry> = Object.fromEntries(
 	FINISHES.map((f) => [f.name, f]),
 );
 
-/** The active finish for a deck `finish:` value (defaults to boardroom). */
+/** The active finish for a deck `finish:` value (defaults to none). */
 export function activeFinish(value: string | undefined | null): FinishEntry {
 	const key = (value ?? '').trim().toLowerCase();
-	return FINISH_BY_NAME[key] ?? FINISH_BY_NAME.boardroom;
+	return FINISH_BY_NAME[key] ?? FINISH_BY_NAME.none;
 }

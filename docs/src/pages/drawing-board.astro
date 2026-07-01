@@ -88,6 +88,7 @@ const lintVocab = {
 	universalModifiers: [..._vocab.universalModifiers],
 	mapRegions,
 	finishNames: _vocab.finishNames || [],
+	modeNames: _vocab.modeNames || [],
 	splitNames: _vocab.splitNames || [],
 	capacity: _vocab.capacity || {},
 };
@@ -584,6 +585,7 @@ const dbData = JSON.stringify({
 				// controller's onEdit → syncThemeControls (picker + chrome) below.
 				palettes: data.palettes || [],
 				finishes: (data.lintVocab && data.lintVocab.finishNames) || [],
+				modes: (data.lintVocab && data.lintVocab.modeNames) || [],
 				getDefaultTheme: () => document.documentElement.getAttribute('data-palette') || (data.palettes && data.palettes[0]) || '',
 			});
 			window.__dbConfig = config;
