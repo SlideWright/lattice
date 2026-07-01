@@ -255,6 +255,21 @@ in patch versions.
 
 ### Changed
 
+- **Studio AI component canon now teaches odd/fixed-aspect shapes to fill the stage, not float or overflow (#610, #643 spike).**
+  Live validation (#639) found the "design for fit" canon reasons about element *count* and *monumentality* but not about how a
+  non-rectangular or fixed-aspect shape (hexagon, disc, stamp, film frame) distributes into the 16:9 stage — so hexagon tiles
+  overflowed the bottom, avatar discs and film strips floated small in a sea of empty, and signposts broke. A new **"shape must earn
+  the stage"** bullet (`lib/layout/ai.js` `COMPONENT_CANON`) teaches the fix as the *same flex-fill mechanism as a card grid*, applied
+  to the shape: make the shapes a `flex:1 1 0` row so the band grows to the full stage height, then give each shape its ratio
+  (`aspect-ratio`/`clip-path`) *inside* that grown cell — so N shapes sit edge-to-edge in one stage-filling band, never a thin ribbon
+  mid-slide; a strip/band form grows its frames (`flex:1`) or stacks. **Evidence (before/after render probe on the odd-shape prompts):**
+  the worst failures are removed — hexagon overflow, the broken one-word-per-line signpost, and empty-frame polaroids are gone — and
+  fill improves in the common case; the improvement is *directional, not guaranteed* (the model applies the mechanism unevenly, so some
+  strips/grids still float in a given draw — the same partial-effect pattern documented for prompt guidance in #644). An earlier draft
+  also tried a *scattered-layout* clause; it regressed the margin gate (scatter nudged the model to `margin`) without reliably helping,
+  so it was dropped — the shipped bullet is the flex-fill mechanism only. Generator guidance only — no gate or runtime change; the
+  frozen adversarial eval stays 18/18 and the odd-shape gate-clean rate is unchanged. Rationale in
+  `engineering/decisions/2026-06-29-ai-component-generation.md` §11.
 - **Studio topbar information architecture — appearance grouping + one responsive `⋯` overflow.**
   The topbar no longer crowds ~15 controls into one 54px row on a phone. On **desktop (≥1100)**
   the theme picker and light/dark toggle are grouped into one bordered **Appearance segment**

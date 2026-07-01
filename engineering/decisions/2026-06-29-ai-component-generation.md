@@ -509,3 +509,20 @@ All three pillars landed, faithful to the design above:
   - A **separate, softer fit/overflow finding** (odd shapes — honeycomb overflow, stamp/filmstrip
     dead-space, polaroid/luggagetag/maptrail broken) is logged as its own follow-up (#643), kept off this
     PR's path (#18/#17). Full report + PNGs on #639.
+  - **#643 spike — "shape must earn the stage" (shipped).** A before/after render probe on the odd-shape prompts
+    (honeycomb, stamps, filmstrip, polaroid, maptrail, disc-avatars; `.scratch/stress/fit-probe.mjs`) confirmed the
+    gap persists on the post-#644 canon: fixed-aspect/clipped shapes size by their *intrinsic* proportion, so they
+    float small in empty or (when tall, e.g. a hexagon) clip the bottom — dead-space and overflow share this one
+    root. The fix is a new bullet teaching the **same flex-fill mechanism as a card grid, applied to the shape**:
+    a `flex:1 1 0` row grows the band to the full stage height, then the shape's `aspect-ratio`/`clip-path` sits
+    *inside* the grown cell; a strip/band grows its frames or stacks. This removes the worst failures (hexagon
+    overflow, the broken vertical signpost, empty-frame polaroids) and improves fill in the common case — but the
+    effect is **directional, not deterministic**: the model applies the mechanism unevenly, so a given draw of a
+    filmstrip or disc row can still float. This is the **same partial-effect signature as the #644 margin guidance**
+    — a soft layout heuristic moves behavior only partly, unlike a concrete *token-path* mechanism (the hex recipe),
+    which was decisive. A first draft added a **scattered/positioned clause** (polaroid/corkboard/signpost with a
+    `transform` tilt); the render probe showed it **regressed the margin gate** (scatter nudged the model to `margin`)
+    without reliably improving fill, so it was **dropped** — the shipped bullet is the flex-fill mechanism only.
+    Generator guidance only; frozen eval stays 18/18, odd-shape gate-clean rate unchanged. Residual variance
+    (stamps dead-space, intermittent strip/grid float) is the honest ceiling of prompt-only fit guidance; a harder
+    fix would need per-family layouts (a graduation-path concern, not the canon).
