@@ -130,6 +130,10 @@ the refdoc id prefix.
   are fixed presets, not doc-driven.
 - `pdf-text` suits digital-text PDFs (brand guides, decks); scanned/image PDFs
   would need the pricier `mistral-ocr` engine — a later toggle if demand appears.
-- **Multi-doc grounding** is deferred — `groundMessages` grounds one doc; the picker
-  is single-select by design (the reviews flagged multi-select as a trap given the
-  single-doc model).
+- **Multi-doc grounding shipped (#656).** `groundMessages` now takes an array: text docs
+  inline as filename-labeled blocks under one untrusted-data preamble, each PDF rides as
+  its own file content-part, and the picker is multi-select (toggle membership; a removable
+  chip per doc; budget summed via `refDocsTokens`; `MAX_GROUND_DOCS` cap). The earlier
+  "multi-select is a trap" concern was specific to routing selection through the Library's
+  bulk-export checkboxes; an in-picker toggle with explicit per-doc chips avoids that
+  ambiguity. Per-doc weighting/ordering remains out of scope.

@@ -25,6 +25,17 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **Ground one AI generation in several reference docs at once (#656).** The reference-doc
+  picker is now multi-select — toggle any number of saved docs (up to a cap) into the grounding
+  set for a theme/component/deck-chat generation, e.g. brand guide + tone-of-voice + last
+  quarter's deck together. Each active doc shows as a removable chip with a combined "N docs ·
+  billed each run" note; the pre-send budget estimate sums across them. Under the hood
+  `groundMessages` inlines the text docs as filename-labeled blocks under one untrusted-data
+  preamble and attaches each PDF as its own file part — the #22 threat model is unchanged (every
+  doc is framed as data; generated HTML still crosses the sanitizer).
+
 ### Changed
 
 - **Breaking: `boardroom` and `sketch` moved off `finish:` onto a new `mode:` axis.**
