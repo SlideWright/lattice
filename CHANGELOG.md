@@ -262,10 +262,13 @@ in patch versions.
   the stage"** bullet (`lib/layout/ai.js` `COMPONENT_CANON`) teaches the fix as the *same flex-fill mechanism as a card grid*, applied
   to the shape: make the shapes a `flex:1 1 0` row so the band grows to the full stage height, then give each shape its ratio
   (`aspect-ratio`/`clip-path`) *inside* that grown cell — so N shapes sit edge-to-edge in one stage-filling band, never a thin ribbon
-  mid-slide; a strip/band form grows its frames (`flex:1`) or stacks. **Evidence (before/after render probe on the odd-shape prompts):**
-  the worst failures are removed — hexagon overflow, the broken one-word-per-line signpost, and empty-frame polaroids are gone — and
-  fill improves in the common case; the improvement is *directional, not guaranteed* (the model applies the mechanism unevenly, so some
-  strips/grids still float in a given draw — the same partial-effect pattern documented for prompt guidance in #644). An earlier draft
+  mid-slide; a strip/band form grows its frames (`flex:1`) or stacks. **Evidence (blind K=5 OLD-vs-NEW controlled trial, 60 renders —
+  6 odd-shape prompts × 5 samples × two canon arms, DOM `.cell-stage` overflow + full visual audit):** the fix cuts the *destructive*
+  failure — overflow incidence **0.47 → 0.33**, mean overflow magnitude **0.665 → 0.506** — with the hex/margin/font gates **unaffected**
+  (gate pass 0.83 → 0.80, ±1 sample). Clear wins on honeycomb (overflow eliminated) and maptrail (huddled signs → filling stacks); stamps
+  partial; filmstrip/polaroid a wash; disc-avatars a slight regression. The improvement is *directional, not guaranteed* (the model applies
+  the mechanism unevenly, so some strips/grids still float in a given draw — the same partial-effect pattern documented for prompt guidance
+  in #644); it trades destructive overflow (clipped content) for a milder underfill/collapse (dead space, no content lost). An earlier draft
   also tried a *scattered-layout* clause; it regressed the margin gate (scatter nudged the model to `margin`) without reliably helping,
   so it was dropped — the shipped bullet is the flex-fill mechanism only. Generator guidance only — no gate or runtime change; the
   frozen adversarial eval stays 18/18 and the odd-shape gate-clean rate is unchanged. Rationale in
