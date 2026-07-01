@@ -109,12 +109,21 @@ color-coded outlines; pointing at a box reveals its chip *and its container chai
 enriched to the full lever set. `debug: always` pins every chip on at once (the old
 behavior) for a static map. Reveal is a token in the same list, classified out from
 facets: `debug: always`, `debug: hover class box`. Default is `hover`. This is what
-kills the wall-of-chips density — you pull detail in only where you look. **Touch has
-no hover**, so a **tap** reveals a box's chain (tap it again, or tap empty space, to
-dismiss); mouse keeps its hover behavior. The preview iframe also owns swipe/scroll,
-which starts with the same finger-down — so reveal fires only on a *genuine tap*
-(pointer down→up with no meaningful move, and no `pointercancel`); a swipe moves or
-cancels and passes straight through to scroll, leaving no stray label.
+kills the wall-of-chips density — you pull detail in only where you look.
+
+**Debug owns the pointer in `hover` mode (a capture layer).** The preview iframe has
+its OWN gestures (click-to-navigate, chart reveal, and on touch there is no hover at
+all), and passively listening lost the race on real devices. So `hover` mode installs
+a transparent **capture layer** (`#lattice-debug-capture`, `pointer-events:auto`) that
+TAKES PRECEDENCE: a mouse **hover** or a **tap** reveals the box beneath and its chain
+(tap again / tap empty to dismiss), and every synthesized **click is suppressed**
+(`stopImmediatePropagation`) so the preview's own gestures never fire while debugging.
+The one gesture that survives is the **swipe** — `touch-action:pan-y` on the layer lets
+a vertical drag scroll the filmstrip, and a tap is distinguished from a swipe by
+down→up with no meaningful move (a moved/cancelled pointer reveals nothing). `always`
+mode stays passive (chips pinned, the deck interactive) — precedence is a `hover`-mode
+affordance only. Owner directive (2026-07-01): "in debug + hover, debug takes
+precedence over everything else; swipe may stay, all other gestures off."
 
 Unknown facet tokens are a lint **warning** (not an error), listed by
 `lint-core.js`, mirroring how `finish` / `mode` / `split` vocab is validated.

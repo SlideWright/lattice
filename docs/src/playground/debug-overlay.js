@@ -27,6 +27,7 @@
 
 export const DEBUG_STYLE_ID = 'lattice-debug-style';
 export const DEBUG_OVERLAY_ID = 'lattice-debug-overlay';
+export const DEBUG_CAPTURE_ID = 'lattice-debug-capture';
 
 // The levers. `identity size layout` is the default profile (`debug: on`); `class`
 // and `box` are opt-in. Order here is the render order on the chip.
@@ -150,6 +151,12 @@ export function debugCss() {
 		// chips ignore the deck's own transforms/scroll containers and sit in viewport
 		// space (positions are computed from getBoundingClientRect each redraw).
 		`#${DEBUG_OVERLAY_ID}{position:fixed;inset:0;pointer-events:none;z-index:2147483000;font:600 11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;}`,
+		// In HOVER mode, this transparent layer OWNS pointer input so debug takes
+		// precedence over the preview's own gestures (click-to-navigate, chart reveal):
+		// a tap reveals the box beneath, and `touch-action:pan-y` lets a vertical swipe
+		// still scroll the filmstrip. pointer-events:auto (a div's default) so it
+		// intercepts; skipped by elementsFromPoint via its id when we hit-test beneath.
+		`#${DEBUG_CAPTURE_ID}{position:fixed;inset:0;z-index:2147482999;background:transparent;touch-action:pan-y;cursor:crosshair;}`,
 		`#${DEBUG_OVERLAY_ID} .dbg-chip{position:absolute;transform:translateY(0);background:rgba(12,15,22,.92);color:#fff;padding:1px 5px;border-radius:0 0 4px 0;border-left:3px solid #fff;white-space:nowrap;max-width:60vw;overflow:hidden;text-overflow:ellipsis;}`,
 		`#${DEBUG_OVERLAY_ID} .dbg-chip[data-dbg-layout="grid"]{border-left-color:${LAYOUT_COLORS.grid};}`,
 		`#${DEBUG_OVERLAY_ID} .dbg-chip[data-dbg-layout="flex"]{border-left-color:${LAYOUT_COLORS.flex};}`,
@@ -269,52 +276,54 @@ export function applyDebug(frame, opts = {}) {
 		win.addEventListener('resize', redraw);
 		win.addEventListener('scroll', redraw, { passive: true });
 		doc.__dbgResize = redraw;
-		// Hover (mouse): track the box under the pointer; renderChips reveals it (+ its
-		// containers) and, in `hover` mode, hides everything else.
-		const move = (e) => {
-			doc.__dbgHot = hitBox(doc, overlay, e);
+	}
+
+	// HOVER mode: a transparent CAPTURE LAYER owns pointer input so debug takes
+	// precedence over the preview's own gestures (click-to-navigate, chart reveal).
+	// `always` mode stays passive — chips are pinned and the deck stays interactive.
+	if (enabled.some((s) => s.cfg.reveal === 'hover') && doc.createElement) {
+		const cap = doc.createElement('div');
+		cap.id = DEBUG_CAPTURE_ID;
+		(doc.body || doc.documentElement).appendChild(cap);
+		const reveal = (x, y, toggle) => {
+			const hit = hitFromPoint(doc, overlay, x, y);
+			doc.__dbgHot = toggle && hit && hit === doc.__dbgHot ? null : hit; // tap again / empty → dismiss
 			renderChips(doc, win);
 		};
-		const leave = () => {
+		// Mouse: hover reveals the box under the pointer.
+		cap.addEventListener('mousemove', (e) => reveal(e.clientX, e.clientY, false));
+		cap.addEventListener('mouseleave', () => {
 			doc.__dbgHot = null;
 			renderChips(doc, win);
-		};
-		// Touch has no hover, so a TAP reveals a box's label (tap it again, or tap empty
-		// space, to dismiss). But the preview iframe ALSO owns swipe/scroll, which starts
-		// with the same finger-down — so we must NOT reveal on down. Instead we watch for
-		// a genuine tap: down → up with no meaningful move (and no pointercancel, which
-		// fires the moment the browser claims the gesture for scrolling). A swipe moves or
-		// cancels → no reveal, and the scroll passes through untouched. Mouse keeps hover.
+		});
+		// Touch: a genuine TAP (down→up, no meaningful move, no pointercancel) reveals;
+		// a swipe MOVES or cancels → no reveal, and `touch-action:pan-y` lets it scroll.
 		let tap = null;
-		const down = (e) => {
+		cap.addEventListener('pointerdown', (e) => {
 			tap = e.pointerType === 'mouse' ? null : { x: e.clientX, y: e.clientY, moved: false };
-		};
-		const tmove = (e) => {
+		});
+		cap.addEventListener('pointermove', (e) => {
 			if (tap && (Math.abs(e.clientX - tap.x) > 10 || Math.abs(e.clientY - tap.y) > 10)) tap.moved = true;
-		};
-		const up = (e) => {
+		});
+		cap.addEventListener('pointerup', (e) => {
 			const wasTap = tap && !tap.moved;
 			tap = null;
-			if (!wasTap) return; // a swipe/scroll (or a mouse event) — reveal nothing
-			const hit = hitBox(doc, overlay, e);
-			doc.__dbgHot = hit && hit === doc.__dbgHot ? null : hit; // tap again / tap empty → dismiss
-			renderChips(doc, win);
-		};
-		const cancel = () => {
+			if (!wasTap) return; // a swipe — let it scroll, reveal nothing
+			reveal(e.clientX, e.clientY, true);
+		});
+		cap.addEventListener('pointercancel', () => {
 			tap = null;
-		};
-		doc.addEventListener('mousemove', move);
-		doc.addEventListener('mouseleave', leave);
-		doc.addEventListener('pointerdown', down);
-		doc.addEventListener('pointermove', tmove);
-		doc.addEventListener('pointerup', up);
-		doc.addEventListener('pointercancel', cancel);
-		doc.__dbgMove = move;
-		doc.__dbgLeave = leave;
-		doc.__dbgDown = down;
-		doc.__dbgTMove = tmove;
-		doc.__dbgUp = up;
-		doc.__dbgCancel = cancel;
+		});
+		// Suppress the click a tap synthesizes (and any mouse click) so the preview's
+		// click-to-navigate / chart reveal never fires while debug owns the surface.
+		cap.addEventListener(
+			'click',
+			(e) => {
+				e.stopImmediatePropagation();
+				e.preventDefault();
+			},
+			true,
+		);
 	}
 	if (win?.setTimeout) {
 		for (const t of [80, 320, 1200]) win.setTimeout(redraw, t);
@@ -343,14 +352,19 @@ function makeChip(doc, el, mode, reveal, restText, fullText) {
 	return chip;
 }
 
-// Hit-test the box under the pointer → the nearest element that owns a chip, or
-// null. Walks up from elementFromPoint since the overlay itself is pointer-events:none.
-function hitBox(doc, overlay, e) {
+// The nearest chip-owning box beneath a viewport point → or null. The capture layer
+// sits on top, so we hit-test with elementsFromPoint (front-to-back) and step over
+// the debug layers by id; the overlay + chips are pointer-events:none and already
+// omitted. Then walk up to the nearest box that owns a chip.
+function hitFromPoint(doc, overlay, x, y) {
+	if (!doc.elementsFromPoint) return null;
 	const owned = new Set(Array.from(overlay.children).map((c) => c.__dbgEl));
-	let node = doc.elementFromPoint ? doc.elementFromPoint(e.clientX, e.clientY) : null;
-	while (node && node !== doc.body) {
-		if (owned.has(node)) return node;
-		node = node.parentElement;
+	for (const start of doc.elementsFromPoint(x, y)) {
+		if (start.id === DEBUG_CAPTURE_ID || start.id === DEBUG_OVERLAY_ID) continue;
+		for (let n = start; n && n.nodeType === 1; n = n.parentElement) {
+			if (n.id === DEBUG_CAPTURE_ID || n.id === DEBUG_OVERLAY_ID) break;
+			if (owned.has(n)) return n;
+		}
 	}
 	return null;
 }
@@ -418,6 +432,9 @@ function teardown(doc, win) {
 	if (style) style.remove();
 	const overlay = doc.getElementById?.(DEBUG_OVERLAY_ID);
 	if (overlay) overlay.remove();
+	// The capture layer holds all the pointer listeners; removing the node drops them.
+	const cap = doc.getElementById?.(DEBUG_CAPTURE_ID);
+	if (cap) cap.remove();
 	if (doc.__dbgRO) {
 		doc.__dbgRO.disconnect();
 		doc.__dbgRO = null;
@@ -426,14 +443,7 @@ function teardown(doc, win) {
 		win.removeEventListener('resize', doc.__dbgResize);
 		win.removeEventListener('scroll', doc.__dbgResize);
 	}
-	if (doc.__dbgMove) doc.removeEventListener('mousemove', doc.__dbgMove);
-	if (doc.__dbgLeave) doc.removeEventListener('mouseleave', doc.__dbgLeave);
-	if (doc.__dbgDown) doc.removeEventListener('pointerdown', doc.__dbgDown);
-	if (doc.__dbgTMove) doc.removeEventListener('pointermove', doc.__dbgTMove);
-	if (doc.__dbgUp) doc.removeEventListener('pointerup', doc.__dbgUp);
-	if (doc.__dbgCancel) doc.removeEventListener('pointercancel', doc.__dbgCancel);
-	doc.__dbgResize = doc.__dbgMove = doc.__dbgLeave = doc.__dbgHot = null;
-	doc.__dbgDown = doc.__dbgTMove = doc.__dbgUp = doc.__dbgCancel = null;
+	doc.__dbgResize = doc.__dbgHot = null;
 	// Drop the per-element stamps so a toggled-off pass leaves the DOM pristine.
 	if (doc.querySelectorAll) {
 		for (const el of Array.from(doc.querySelectorAll('[data-dbg-layout]'))) el.removeAttribute('data-dbg-layout');

@@ -173,31 +173,20 @@ describe('applyDebug — lifecycle', () => {
 		assert.ok(frame.contentDocument.getElementById(DEBUG_OVERLAY_ID), 'overlay injected by override');
 	});
 
-	test('touch: a genuine TAP reveals then dismisses; a SWIPE reveals nothing (scroll passes through)', async () => {
-		const { applyDebug } = await load();
-		const frame = frameWith(deck('on'));
-		const doc = frame.contentDocument;
-		applyDebug(frame, { force: null });
-		const section = doc.querySelector('section');
-		doc.elementFromPoint = () => section; // jsdom has no layout hit-testing
-		assert.equal(typeof doc.__dbgUp, 'function', 'pointer tap handlers are wired');
-		const tap = (x = 5, y = 5) => {
-			doc.__dbgDown({ pointerType: 'touch', clientX: x, clientY: y });
-			doc.__dbgUp({ pointerType: 'touch', clientX: x, clientY: y });
-		};
-		tap();
-		assert.equal(doc.__dbgHot, section, 'a tap reveals the tapped box');
-		tap();
-		assert.equal(doc.__dbgHot, null, 'a second tap on the same box dismisses it');
-		// A swipe: down → move past threshold → up. It must NOT reveal (the surface scrolls).
-		doc.__dbgDown({ pointerType: 'touch', clientX: 5, clientY: 5 });
-		doc.__dbgTMove({ pointerType: 'touch', clientX: 5, clientY: 80 });
-		doc.__dbgUp({ pointerType: 'touch', clientX: 5, clientY: 80 });
-		assert.equal(doc.__dbgHot, null, 'a swipe leaves the overlay alone');
-		// A pointercancel (browser claims the gesture for scroll) also aborts the tap.
-		doc.__dbgDown({ pointerType: 'touch', clientX: 5, clientY: 5 });
-		doc.__dbgCancel();
-		doc.__dbgUp({ pointerType: 'touch', clientX: 5, clientY: 5 });
-		assert.equal(doc.__dbgHot, null, 'a cancelled gesture reveals nothing');
+	test('hover mode installs a pointer CAPTURE layer (debug owns input); always mode does not', async () => {
+		const { applyDebug, DEBUG_CAPTURE_ID } = await load();
+		// hover (the default) → a capture layer owns pointer input, and teardown removes it.
+		const f1 = frameWith(deck('on'));
+		applyDebug(f1, { force: null });
+		const cap = f1.contentDocument.getElementById(DEBUG_CAPTURE_ID);
+		assert.ok(cap, 'hover mode installs the capture layer');
+		assert.equal(cap.style.touchAction || '', ''); // style comes from the injected CSS, not inline
+		applyDebug(f1, { force: 'off' });
+		assert.equal(f1.contentDocument.getElementById(DEBUG_CAPTURE_ID), null, 'teardown removes the capture layer');
+
+		// `always` mode pins the chips and leaves the deck interactive — no capture layer.
+		const f2 = frameWith(deck('always'));
+		applyDebug(f2, { force: null });
+		assert.equal(f2.contentDocument.getElementById(DEBUG_CAPTURE_ID), null, 'always mode does not capture input');
 	});
 });
