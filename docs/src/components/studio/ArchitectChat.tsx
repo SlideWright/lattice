@@ -2,6 +2,7 @@ import { ArrowUp, Check, Sparkles, X } from 'lucide-react';
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { type ChatTurn, chatComplete } from './architect';
+import { useReferenceDoc } from './reference-doc-ui';
 import { type ChatMessage, loadChat, saveChat } from './studio-store';
 
 // The Architect chat — a real conversational thread (not a fixed card panel).
@@ -15,6 +16,10 @@ export function ArchitectChat({ deckId, source, aiReady, onApply, onConnect, not
 	const [input, setInput] = React.useState('');
 	const [busy, setBusy] = React.useState(false);
 	const scrollRef = React.useRef<HTMLDivElement>(null);
+	// A reference doc grounds the whole conversation (#640) — kept across turns (a
+	// chat about "the attached brand deck" spans several questions); the chip's ✕
+	// removes it. Its tokens are billed each turn, as the chip states.
+	const refDoc = useReferenceDoc(notify);
 
 	// Reload the thread when the deck changes; persist on every change.
 	React.useEffect(() => setMessages(loadChat(deckId)), [deckId]);
@@ -32,7 +37,7 @@ export function ArchitectChat({ deckId, source, aiReady, onApply, onConnect, not
 		setBusy(true);
 		try {
 			const turns: ChatTurn[] = history.map((m) => ({ role: m.role, content: m.content }));
-			const out = await chatComplete(turns, source);
+			const out = await chatComplete(turns, source, refDoc.doc);
 			if (out.status === 'offline') {
 				setMessages([...history, { role: 'assistant', content: 'Connect a model in Workspace → AI model and I can answer and edit your deck. Until then I can’t generate a reply.' }]);
 				onConnect();
@@ -81,7 +86,8 @@ export function ArchitectChat({ deckId, source, aiReady, onApply, onConnect, not
 				))}
 				{busy && <div className="flex justify-start"><div className="rounded-2xl border border-border bg-card px-3 py-2 text-[12.5px] text-muted-foreground"><Sparkles className="inline size-3.5 animate-pulse text-[var(--accent)]" /> thinking…</div></div>}
 			</div>
-			<div className="border-t border-border p-2.5">
+			<div className="flex flex-col gap-1.5 border-t border-border p-2.5">
+				{refDoc.chip}
 				<div className="flex items-end gap-1.5 rounded-xl border border-border bg-background px-2.5 py-1.5 focus-within:border-[var(--accent)]">
 					<textarea
 						value={input}
@@ -92,6 +98,7 @@ export function ArchitectChat({ deckId, source, aiReady, onApply, onConnect, not
 						aria-label="Message the Architect"
 						className="max-h-[120px] min-h-[22px] flex-1 resize-none bg-transparent text-[12.5px] text-foreground outline-none placeholder:text-muted-foreground"
 					/>
+					{refDoc.attachButton}
 					<button type="button" onClick={send} disabled={busy || !input.trim()} aria-label="Send" className="grid size-7 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground disabled:opacity-40"><ArrowUp className="size-4" /></button>
 				</div>
 			</div>

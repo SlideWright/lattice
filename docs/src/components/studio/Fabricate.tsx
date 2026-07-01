@@ -20,6 +20,7 @@ import { downloadText } from './download';
 import { FinishStudio } from './FinishStudio';
 import { type Finding, LayoutStudio, STARTER_CSS, STARTER_DESCRIPTION, STARTER_META, STARTER_NAME, STARTER_SKELETON } from './LayoutStudio';
 import { manifestJsonCompletion } from './manifest-complete';
+import { useReferenceDoc } from './reference-doc-ui';
 import { saveStudioTheme } from './theme-library';
 import { useBreakpoint } from './use-breakpoint';
 
@@ -191,6 +192,12 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 	const [compPrompt, setCompPrompt] = React.useState('');
 	const [compGen, setCompGen] = React.useState<'idle' | 'working'>('idle');
 	const [compSimilar, setCompSimilar] = React.useState<ComponentSimilar[]>([]);
+
+	// Reference-doc grounding (#640) — one per surface: a brand guide grounds the
+	// theme, an existing component/deck grounds the component. Fed to generate*,
+	// cleared on a successful run.
+	const themeDoc = useReferenceDoc(notify);
+	const compDoc = useReferenceDoc(notify);
 	// The description disclosure (chevron under the name) — collapsed by default on
 	// both tabs; opening reveals the one-line caption editor.
 	const [descOpen, setDescOpen] = React.useState(false);
@@ -280,12 +287,13 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 		if (!p || gen === 'working') return;
 		setGen('working');
 		try {
-			const out = await generateTheme(core, p);
+			const out = await generateTheme(core, p, themeDoc.doc);
 			if (out.status === 'ok') {
 				setCore(out.essentials as Record<EssKey, string>);
 				setRampStrategy(out.rampStrategy);
 				setOverrides({});
 				setPrompt('');
+				themeDoc.clear();
 				// The AI suggests a name + caption — seed them so export/README have a
 				// real title, but only when the author hasn't typed their own (a refine
 				// like "warmer" keeps the palette's identity). Always editable.
@@ -315,8 +323,9 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 		if (!p || compGen === 'working') return;
 		setCompGen('working');
 		try {
-			const out = await generateComponent(p, catalog);
+			const out = await generateComponent(p, catalog, compDoc.doc);
 			if (out.status === 'ok') {
+				compDoc.clear();
 				setCompName(out.draft.name);
 				setCompDesc(out.draft.description);
 				setCompCss(out.draft.css);
@@ -492,6 +501,7 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 							aria-label="Describe a look"
 							className="min-w-0 flex-1 bg-transparent text-[13px] text-[var(--text-heading)] outline-none placeholder:text-muted-foreground disabled:opacity-60"
 						/>
+						{themeDoc.attachButton}
 						{modelReady ? (
 							<button type="button" onClick={() => runDescribe(prompt)} disabled={gen === 'working' || !prompt.trim()} aria-label="Generate theme" className="grid size-7 shrink-0 place-items-center rounded-md bg-[var(--accent)] text-[var(--on-accent,#fff)] disabled:opacity-40">
 								{gen === 'working' ? <Loader2 className="size-4 animate-spin" /> : <ArrowUp className="size-4" />}
@@ -510,6 +520,7 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 							</DropdownMenu>
 						)}
 					</div>
+					{themeDoc.chip}
 					{modelReady ? (
 						<div className="flex flex-wrap items-center gap-1.5">
 							<span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">Refine</span>
@@ -649,6 +660,7 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 							aria-label="Describe a component"
 							className="min-w-0 flex-1 bg-transparent text-[13px] text-[var(--text-heading)] outline-none placeholder:text-muted-foreground disabled:opacity-60"
 						/>
+						{compDoc.attachButton}
 						{modelReady ? (
 							<button type="button" onClick={() => runDescribeComponent(compPrompt)} disabled={compGen === 'working' || !compPrompt.trim()} aria-label="Generate component" className="grid size-7 shrink-0 place-items-center rounded-md bg-[var(--accent)] text-[var(--on-accent,#fff)] disabled:opacity-40">
 								{compGen === 'working' ? <Loader2 className="size-4 animate-spin" /> : <ArrowUp className="size-4" />}
@@ -667,6 +679,7 @@ export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onO
 							</DropdownMenu>
 						)}
 					</div>
+					{compDoc.chip}
 					{compSimilar.length > 0 ? (
 						<div className="flex flex-wrap items-center gap-1.5">
 							<span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70" title="Existing components close to your request — reuse one where it fits">Similar</span>
