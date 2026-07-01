@@ -82,6 +82,21 @@ Drops the dark canvas for the standard bright body-slide background, centers the
 ## Before we can score a signal, we have to agree on what one is.
 ```
 
+### `qr` — QR — scan-to call to action
+
+The `qr` variant adds a scannable code from a payload bullet — a bare URL auto-resolves, or force a non-URL with `` `qr` ``; an optional `` `caption` `` bullet labels it. Reuses the shared QR encoder; the code is a fixed light-paper/dark-ink tile so it scans on any ground.
+
+```markdown
+<!-- _class: divider qr -->
+
+`Next step`
+
+## Begin the pilot.
+
+- https://slidewright.dev/pilot/start
+- Scan to begin `caption`
+```
+
 ## Universal modifiers
 
 This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.

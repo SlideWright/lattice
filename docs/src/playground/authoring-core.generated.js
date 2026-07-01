@@ -364,6 +364,54 @@ ${indent}   - ${body.trim()}`;
             fix: "Check the spelling against dist/docs/components.json (component names) or design/design-system.md \xA76.5 (modifiers)."
           });
         }
+        if (tokens.includes("qr")) {
+          const URL = /^(https?:\/\/|mailto:|tel:|WIFI:|BEGIN:VCARD)/i;
+          let payloads = 0, empties = 0;
+          const bulletRe = /^-\s+(.+?)\s*$/gm;
+          let b;
+          while (b = bulletRe.exec(slide)) {
+            const item = b[1];
+            const codeM = item.match(/`([^`]+)`\s*$/);
+            const key = codeM ? codeM[1].trim().toLowerCase() : "";
+            const value = codeM ? item.slice(0, item.length - codeM[0].length).trim() : item.trim();
+            if (key === "qr") {
+              payloads++;
+              if (!value) empties++;
+            } else if (!key && URL.test(value)) payloads++;
+          }
+          const sn = idx - fm + 1;
+          if (empties) {
+            findings.push({
+              slide: sn,
+              rule: "qr-empty-payload",
+              severity: "error",
+              classToken: "qr",
+              line: m[0],
+              message: "the `qr` payload bullet has no value",
+              fix: "Give it a value: ``- https://\u2026 `qr` `` or ``- text `qr` ``."
+            });
+          } else if (payloads === 0) {
+            findings.push({
+              slide: sn,
+              rule: "qr-missing-payload",
+              severity: "error",
+              classToken: "qr",
+              line: m[0],
+              message: "a `qr` slide has no scannable payload",
+              fix: "Add a payload bullet: `- https://\u2026` (auto-detected), or ``- text `qr` `` to force text."
+            });
+          } else if (payloads > 1) {
+            findings.push({
+              slide: sn,
+              rule: "qr-duplicate-payload",
+              severity: "error",
+              classToken: "qr",
+              line: m[0],
+              message: `a \`qr\` slide has ${payloads} payloads; it renders only one`,
+              fix: "Keep one payload bullet; remove the extras."
+            });
+          }
+        }
         if (vocab.capacity) {
           for (const t of tokens) {
             const cap = vocab.capacity[t];
@@ -440,7 +488,7 @@ ${indent}   - ${body.trim()}`;
             });
           }
         }
-        if (tokens.some((t) => splitSlot.has(t))) {
+        if (tokens.some((t) => splitSlot.has(t)) && !tokens.includes("qr")) {
           const offending = findSplitBodylessItem(slide);
           if (offending) {
             findings.push({

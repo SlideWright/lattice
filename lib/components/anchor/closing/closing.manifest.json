@@ -1,15 +1,27 @@
 {
   "$schema": "../../manifest.schema.json",
   "name": "closing",
-  "adapt": { "mode": "native", "priority": ["heading", "subtitle", "eyebrow"] },
+  "adapt": {
+    "mode": "native",
+    "priority": [
+      "heading",
+      "subtitle",
+      "eyebrow"
+    ]
+  },
   "function": "anchor",
   "form": "bookend",
   "substance": "prose",
-  "tags": ["summary", "takeaway", "board-deck"],
+  "tags": [
+    "summary",
+    "takeaway",
+    "board-deck"
+  ],
   "description": "Final slide. Dark canvas mirror of title.",
   "purpose": "Last slide of every deck. Restates the takeaway or call-to-action. Like title, suppresses header/footer/pagination — the dark canvas signals \"we're done.\"",
   "variants": [
-    "numbered"
+    "numbered",
+    "qr"
   ],
   "slots": {
     "heading": {
@@ -78,6 +90,11 @@
       "label": "Numbered — independent closing counter",
       "caption": "Stamps an auto-incrementing closing number, independent of the divider section counter. Useful for serialized deck families where each deck closes on numbered note `Closing 04`.",
       "sample": "<!-- _class: closing silent numbered -->\n\n## Take this away.\n\n`Closing 04`\n"
+    },
+    "qr": {
+      "label": "QR — scan to take the deck",
+      "caption": "The `qr` variant adds a scannable code from a payload bullet — a bare URL auto-resolves, or force a non-URL with `` `qr` ``; an optional `` `caption` `` bullet labels it. Reuses the shared QR encoder; the code is a fixed light-paper/dark-ink tile so it scans on any ground.",
+      "sample": "<!-- _class: closing qr -->\n\n`Q3 Board Review`\n\n## Take the deck with you.\n\nEvery slide, the appendix, and the workbook — before you go.\n\n- https://slidewright.dev/decks/q3\n- Scan to open `caption`\n"
     }
   }
 }

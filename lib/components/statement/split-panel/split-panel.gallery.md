@@ -119,6 +119,21 @@ One-sentence framing paragraph.
 
 ---
 
+<!-- _class: split-panel qr -->
+<!-- _footer: "QR — companion: claim beside a scannable code · split-panel qr" -->
+
+`Revenue model`
+
+## The full build is in the workbook.
+
+Every line traces to a driver you can open — three scenarios off one shared set of assumptions.
+
+- https://slidewright.dev/appendix/revenue-model `qr`
+- Scan for the live model `caption`
+
+
+---
+
 <!-- _class: split-panel dark -->
 <!-- _footer: "Composition: dark · split-panel dark" -->
 

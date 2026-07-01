@@ -162,6 +162,23 @@ One-sentence framing paragraph.
   - Supporting detail.
 ```
 
+### `qr` — QR — companion: claim beside a scannable code
+
+The `qr` variant adds a scannable code from a payload bullet — a bare URL auto-resolves, or force a non-URL with `` `qr` ``; an optional `` `caption` `` bullet labels it. Reuses the shared QR encoder; the code is a fixed light-paper/dark-ink tile so it scans on any ground.
+
+```markdown
+<!-- _class: split-panel qr -->
+
+`Revenue model`
+
+## The full build is in the workbook.
+
+Every line traces to a driver you can open — three scenarios off one shared set of assumptions.
+
+- https://slidewright.dev/appendix/revenue-model `qr`
+- Scan for the live model `caption`
+```
+
 ## Universal modifiers
 
 This component accepts all universal variants (`dark`, `compact`, `loose`, `accent`, state markers, treatments). See [design/design-system.md §6.5](../../../../design/design-system.md#65-universal-variants--three-tiers) for the catalog.

@@ -14864,6 +14864,57 @@ section.chart-frame.cover::after {
   color: color-mix(in oklab, var(--text-heading) 62%, transparent);
 }
 
+/* === lib/components/connect/_qr-card/qr-general.css === */
+/* qr-general.css — the `qr` variant's figure, shared across its host components
+ * (closing / divider / split-panel). Injected by the qr-general transform as
+ * `<figure class="qr-figure"><div class="qr-tile">…</div><figcaption>…</figcaption></figure>`.
+ *
+ * The tile is a fixed light "paper" / dark "ink" (token-with-fallback, the same
+ * --qr-paper/--qr-ink wifi/contact use) so the code scans on any host — dark
+ * ones included — the one place a fixed contrast is correct. Spacing is gap /
+ * padding only (HARD RULE #20). */
+
+.qr-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-sm);
+}
+.qr-figure .qr-tile {
+  width: 9em;
+  padding: 0.6em;
+  background: var(--qr-paper, #ffffff);
+  color: var(--qr-ink, #14140f);
+  border-radius: 0.6em;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.22);
+}
+.qr-figure .qr-tile svg { display: block; width: 100%; height: auto; }
+.qr-figure figcaption {
+  font-size: var(--fs-body-compact);
+  color: var(--text-heading); /* correct on a light ground (split-panel's right zone) */
+  text-align: center;
+  font-weight: 500;
+  max-width: 12em;
+  line-height: 1.25;
+}
+
+/* Anchors (closing / divider) — a centered figure under the heading; the section's
+ * own column gap separates it from the h2. These hosts sit on a DARK ground, so
+ * the caption takes the same light display token the heading uses (the light-ground
+ * --text-heading would vanish on dark). */
+section.closing.qr .qr-figure,
+section.divider.qr .qr-figure { align-items: center; }
+section.closing.qr .qr-figure figcaption,
+section.divider.qr .qr-figure figcaption { color: var(--text-display); }
+
+/* Split-panel — the figure fills the supporting (right) zone. */
+section.split-panel.qr .panel-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+section.split-panel.qr .qr-figure .qr-tile { width: 10.5em; }
+
 /* === lib/base/base.treatments.css === */
 /* base.treatments.css — peripheral atmospheric accents.
  *
