@@ -12,6 +12,7 @@ import {
 	type Catalog,
 	detectComponent,
 	SOURCE_KEY,
+	sanitizePalette,
 	variantOptions,
 	variantSource,
 } from '@/lib/playground-controller';
@@ -141,7 +142,23 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 				return;
 			}
 			const root = document.documentElement;
-			const palette = root.getAttribute('data-palette') || 'indaco';
+			const rawPalette = root.getAttribute('data-palette') || 'indaco';
+			// Self-heal a stale persisted palette: `lattice-docs-palette` (seeded onto
+			// data-palette pre-hydration) can hold a theme that no longer exists — a
+			// renamed/retired palette from an earlier session. Its theme CSS 404s and
+			// the render fails, blanking the preview (the "blank in my browser, fine in
+			// private browsing" report; the error status is hidden on the mobile layout).
+			// Fall back to a registered palette and rewrite the stored value so it heals
+			// instead of failing every render.
+			const palette = sanitizePalette(rawPalette, palettes);
+			if (palette !== rawPalette) {
+				root.setAttribute('data-palette', palette);
+				try {
+					localStorage.setItem('lattice-docs-palette', palette);
+				} catch {
+					/* private mode */
+				}
+			}
 			const mode = root.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
 			setStatusLine('Rendering…');
 			const r = await engine.renderInto(frame, getSource(), palette, mode, previewStateRef.current, fresh);
@@ -159,7 +176,7 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 				chartInteractRef.current?.rebind();
 			}
 		},
-		[getSource, setStatusLine],
+		[getSource, setStatusLine, palettes],
 	);
 
 	const scheduleRender = React.useCallback(() => {

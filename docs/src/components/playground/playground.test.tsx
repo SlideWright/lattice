@@ -4,6 +4,7 @@ import {
 	detectComponent,
 	renderSig,
 	resolveThemeName,
+	sanitizePalette,
 	variantOptions,
 	variantSource,
 } from '@/lib/playground-controller';
@@ -101,5 +102,23 @@ describe('renderSig', () => {
 		expect(renderSig('indaco', 'light', 1280, 720)).toBe('indaco|light|1280x720');
 		expect(renderSig('indaco', 'light', 1280, 720)).not.toBe(renderSig('indaco', 'dark', 1280, 720));
 		expect(renderSig('indaco', 'light', 3840, 2160)).toBe('indaco|light|3840x2160');
+	});
+});
+
+describe('sanitizePalette', () => {
+	const valid = ['indaco', 'cuoio', 'onyx'];
+	it('keeps a registered palette unchanged', () => {
+		expect(sanitizePalette('cuoio', valid)).toBe('cuoio');
+		expect(sanitizePalette('indaco', valid)).toBe('indaco');
+	});
+	it('falls back to indaco for a retired/unknown palette (the stale-localStorage blank)', () => {
+		expect(sanitizePalette('zaffre-legacy', valid)).toBe('indaco');
+		expect(sanitizePalette('', valid)).toBe('indaco');
+	});
+	it('falls back to the first palette when indaco is absent', () => {
+		expect(sanitizePalette('gone', ['cuoio', 'onyx'])).toBe('cuoio');
+	});
+	it('passes through unchanged when the vocabulary is empty (cannot judge validity)', () => {
+		expect(sanitizePalette('anything', [])).toBe('anything');
 	});
 });
