@@ -135,6 +135,9 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const [shareOpen, setShareOpen] = React.useState(false);
 	const [workspaceOpen, setWorkspaceOpen] = React.useState(false);
 	const [libraryOpen, setLibraryOpen] = React.useState(false);
+	// When the reference-doc picker's "Manage in Library" link opens the Library, jump
+	// it straight to the Docs tab (#651). Undefined for the normal Library button.
+	const [libInitialFilter, setLibInitialFilter] = React.useState<'refdoc' | undefined>(undefined);
 	const [presentOpen, setPresentOpen] = React.useState(false);
 	const [cmdOpen, setCmdOpen] = React.useState(false);
 	const [moreOpen, setMoreOpen] = React.useState(false); // the compact "⋯ More" overflow menu
@@ -835,7 +838,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				<button type="button" onClick={() => setArchitectTab('coach')} aria-pressed={architectTab === 'coach'} className={cn('flex-1 rounded-lg border px-2 py-1.5 text-[12px] font-semibold', architectTab === 'coach' ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]' : 'border-border text-muted-foreground')}>Coach</button>
 				<button type="button" onClick={() => setArchitectTab('chat')} aria-pressed={architectTab === 'chat'} className={cn('flex-1 rounded-lg border px-2 py-1.5 text-[12px] font-semibold', architectTab === 'chat' ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]' : 'border-border text-muted-foreground')}>Chat</button>
 			</div>
-			{architectTab === 'coach' ? <div className="min-h-0 flex-1 overflow-y-auto">{architectCards}</div> : <ArchitectChat deckId={deck.id} source={source} aiReady={ai.ready} onApply={applyChatEdit} onConnect={() => setWorkspaceOpen(true)} notify={notify} />}
+			{architectTab === 'coach' ? <div className="min-h-0 flex-1 overflow-y-auto">{architectCards}</div> : <ArchitectChat deckId={deck.id} source={source} aiReady={ai.ready} onApply={applyChatEdit} onConnect={() => setWorkspaceOpen(true)} onManageDocs={() => { setLibInitialFilter('refdoc'); setLibraryOpen(true); }} notify={notify} />}
 		</div>
 	);
 
@@ -1321,10 +1324,11 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			<WorkspaceSheet open={workspaceOpen} onOpenChange={setWorkspaceOpen} notify={notify} />
 			<Library
 				open={libraryOpen}
-				onOpenChange={setLibraryOpen}
+				onOpenChange={(o) => { setLibraryOpen(o); if (!o) setLibInitialFilter(undefined); }}
 				options={options}
 				activePalette={palette}
 				activeFinish={finish}
+				initialFilter={libInitialFilter}
 				onApplyTheme={applyPalette}
 				onApplyFinish={(name) => { setFinish(name); notify(`Applied ${name}.`); }}
 				onInsert={(skeleton) => applyDeckOp(addSlideAfter(source, curIndex, skeleton))}
