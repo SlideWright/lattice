@@ -156,28 +156,34 @@ describe('finish-generate', () => {
 		}
 	});
 
-	describe('mark glyph — the author can carry their own initials/number (#5b)', () => {
+	describe('mark glyph — author-personalized, never a baked placeholder (#5b)', () => {
 		it('sanitizeGlyph strips string-escape + tag chars and clamps length', () => {
-			expect(sanitizeGlyph('AB', 'L')).toBe('AB');
-			expect(sanitizeGlyph('toolong', '03')).toBe('too'); // ~3 chars
-			expect(sanitizeGlyph('"; } body {', 'L')).toBe('bod'); // quotes/braces/semicolon/spaces gone
-			expect(sanitizeGlyph('a"b', 'L')).toBe('ab'); // quote removed
-			expect(sanitizeGlyph('<svg>', 'L')).toBe('svg'); // angle brackets gone
-			expect(sanitizeGlyph('', 'L')).toBe('L'); // empty → fallback
-			expect(sanitizeGlyph('   ', '03')).toBe('03'); // whitespace-only → fallback
-			expect(sanitizeGlyph(42, 'L')).toBe('L'); // non-string → fallback
+			expect(sanitizeGlyph('AB')).toBe('AB');
+			expect(sanitizeGlyph('toolong')).toBe('too'); // ~3 chars
+			expect(sanitizeGlyph('"; } body {')).toBe('bod'); // quotes/braces/semicolon/spaces gone
+			expect(sanitizeGlyph('a"b')).toBe('ab'); // quote removed
+			expect(sanitizeGlyph('<svg>')).toBe('svg'); // angle brackets gone
+			expect(sanitizeGlyph('')).toBe(''); // empty → empty (NO baked placeholder)
+			expect(sanitizeGlyph('   ')).toBe(''); // whitespace-only → empty
+			expect(sanitizeGlyph(42)).toBe(''); // non-string → empty
 		});
 
-		it('a monogram emits the author glyph (sanitized), defaulting to "L"', () => {
+		it('a monogram emits the author glyph (sanitized), or NOTHING when empty (no baked "L")', () => {
 			const withGlyph = generateFinishCss('x', { ...DEFAULT_RECIPE, mark: { type: 'monogram', placement: 'center', glyph: 'AB' } });
 			expect(withGlyph).toContain('--fin-mark-text:"AB"');
 			const noGlyph = generateFinishCss('x', { ...DEFAULT_RECIPE, mark: { type: 'monogram', placement: 'center' } });
-			expect(noGlyph).toContain('--fin-mark-text:"L"');
+			// Empty glyph → empty content, so NOTHING renders. Never the old "L" placeholder.
+			expect(noGlyph).toContain('--fin-mark-text:""');
+			expect(noGlyph).not.toContain('--fin-mark-text:"L"');
 		});
 
-		it('a numeral emits the author glyph, defaulting to "03" — and cannot break the rule', () => {
+		it('a numeral emits the author glyph, or NOTHING when empty (no baked "03") — and cannot break the rule', () => {
 			const numeral = generateFinishCss('x', { ...DEFAULT_RECIPE, mark: { type: 'numeral', placement: 'bottom-right', glyph: '7' } });
 			expect(numeral).toContain('--fin-mark-text:"7"');
+			// Empty glyph → empty content, so NOTHING renders. Never the old "03" placeholder.
+			const noGlyph = generateFinishCss('x', { ...DEFAULT_RECIPE, mark: { type: 'numeral', placement: 'bottom-right' } });
+			expect(noGlyph).toContain('--fin-mark-text:""');
+			expect(noGlyph).not.toContain('--fin-mark-text:"03"');
 			// A crafted glyph cannot close the content string or inject a declaration.
 			const evil = generateFinishCss('x', { ...DEFAULT_RECIPE, mark: { type: 'numeral', placement: 'bottom-right', glyph: '";color:red;"' } });
 			expect(evil).not.toContain('color:red');
@@ -187,6 +193,70 @@ describe('finish-generate', () => {
 		it('coerceRecipe keeps a string glyph and drops a non-string one', () => {
 			expect(coerceRecipe({ mark: { type: 'monogram', glyph: 'AB' } }).mark.glyph).toBe('AB');
 			expect(coerceRecipe({ mark: { type: 'monogram', glyph: 42 } }).mark.glyph).toBeUndefined();
+		});
+	});
+
+	describe('transform axes — marks freely sized/moved/tilted, washes with a movable hotspot', () => {
+		const slotValue = (css: string, slot: string): string => new RegExp(`--${slot}:([^;]*)`).exec(css)?.[1] ?? '';
+		const markRecipe = (over: Partial<FinishRecipe['mark']>): FinishRecipe => ({ ...DEFAULT_RECIPE, mark: { type: 'numeral', placement: 'center', glyph: '7', ...over } });
+
+		it('mark SCALE drives the glyph font-size (100% → 30cqi base; clamps to range)', () => {
+			expect(slotValue(generateFinishCss('x', markRecipe({ scale: 100 })), 'fin-mark-fs')).toBe('30cqi');
+			expect(slotValue(generateFinishCss('x', markRecipe({ scale: 200 })), 'fin-mark-fs')).toBe('60cqi');
+			expect(slotValue(generateFinishCss('x', markRecipe({ scale: 50 })), 'fin-mark-fs')).toBe('15cqi');
+			// Out-of-range is clamped by coerceRecipe (min 30 → 9cqi, max 200 → 60cqi).
+			expect(slotValue(generateFinishCss('x', markRecipe({ scale: 9999 })), 'fin-mark-fs')).toBe('60cqi');
+			expect(slotValue(generateFinishCss('x', markRecipe({ scale: 1 })), 'fin-mark-fs')).toBe('9cqi');
+		});
+
+		it('mark X/Y move the centered glyph via translate; angle rotates it', () => {
+			const t = slotValue(generateFinishCss('x', markRecipe({ x: 88, y: 84, angle: 12 })), 'fin-mark-transform');
+			// translate is (x-50, y-50)% of the slide; rotate by angle.
+			expect(t).toBe('translate(38%, 34%) rotate(12deg)');
+			// Centered + center-aligned so the translate resolves about the slide center.
+			const css = generateFinishCss('x', markRecipe({ x: 50, y: 50, angle: 0 }));
+			expect(css).toContain('--fin-mark-align:center');
+			expect(css).toContain('--fin-mark-justify:center');
+			expect(slotValue(css, 'fin-mark-transform')).toBe('translate(0%, 0%) rotate(0deg)');
+		});
+
+		it('the mark transform is face-INVARIANT (identical glyph placement in screen + export)', () => {
+			const css = generateFinishCss('x', markRecipe({ x: 70, y: 30, scale: 120 }));
+			// The transform/fs slots are emitted once (rich rule) and never overridden by the
+			// export blocks — a glyph must sit in the same spot/size in the baked PDF.
+			const occurrences = css.split('--fin-mark-transform:').length - 1;
+			expect(occurrences).toBe(1);
+		});
+
+		it('a single-source WASH reads its movable hotspot from x/y and scales reach by spread', () => {
+			const css = generateFinishCss('x', { ...DEFAULT_RECIPE, wash: { type: 'spotlight', intensity: 8, x: 20, y: 70, spread: 150 } });
+			const wash = slotValue(css, 'fin-wash');
+			expect(wash).toContain('at 20% 70%');
+			// spread 150% scales the spotlight's 80%/70% reach up.
+			expect(wash).toContain('120% 105%');
+		});
+
+		it('a directional/multi-source wash (duotone) ignores the hotspot (no `at x% y%`)', () => {
+			const wash = slotValue(generateFinishCss('x', { ...DEFAULT_RECIPE, wash: { type: 'duotone', intensity: 8, x: 20, y: 70 } }), 'fin-wash');
+			expect(wash).not.toContain('at 20% 70%');
+		});
+
+		it('coerceRecipe fills the transform axes from the coarse fields and clamps them', () => {
+			// Absent axes → derived: placement keyword → glyph x/y; wash type → hotspot; defaults.
+			const r = coerceRecipe({ mark: { type: 'numeral', placement: 'top-left' }, wash: { type: 'corner-glow', intensity: 10 } });
+			expect(r.mark.x).toBe(12); // top-left home
+			expect(r.mark.y).toBe(16);
+			expect(r.mark.scale).toBe(100);
+			expect(r.mark.angle).toBe(0);
+			expect(r.wash.x).toBe(100); // corner-glow natural hotspot
+			expect(r.wash.y).toBe(0);
+			expect(r.wash.spread).toBe(100);
+			// Present-but-out-of-range → clamped, not dropped.
+			const c = coerceRecipe({ mark: { type: 'numeral', x: 999, y: -5, scale: 9999, angle: 999 } });
+			expect(c.mark.x).toBe(100);
+			expect(c.mark.y).toBe(0);
+			expect(c.mark.scale).toBe(200);
+			expect(c.mark.angle).toBe(30);
 		});
 	});
 });

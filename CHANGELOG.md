@@ -27,6 +27,21 @@ in patch versions.
 
 ### Added
 
+- **Finish marks and washes are now freely sized, moved, and tilted.** A finish's
+  ghost glyph (monogram / numeral) is no longer locked to a corner at a fixed huge
+  size — the recipe carries continuous `scale` / `x` / `y` / `angle` axes, so a mark
+  can be a tiny corner emblem or a dramatic slide-spanning ghost, placed anywhere and
+  rotated. Single-source washes (corner-glow, spotlight) gain a movable hotspot
+  (`x` / `y`) and a `spread` reach. All axes round-trip through Save / Share / the AI
+  recipe, stay export-safe (face-invariant transform, no new sinks), and the default
+  ghost size dropped from ~40cqi to a tasteful 30cqi. Authored in the Finish Studio
+  via a 3D joystick, drag-on-canvas handles, and numeric fields.
+- **The brand logo can be moved and resized.** New `logo-x` / `logo-y` (0–100, the
+  logo center as a % of the slide) and `logo-scale` (a multiplier) front-matter
+  directives place the deck logo anywhere at any size — it defaults to the original
+  top-right corner, so existing decks are unchanged. Honored identically across all
+  three render paths (engine HTML, the runtime, the emulator); values are clamped and
+  numeric-only, so a crafted value can't inject a style.
 - **The Library now manages saved finishes too.** A fabricated finish saved to your
   library appears in the Library shelf (new **Finish** filter) with Apply · Share · Delete,
   mirroring themes and components — Share exports it as a `kind:"finish"` lattice-asset zip
@@ -85,6 +100,25 @@ in patch versions.
   The Studio Inspector's swatch-previewed **Finish** field (grouped Plain /
   Finishes) writes the register. Demo: `examples/finish-backdrops.md`. See
   `engineering/decisions/2026-06-30-finish-the-surface-layer.md`.
+- **Four more premium finish presets + four new layer types — leaning into
+  tunable + movable layers.** Adds `finish: nimbus` (a new **mesh** wash — 3–4
+  soft overlapping radial accent blooms summed into an organic gradient-mesh
+  atmosphere, seated by a vignette; the wash intensity tunes the bloom strength),
+  `loom` (a new **lattice** texture — a woven ±45° diagonal cross-hatch, on-brand
+  for the product, with a *movable* corner glow; tune the weave scale, move the
+  glow), `savile` (a new **pinstripe** texture — fine vertical lines whose pitch
+  the scale tunes — plus a *movable* monogram mark), and `gallery` (a new
+  **frame** edge — a thin inset keyline border drawn as four crisp accent strips,
+  no soft-shadow alpha — plus a spotlight and a *movable* numeral). All four are
+  palette-blind (`color-mix(var(--accent)/var(--bg)/var(--ink))`), export-safe
+  (every full-bleed fade is opaque-to-opaque; tiled patterns use a hard 1px
+  `transparent` gap, never an area fade; no `mask-image`, no `url()`, no hex), and
+  ride the same dual-face (rich-on-screen / opaque-on-export) compositor as the
+  first five. The new layer types extend the Studio recipe vocabulary
+  (`WASH_TYPES`/`TEXTURE_TYPES`/`EDGE_TYPES`) and gradient builders, so a
+  fabricated finish can use them too. `FINISH_REGISTER`, the catalog, the
+  recipe↔engine gate, and the demo deck (`examples/finish-backdrops.md`) all carry
+  the four. See `engineering/decisions/2026-06-30-finish-the-surface-layer.md`.
 - **Finishes are now rich-on-screen and safe-on-export — a dual-variant per
   preset.** On screen (live preview, presenter, web, docs) each finish shows the
   richer "dissolving" look of the mockups: the pattern fades directionally toward
@@ -195,6 +229,20 @@ in patch versions.
 
 ### Fixed
 
+- **Finish glyph-marks no longer paint a baked placeholder on every slide.** A
+  glyph-mark (the ghost monogram / numeral) is now **author-personalized and never
+  appears in a finish by default** — a deck-wide `finish:` register (or a per-slide
+  `finish-<name>`) paints **no glyph at all** until an author sets one. Previously
+  the `meridian`/`gallery` (numeral) and `savile` (monogram) presets baked a literal
+  `"03"`/`"L"` into the mark slot, so applying a finish deck-wide stamped the same
+  wrong mark — e.g. a giant faint "03" — on every slide regardless of its real
+  position. The mark layer/type is unchanged (the Studio designer still offers it,
+  and authors can set the glyph in the Studio's *Initials*/*Number* field or via a
+  `<style>section.finish-<name> { --fin-mark-text: "…"; }</style>` slot); only the
+  default rendered text went empty (engine `base.finish.css`; the Studio generator's
+  `sanitizeGlyph` now yields `""` for an empty glyph). Demo `examples/finish-backdrops.md`
+  opts its meridian/savile/gallery slides into explicit glyphs to showcase the
+  movable mark while proving the clean no-glyph default.
 - **Studio editor no longer collapses when the Architect panel is closed.** The
   desktop grid declared a fixed `0px` first column for the (conditionally rendered)
   Architect, so closing it dropped the editor into the zero-width track. The column

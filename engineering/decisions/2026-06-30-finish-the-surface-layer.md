@@ -77,6 +77,35 @@ summary: Finish — the surface artifact of the existing Finish axis, a single f
 > name/Save/Export with the consumption loop wired; (3) the AI recipe door. Each
 > slice banks standalone. Merge + export sign-off remain human gates.
 
+> **FOLLOW-UP (2026-07-01) — placed layers are freely SIZED / MOVED / TILTED, plus a
+> movable brand logo.** Feedback: the ghost marks were "huge" and corner-locked. The
+> fix makes a placed layer a *continuously* placed object, not a snapped one:
+> - **Marks** (monogram/numeral) gain `scale` / `x` / `y` / `angle` on the recipe
+>   (`finish-generate.ts`), emitted as `--fin-mark-fs` + `--fin-mark-transform`
+>   (`translate((x-50)%,(y-50)%) rotate(deg)`) and consumed by the `section.finish::before`
+>   in `base.finish.css`. Face-INVARIANT (identical placement in screen + export). The
+>   default ghost dropped 40cqi → 30cqi. `coerceRecipe` fills the axes from the coarse
+>   `placement`/wash-hotspot fields and clamps them.
+> - **Single-source washes** (corner-glow, spotlight) gain a movable hotspot (`x`/`y`)
+>   and a `spread`; directional/multi-source washes ignore it (`washHasHotspot`).
+> - **Brand logo** gains `logo-x`/`logo-y`/`logo-scale` front-matter → `--logo-*` custom
+>   props on `img.deck-logo`, emitted identically by `plugins.js` (engine + emulator) and
+>   `runtime/index.js` (3-path parity, clamped numeric-only, no style injection). Defaults
+>   reproduce the original top-right corner.
+> - **Controls:** a reusable CSS-3D velocity **Joystick** (`Joystick.tsx`) + drag-on-canvas
+>   handles over the live preview + exact numeric/keyboard fields, all in the Finish Studio.
+> - **Overflow-probe fix (`overflow-probe.js`):** a mark/logo is *meant* to bleed past the
+>   edge; raw `scrollHeight/Width` counted that bleed as content overflow (false ring /
+>   export-warning / autosplit). The section base now measures overflow from FLOWED children
+>   (skipping out-of-flow decorative layers — the same rule already used for cells), so real
+>   content overflow is still caught but a decorative bleed is not. *No section-level CSS
+>   (`overflow:clip`/`contain`) clamps a transformed pseudo's scroll contribution in Chromium
+>   — verified empirically — so the fix must live in the probe.*
+> - **Deferred (design fork):** an in-Studio **joystick for the logo** needs a brand/logo
+>   Inspector section (there's no logo-source UI today) and a debounced front-matter commit
+>   (a 60fps joystick can't rewrite deck source per frame). Surfaced for a follow-up. The
+>   engine capability ships now; authors set `logo-x/y/scale` in source today.
+
 **The ask (a creative-designer's-eye review of the Studio).** Lattice is strong
 at *structure* (Form) and *palette* (the color half of Finish) but feels thin on
 *atmosphere and identity*. The two moves that make a deck feel like *theirs* — a

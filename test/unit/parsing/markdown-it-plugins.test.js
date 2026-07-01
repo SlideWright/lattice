@@ -343,6 +343,53 @@ describe('markdown-it-plugins', () => {
     assert.match(out, /&quot;|&lt;|&gt;/);
   });
 
+  test('applyDeckLogoToHtml: `logo-x`/`logo-y`/`logo-scale` emit clamped inline --logo-* props', () => {
+    const html = '<section id="1" data-lattice-slide="1"></section>';
+    const md = '---\nlogo: ./acme.svg\nlogo-x: 50\nlogo-y: 84\nlogo-scale: 2.4\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    assert.match(out, /style="[^"]*--logo-scale:2\.4/);
+    assert.match(out, /--logo-x:50%/);
+    assert.match(out, /--logo-y:84%/);
+    // Positioning flips the corner anchor + re-centers on the point.
+    assert.match(out, /--logo-anchor-right:auto/);
+    assert.match(out, /--logo-nudge:translate\(-50%, -50%\)/);
+  });
+
+  test('applyDeckLogoToHtml: no inline style when placement/size are absent (default corner unchanged)', () => {
+    const html = '<section id="1" data-lattice-slide="1"></section>';
+    const md = '---\nlogo: ./acme.svg\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    assert.doesNotMatch(out, /style="[^"]*--logo-/);
+  });
+
+  test('applyDeckLogoToHtml: scale-only emits --logo-scale but no positioning props', () => {
+    const html = '<section id="1" data-lattice-slide="1"></section>';
+    const md = '---\nlogo: ./acme.svg\nlogo-scale: 1.5\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    assert.match(out, /--logo-scale:1\.5/);
+    assert.doesNotMatch(out, /--logo-x:/);
+  });
+
+  test('applyDeckLogoToHtml: a lone axis (x without y) does NOT position (avoids a half-shift off the corner)', () => {
+    const html = '<section id="1" data-lattice-slide="1"></section>';
+    const md = '---\nlogo: ./acme.svg\nlogo-x: 30\n---\n';
+    const out = plugins.applyDeckLogoToHtml(html, md);
+    assert.doesNotMatch(out, /--logo-x:/);
+    assert.doesNotMatch(out, /--logo-nudge:/);
+  });
+
+  test('applyDeckLogoToHtml: out-of-range values clamp (x→0..100, scale→0.2..3); non-numbers are ignored', () => {
+    const html = '<section id="1" data-lattice-slide="1"></section>';
+    const out = plugins.applyDeckLogoToHtml(html, '---\nlogo: ./acme.svg\nlogo-x: 999\nlogo-y: -20\nlogo-scale: 99\n---\n');
+    assert.match(out, /--logo-x:100%/);
+    assert.match(out, /--logo-y:0%/);
+    assert.match(out, /--logo-scale:3/);
+    // A non-numeric value can't inject anything into the style.
+    const out2 = plugins.applyDeckLogoToHtml(html, '---\nlogo: ./acme.svg\nlogo-scale: "}; evil"\n---\n');
+    assert.doesNotMatch(out2, /--logo-scale/);
+    assert.doesNotMatch(out2, /evil/);
+  });
+
   // ── verdictGridBadges ──────────────────────────────────────────────────
 
   test('verdictGridBadges: [x] / [-] / [ ] / [/] markers become badge spans with shape classes', () => {

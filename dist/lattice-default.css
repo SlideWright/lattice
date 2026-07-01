@@ -13604,10 +13604,18 @@ section:not(.overflow) > .overflow-tab { display: none; }
  * ──────────────────────────────────────────────────────────────────── */
 img.deck-logo {
   position: absolute;
-  top: var(--frame-inset-y);
-  right: var(--frame-inset-x);
-  width: 6.25cqi;
-  height: 4cqi;
+  /* Default: the top-right corner via frame insets. An author can MOVE + SIZE the
+   * mark with `logo-x`/`logo-y` (0–100, the logo CENTER as a % of the slide) and
+   * `logo-scale` (a multiplier). When x/y are set the injector also flips
+   * --logo-anchor-right to auto and --logo-nudge to translate(-50%,-50%), so the
+   * logo centers on its point instead of hugging the corner. All defaults reproduce
+   * the original placement, so untouched decks are unchanged. */
+  top: var(--logo-y, var(--frame-inset-y));
+  right: var(--logo-anchor-right, var(--frame-inset-x));
+  left: var(--logo-x, auto);
+  width: calc(6.25cqi * var(--logo-scale, 1));
+  height: calc(4cqi * var(--logo-scale, 1));
+  transform: var(--logo-nudge, none);
   object-fit: contain;
   pointer-events: none;
   user-select: none;
@@ -15345,6 +15353,24 @@ section.finish {
   background-position: var(--fin-position, top left);
   background-repeat: var(--fin-repeat, repeat);
 }
+/* --fin-frame paints an inset keyline FRAME (the `frame` edge type) as stacked
+ * SOLID inset box-shadows on the SECTION itself — NOT the ::after pseudo, which the
+ * engine reserves for the pagination marker (`div.lattice > section::after`), so a
+ * finish ::after edge is clobbered in the real render. A box-shadow on the real
+ * section paints reliably in the vector PDF. The shadows are OPAQUE (a bg-colored
+ * mat ring + an accent-into-bg keyline ring) and BLUR-FREE, so they carry no alpha —
+ * an alpha/blurred inset shadow grays in print, a flat solid one does not. Default none.
+ *
+ * Scoped `:not(.overflow)` so it YIELDS to the overflow-debug red ring
+ * (`section.overflow { box-shadow: inset 0 0 0 4px … }`, base.modifiers.css): both are
+ * (0,1,1) box-shadow and base.finish loads AFTER base.modifiers, so an unscoped finish
+ * box-shadow would win on an overflowing finish slide and silently kill the red ring
+ * (the runtime overflow signal). With `:not(.overflow)` the finish rule stops matching
+ * once a slide overflows, so the red ring shows; on a normal slide it still wins (the
+ * `:not()` adds no specificity, but the finish rule is later in source order). */
+section.finish:not(.overflow) {
+  box-shadow: var(--fin-frame, none);
+}
 
 /* z3 — the MARK pseudo. A full-inset layer behind content; the preset fills
  * --fin-mark (a gradient) and/or --fin-mark-text (the ghost numeral glyph).
@@ -15372,6 +15398,13 @@ section.finish::before {
   line-height: 0.78;
   letter-spacing: -0.04em;
   color: var(--fin-mark-color, var(--bg));
+  /* The placed text glyph is centered (align/justify) then freely MOVED + TILTED by
+   * the designer's transform (translate to x/y, rotate by angle). Default `none`
+   * keeps the built-in presets' flex placement untouched. transform-origin center so
+   * rotation pivots about the glyph, and translate %s resolve against this full-bleed
+   * box (= the slide). */
+  transform: var(--fin-mark-transform, none);
+  transform-origin: center;
 }
 
 /* z4 — the EDGE pseudo. A full-inset layer for vignettes / corner folds; the
@@ -15504,12 +15537,15 @@ section.finish-meridian {
   --fin-size: auto, cover;
   --fin-position: top left, top left;
   --fin-repeat: repeat, no-repeat;
-  /* ghost numeral — a content:"" glyph in --font-display; OPAQUE faint color */
+  /* ghost numeral — author-personalized; EMPTY by default so a deck-wide finish
+   * paints NO numeral (HARD requirement: a glyph-mark is never a baked placeholder).
+   * The mark LAYER/slots stay wired (the Studio designer offers it, and an author can
+   * set a per-slide glyph), only the rendered text is empty until set. OPAQUE faint color. */
   --fin-mark: none;
   --fin-mark-opaque: none;
-  --fin-mark-text: "03";
+  --fin-mark-text: "";
   --fin-mark-color: color-mix(in srgb, var(--accent) 9%, var(--bg));
-  --fin-mark-fs: 40cqi;              /* oversized, ~512px at 1280 */
+  --fin-mark-fs: 30cqi;              /* tasteful default ghost (~third of slide height) */
   --fin-mark-pad: 0 1cqi 0 0;        /* right-aligned, hug the bottom edge */
   --fin-mark-align: flex-end;
   --fin-mark-justify: flex-end;
@@ -15679,6 +15715,202 @@ section.finish-ledger {
   --fin-edge-size: 9.4cqi 9.4cqi; /* ~120px corner fold */
 }
 
+/* ── 6 · NIMBUS — a gradient MESH of soft accent blooms + a seating vignette ───
+ * NEW layer type: `mesh` (wash) — 3–4 overlapping radial accent blooms in
+ * different corners, summed into an organic gradient-mesh atmosphere. Pure
+ * premium air; the wash intensity tunes the bloom strength. No texture, no mark.
+ * RICH:   each bloom fades to transparent so they ADD cleanly (premultiplied
+ *         alpha) into a soft mesh; the vignette fades to a faint ink rim.
+ * OPAQUE: each bloom ends opaque on var(--bg) (no gray cloud); opaque ink-in-bg
+ *         vignette. Same 4 wash layers + 0 texture layers in both faces. */
+section.finish-nimbus {
+  --fin-texture: none;
+  --fin-texture-opaque: none;
+  /* RICH mesh — four blooms toward transparent. */
+  --fin-wash:
+    radial-gradient(60% 60% at 12% 18%, color-mix(in srgb, var(--accent) 15%, transparent) 0%, transparent 60%),
+    radial-gradient(58% 58% at 88% 24%, color-mix(in srgb, var(--accent) 11%, transparent) 0%, transparent 58%),
+    radial-gradient(64% 64% at 78% 90%, color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 62%),
+    radial-gradient(50% 50% at 28% 88%, color-mix(in srgb, var(--accent) 8%, transparent) 0%, transparent 58%);
+  /* OPAQUE mesh — four blooms ending on var(--bg). */
+  --fin-wash-opaque:
+    radial-gradient(60% 60% at 12% 18%, color-mix(in srgb, var(--accent) 12%, var(--bg)) 0%, var(--bg) 60%),
+    radial-gradient(58% 58% at 88% 24%, color-mix(in srgb, var(--accent) 8%, var(--bg)) 0%, var(--bg) 58%),
+    radial-gradient(64% 64% at 78% 90%, color-mix(in srgb, var(--accent) 6%, var(--bg)) 0%, var(--bg) 62%),
+    radial-gradient(50% 50% at 28% 88%, color-mix(in srgb, var(--accent) 6%, var(--bg)) 0%, var(--bg) 58%);
+  /* 5 background-image layers: the texture-none slot (the compositor always lists
+   * `var(--fin-texture,none)` first) + the 4 mesh wash blooms — same count both faces.
+   * The aux slots carry one entry per layer, in compositor order (texture, then wash). */
+  --fin-size: auto, cover, cover, cover, cover;
+  --fin-position: top left, top left, top left, top left, top left;
+  --fin-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  --fin-mark: none;
+  --fin-mark-opaque: none;
+  --fin-mark-text: "";
+  /* vignette to seat the mesh — RICH low-alpha ink rim, OPAQUE ink-in-bg rim. */
+  --fin-edge:
+    radial-gradient(
+      82% 82% at 50% 50%,
+      transparent 58%,
+      color-mix(in srgb, var(--ink, var(--accent)) 8%, transparent) 100%
+    );
+  --fin-edge-opaque:
+    radial-gradient(
+      82% 82% at 50% 50%,
+      var(--bg) 60%,
+      color-mix(in srgb, var(--ink, var(--accent)) 6%, var(--bg)) 100%
+    );
+  --fin-edge-position: center;
+  --fin-edge-size: cover;
+}
+
+/* ── 7 · LOOM — a woven LATTICE cross-hatch + a MOVABLE corner glow ────────────
+ * NEW layer type: `lattice` (texture) — two repeating-linear-gradients at
+ * +45°/−45° summed into a diagonal CROSS-hatch weave (on-brand: the product is
+ * Lattice). The texture scale tunes the weave pitch; the corner glow is MOVABLE
+ * via placement (here top-left, the opposite corner from Atrium's top-right).
+ * RICH:   weave lines + glow mix toward transparent.
+ * OPAQUE: weave lines + glow mix into var(--bg). 2 texture + 1 wash, both faces. */
+section.finish-loom {
+  --fin-texture:
+    repeating-linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--accent) 9%, transparent) 0 1px,
+      transparent 1px 34px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--accent) 9%, transparent) 0 1px,
+      transparent 1px 34px
+    );
+  --fin-texture-opaque:
+    repeating-linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--accent) 7%, var(--bg)) 0 1px,
+      transparent 1px 34px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--accent) 7%, var(--bg)) 0 1px,
+      transparent 1px 34px
+    );
+  --fin-wash:
+    radial-gradient(
+      ellipse 120% 90% at 0% 0%,
+      color-mix(in srgb, var(--accent) 14%, transparent) 0%,
+      transparent 60%
+    );
+  --fin-wash-opaque:
+    radial-gradient(
+      ellipse 120% 90% at 0% 0%,
+      color-mix(in srgb, var(--accent) 11%, var(--bg)) 0%,
+      var(--bg) 55%
+    );
+  /* 2 weave layers (45°, −45°) + 1 glow layer — same count both faces. */
+  --fin-size: auto, auto, cover;
+  --fin-position: top left, top left, top left;
+  --fin-repeat: repeat, repeat, no-repeat;
+  --fin-mark: none;
+  --fin-mark-opaque: none;
+  --fin-mark-text: "";
+  --fin-edge: none;
+  --fin-edge-opaque: none;
+}
+
+/* ── 8 · SAVILE — a tailored vertical PINSTRIPE + a MOVABLE monogram ──────────
+ * NEW layer type: `pinstripe` (texture) — fine VERTICAL repeating-linear-gradient
+ * lines (90deg = columns); the texture scale tunes the pitch (here 18px, tight
+ * and editorial). The mark is a MOVABLE monogram (the existing glyph param),
+ * seated bottom-right. Tailored / Savile Row.
+ * The pinstripe is a 1px opaque line + transparent GAP (a hard stop), so both
+ * faces bake clean — only the line COLOR is the face knob. 1 texture layer. */
+section.finish-savile {
+  --fin-texture:
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--accent) 10%, transparent) 0 1px,
+      transparent 1px 18px
+    );
+  --fin-texture-opaque:
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--accent) 8%, var(--bg)) 0 1px,
+      transparent 1px 18px
+    );
+  --fin-wash: none;
+  --fin-wash-opaque: none;
+  /* 1 pinstripe layer + 1 wash-none layer — same count both faces. */
+  --fin-size: auto, auto;
+  --fin-position: top left, top left;
+  --fin-repeat: repeat, no-repeat;
+  /* MOVABLE monogram — a ghost glyph in --font-display; OPAQUE faint color.
+   * Author-personalized: EMPTY by default so a deck-wide finish paints NO monogram
+   * (a glyph-mark is never a baked placeholder). The Studio glyph param / a per-slide
+   * override sets the initials; the placement axis moves it (bottom-right here). */
+  --fin-mark: none;
+  --fin-mark-opaque: none;
+  --fin-mark-text: "";
+  --fin-mark-color: color-mix(in srgb, var(--accent) 9%, var(--bg));
+  --fin-mark-fs: 30cqi;
+  --fin-mark-pad: 0 2cqi;
+  --fin-mark-align: flex-end;
+  --fin-mark-justify: flex-end;
+  --fin-edge: none;
+  --fin-edge-opaque: none;
+}
+
+/* ── 9 · GALLERY — a museum inset FRAME keyline + spotlight + MOVABLE numeral ──
+ * NEW layer type: `frame` (edge) — a thin INSET keyline border drawn as four
+ * solid accent-into-bg strips (top/right/bottom/left), positioned in from each
+ * edge. NO box-shadow alpha (it grays in the vector PDF); the strips are flat
+ * accent-in-bg fills, so the FRAME is identical in both faces (face-invariant)
+ * and export-safe by construction. A centered spotlight lifts the field; a
+ * MOVABLE numeral (top-left here) labels the plate. Museum framing.
+ * 0 texture layers; 1 spotlight wash layer; 4 frame strips. */
+section.finish-gallery {
+  --fin-texture: none;
+  --fin-texture-opaque: none;
+  --fin-wash:
+    radial-gradient(
+      80% 70% at 50% 42%,
+      color-mix(in srgb, var(--accent) 10%, transparent) 0%,
+      transparent 60%
+    );
+  --fin-wash-opaque:
+    radial-gradient(
+      80% 70% at 50% 42%,
+      color-mix(in srgb, var(--accent) 7%, var(--bg)) 0%,
+      var(--bg) 60%
+    );
+  /* 2 background-image layers: the texture-none slot (the compositor always lists
+   * `var(--fin-texture,none)` first) + the 1 spotlight wash — same count both faces. */
+  --fin-size: auto, cover;
+  --fin-position: top left, top left;
+  --fin-repeat: no-repeat, no-repeat;
+  /* MOVABLE numeral — a ghost glyph, top-left. Author-personalized: EMPTY by default
+   * so a deck-wide finish paints NO numeral (never a baked placeholder). The Studio
+   * glyph param / a per-slide override sets it; the placement axis moves it. */
+  --fin-mark: none;
+  --fin-mark-opaque: none;
+  --fin-mark-text: "";
+  --fin-mark-color: color-mix(in srgb, var(--accent) 9%, var(--bg));
+  --fin-mark-fs: 30cqi;
+  --fin-mark-pad: 0 1cqi;
+  --fin-mark-align: flex-start;
+  --fin-mark-justify: flex-start;
+  /* FRAME — an inset keyline museum mat, drawn as two stacked SOLID inset
+   * box-shadows on the SECTION (see the compositor's --fin-frame note): an outer
+   * bg-colored ring (the mat, 0 → 2.6cqi) then an accent-into-bg keyline ring
+   * (2.6cqi → 2.82cqi). Both opaque + blur-free, so they bake crisp in the vector
+   * PDF and carry no alpha — identical in both faces (export-safe by construction).
+   * The ::after edge stays none (the engine reserves ::after for pagination). */
+  --fin-edge: none;
+  --fin-edge-opaque: none;
+  --fin-frame:
+    inset 0 0 0 2.6cqi var(--bg),
+    inset 0 0 0 2.82cqi color-mix(in srgb, var(--accent) 40%, var(--bg));
+}
+
 /* ════════════════════════════════════════════════════════════════════════════
  * THE OPAQUE FLIP — the export fallback (the load-bearing PDF-safety swap).
  * Re-points every full-bleed slot to its preset's `--fin-*-opaque` mirror, so a
@@ -15731,7 +15963,9 @@ section.backdrop-none {
   --fin-texture-opaque: none;
   --fin-mark-opaque: none;
   --fin-edge-opaque: none;
+  --fin-frame: none; /* clear the inset keyline frame too */
   background-image: none;
+  box-shadow: none;
 }
 
 /* === lib/base/base.focus.css === */
