@@ -236,7 +236,17 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 			saveSource();
 			setSourceVersion((v) => v + 1);
 			syncPickers();
-			if (opts?.toPreview) setPane('preview');
+			if (opts?.toPreview) {
+				setPane('preview');
+				// Reveal the preview pane SYNCHRONOUSLY (not only via the React effect,
+				// which runs after commit) so `freshRender` below writes the srcdoc into a
+				// laid-out, non-zero-width iframe. On the mobile single-pane layout the
+				// inactive pane is display:none: if the deck is rendered while the pane is
+				// still hidden, the in-iframe FIT agent measures a 0-width box and iOS
+				// Safari never reveals it (unlike Chrome, which recovers via ResizeObserver).
+				// This mirrors the Drawing Board's setPane, which sets data-pane THEN renders.
+				document.body.setAttribute('data-pane', 'preview');
+			}
 			freshRender();
 		},
 		[setSource, saveSource, syncPickers, freshRender],
@@ -322,7 +332,15 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 
 	const onTab = (which: 'edit' | 'preview') => {
 		setPane(which);
-		if (which === 'preview') render(false);
+		if (which === 'preview') {
+			// Reveal the pane synchronously before render(false) reads the iframe width,
+			// so the FIT measurement runs against a laid-out (non-zero-width) iframe —
+			// same reason as applyDeck's toPreview branch. The effect below still sets
+			// data-pane from state (single source); this pre-set just wins the ordering
+			// so a Safari render into a still-hidden pane can't leave the deck blank.
+			document.body.setAttribute('data-pane', 'preview');
+			render(false);
+		}
 	};
 	// `pane` is the SINGLE source of truth for which pane is active; the body
 	// data-pane attribute (the mobile single-pane layout keys off it —
