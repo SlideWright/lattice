@@ -1,0 +1,72 @@
+{
+  "$schema": "../../manifest.schema.json",
+  "name": "wifi",
+  "function": "statement",
+  "bucket": "connect",
+  "form": "panel",
+  "substance": "structure",
+  "adapt": {
+    "mode": "native",
+    "priority": [
+      "fields",
+      "title"
+    ]
+  },
+  "tags": [
+    "reference",
+    "onboarding",
+    "kickoff"
+  ],
+  "description": "A network join card: readable Wi-Fi credentials beside a QR a phone scans to connect in one tap.",
+  "purpose": "Use to get a room onto the Wi-Fi without reading a password aloud. The QR encodes the standard WIFI: payload; the same details render legibly for anyone typing them by hand. Author the fields as a postfix-key list.",
+  "slots": {
+    "title": {
+      "selector": "h2",
+      "required": true,
+      "description": "The card heading (e.g. \"Join the room.\")."
+    },
+    "fields": {
+      "selector": "ul > li",
+      "required": true,
+      "description": "One field per bullet in postfix-key form — value first, trailing inline-code names the field: `- Offsite-Guest `ssid``. Keys: ssid|network (required), password|pass, security|auth. Omit the password for an open network. Optional keys: `caption` (CTA under the QR); the security row shows exactly what you write."
+    },
+    "eyebrow": {
+      "selector": "p:first-child > code",
+      "required": false,
+      "description": "Optional kicker above the heading, authored as an inline-code first line: `` `Room Wi-Fi` ``."
+    },
+    "caption": {
+      "selector": "ul > li",
+      "required": false,
+      "description": "Optional call-to-action under the QR, as a postfix-key bullet: ``- Scan to connect `caption` ``."
+    }
+  },
+  "skeleton": "<!-- _class: wifi -->\n\n`Room Wi-Fi`\n\n## Join the room.\n\n- Network-Name `ssid`\n- network-password `password`\n- WPA2 `security`\n- Scan to connect `caption`\n",
+  "sample": "<!-- _class: wifi -->\n\n`Room Wi-Fi`\n\n## Join the room.\n\n- Offsite-Guest `ssid`\n- boardroom2026 `password`\n- WPA2 `security`\n- Scan to connect `caption`\n",
+  "whenToUse": [
+    {
+      "title": "Get the room connected",
+      "body": "Guests scan to join instead of squinting at a password on the slide — the credentials are still shown for anyone who prefers to type."
+    },
+    {
+      "title": "Open networks are one field short",
+      "body": "Drop the password bullet and the card renders an open network; the QR encodes it as `nopass`."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Not for secrets that outlive the room",
+      "body": "A rendered deck is persistent and shareable. Use it for guest/offsite networks, not for credentials that must not leak."
+    },
+    {
+      "title": "Don't bold the field values",
+      "body": "The value leads and the key is a trailing inline-code tag — `- Offsite-Guest `ssid``. Don't write `- **SSID:** Offsite-Guest`; the transform reads the postfix key, not a bold label."
+    }
+  ],
+  "related": [
+    {
+      "name": "contact",
+      "when": "the card is a person's identity rather than a network"
+    }
+  ]
+}

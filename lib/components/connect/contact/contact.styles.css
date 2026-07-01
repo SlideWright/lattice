@@ -1,0 +1,87 @@
+/* contact — an identity card that encodes a vCard: name hero + lockup + ledger
+ * beside a scannable QR. Emitted structure (see contact.transform.js):
+ *   .qr-card.contact-card > .qr-identity (.qr-name + .qr-lockup + .qr-ledger)
+ *                         > .qr-side (.qr-tile + .qr-cta)
+ * QR tile is fixed light paper / dark ink (scans in every theme), via a
+ * token-with-fallback so a theme can retune it. */
+
+section.contact .qr-card {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 0.85em;
+  overflow: hidden;
+}
+
+section.contact .qr-identity {
+  flex: 1 1 58%;
+  padding: 2.9em 3.1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.35em;
+}
+
+section.contact .qr-name {
+  font-family: var(--font-display);
+  font-size: var(--fs-hero);
+  line-height: 0.97;
+  color: var(--text-heading);
+  padding: 0;
+}
+
+section.contact .qr-lockup {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  font-family: var(--font-label);
+  font-size: var(--fs-meta);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+section.contact .qr-tick {
+  width: 2.4em;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+section.contact .qr-ledger {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-mono);
+  font-size: var(--fs-body-compact);
+  color: var(--text-muted);
+  line-height: 2.05;
+}
+
+section.contact .qr-side {
+  flex: 1 1 42%;
+  padding: 2.9em 3.1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.1em;
+  border-left: 1px solid var(--border);
+}
+
+section.contact .qr-tile {
+  width: 8em;
+  padding: 0.85em;
+  background: var(--qr-paper, #ffffff);
+  color: var(--qr-ink, #14140f);
+  border: 1px solid var(--border);
+  border-radius: 0.6em;
+}
+
+section.contact .qr-cta {
+  font-family: var(--font-label);
+  font-size: var(--fs-meta);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}

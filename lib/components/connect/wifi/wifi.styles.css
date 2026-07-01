@@ -1,0 +1,108 @@
+/* wifi — a network join card: readable credentials beside a scannable QR.
+ * Emitted structure (see wifi.transform.js):
+ *   .qr-card.wifi-card > .qr-head (eyebrow + h2)
+ *                      > .qr-body > .qr-side (.qr-tile + .qr-cta) + dl.qr-fields
+ * The QR tile is a fixed light "paper" with dark "ink" so the code scans in
+ * every theme (dark included) — the one place a fixed contrast is correct; it
+ * routes through tokens with a fallback so a theme may still retune it. */
+
+section.wifi .qr-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  gap: 1.9em;
+}
+
+section.wifi .qr-eyebrow {
+  font-size: var(--fs-meta);
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 600;
+  padding: 0;
+}
+
+section.wifi .qr-head h2 {
+  font-size: var(--fs-h1);
+  color: var(--text-heading);
+  font-weight: 600;
+  line-height: 1.02;
+  padding-top: 0.18em;
+}
+
+section.wifi .qr-body {
+  display: flex;
+  align-items: center;
+  gap: 3.6em;
+}
+
+section.wifi .qr-side {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9em;
+  width: 12em;
+}
+
+section.wifi .qr-tile {
+  width: 12em;
+  padding: 1em;
+  background: var(--qr-paper, #ffffff);
+  color: var(--qr-ink, #14140f);
+  border: 1px solid var(--border);
+  border-radius: 0.85em;
+}
+
+section.wifi .qr-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: var(--fs-meta);
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 600;
+}
+section.wifi .qr-cta::before {
+  content: "";
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+section.wifi .qr-fields {
+  flex: 1 1 auto;
+  max-width: 24em;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+  padding: 0;
+}
+
+section.wifi .qr-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+}
+section.wifi .qr-row + .qr-row {
+  border-top: 1px solid var(--border);
+  padding-top: 1.5em;
+}
+section.wifi .qr-row dt {
+  font-size: var(--fs-meta);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+section.wifi .qr-row dd {
+  font-size: var(--fs-h3);
+  color: var(--text-heading);
+  line-height: 1.12;
+}
+section.wifi .qr-row dd.qr-mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.005em;
+}

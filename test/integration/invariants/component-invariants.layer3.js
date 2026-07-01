@@ -22,7 +22,7 @@
  *     These are deliberately lighter than a transform check (Layers 1–2 already
  *     guarantee the contract) but still assert MEANING, not pixels.
  *
- * Coverage: all 53 components carry a layer-3 rule. Each entry maps a label →
+ * Coverage: every component carries a layer-3 rule. Each entry maps a label →
  * async `(page, assert, SLIDE) => {}` run against the rendered sample slide
  * (`SLIDE` = `section[data-lattice-slide="1"]`). Keep these about MEANING —
  * counts, presence of a computed relationship — not pixels.
@@ -345,11 +345,25 @@ const LAYER3 = {
       assert.ok(f.l && f.r, `split-panel missing a panel (left=${f.l} right=${f.r})`);
     },
   },
+  // connect — the postfix-key list is consumed into a `.qr-card` with an embedded
+  // QR tile; assert the rendered card + code, not the authored `ul > li`.
+  wifi: {
+    'renders a scannable QR tile':
+      present('.qr-card .qr-tile svg[role="img"]', 1, 'wifi did not render a QR tile'),
+    'renders the readable credential rows':
+      present('.qr-fields .qr-row', 2, 'wifi did not render credential rows'),
+  },
+  contact: {
+    'renders a scannable QR tile':
+      present('.qr-card .qr-tile svg[role="img"]', 1, 'contact did not render a QR tile'),
+    'renders the identity name':
+      present('.qr-identity .qr-name', 1, 'contact did not render the identity name'),
+  },
 };
 
 // Components whose authored slot markup is consumed by a transform — layer 1's
 // "slot selector resolves" is meaningless for them, so it's skipped and the
 // rendered contract above stands in.
-const TRANSFORM = new Set([...CHARTS, 'glossary', 'compare-code']);
+const TRANSFORM = new Set([...CHARTS, 'glossary', 'compare-code', 'wifi', 'contact']);
 
 module.exports = { LAYER3, TRANSFORM };

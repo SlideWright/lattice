@@ -216,6 +216,21 @@
     ],
     "description": "Multi-row comparison table with consistent columns."
   },
+  "lattice: contact": {
+    "prefix": "lattice-contact",
+    "body": [
+      "<!-- _class: contact -->",
+      "",
+      "## Add me.",
+      "",
+      "- Full Name `name`",
+      "- Title `title`",
+      "- Organization `org`",
+      "- name@example.com `email`",
+      "- Scan to add me `caption`"
+    ],
+    "description": "An identity card that encodes a vCard: name, title and contact lines beside a QR that saves the presenter to a phone."
+  },
   "lattice: content": {
     "prefix": "lattice-content",
     "body": [
@@ -935,6 +950,22 @@
       "  - One-line rationale; the last option is the focal verdict. Recommended."
     ],
     "description": "Options scored against criteria as a verdict matrix."
+  },
+  "lattice: wifi": {
+    "prefix": "lattice-wifi",
+    "body": [
+      "<!-- _class: wifi -->",
+      "",
+      "`Room Wi-Fi`",
+      "",
+      "## Join the room.",
+      "",
+      "- Network-Name `ssid`",
+      "- network-password `password`",
+      "- WPA2 `security`",
+      "- Scan to connect `caption`"
+    ],
+    "description": "A network join card: readable Wi-Fi credentials beside a QR a phone scans to connect in one tap."
   },
   "lattice: word-cloud": {
     "prefix": "lattice-word-cloud",
