@@ -261,6 +261,16 @@ in patch versions.
 
 ### Fixed
 
+- **The Workbench no longer jumps as it loads (mobile CLS 0.18 → 0).** The Theme
+  Studio's control panel ships its "Start from" starters and "Essentials" color
+  fields as empty containers that the engine fills imperatively once it boots — so
+  on a throttled connection the shell painted them at 0px, then the fill shoved
+  every block below down in one lurch (a ~0.18 Cumulative Layout Shift on a phone,
+  0.058 on desktop — the page's only shift, now surfaced by the perf watch that
+  finally measures it). The two containers now reserve their populated height up
+  front (the same `min-height` idiom the live-preview host already uses), so the
+  fill lands in place: measured CLS drops to 0 on mobile and 0.01 on desktop, with
+  no change to the settled layout at any width.
 - **The nightly perf watch measures the site again — and now covers the Studio.**
   When the docs site retired its `/lattice` project-page base for the root base
   (`/`) on 2026-06-28, the two Lighthouse collection configs (`lighthouserc.cjs`,
