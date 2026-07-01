@@ -45,6 +45,17 @@ in patch versions.
 
 ### Added
 
+- **Reference docs are now searchable to pick and manageable in the Library (#651).** The
+  chat/Fabricate paperclip picker is now a **searchable** popover (search box + scroll), so a
+  reference library of any size stays usable instead of a flat dropdown — rows show honest
+  metadata only (type · size · added date; no fabricated "used in N decks"), the active doc is
+  checked and still deletable, and "Add a file…" is pinned. A new **Docs tab in the Library**
+  is the management home: every saved doc as a card with Download (rebuilds the original bytes)
+  and delete, plus a contextual "Add file"; the picker's "Manage in Library" link opens straight
+  to it. Design converged from a red-team + inversion + independent-checker pass (the reviews
+  steered *away* from opening the full Library to select — selection stays in the composer). See
+  `engineering/decisions/2026-07-01-studio-reference-docs.md`.
+
 - **Studio AI can now be grounded in your own reference document (#640).** Attach a
   brand guide, an existing deck, or a content brief (`.txt` / `.md` / `.pdf`) and the
   Architect grounds theme, component, and deck-chat generation in it — "match this
