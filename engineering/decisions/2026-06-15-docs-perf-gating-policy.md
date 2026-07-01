@@ -154,3 +154,20 @@ in `docs/src/playground/perf-overlay-prefs.js`.
 - `.github/workflows/docs-overflow.yml` — per-PR overflow guard (was
   `lighthouse.yml`; perf step removed).
 - `lighthouserc.cjs` / `lighthouserc.mobile.cjs` — now collection-only.
+
+## Update (2026-07-01) — root-base URL fix + Studio coverage
+
+The 2026-06-28 retirement of the `/lattice` project-page base (site now serves at
+`/`; see `astro.config.mjs`) left both collection configs pointing at stale
+`/lattice/…` URLs. `lhci collect` 404s on the first URL and throws, so the nightly's
+non-`continue-on-error` **HEAD** collection failed every night from 2026-06-28 until
+this fix — the watch was measuring nothing. (The **base** collection is
+`continue-on-error`, so a base commit whose own configs 404 never fails the job; the
+compare just runs head-only. For the ~24h after this fix merges the base still 404s,
+then self-heals as the base window rolls past it — no workflow change needed.)
+
+Fixed the URLs to the root base and, while there, added the three interactive app
+surfaces — `/studio/`, `/drawing-board/`, `/workbench/` — to the measured list. These
+`client:only` CodeMirror + live-engine shells are the heaviest thing a user loads and
+were never covered; the mobile profile (4× CPU, Slow-4G) puts them at ~40–55 perf,
+dominated by the engine JS payload, so this is exactly where a regression would bite.

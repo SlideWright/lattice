@@ -60,6 +60,12 @@ function openFabricate(user: ReturnType<typeof userEvent.setup>) {
 	return (async () => {
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
 		await user.click(await screen.findByText('Fabricate'));
+		// Fabricate is code-split (React.lazy) out of the initial Studio island, so
+		// its subtree arrives a tick after the click via Suspense — wait for the
+		// Theme Studio specimen before the callers assert against it.
+		await waitFor(() => {
+			if (!document.querySelector('[data-label="Theme specimen"]')) throw new Error('Fabricate not loaded yet');
+		});
 	})();
 }
 

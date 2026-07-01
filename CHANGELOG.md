@@ -283,6 +283,27 @@ in patch versions.
 
 ### Fixed
 
+- **The Workbench no longer jumps as it loads (mobile CLS 0.18 → 0).** The Theme
+  Studio's control panel ships its "Start from" starters and "Essentials" color
+  fields as empty containers that the engine fills imperatively once it boots — so
+  on a throttled connection the shell painted them at 0px, then the fill shoved
+  every block below down in one lurch (a ~0.18 Cumulative Layout Shift on a phone,
+  0.058 on desktop — the page's only shift, now surfaced by the perf watch that
+  finally measures it). The two containers now reserve their populated height up
+  front (the same `min-height` idiom the live-preview host already uses), so the
+  fill lands in place: measured CLS drops to 0 on mobile and 0.01 on desktop, with
+  no change to the settled layout at any width.
+- **The nightly perf watch measures the site again — and now covers the Studio.**
+  When the docs site retired its `/lattice` project-page base for the root base
+  (`/`) on 2026-06-28, the two Lighthouse collection configs (`lighthouserc.cjs`,
+  `lighthouserc.mobile.cjs`) still pointed at `/lattice/…` URLs, so `lhci collect`
+  404'd and the nightly `perf-nightly.yml` HEAD collection failed outright — the
+  watch had been measuring nothing since. The URLs are corrected to the root base,
+  and the list gains the three interactive app surfaces (`/studio/`,
+  `/drawing-board/`, `/workbench/` — the heavy CodeMirror + live-engine shells a
+  user actually authors in) so the surface most likely to regress on a mid-tier
+  phone is finally under standing coverage. See
+  `engineering/decisions/2026-06-15-docs-perf-gating-policy.md`.
 - **Finish glyph-marks no longer paint a baked placeholder on every slide.** A
   glyph-mark (the ghost monogram / numeral) is now **author-personalized and never
   appears in a finish by default** — a deck-wide `finish:` register (or a per-slide
@@ -309,6 +330,18 @@ in patch versions.
 
 ### Changed
 
+- **The Studio's Fabricate studio is code-split out of the initial load.** Fabricate
+  — the theme / component / finish fabrication workspace, its FinishStudio and
+  LayoutStudio subtrees, and its own large icon set — is reached only via the
+  Fabricate tab, so it now loads on first open (`React.lazy`) instead of riding in
+  the main Studio island. Deferring it pulls its whole subtree out of the initial
+  static JS graph, which drops from **1365 KB → 783 KB uncompressed (460 KB → 269 KB
+  gzipped; ~272 KB brotli as Cloudflare serves it) — a ~41% cut** to the JS every
+  Studio visitor downloads up front, the heaviest thing a mobile user waits on. No
+  change to Fabricate itself beyond a one-tick "Loading…" on first open. Measured
+  on the live Cloudflare deployment (branch preview vs `main`) and corroborated by
+  an identical-tooling local build; the interactive app surfaces are now under the
+  nightly perf watch (see Fixed), so this stays measured.
 - **Studio AI component canon now teaches odd/fixed-aspect shapes to fill the stage, not float or overflow (#610, #643 spike).**
   Live validation (#639) found the "design for fit" canon reasons about element *count* and *monumentality* but not about how a
   non-rectangular or fixed-aspect shape (hexagon, disc, stamp, film frame) distributes into the 16:9 stage — so hexagon tiles

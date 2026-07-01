@@ -83,6 +83,18 @@
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 8px;
+	/* Reserve the populated height. This grid + .studio-fields below ship EMPTY
+	   from the server and are filled imperatively when the (throttled-network)
+	   engine boots — without a reserve the shell paints them at 0px, then the
+	   fill pushes every block below down: a single ~0.18 CLS on mobile, the
+	   workbench's only layout shift. Same idiom as .studio-preview-host. Sized to
+	   the fixed 4 starters at the 2-column width; the 1-column phone value is in
+	   the max-width:460px block. */
+	min-height: 88px;
+}
+/* The 4 essential color fields (fixed set; picker rows are font-invariant). */
+.studio-fields {
+	min-height: 501px;
 }
 .studio-starter {
 	display: flex;
@@ -586,7 +598,9 @@
 
 /* Narrow phones: starters to one column, stack the refine row. */
 @media (max-width: 460px) {
-	.studio-starters { grid-template-columns: 1fr; }
+	/* 1 column → 4 stacked rows, so the boot-fill reserve is taller than the
+	   2-column desktop value above (keeps the CLS reserve exact per regime). */
+	.studio-starters { grid-template-columns: 1fr; min-height: 184px; }
 	.studio-ai-row { flex-wrap: wrap; }
 	.studio-ai-row .studio-btn { flex: 1 1 100%; }
 	.lstudio-field { grid-template-columns: 1fr; }

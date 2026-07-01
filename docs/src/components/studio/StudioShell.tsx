@@ -20,7 +20,6 @@ import { listStudioComponents, type StudioComponent } from './component-library'
 import { addSlideAfter, deleteSlide, duplicateSlide, moveSlide, replaceSlide } from './deck-ops';
 import { DECKS, deckSource, type StudioDeck } from './decks';
 import { Editor, type EditorHandle } from './Editor';
-import { Fabricate } from './Fabricate';
 import { activeFinishLabel, FinishMenuItems, type SavedFinishMenuEntry } from './FinishPicker';
 import { generateSwatch as finishSwatch } from './finish-generate';
 import { deleteStudioFinish, listStudioFinishes, type StudioFinish } from './finish-library';
@@ -39,6 +38,14 @@ import { activePaletteLabel, BUILTIN_PALETTES, ThemeMenuItems } from './ThemePic
 import { deleteStudioTheme, listStudioThemes, type StudioTheme } from './theme-library';
 import { useBreakpoint } from './use-breakpoint';
 import { WorkspaceSheet } from './WorkspaceSheet';
+
+// The Fabricate studio (theme / component / finish fabrication) is a large,
+// self-contained subtree — FinishStudio, LayoutStudio, CodeField, the manifest
+// completion, and its own big lucide-icon set — reached only via the
+// `view === 'fabricate'` tab. Code-split it so its ~chunk stays out of the
+// initial Studio island payload (the heaviest thing a mobile user waits on) and
+// loads on first open. It's already mount-on-view, so this is a drop-in.
+const Fabricate = React.lazy(() => import('./Fabricate').then((m) => ({ default: m.Fabricate })));
 
 // Offline FALLBACK known-components — used only when the real catalog (the
 // `components` prop, the full 53-component manifest) fails to load. The live known
@@ -1208,7 +1215,9 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 
 			{/* ── Body ─────────────────────────────────────────────────── */}
 			{view === 'fabricate' ? (
-				<Fabricate options={options} catalog={components} onClose={() => setView('compose')} notify={notify} onSaved={() => { refreshThemes(); refreshComponents(); refreshFinishes(); }} onOpenWorkspace={() => setWorkspaceOpen(true)} />
+				<React.Suspense fallback={<div className="grid flex-1 place-items-center text-[13px] text-muted-foreground">Loading the Fabricate studio…</div>}>
+					<Fabricate options={options} catalog={components} onClose={() => setView('compose')} notify={notify} onSaved={() => { refreshThemes(); refreshComponents(); refreshFinishes(); }} onOpenWorkspace={() => setWorkspaceOpen(true)} />
+				</React.Suspense>
 			) : mobile ? (
 				/* Mobile: one swappable Edit/Preview pane; panels live in sheets. */
 				<div className="flex min-h-0 flex-1 flex-col">
