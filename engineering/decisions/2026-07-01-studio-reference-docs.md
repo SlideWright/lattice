@@ -82,6 +82,47 @@ The attached doc's tokens fold into the pre-send budget estimate (`estimateUsd` 
 hard cap, and the chip states "billed each run." The authoritative per-call cost
 still rides back via `usage.cost`. No implied "free."
 
+## Follow-up (#651) — searchable picker + a Library management home
+
+The first cut's picker was a flat dropdown listing every saved doc, and there was
+no place to *manage* the library. The ask was "make the paperclip open the Library
+to select, and give me somewhere to manage files." We mocked that (📎 opens the full
+Library Sheet in a pick mode) and ran it through a **red-team + inversion + an
+independent feasibility checker**. Both converged AGAINST unifying selection into the
+Library:
+
+- **Selection and management are different jobs.** Selecting is a fast, in-flow
+  sub-action of composing a message (one doc grounds the chat); managing is occasional
+  housekeeping. Opening a full 720px right-side Sheet to attach one file is a heavy
+  context switch, steals focus from the half-typed prompt, and full-screen-covers the
+  chat on mobile.
+- **The pick-back wiring is the deciding cost.** The active doc is local hook state
+  next to each 📎; routing a Library selection back into one of three hook instances
+  (chat + two Fabricate) needs a shell-level callback for **no new capability** — the
+  same IndexedDB list is already local to each picker.
+- **The Library card grid doesn't reuse cleanly** (bulk-export checkboxes imply
+  multi-doc grounding, which `groundMessages` doesn't do), and the mock promised
+  **"used in N decks" — unbacked**: nothing tracks deck↔doc usage, so that stat was cut.
+
+**Decision — the hybrid (invert the picker):**
+
+1. **Select** → the 📎 picker becomes a **searchable** Popover + cmdk Command
+   (`reference-doc-ui.tsx`): a search box (so it scales past a handful of files — the
+   real fix for the flat-list problem), a pinned "Add a file…", rows with **honest
+   metadata only** (type · size · added date), the active doc checked (and still
+   deletable), and an optional "Manage in Library" link. Stays in the composer.
+2. **Manage** → a **Docs tab in the Library** (`Library.tsx`): every saved doc as a
+   manage-only card (glyph · name · size · date) with Download (rebuilds the original
+   bytes via `dataUrlToBlob`) + two-tap delete + a contextual "Add file". Reuses the
+   Library's `download()` + `DeleteBtn`; refdoc cards carry no share/bulk-export
+   (docs aren't lattice assets). `StudioShell` threads `onManageDocs` → `ArchitectChat`
+   → the hook, and passes `initialFilter='refdoc'` so the link jumps straight to Docs.
+
+An implementation maker-checker then fixed: the empty-library onboarding hint (vs a
+misleading "no matches"), cmdk selection identity on same-named docs (`value=id`,
+`keywords=[name]`), a silent 0-byte PDF download guard, active-doc deletability, and
+the refdoc id prefix.
+
 ## Scope / not done
 
 - Grounding is applied to the deck **chat** surface; the canned one-click reshape
@@ -89,3 +130,6 @@ still rides back via `usage.cost`. No implied "free."
   are fixed presets, not doc-driven.
 - `pdf-text` suits digital-text PDFs (brand guides, decks); scanned/image PDFs
   would need the pricier `mistral-ocr` engine — a later toggle if demand appears.
+- **Multi-doc grounding** is deferred — `groundMessages` grounds one doc; the picker
+  is single-select by design (the reviews flagged multi-select as a trap given the
+  single-doc model).

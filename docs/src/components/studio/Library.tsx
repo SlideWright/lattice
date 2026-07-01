@@ -1,4 +1,4 @@
-import { Check, FileBox, Package, Plus, Search, Share2, Trash2, Upload } from 'lucide-react';
+import { Check, Download, FileBox, FileText, Package, Plus, Search, Share2, Trash2, Upload } from 'lucide-react';
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -8,16 +8,18 @@ import { componentZipName, finishZipName, packBundle, packComponent, packFinish,
 import { deleteStudioComponent, listStudioComponents, type StudioComponent, saveStudioComponent } from './component-library';
 import { generateSwatch } from './finish-generate';
 import { deleteStudioFinish, listStudioFinishes, type StudioFinish, saveStudioFinish } from './finish-library';
+import { formatBytes, REF_DOC_ACCEPT, readReferenceDoc } from './reference-doc';
+import { deleteRefDoc, listRefDocs, type RefDocRecord, saveRefDoc } from './reference-doc-store';
 import { renderThemeShowcase } from './share-export';
 import { deleteStudioTheme, listStudioThemes, type StudioTheme, saveStudioTheme } from './theme-library';
 
-// The unified Library — one shelf for every saved theme + component (the shared
-// asset store), with a consistent apply/insert · share · manage flow (#54/#56)
-// and zip import/export on the lattice-asset contract (#55). The two deck actions
-// (apply a theme, insert a component) delegate to the shell; storage ops (delete,
-// import) run here, then `onChanged` refreshes the shell's topbar/insert lists.
+// The unified Library — one shelf for every saved theme + component + finish + the
+// user's reference docs (#651), with a consistent apply/insert · share · manage flow
+// (#54/#56) and zip import/export on the lattice-asset contract (#55). The two deck
+// actions (apply a theme, insert a component) delegate to the shell; storage ops
+// (delete, import) run here, then `onChanged` refreshes the shell's topbar/insert lists.
 
-type Filter = 'all' | 'theme' | 'component' | 'finish';
+type Filter = 'all' | 'theme' | 'component' | 'finish' | 'refdoc';
 
 function download(blob: Blob, filename: string) {
 	const url = URL.createObjectURL(blob);
@@ -30,6 +32,25 @@ function download(blob: Blob, filename: string) {
 	setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+// Rebuild a Blob from a `data:…;base64,…` URL (a stored PDF's original bytes).
+function dataUrlToBlob(dataUrl: string): Blob {
+	const [head, b64] = dataUrl.split(',');
+	const mime = /:(.*?);/.exec(head)?.[1] || 'application/octet-stream';
+	const bin = atob(b64 || '');
+	const bytes = new Uint8Array(bin.length);
+	for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+	return new Blob([bytes], { type: mime });
+}
+
+// Honest, free date label for a reference-doc card (the record's addedAt).
+function fmtDate(ts: number): string {
+	try {
+		return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+	} catch {
+		return '';
+	}
+}
+
 // A few representative swatches for a theme card: the picked essentials, or the
 // accent as a fallback when a legacy record has none.
 function themeSwatches(t: StudioTheme): string[] {
@@ -38,12 +59,13 @@ function themeSwatches(t: StudioTheme): string[] {
 	return ['var(--accent)'];
 }
 
-export function Library({ open, onOpenChange, options, activePalette, activeFinish, onApplyTheme, onApplyFinish, onInsert, onChanged, notify }: {
+export function Library({ open, onOpenChange, options, activePalette, activeFinish, initialFilter, onApplyTheme, onApplyFinish, onInsert, onChanged, notify }: {
 	open: boolean;
 	onOpenChange: (o: boolean) => void;
 	options: SingleSlideOptions;
 	activePalette: string;
 	activeFinish: string;
+	initialFilter?: Filter;
 	onApplyTheme: (name: string) => void;
 	onApplyFinish: (name: string) => void;
 	onInsert: (skeleton: string, name: string) => void;
@@ -53,39 +75,81 @@ export function Library({ open, onOpenChange, options, activePalette, activeFini
 	const [themes, setThemes] = React.useState<StudioTheme[]>([]);
 	const [components, setComponents] = React.useState<StudioComponent[]>([]);
 	const [finishes, setFinishes] = React.useState<StudioFinish[]>([]);
+	const [docs, setDocs] = React.useState<RefDocRecord[]>([]);
 	const [filter, setFilter] = React.useState<Filter>('all');
 	const [query, setQuery] = React.useState('');
 	const [sel, setSel] = React.useState<Set<string>>(new Set());
 	const [busy, setBusy] = React.useState<string | null>(null);
 	const [armed, setArmed] = React.useState<string | null>(null);
 	const fileRef = React.useRef<HTMLInputElement>(null);
+	const docFileRef = React.useRef<HTMLInputElement>(null);
 
 	const reload = React.useCallback(() => {
-		Promise.all([listStudioThemes(), listStudioComponents(), listStudioFinishes()]).then(([t, c, f]) => {
+		Promise.all([listStudioThemes(), listStudioComponents(), listStudioFinishes(), listRefDocs()]).then(([t, c, f, d]) => {
 			setThemes(t);
 			setComponents(c);
 			setFinishes(f);
+			setDocs(d);
 		});
 	}, []);
-	// Load (and refresh) whenever the drawer opens.
+	// Load (and refresh) whenever the drawer opens; honor a requested initial tab
+	// (the picker's "Manage in Library" link opens straight to Docs).
 	React.useEffect(() => {
-		if (open) reload();
-		else {
+		if (open) {
+			reload();
+			if (initialFilter) setFilter(initialFilter);
+		} else {
 			setSel(new Set());
 			setArmed(null);
 		}
-	}, [open, reload]);
+	}, [open, reload, initialFilter]);
 
 	const q = query.trim().toLowerCase();
 	const vThemes = filter === 'all' || filter === 'theme' ? themes.filter((t) => !q || t.label.toLowerCase().includes(q) || t.name.includes(q)) : [];
 	const vComponents = filter === 'all' || filter === 'component' ? components.filter((c) => !q || c.name.includes(q) || (c.bucket || '').includes(q)) : [];
 	const vFinishes = filter === 'all' || filter === 'finish' ? finishes.filter((f) => !q || f.label.toLowerCase().includes(q) || f.name.includes(q)) : [];
-	const total = themes.length + components.length + finishes.length;
+	const vDocs = filter === 'all' || filter === 'refdoc' ? docs.filter((d) => !q || d.name.toLowerCase().includes(q)) : [];
+	const total = themes.length + components.length + finishes.length + docs.length;
 
 	const tKey = (t: StudioTheme) => `theme:${t.id}`;
 	const cKey = (c: StudioComponent) => `comp:${c.id}`;
 	const fKey = (f: StudioFinish) => `finish:${f.id}`;
 	const toggle = (k: string) => setSel((s) => { const n = new Set(s); n.has(k) ? n.delete(k) : n.add(k); return n; });
+
+	// Reference docs (#651) — download rebuilds the original bytes from the record;
+	// delete removes it from the shared library. No bulk-export/share (docs aren't
+	// lattice assets), so refdoc cards carry no selection checkbox.
+	function downloadDoc(d: RefDocRecord) {
+		try {
+			if (d.docKind === 'pdf' && !d.dataUrl) { notify('Could not download that doc.'); return; } // don't ship a 0-byte .pdf
+			const blob = d.docKind === 'pdf' && d.dataUrl ? dataUrlToBlob(d.dataUrl) : new Blob([d.text ?? ''], { type: 'text/plain' });
+			download(blob, d.name);
+		} catch {
+			notify('Could not download that doc.');
+		}
+	}
+	function removeDoc(d: RefDocRecord) {
+		deleteRefDoc(d.id).then(() => { reload(); notify(`Deleted ${d.name}.`); });
+	}
+	async function addDocFiles(files: FileList | null) {
+		if (!files?.length) return;
+		setBusy('Adding…');
+		let n = 0;
+		try {
+			for (const file of Array.from(files)) {
+				const d = await readReferenceDoc(file);
+				await saveRefDoc(d, Date.now());
+				n++;
+			}
+			reload();
+			notify(`Added ${n} reference doc${n === 1 ? '' : 's'}.`);
+		} catch (e) {
+			notify(String((e as Error)?.message || 'Could not add that file.'));
+		} finally {
+			setBusy(null);
+			if (docFileRef.current) docFileRef.current.value = '';
+		}
+	}
 
 	async function shareTheme(t: StudioTheme) {
 		setBusy(`Rendering ${t.label} showcase…`);
@@ -184,16 +248,23 @@ export function Library({ open, onOpenChange, options, activePalette, activeFini
 					<SheetTitle className="flex shrink-0 items-center gap-2 text-[15px]"><FileBox className="size-[18px] text-[var(--accent)]" />Library</SheetTitle>
 					<div className="ml-1 flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-border bg-background px-2.5 py-1.5 text-muted-foreground">
 						<Search className="size-3.5 shrink-0" />
-						<input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search themes, components & finishes…" aria-label="Search library" className="min-w-0 flex-1 bg-transparent text-[12.5px] text-foreground outline-none placeholder:text-muted-foreground" />
+						<input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search themes, components, finishes & docs…" aria-label="Search library" className="min-w-0 flex-1 bg-transparent text-[12.5px] text-foreground outline-none placeholder:text-muted-foreground" />
 					</div>
-					<Button variant="outline" size="sm" className="shrink-0 gap-1.5" onClick={() => fileRef.current?.click()} aria-label="Import .zip" title="Import a .zip"><Upload className="size-3.5" /><span className="hidden sm:inline">Import</span></Button>
+					{/* Contextual add: the Docs tab attaches .txt/.md/.pdf reference docs; every
+					    other tab imports a lattice-asset .zip — one button, meaning by tab. */}
+					{filter === 'refdoc' ? (
+						<Button variant="outline" size="sm" className="shrink-0 gap-1.5" onClick={() => docFileRef.current?.click()} aria-label="Add a reference doc" title="Add a .txt/.md/.pdf reference doc"><Plus className="size-3.5" /><span className="hidden sm:inline">Add file</span></Button>
+					) : (
+						<Button variant="outline" size="sm" className="shrink-0 gap-1.5" onClick={() => fileRef.current?.click()} aria-label="Import .zip" title="Import a .zip"><Upload className="size-3.5" /><span className="hidden sm:inline">Import</span></Button>
+					)}
 					<input ref={fileRef} type="file" accept=".zip" multiple hidden onChange={(e) => importFiles(e.target.files)} />
+					<input ref={docFileRef} type="file" accept={REF_DOC_ACCEPT} multiple hidden onChange={(e) => addDocFiles(e.target.files)} />
 				</SheetHeader>
 
 				<div className="flex items-center gap-2 border-b border-border bg-card px-4 py-2.5">
 					<div className="inline-flex rounded-lg border border-border bg-background p-[3px]">
-						{(['all', 'theme', 'component', 'finish'] as Filter[]).map((f) => (
-							<button key={f} type="button" onClick={() => setFilter(f)} aria-pressed={filter === f} className={cn('rounded-md px-3 py-1 text-[12px] font-semibold capitalize', filter === f ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}>{f === 'all' ? 'All' : `${f}s`}</button>
+						{(['all', 'theme', 'component', 'finish', 'refdoc'] as Filter[]).map((f) => (
+							<button key={f} type="button" onClick={() => setFilter(f)} aria-pressed={filter === f} className={cn('rounded-md px-3 py-1 text-[12px] font-semibold capitalize', filter === f ? 'bg-card text-[var(--accent)] shadow-sm' : 'text-muted-foreground')}>{f === 'all' ? 'All' : f === 'refdoc' ? 'Docs' : f === 'finish' ? 'Finishes' : `${f}s`}</button>
 						))}
 					</div>
 					<span className="ml-auto font-mono text-[11px] text-muted-foreground">{selCount > 0 ? `${selCount} selected · ` : ''}{total} total</span>
@@ -266,6 +337,20 @@ export function Library({ open, onOpenChange, options, activePalette, activeFini
 									</div>
 								);
 							})}
+							{vDocs.map((d) => (
+								// Reference doc — manage-only card (no select/share; docs aren't lattice assets).
+								<div key={`refdoc:${d.id}`} className="relative overflow-hidden rounded-xl border border-border bg-card">
+									<div className="grid h-[88px] w-full place-content-center bg-[var(--accent-soft)]"><span className="grid size-11 place-items-center rounded-xl border border-border bg-card font-mono text-[11px] font-bold text-[var(--accent)]">{d.docKind === 'pdf' ? 'PDF' : (/\.([a-z0-9]+)$/i.exec(d.name)?.[1] || 'txt').slice(0, 4).toUpperCase()}</span></div>
+									<div className="p-2.5">
+										<div className="flex items-center gap-1.5 text-[12.5px] font-bold text-[var(--text-heading)]"><FileText className="size-3.5 shrink-0 text-[var(--accent)]" /><span className="truncate">{d.name}</span><span className="rounded-full border border-[color-mix(in_srgb,var(--accent)_30%,transparent)] bg-[var(--accent-soft)] px-1.5 py-0.5 font-mono text-[8.5px] uppercase tracking-wide text-[var(--accent)]">Doc</span></div>
+										<div className="mt-1 truncate font-mono text-[10.5px] text-muted-foreground">{d.docKind === 'pdf' ? 'pdf' : 'text'} · {formatBytes(d.bytes)} · added {fmtDate(d.addedAt)}</div>
+										<div className="mt-2.5 flex items-center gap-1.5">
+											<button type="button" onClick={() => downloadDoc(d)} className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-card py-1.5 text-[11.5px] font-semibold text-foreground"><Download className="size-3.5" />Download</button>
+											<DeleteBtn armed={armed === `refdoc:${d.id}`} onArm={() => setArmed(`refdoc:${d.id}`)} onConfirm={() => { setArmed(null); removeDoc(d); }} label={d.name} />
+										</div>
+									</div>
+								</div>
+							))}
 						</div>
 					)}
 				</div>

@@ -11,7 +11,7 @@ import { type ChatMessage, loadChat, saveChat } from './studio-store';
 // so nothing changes the deck until the author accepts it. History persists per
 // deck; with no model connected it degrades honestly (points at Workspace).
 
-export function ArchitectChat({ deckId, source, aiReady, onApply, onConnect, notify }: { deckId: string; source: string; aiReady: boolean; onApply: (next: string) => void; onConnect: () => void; notify: (m: string) => void }) {
+export function ArchitectChat({ deckId, source, aiReady, onApply, onConnect, onManageDocs, notify }: { deckId: string; source: string; aiReady: boolean; onApply: (next: string) => void; onConnect: () => void; onManageDocs?: () => void; notify: (m: string) => void }) {
 	const [messages, setMessages] = React.useState<ChatMessage[]>(() => loadChat(deckId));
 	const [input, setInput] = React.useState('');
 	const [busy, setBusy] = React.useState(false);
@@ -19,7 +19,7 @@ export function ArchitectChat({ deckId, source, aiReady, onApply, onConnect, not
 	// A reference doc grounds the whole conversation (#640) — kept across turns (a
 	// chat about "the attached brand deck" spans several questions); the chip's ✕
 	// removes it. Its tokens are billed each turn, as the chip states.
-	const refDoc = useReferenceDoc(notify);
+	const refDoc = useReferenceDoc(notify, onManageDocs);
 
 	// Reload the thread when the deck changes; persist on every change.
 	React.useEffect(() => setMessages(loadChat(deckId)), [deckId]);
