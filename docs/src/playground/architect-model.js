@@ -375,7 +375,7 @@ function openRouterBackend(defaultModel = DEFAULT_OR_MODEL, defaultMaxTokens = 0
       writeCachedCatalog(catalogCache);
       return catalogCache;
     },
-    async complete({ messages, json, onToken, signal, onUsage, maxTokens }) {
+    async complete({ messages, json, onToken, signal, onUsage, maxTokens, plugins }) {
       const key = readLS(OR_KEY_LS);
       if (!key) throw new Error('OpenRouter not connected');
       // usage:{include:true} guarantees the authoritative per-request `usage.cost`
@@ -383,6 +383,9 @@ function openRouterBackend(defaultModel = DEFAULT_OR_MODEL, defaultMaxTokens = 0
       // Cache the static system prefix (the big authoring canon) so a fan-out of
       // calls re-reads it at ~0.1x instead of re-paying full input each time.
       const body = { model: this.getModel(), messages: withCachedSystem(messages, this.getModel()), stream: !!onToken, usage: { include: true } };
+      // Optional plugins (e.g. the file-parser plugin that extracts an inlined
+      // reference PDF server-side, #640). Passed through verbatim when present.
+      if (plugins?.length) body.plugins = plugins;
       // max_tokens bounds worst-case completion cost (a runaway reply can't blow the
       // budget). Opt-in per instance: only the Studio sets a ceiling; the Drawing Board
       // (defaultMaxTokens 0) stays uncapped, so its long deck rewrites aren't truncated.

@@ -27,6 +27,20 @@ in patch versions.
 
 ### Added
 
+- **Studio AI can now be grounded in your own reference document (#640).** Attach a
+  brand guide, an existing deck, or a content brief (`.txt` / `.md` / `.pdf`) and the
+  Architect grounds theme, component, and deck-chat generation in it — "match this
+  brand guide", "in the style of this deck". A live probe confirmed OpenRouter has no
+  upload-by-id, so the path is **inline-only**: text/Markdown inlines as text; a PDF
+  inlines as a file part parsed server-side by the `file-parser` plugin (cloud tier;
+  on-device degrades honestly). Docs persist to a **shared library** (browser
+  IndexedDB, reusable across every deck) — a paperclip picker offers "Add a file…"
+  plus your saved docs, stored **locally and never uploaded**. The doc is treated as
+  untrusted **data, not instructions** (HARD RULE #22 — framed behind an
+  ignore-directives preamble; any generated HTML still crosses `sanitizeSlideHtml`),
+  and its tokens fold into the pre-send budget estimate and the "billed each run"
+  chip — honest cost, no implied free. See
+  `engineering/decisions/2026-07-01-studio-reference-docs.md`.
 - **Finish marks and washes are now freely sized, moved, and tilted.** A finish's
   ghost glyph (monogram / numeral) is no longer locked to a corner at a fixed huge
   size — the recipe carries continuous `scale` / `x` / `y` / `angle` axes, so a mark

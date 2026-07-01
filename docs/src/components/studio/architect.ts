@@ -11,8 +11,14 @@ import { buildRefinePrompt, cleanRewrite, REFINE_ACTIONS } from '@/playground/dr
 import { budgetStatus, readBudgetCap, readBudgetFloor, readBudgetMode, readDedupEnabled, readSpend, recordSpend } from '@/playground/drawing-board-settings.js';
 import { askComponentMessages, auditComponentDesign, coerceComponent, gateComponent, rankSimilar } from '@/playground/layout-core.generated.js';
 import { askMessages, auditBoth, coerceEssentials, deriveTheme, STARTERS } from '@/playground/theme-core.generated.js';
+import { type GroundMsg, groundMessages, type MsgContent, type ReferenceDoc, refDocTokens } from './reference-doc';
 import { languageDirective } from './studio-language';
 import { loadInstructions, loadSettings } from './studio-store';
+
+// Re-export so UI surfaces (Fabricate, the deck chat) import the doc type + reader
+// from one place alongside the generate functions they feed it to.
+export type { ReferenceDoc } from './reference-doc';
+export { REF_DOC_ACCEPT, readReferenceDoc } from './reference-doc';
 
 // Re-export the canonical refine action list (Polish / Formalize / Elaborate /
 // Shorten) so the Studio's UI menu and the Drawing Board read from one source.
@@ -43,7 +49,7 @@ const SYSTEM =
 // `_class` invokes) that must stay canonical English to pass the gates and resolve
 // at render time. Read live, so a change in the Workspace drawer takes effect on
 // the next turn. See engineering/decisions/2026-06-30-studio-output-language.md.
-type Msg = { role: string; content: string };
+type Msg = GroundMsg; // { role; content: string | ContentPart[] } — array content carries an inlined PDF
 
 function studioVoice(): string {
 	const parts = [languageDirective(loadSettings().language)];
@@ -59,8 +65,10 @@ export function withStudioVoice(messages: Msg[]): Msg[] {
 	if (!extra) return messages;
 	const out = messages.map((m) => ({ ...m }));
 	const sys = out.find((m) => m.role === 'system');
-	if (sys) sys.content = `${sys.content}\n\n${extra}`;
-	else out.unshift({ role: 'system', content: extra });
+	// The system turn is always plain text (we author it); the string guard keeps
+	// TS honest now that a message's content may be content-parts (an inlined PDF).
+	if (sys && typeof sys.content === 'string') sys.content = `${sys.content}\n\n${extra}`;
+	else if (!sys) out.unshift({ role: 'system', content: extra });
 	return out;
 }
 
@@ -114,7 +122,7 @@ export type ModelAvailability = {
 export type TierProgress = { progress: number; text?: string; status?: string };
 
 type ArchitectModel = {
-	complete: (o: { messages: { role: string; content: string }[]; json?: boolean; fallback?: string; onUsage?: (u: Usage) => void; maxTokens?: number }) => Promise<string>;
+	complete: (o: { messages: { role: string; content: MsgContent }[]; json?: boolean; fallback?: string; onUsage?: (u: Usage) => void; maxTokens?: number; plugins?: unknown[] }) => Promise<string>;
 	// bge-small sentence embeddings (CDN, on-device) — null on Safari/mobile/no-CDN/model-off.
 	embed?: (texts: string | string[]) => Promise<number[][] | null>;
 	availability: () => ModelAvailability;
@@ -170,7 +178,7 @@ export type ArchitectOutcome =
  * hard budget cap (mode: 'stop') is reached on the cloud tier — so the UI degrades
  * honestly and never spends real credit past the guardrail.
  */
-export async function runArchitect(source: string, instruction: string): Promise<ArchitectOutcome> {
+export async function runArchitect(source: string, instruction: string, doc?: ReferenceDoc | null): Promise<ArchitectOutcome> {
 	const model = await architectModel();
 	if (!model) return { status: 'offline' };
 	const generation = model.availability().generation;
@@ -178,17 +186,20 @@ export async function runArchitect(source: string, instruction: string): Promise
 	// Respect the budget on the paid cloud tier — blocks when over, and (hard-stop mode)
 	// refuses a call whose estimate would breach the cap. Local tiers are free.
 	if (generation === 'openrouter') {
-		const blk = cloudBudgetBlock(model, `${instruction}\n${source}`);
+		const blk = cloudBudgetBlock(model, `${instruction}\n${source}`, refDocTokens(doc));
 		if (blk) return { status: 'blocked', note: blk };
 	}
-	const messages = withStudioVoice([
+	// Ground in the user's reference doc (#640) — e.g. "rewrite this in the style of
+	// the attached deck". Applied after the Studio voice so the doc sits in the user turn.
+	const ground = groundMessages(withStudioVoice([
 		{ role: 'system', content: SYSTEM },
 		{ role: 'user', content: `${instruction}\n\nThe deck — address slides by their [slide N] markers, and never include a marker in an edit body:\n\n${numberSlides(source)}` },
-	]);
+	]), doc, generation === 'openrouter');
 	let reply = '';
 	try {
 		reply = await model.complete({
-			messages,
+			messages: ground.messages,
+			plugins: ground.plugins,
 			fallback: '',
 			onUsage: (u) => recordSpend(u?.cost ?? 0, u?.total_tokens ?? (u?.prompt_tokens || 0) + (u?.completion_tokens || 0)),
 		});
@@ -281,21 +292,24 @@ export type ThemeGenOutcome =
  * so a connected model that returns nonsense degrades to the fallback essentials,
  * still AA-clean.
  */
-export async function generateTheme(current: ThemeEssentials, prompt: string): Promise<ThemeGenOutcome> {
+export async function generateTheme(current: ThemeEssentials, prompt: string, doc?: ReferenceDoc | null): Promise<ThemeGenOutcome> {
 	if (!prompt.trim()) return { status: 'nochange', note: 'Describe a look to generate a theme.' };
 	const model = await architectModel();
 	if (!model) return { status: 'offline' };
 	const generation = model.availability().generation;
 	if (generation === 'floor') return { status: 'offline' };
 	if (generation === 'openrouter') {
-		const blk = cloudBudgetBlock(model, prompt);
+		const blk = cloudBudgetBlock(model, prompt, refDocTokens(doc));
 		if (blk) return { status: 'blocked', note: blk };
 	}
 	const fallback: ThemeEssentials = current && Object.keys(current).length ? current : (STARTERS[0].essentials as ThemeEssentials);
+	// Ground in the user's reference doc (#640) — e.g. "match this brand guide".
+	const ground = groundMessages(askMessages(fallback, prompt), doc, generation === 'openrouter');
 	let reply = '';
 	try {
 		reply = await model.complete({
-			messages: askMessages(fallback, prompt),
+			messages: ground.messages,
+			plugins: ground.plugins,
 			fallback: '',
 			onUsage: (u) => recordSpend(u?.cost ?? 0, u?.total_tokens ?? (u?.prompt_tokens || 0) + (u?.completion_tokens || 0)),
 		});
@@ -499,6 +513,7 @@ async function dedupComponents(prompt: string, catalog: DedupCatalog, model: Arc
 export async function generateComponent(
 	prompt: string,
 	catalog: { name: string; bucket?: string; description?: string; purpose?: string; tags?: string[] }[] = [],
+	doc?: ReferenceDoc | null,
 ): Promise<ComponentGenOutcome> {
 	if (!prompt.trim()) return { status: 'nochange', note: 'Describe a component to generate one.' };
 	const model = await architectModel();
@@ -506,17 +521,21 @@ export async function generateComponent(
 	const generation = model.availability().generation;
 	if (generation === 'floor') return { status: 'offline' };
 	if (generation === 'openrouter') {
-		const blk = cloudBudgetBlock(model, prompt);
+		const blk = cloudBudgetBlock(model, prompt, refDocTokens(doc));
 		if (blk) return { status: 'blocked', note: blk };
 	}
 	// Dedup-first (§5/§8): unless the author turned it off, rank the request against
 	// the catalog (embeddings → fuse → lexical), surface near neighbors, and hand
 	// them to the model as reuse hints.
 	const similar = readDedupEnabled() ? await dedupComponents(prompt, catalog, model) : [];
+	// Ground in the user's reference doc (#640) — prepended to the user turn as
+	// untrusted DATA; a PDF rides as an inlined file-part + the parser plugin.
+	const ground = groundMessages(askComponentMessages(prompt, { similar }), doc, generation === 'openrouter');
 	let reply = '';
 	try {
 		reply = await model.complete({
-			messages: askComponentMessages(prompt, { similar }),
+			messages: ground.messages,
+			plugins: ground.plugins,
 			json: true,
 			fallback: '',
 			onUsage: (u) => recordSpend(u?.cost ?? 0, u?.total_tokens ?? (u?.prompt_tokens || 0) + (u?.completion_tokens || 0)),
@@ -617,25 +636,27 @@ export type ChatResult =
  * resulting source + a line diff for a review-then-apply card (nothing is applied
  * here). Degrades to `offline`/`blocked` honestly — never a fabricated answer.
  */
-export async function chatComplete(history: ChatTurn[], source: string): Promise<ChatResult> {
+export async function chatComplete(history: ChatTurn[], source: string, doc?: ReferenceDoc | null): Promise<ChatResult> {
 	const model = await architectModel();
 	if (!model) return { status: 'offline' };
 	const generation = model.availability().generation;
 	if (generation === 'floor') return { status: 'offline' };
 	const last = history[history.length - 1];
 	if (generation === 'openrouter') {
-		const blk = cloudBudgetBlock(model, `${last?.content ?? ''}\n${source}`);
+		const blk = cloudBudgetBlock(model, `${last?.content ?? ''}\n${source}`, refDocTokens(doc));
 		if (blk) return { status: 'blocked', reply: blk };
 	}
-	const messages = withStudioVoice([
+	// Ground the final user turn in the reference doc (#640).
+	const ground = groundMessages(withStudioVoice([
 		{ role: 'system', content: `${SYSTEM}\n\nConverse with the author. Answer questions directly. Only emit edit blocks when they actually want a change to the deck.` },
 		...history.slice(0, -1),
 		{ role: 'user', content: `${last?.content ?? ''}\n\nThe current deck — address slides by their [slide N] markers, never include a marker in an edit body:\n\n${numberSlides(source)}` },
-	]);
+	]), doc, generation === 'openrouter');
 	let reply = '';
 	try {
 		reply = await model.complete({
-			messages,
+			messages: ground.messages,
+			plugins: ground.plugins,
 			fallback: '',
 			onUsage: (u) => recordSpend(u?.cost ?? 0, u?.total_tokens ?? (u?.prompt_tokens || 0) + (u?.completion_tokens || 0)),
 		});
@@ -695,20 +716,22 @@ export async function architectCredits(): Promise<ORCredits | null> {
 // A cheap token estimate: ~4 chars/token. Enough for a pre-send "≈ $X".
 const estTokens = (text: string) => Math.ceil((text || '').length / 4);
 
-/** Estimate a cloud call's USD cost: prompt tokens × in-price + an output ceiling × out-price. */
-export function estimateUsd(promptText: string, price: ORPrice | null, maxOut = 4096): number | null {
+/** Estimate a cloud call's USD cost: prompt tokens × in-price + an output ceiling ×
+ *  out-price. `extraTokens` folds in an attached reference doc's contribution (#640)
+ *  so the pre-send guard and readout include the doc the user pays for. */
+export function estimateUsd(promptText: string, price: ORPrice | null, maxOut = 4096, extraTokens = 0): number | null {
 	if (!price || price.promptPerM == null || price.completionPerM == null) return null;
-	return (estTokens(promptText) / 1e6) * price.promptPerM + (maxOut / 1e6) * price.completionPerM;
+	return ((estTokens(promptText) + extraTokens) / 1e6) * price.promptPerM + (maxOut / 1e6) * price.completionPerM;
 }
 
 // The cloud budget gate, shared by every architect action: blocks when already over
 // the cap/balance, AND — in hard-stop mode — refuses a call whose ESTIMATE would
 // breach the self-cap, so a single large request can't overshoot. Returns a note, or null.
-function cloudBudgetBlock(model: ArchitectModel, promptText: string): string | null {
+function cloudBudgetBlock(model: ArchitectModel, promptText: string, extraTokens = 0): string | null {
 	const s = architectSpend();
 	if (s.status.blocked) return 'Budget cap reached — raise it in Workspace → Spend, or switch tier.';
 	if (s.mode === 'stop' && s.cap > 0) {
-		const est = estimateUsd(promptText, model.openRouterModelPrice?.() ?? null);
+		const est = estimateUsd(promptText, model.openRouterModelPrice?.() ?? null, 4096, extraTokens);
 		if (est != null && s.session + est > s.cap) {
 			return `Estimated ~$${est.toFixed(2)} — that would exceed your $${s.cap.toFixed(2)} cap. Raise it in Workspace → Spend, pick a cheaper model, or switch to On-device (free).`;
 		}
