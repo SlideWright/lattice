@@ -315,6 +315,21 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	// Named `renderMode` locally to avoid clashing with the light/dark `mode` below.
 	const renderMode = getFrontMatter(source, 'mode') || 'boardroom';
 	const setRenderMode = (value: string) => setSource((s) => setFrontMatter(s, 'mode', value === 'boardroom' ? null : value));
+	// The layout DEBUG overlay — a real deck setting (`debug:` front matter), so it
+	// rides in previewFm to the render and is stripped from every export. Presets map
+	// to the overlay's reveal modes; a hand-typed facet list shows verbatim.
+	const debugValue = getFrontMatter(source, 'debug');
+	const setDebug = (value: string | null) => setSource((s) => setFrontMatter(s, 'debug', value));
+	const debugLabel =
+		debugValue == null || /^(off|false|no)$/i.test(debugValue)
+			? 'Off'
+			: /^(on|true|yes)$/i.test(debugValue)
+				? 'On · hover'
+				: /^(always|pinned)$/i.test(debugValue)
+					? 'On · always'
+					: debugValue === 'all'
+						? 'All levers'
+						: debugValue;
 	// The saved finishes, shaped for the picker (slug + label + a chip swatch).
 	const savedFinishMenu = React.useMemo<SavedFinishMenuEntry[]>(
 		() => savedFinishes.map((f) => ({ id: f.id, name: f.name, label: f.label, swatch: finishSwatch(f.recipe) })),
@@ -928,6 +943,23 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			</InspGroup>
 			<InspGroup icon={<Wand2 className="size-3.5" />} label="Authoring">
 				<Field label="Inline validation"><Toggle label="Inline validation" on={validation} onClick={() => { setValidation((v) => { notify(v ? 'Inline validation off — the editor stops flagging components.' : 'Inline validation on — unknown components are flagged again.'); return !v; }); }} /></Field>
+				{/* Debug overlay — outlines every box by layout mode and labels the
+				    structural ones on hover; `always` pins them. A deck setting (`debug:`
+				    front matter), preview-only, stripped from every export.
+				    engineering/decisions/2026-07-01-debug-bounding-boxes.md */}
+				<Field label="Debug overlay">
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Control aria-label="Debug overlay">{debugLabel} <ChevronDown className="size-3.5" /></Control>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end" className="w-44">
+							<DropdownMenuItem onSelect={() => setDebug(null)}>Off{debugLabel === 'Off' && <span className="ml-auto text-[var(--accent)]">✓</span>}</DropdownMenuItem>
+							<DropdownMenuItem onSelect={() => setDebug('on')}>On · hover{debugLabel === 'On · hover' && <span className="ml-auto text-[var(--accent)]">✓</span>}</DropdownMenuItem>
+							<DropdownMenuItem onSelect={() => setDebug('always')}>On · always{debugLabel === 'On · always' && <span className="ml-auto text-[var(--accent)]">✓</span>}</DropdownMenuItem>
+							<DropdownMenuItem onSelect={() => setDebug('all')}>All levers{debugLabel === 'All levers' && <span className="ml-auto text-[var(--accent)]">✓</span>}</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</Field>
 			</InspGroup>
 			<InspGroup icon={<History className="size-3.5" />} label="History">
 				<button type="button" onClick={saveVersion} className="mb-1.5 flex w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-[12.5px] font-semibold text-[var(--accent)] hover:bg-[var(--accent-soft)]"><Save className="size-3.5" />Save a version</button>
