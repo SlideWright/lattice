@@ -17,8 +17,8 @@ import {
 	variantSource,
 } from '@/lib/playground-controller';
 import { createEngineBridge, type PreviewState } from '@/lib/playground-engine';
-import { applyBbox } from '@/playground/bbox-overlay.js';
-import { bboxEnabled, onBboxEnabledChange } from '@/playground/bbox-prefs.js';
+import { applyDebug, deckDebugOn } from '@/playground/debug-overlay.js';
+import { debugEffectiveOn, getDebugOverride, onDebugOverrideChange, setDebugOverride } from '@/playground/debug-prefs.js';
 import { readFrontMatter } from '@/playground/deck-config.js';
 import { createChartInteract } from '@/playground/drawing-board-chart-interact.js';
 import { BoundingBoxToggle } from './BoundingBoxToggle';
@@ -105,29 +105,33 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 		}
 	}, [sourceVersion]);
 
-	// Debug bounding boxes — colour-coded element outlines in the preview. `bboxOn`
-	// is the live (session) state: the toolbar button flips it temporarily, the
-	// deck-setup drawer's switch flips the PERSISTED default (bbox-prefs), and we
-	// seed from / follow that default here. A ref mirrors the live value so the
-	// iframe's onLoad re-applies after each full srcdoc rewrite without a stale
-	// closure. applyBbox no-ops until the iframe has a document.
-	const [bboxOn, setBboxOn] = React.useState(false);
-	const bboxOnRef = React.useRef(bboxOn);
-	bboxOnRef.current = bboxOn;
+	// Layout debug overlay. The deck's `debug:` front matter is the default (the
+	// engine stamps `data-debug` per section); a viewer's toolbar toggle is a
+	// per-session OVERRIDE (debug-prefs → localStorage: 'on'|'off'|follow). `force`
+	// is what we pass the agent; a ref mirrors it so the iframe onLoad + the render
+	// loop re-apply after a srcdoc rewrite / section patch without a stale closure.
+	const [debugOverride, setDebugOverrideState] = React.useState<'on' | 'off' | null>(null);
+	const [deckHasDebug, setDeckHasDebug] = React.useState(false);
+	const forceRef = React.useRef<'on' | 'off' | null>(null);
+	forceRef.current = debugOverride;
 	React.useEffect(() => {
-		setBboxOn(bboxEnabled());
-		const unsubscribe = onBboxEnabledChange(setBboxOn);
-		return () => {
-			unsubscribe();
-		};
+		setDebugOverrideState(getDebugOverride());
+		return onDebugOverrideChange(setDebugOverrideState);
 	}, []);
+	// biome-ignore lint/correctness/useExhaustiveDependencies: sourceVersion is the explicit re-eval trigger.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: sourceVersion is the explicit re-eval trigger; getSource reads the live editor.
 	React.useEffect(() => {
-		applyBbox(frameRef.current, bboxOn);
-	}, [bboxOn]);
-	// Re-inject after every full srcdoc rewrite (deck swap / theme / mode / size).
-	// Section patches keep the document — and the injected <style> — alive.
+		setDeckHasDebug(deckDebugOn(getSource()));
+	}, [sourceVersion]);
+	const debugOn = debugEffectiveOn(deckHasDebug);
+	// biome-ignore lint/correctness/useExhaustiveDependencies: re-apply on override flip or a deck edit; the agent reads the live force via forceRef.
+	React.useEffect(() => {
+		applyDebug(frameRef.current, { force: forceRef.current });
+	}, [debugOverride, sourceVersion]);
+	// Re-apply after every full srcdoc rewrite (deck swap / theme / mode / size);
+	// the render loop re-applies after a section patch (the doc stays live there).
 	const onFrameLoad = React.useCallback(() => {
-		applyBbox(frameRef.current, bboxOnRef.current);
+		applyDebug(frameRef.current, { force: forceRef.current });
 	}, []);
 
 	// ── The render loop (wraps the engine; never reimplements it) ───────────────
@@ -174,6 +178,11 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 				frame.parentElement?.classList.add('is-live');
 				// Re-bind the hover layer to the (possibly new) iframe document.
 				chartInteractRef.current?.rebind();
+				// Re-apply the debug overlay: a section PATCH keeps the doc live but swaps
+				// the <section> nodes the chips were bound to, so the agent must redraw.
+				// (A full srcdoc write reloads → onFrameLoad handles that; this no-ops
+				// until the fresh doc is ready.)
+				applyDebug(frame, { force: forceRef.current });
 			}
 		},
 		[getSource, setStatusLine, palettes],
@@ -425,7 +434,7 @@ export function PlaygroundApp({ data }: { data: PlaygroundData }) {
 					>
 						{status}
 					</span>
-					<BoundingBoxToggle on={bboxOn} onToggle={() => setBboxOn((v) => !v)} />
+					<BoundingBoxToggle on={debugOn} onToggle={() => setDebugOverride(debugOn ? 'off' : 'on')} />
 					<DeckSetupSheet
 						getSource={getSource}
 						setSource={setSource}
