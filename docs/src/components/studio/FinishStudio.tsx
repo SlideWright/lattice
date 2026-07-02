@@ -82,6 +82,13 @@ export function FinishStudio({
 	// "Export preview" — show the OPAQUE export face the PDF/PPTX bakes, not just the
 	// rich on-screen face, so the designer sees the flatter look before they ship it.
 	const [exporting, setExporting] = React.useState(false);
+	// Preview-only backdrop RESTRAINT (%). The deck-wide `backdrop: strength:` axis dims
+	// a finish via `--backdrop-strength` (opacity on the `.backdrop` compositor); this
+	// dials the SAME token on the specimen so a finish can be designed and judged at the
+	// restraint it'll be shown with. Preview-scoped: the finish stays a pure recipe —
+	// strength is a per-deck control, not baked into the saved finish (the finish/backdrop
+	// axes are deliberately separate; see 2026-07-01-finish-restraint-controls.md).
+	const [strength, setStrength] = React.useState(100);
 	const [prompt, setPrompt] = React.useState('');
 	const [gen, setGen] = React.useState<'idle' | 'working'>('idle');
 	const [saving, setSaving] = React.useState(false);
@@ -91,6 +98,15 @@ export function FinishStudio({
 	// export/save (targets the named slug). Recompute as the recipe changes.
 	const slug = safeFinishSlug(name) === 'custom' && !name.trim() ? 'custom' : safeFinishSlug(name);
 	const previewCss = React.useMemo(() => generateFinishCss(PREVIEW_SLUG, recipe), [recipe]);
+	// The preview CSS plus (when restrained) the `--backdrop-strength` token on the
+	// specimen's backdrop — the exact lever the deck-wide `backdrop: strength:` pulls.
+	const previewBackdropCss = React.useMemo(
+		() =>
+			strength >= 100
+				? previewCss
+				: `${previewCss}\n/* preview backdrop restraint (design-time only) */\nsection.finish > .backdrop { --backdrop-strength: ${(strength / 100).toFixed(2)}; }`,
+		[previewCss, strength],
+	);
 	const nameOk = !!name.trim() && /^[a-z][a-z0-9-]*$/.test(slug);
 
 	// Mutators — each layer's controls write back through coerceRecipe so state can
@@ -243,13 +259,23 @@ export function FinishStudio({
 							</div>
 						</div>
 					</div>
+					{/* Preview restraint — judge the finish at the backdrop strength it'll be
+					    shown with (the deck-wide `backdrop: strength:` axis). Design-time only. */}
+					<Tuned label="Preview strength" value={`${strength}%`}>
+						<div className="flex items-center gap-2.5">
+							<Slider aria-label="Preview backdrop strength" min={10} max={100} value={strength} onValueChange={setStrength} />
+							{strength < 100 && (
+								<button type="button" onClick={() => setStrength(100)} className="shrink-0 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground hover:text-[var(--accent)]">Reset</button>
+							)}
+						</div>
+					</Tuned>
 					<div className="relative">
 						<DeckPreview
 							options={options}
 							sample={specimen(exporting)}
 							mermaid={false}
 							modeOverride={mode}
-							extraCss={previewCss}
+							extraCss={previewBackdropCss}
 							debounceMs={140}
 							className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-background shadow-[0_6px_18px_rgba(10,22,40,.10)]"
 							aria-label="Finish specimen"
