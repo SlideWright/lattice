@@ -290,6 +290,22 @@ lint/test catches a violation, *discipline* = no automated gate, so it's on you)
   **UNVERIFIED** — never turn "couldn't test" into "tested." *(discipline — no
   automated gate; the test is whether every "verified" in a PR or report can point
   at the surface + artifact behind it. Sharpens the QUALITY BAR.)*
+- **#24 — Our `OPEN_ROUTER_KEY` stays OFF the site and OUT of tests.** Two guards for our
+  paid OpenRouter budget. (1) **No exposure:** the deployed docs are a static bundle and the
+  Playground runs on the USER's own key via OAuth (bring-your-own-key), so our server-side
+  `OPEN_ROUTER_KEY` must never appear in `docs/**` — a reference there would inline it into the
+  shipped bundle (leak) AND spend our budget on the live site. (2) **No abuse:** nothing spends it
+  on the per-PR path — no `test/**` file reads OUR key, no `pull_request`/`push` workflow injects it,
+  no `test`-family npm script invokes a spender. The gate keys on OUR key NAME, not the
+  `openrouter.ai` endpoint, so Playwright e2e / integration tests that MOCK the endpoint (`page.route`)
+  or drive the Playground on the user's own / a test key are fine; throwaway prototypes that hit the
+  live API go in `.scratch/` (not scanned). A tool that DOES spend it (today only
+  `tools/component-gen-eval.mjs`) is on-demand + opt-in (`OPENROUTER_ALLOW_SPEND=1`), prints its cost,
+  and validates on a tiny sample (`--limit 1`) with a per-key cap set at OpenRouter; **live CI E2E**
+  runs in a sanctioned **nightly/dispatch** workflow (`SANCTIONED_OPENROUTER_WORKFLOWS`, self-skipping
+  when the secret is unset), never per-PR. *(gated — `checkOpenRouterBudget` +
+  `SANCTIONED_OPENROUTER_SPENDERS` / `SANCTIONED_OPENROUTER_WORKFLOWS` in `tools/check-ownership.js`,
+  via `build:check`; `engineering/workflow.md` §OpenRouter budget.)*
 
 ---
 

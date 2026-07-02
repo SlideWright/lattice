@@ -43,6 +43,9 @@ const {
   CANONICAL_FS_TOKENS,
   SINGLETON_TAGS,
   checkPreviewHtmlSinks,
+  checkOpenRouterBudget,
+  SANCTIONED_OPENROUTER_SPENDERS,
+  SANCTIONED_OPENROUTER_WORKFLOWS,
   listSourceFiles,
   SANCTIONED_PREVIEW_BUILDERS,
   PREVIEW_BUILDER_MARKER,
@@ -366,6 +369,53 @@ describe('check-ownership', () => {
       const stripped = src.replace(new RegExp(SANITIZE_CALL.source, 'g'), 'noop(');
       assert.ok(PREVIEW_BUILDER_MARKER.test(stripped), 'still a builder');
       assert.ok(!SANITIZE_CALL.test(stripped), 'sanitize call gone → gate would flag it');
+    });
+  });
+
+  describe('OpenRouter budget gate (HARD RULE #24)', () => {
+    const REPO = path.join(__dirname, '..', '..', '..');
+
+    test('the sole sanctioned spender is the eval tool, and it exists', () => {
+      assert.deepEqual(SANCTIONED_OPENROUTER_SPENDERS, ['tools/component-gen-eval.mjs']);
+      assert.ok(fs.existsSync(path.join(REPO, SANCTIONED_OPENROUTER_SPENDERS[0])));
+    });
+
+    test('every sanctioned workflow exists and still references the key (no stale sanction)', () => {
+      for (const rel of SANCTIONED_OPENROUTER_WORKFLOWS) {
+        const p = path.join(REPO, rel);
+        assert.ok(fs.existsSync(p), `${rel} is sanctioned but missing`);
+        assert.ok(/OPEN_ROUTER_KEY/.test(fs.readFileSync(p, 'utf8')), `${rel} no longer uses the key — stale sanction`);
+      }
+    });
+
+    test('the live repo neither exposes the key to the site nor spends it in tests', () => {
+      const errors = [];
+      checkOpenRouterBudget(errors);
+      assert.deepEqual(errors, [], `OpenRouter budget invariant broken:\n${errors.join('\n')}`);
+    });
+
+    test('fires on a site exposure AND on a test-suite spend', () => {
+      // A .astro probe (build-time frontmatter → inlined into the static bundle) locks in
+      // the .astro scan coverage — a plain .ts probe would pass even if the walk regressed.
+      const siteLeak = path.join(REPO, 'docs/src/pages/__or_probe__.astro');
+      const testSpend = path.join(REPO, 'test/unit/__or_probe__.probe.js'); // not *.test.js — never collected as a test
+      // Build the forbidden strings by concatenation so this SOURCE file doesn't itself
+      // trip the gate; the WRITTEN probes get the real joined strings. The test-spend probe
+      // uses BRACKET notation to lock in that the bare-name scan catches it (not just dot form).
+      const keyRead = 'process.env.' + 'OPEN_ROUTER_KEY';
+      const keyReadBracket = "process.env['" + 'OPEN_ROUTER' + "_KEY']";
+      try {
+        fs.mkdirSync(path.dirname(siteLeak), { recursive: true });
+        fs.writeFileSync(siteLeak, `---\nconst k = ${keyRead};\n---\n<div>{k}</div>\n`);
+        fs.writeFileSync(testSpend, `const k = ${keyReadBracket};\n`);
+        const errors = [];
+        checkOpenRouterBudget(errors);
+        assert.ok(errors.some((e) => /must NEVER reach the site/.test(e)), 'expected a site-exposure error');
+        assert.ok(errors.some((e) => /never spend our budget/.test(e)), 'expected a test-spend error');
+      } finally {
+        fs.rmSync(siteLeak, { force: true });
+        fs.rmSync(testSpend, { force: true });
+      }
     });
   });
 
