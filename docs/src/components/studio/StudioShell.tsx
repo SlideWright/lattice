@@ -393,10 +393,10 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const previewFm = React.useMemo(() => {
 		if (!finishClass) return fm;
 		// A saved finish renders via the stamped `finish finish-<slug>` class + injected
-		// CSS, NOT the engine's `finish:` register — which knows only built-ins and would
-		// mis-prefix a saved token (`finish: finish-shu` → `finish-finish-shu`). So stamp
-		// the class and DROP `finish:` from what the engine sees.
-		return frontMatterBlock(setFrontMatter(mergeClassTokens(source, finishClass), 'finish', null));
+		// CSS — the engine's `finish:` register knows only built-ins and resolves any
+		// other value (bare slug OR prefixed token) to no class, so the `finish:` line is
+		// inert to the engine and we just merge the class that does the work.
+		return frontMatterBlock(mergeClassTokens(source, finishClass));
 	}, [fm, source, finishClass]);
 	const setDeckSize = (value: string) => setSource((s) => setFrontMatter(s, 'size', value));
 	const togglePageNumbers = () => setSource((s) => setFrontMatter(s, 'paginate', pageNumbers ? null : 'true'));
