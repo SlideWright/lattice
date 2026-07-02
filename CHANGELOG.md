@@ -38,6 +38,14 @@ in patch versions.
   `height: 100cqh` off the chart-body — so it fills the available body area
   and scales with it. Refreshed quadrant + chart gallery goldens and the
   affected example decks.
+- **A saved finish now renders in exported/shared decks — including per-slide.** The
+  Markdown and Marp source handoffs inline the referenced saved finishes' generated CSS
+  as a global `<style>`, so a shared deck keeps its finish on another machine (and the
+  CLI renders it). Previously only a *deck-wide* finish was embedded; a finish applied
+  per slide (`_class: … finish-<slug>`) exported blank. The image PDF/PPTX and vector
+  Print paths already carry the finish CSS via the render's `extraCss`; combined with
+  the per-slide `finish` compositor implication, per-slide finishes now render across
+  every export format. No-op for a deck that references no saved finish.
 - **Saved (fabricated) finishes are first-class in the Studio editor.** Applying a
   finish you created no longer trips an `unknown-finish` lint warning — your saved
   finish names are folded into the deck-lint's finish register — and the editor now
