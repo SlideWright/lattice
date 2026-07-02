@@ -77,10 +77,19 @@ export function hashString(s) {
 }
 
 // FIT agent (a string injected into the iframe). Scales each section to the
-// container width, collapses the gap the un-scaled layout box would leave,
-// clamps + clips the filmstrip tail, then reveals .lattice. `gap` is the visible
-// px between slides (must match the SYNC agent's slot pitch); `clamp` removes the
-// dead trailing scroll space the final section's full-height box leaves.
+// container width with CSS `zoom` and reveals .lattice. `gap` is the visible px
+// between slides (must match the SYNC agent's slot pitch); `clamp` pins the
+// filmstrip to its exact scaled height.
+//
+// Why `zoom`, not `transform: scale()`: zoom is a REAL geometry scale — the
+// section box becomes SW*sc × SH*sc, so hit-testing and touch land at the
+// displayed coordinates (transform-scaled iframes drop iOS touch and forced a
+// parent-hosted capture surface + ÷scale coordinate math everywhere). It also
+// removes the negative-margin trick (transform left a full-size layout box) and
+// the overflow-clip dead-space fix. Fidelity is byte-equivalent — `container-type:
+// size` + cqi/cqh resolve identically under zoom (verified: a cqi/cqh-heavy slide
+// diffed zoom-vs-transform is layout-identical, differing only on text anti-alias).
+// See engineering/decisions/2026-07-02-preview-scale-zoom.md.
 function fitAgent(gap, clamp) {
 	return [
 		'(function(){',
@@ -93,17 +102,17 @@ function fitAgent(gap, clamp) {
 		'    var secs=lattice.querySelectorAll(":scope>section");',
 		'    var sc=w/SW;',
 		'    for(var i=0;i<secs.length;i++){var s=secs[i];',
-		'      s.style.transformOrigin="top left";',
-		'      s.style.transform="scale("+sc+")";',
-		'      s.style.marginBottom=(SH*sc-SH+GAP)+"px";',
+		// Real scale → real box (SW*sc × SH*sc). A plain GAP between slides; no
+		// negative-margin compensation (there is no oversized layout box to pull up).
+		'      s.style.zoom=sc;',
+		'      s.style.marginBottom=GAP+"px";',
 		'    }',
-		// Clamp the filmstrip to the scaled-content height and CLIP the tail the
-		// last slide leaves: transform scales the paint, not the layout box, so the
-		// final 1280xSH section keeps its full-height box and would otherwise spill
-		// ~SH*(1-sc) of dead scroll space below the deck. overflow-clip-margin lets
-		// the slide drop-shadow still bleed past the clip edge.
+		// Pin the filmstrip to its exact scaled height. Under zoom each section is a
+		// real SH*sc box, so the natural flow already leaves no dead trailing space
+		// (the transform-era overflow-clip fix is gone); the explicit height just
+		// keeps the SYNC slot math and the centered short-deck layout exact.
 		clamp
-			? '    if(secs.length){lattice.style.height=(secs.length*SH*sc+(secs.length-1)*GAP)+"px";lattice.style.overflow="clip";lattice.style.overflowClipMargin="40px";}'
+			? '    if(secs.length){lattice.style.height=(secs.length*SH*sc+(secs.length-1)*GAP)+"px";}'
 			: '',
 		// Reveal only once scaled — the srcdoc hides .lattice so the first paint
 		// (and the display:none->block pane switch on mobile, where clientWidth is
