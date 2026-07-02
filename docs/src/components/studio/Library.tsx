@@ -319,7 +319,9 @@ export function Library({ open, onOpenChange, options, activePalette, activeFini
 							})}
 							{vFinishes.map((f) => {
 								const k = fKey(f);
-								const active = f.name === activeFinish;
+								// The deck names a saved finish by its prefixed token `finish-<slug>`
+								// (bare slug accepted too, for back-compat).
+								const active = activeFinish === `finish-${f.name}` || activeFinish === f.name;
 								const sw = generateSwatch(f.recipe);
 								return (
 									<div key={k} className={cn('relative overflow-hidden rounded-xl border bg-card', sel.has(k) ? 'border-[var(--accent)] ring-1 ring-[var(--accent)]' : 'border-border')}>

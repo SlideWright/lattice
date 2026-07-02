@@ -73,13 +73,20 @@ export function FinishMenuItems({
 				<>
 					<DropdownMenuSeparator />
 					<DropdownMenuLabel className={LABEL}>Saved</DropdownMenuLabel>
-					{saved.map((s) => (
-						<DropdownMenuItem key={s.id} onSelect={() => onPick(s.name)} className={cn('gap-2', savedActive === s.name && 'font-semibold')}>
-							<Swatch background={s.swatch?.background ?? 'var(--accent-soft, var(--bg))'} backgroundSize={s.swatch?.backgroundSize} />
-							<span className="truncate">{s.label}</span>
-							{savedActive === s.name && <Check className="ml-auto size-3.5 text-[var(--accent)]" />}
-						</DropdownMenuItem>
-					))}
+					{saved.map((s) => {
+						// The deck names a saved finish by its PREFIXED token `finish-<slug>`
+						// (consistent with per-slide `finish-<slug>` classes); accept the bare
+						// slug too so a pre-prefix deck still shows as active.
+						const token = `finish-${s.name}`;
+						const on = savedActive === token || savedActive === s.name;
+						return (
+							<DropdownMenuItem key={s.id} onSelect={() => onPick(token)} className={cn('gap-2', on && 'font-semibold')}>
+								<Swatch background={s.swatch?.background ?? 'var(--accent-soft, var(--bg))'} backgroundSize={s.swatch?.backgroundSize} />
+								<span className="truncate">{s.label}</span>
+								{on && <Check className="ml-auto size-3.5 text-[var(--accent)]" />}
+							</DropdownMenuItem>
+						);
+					})}
 				</>
 			)}
 		</>
@@ -87,12 +94,13 @@ export function FinishMenuItems({
 }
 
 /** Label + swatch for the active finish (for a trigger button). A saved finish
- *  (not in the register) is matched by slug against `saved`. */
+ *  (not in the register) is matched by its prefixed token `finish-<slug>` (or the
+ *  bare slug, for back-compat) against `saved`. */
 export function activeFinishLabel(
 	finish: string,
 	saved: SavedFinishMenuEntry[] = [],
 ): { label: string; swatch: string; backgroundSize?: string } {
-	const savedHit = saved.find((s) => s.name === finish);
+	const savedHit = saved.find((s) => finish === `finish-${s.name}` || finish === s.name);
 	if (savedHit && !FINISHES.some((f) => f.name === finish)) {
 		return { label: savedHit.label, swatch: savedHit.swatch?.background ?? 'var(--accent)', backgroundSize: savedHit.swatch?.backgroundSize };
 	}

@@ -2,7 +2,7 @@ import { autocompletion, completionKeymap } from '@codemirror/autocomplete';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { markdown } from '@codemirror/lang-markdown';
 import { type Diagnostic, linter, lintGutter } from '@codemirror/lint';
-import { EditorState } from '@codemirror/state';
+import { Compartment, EditorState } from '@codemirror/state';
 import { EditorView, keymap, lineNumbers } from '@codemirror/view';
 import * as React from 'react';
 import { buildVocabSets, findingsToDiagnostics } from '@/playground/editor-diagnostics.js';
@@ -94,9 +94,13 @@ export const Editor = React.forwardRef<EditorHandle, {
 	knownComponents?: string[];
 	/** The component catalog, for autocomplete (name/bucket/description). */
 	completionComponents?: CompletionComponent[];
-	/** Finish register names (built-in presets + the user's saved finishes) for
-	 *  `finish:` value completion. */
-	completionFinishes?: string[];
+	/** `finish:` front-matter VALUE vocabulary — built-in presets (bare) + saved
+	 *  finishes (prefixed `finish-<slug>`). Drives both the value completion AND the
+	 *  inline `unknown-finish` lint (a valid value is exactly what's offered). */
+	completionFinishValues?: string[];
+	/** `_class:` slide-level CLASS vocabulary — every finish as its `finish-<x>`
+	 *  class. Drives the `_class:`-line completion only (not lint). */
+	completionFinishClasses?: string[];
 	/** The deterministic lint vocabulary. When present, the editor runs the FULL
 	 *  shared lint-core (severity tiers + per-finding fixes) instead of the
 	 *  unknown-component-only fallback. */
@@ -114,7 +118,7 @@ export const Editor = React.forwardRef<EditorHandle, {
 	 *  an external setSource so callers can react to authoring, not to their own writes. */
 	onUserEdit?: () => void;
 	className?: string;
-}>(function Editor({ value, onChange, knownComponents = [], completionComponents = [], completionFinishes = [], lintVocab, extraComponentNames, onCursorSlide, onSelectionChange, onUserEdit, className }, ref) {
+}>(function Editor({ value, onChange, knownComponents = [], completionComponents = [], completionFinishValues = [], completionFinishClasses = [], lintVocab, extraComponentNames, onCursorSlide, onSelectionChange, onUserEdit, className }, ref) {
 	const hostRef = React.useRef<HTMLDivElement>(null);
 	const viewRef = React.useRef<EditorView | null>(null);
 	const onChangeRef = React.useRef(onChange);
@@ -134,7 +138,9 @@ export const Editor = React.forwardRef<EditorHandle, {
 	const useRealLint = !!lintVocab?.names;
 	// Stable join keys so the memo only rebuilds when a SET changes (not identity).
 	const extraNamesKey = (extraComponentNames || []).join(',');
-	const finishKey = (completionFinishes || []).join(',');
+	const finishKey = (completionFinishValues || []).join(',');
+	const classKey = (completionFinishClasses || []).join(',');
+	const compsKey = (completionComponents || []).map((c) => c.name).join(',');
 	// biome-ignore lint/correctness/useExhaustiveDependencies: extraNamesKey / finishKey are the stable content-proxies; depending on the arrays themselves would rebuild every render.
 	const vocabSets = React.useMemo(() => {
 		if (!useRealLint) return null;
@@ -142,12 +148,50 @@ export const Editor = React.forwardRef<EditorHandle, {
 		// Union your saved local components into the known names so lint-core treats
 		// them as first-class, not unknown. (Built-in `names` stays authoritative.)
 		for (const n of extraComponentNames || []) sets.names.add(n);
-		// Likewise fold the finish vocabulary (built-in presets + your saved
-		// finishes) into the finish register, so `finish: <my-saved-finish>` isn't
-		// flagged `unknown-finish` inline — matching the Architect panel's lint.
-		if (completionFinishes.length) sets.finishNames = [...(sets.finishNames || []), ...completionFinishes];
+		// Fold the finish VALUE vocabulary (built-ins + saved, already prefixed) into
+		// the finish register so `finish: <value>` isn't flagged `unknown-finish`
+		// inline — matching the Architect panel. Also accept the bare slug of a
+		// prefixed saved value (`finish-shu` → `shu`) so a deck authored before the
+		// prefix convention doesn't false-warn.
+		if (completionFinishValues.length) {
+			const extra = completionFinishValues.flatMap((v) => (v.startsWith('finish-') ? [v, v.slice('finish-'.length)] : [v]));
+			sets.finishNames = [...(sets.finishNames || []), ...extra];
+		}
 		return sets;
 	}, [lintVocab, useRealLint, extraNamesKey, finishKey]);
+
+	// The completion + lint extensions live in Compartments so they can be RECONFIGURED
+	// in place when their vocabulary changes (e.g. you save a finish mid-session) —
+	// without tearing down the editor. The editor itself only rebuilds on a `known`
+	// change; finish/vocab changes flow through the reconfigure effects below, so a
+	// freshly-saved finish stops being flagged / starts completing immediately.
+	const acComp = React.useRef(new Compartment());
+	const lintComp = React.useRef(new Compartment());
+	const buildAutocomplete = () =>
+		autocompletion({ override: [makeStudioCompletion(completionComponents, completionFinishValues, completionFinishClasses)], activateOnTyping: true, icons: false });
+	const buildLint = () =>
+		useRealLint && vocabSets
+			? linter(async (view): Promise<Diagnostic[]> => {
+					// Validation is gated by the Studio's toggle: with it off the editor is
+					// handed an empty known-set, so we stand down too.
+					if (known.size === 0) return [];
+					const core = lintCoreMod || (await loadLintCore());
+					if (!core) return [];
+					let findings: unknown[];
+					try {
+						findings = core.lintTextWith(view.state.doc.toString(), vocabSets);
+					} catch {
+						return [];
+					}
+					return findingsToDiagnostics(view.state.doc, findings, {
+						// biome-ignore lint/suspicious/noExplicitAny: lint-core finding + CM view.
+						onFix: (v: any, f: any) => {
+							const out = core.applyFix(v.state.doc.toString(), f);
+							if (out != null) v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: out } });
+						},
+					}) as Diagnostic[];
+				})
+			: makeLinter(known);
 
 	React.useImperativeHandle(ref, () => ({
 		fixAll() {
@@ -218,29 +262,8 @@ export const Editor = React.forwardRef<EditorHandle, {
 						history(),
 						keymap.of([...defaultKeymap, ...historyKeymap, ...completionKeymap]),
 						markdown(),
-						autocompletion({ override: [makeStudioCompletion(completionComponents, completionFinishes)], activateOnTyping: true, icons: false }),
-						useRealLint && vocabSets
-							? linter(async (view): Promise<Diagnostic[]> => {
-									// Validation is gated by the Studio's toggle: with it off the
-									// editor is handed an empty known-set, so we stand down too.
-									if (known.size === 0) return [];
-									const core = lintCoreMod || (await loadLintCore());
-									if (!core) return [];
-									let findings: unknown[];
-									try {
-										findings = core.lintTextWith(view.state.doc.toString(), vocabSets);
-									} catch {
-										return [];
-									}
-									return findingsToDiagnostics(view.state.doc, findings, {
-										// biome-ignore lint/suspicious/noExplicitAny: lint-core finding + CM view.
-										onFix: (v: any, f: any) => {
-											const out = core.applyFix(v.state.doc.toString(), f);
-											if (out != null) v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: out } });
-										},
-									}) as Diagnostic[];
-								})
-							: makeLinter(known),
+						acComp.current.of(buildAutocomplete()),
+						lintComp.current.of(buildLint()),
 						lintGutter(),
 						editorTheme,
 						EditorView.lineWrapping,
@@ -281,6 +304,20 @@ export const Editor = React.forwardRef<EditorHandle, {
 			viewRef.current = null;
 		};
 	}, [known]);
+
+	// Reconfigure the completion when its vocabulary changes (a saved finish appears,
+	// a local component is added) — so it offers the fresh set without a remount.
+	// biome-ignore lint/correctness/useExhaustiveDependencies: compsKey/finishKey/classKey are the stable content-proxies; buildAutocomplete reads the live props.
+	React.useEffect(() => {
+		viewRef.current?.dispatch({ effects: acComp.current.reconfigure(buildAutocomplete()) });
+	}, [compsKey, finishKey, classKey]);
+
+	// Reconfigure the linter when the vocab set changes, so a freshly-saved finish
+	// stops being flagged `unknown-finish` inline (the Architect panel already reacts).
+	// biome-ignore lint/correctness/useExhaustiveDependencies: vocabSets/known are the reactive inputs; buildLint reads the live props.
+	React.useEffect(() => {
+		viewRef.current?.dispatch({ effects: lintComp.current.reconfigure(buildLint()) });
+	}, [vocabSets, known]);
 
 	// External value changes (deck switch) → replace doc without losing the editor.
 	// Reset the cursor to the top so the doc-replace can't map the caret to the end

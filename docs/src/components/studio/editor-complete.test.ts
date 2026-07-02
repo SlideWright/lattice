@@ -45,20 +45,22 @@ describe('makeStudioCompletion', () => {
 		expect(labels(complete('---\nmod', 7))).toContain('mode');
 	});
 
-	it('completes finish register VALUES — built-ins AND the user\'s saved finishes', () => {
-		const withFinishes = makeStudioCompletion(COMPS, ['atrium', 'halo', 'my-brand']);
+	it('completes finish: VALUES — built-ins bare, saved finishes PREFIXED', () => {
+		// The caller passes the exact value vocabulary: built-ins bare, saved prefixed.
+		const withFinishes = makeStudioCompletion(COMPS, ['atrium', 'halo', 'finish-my-brand']);
 		const done = (doc: string, pos = doc.length) => {
 			const r = withFinishes(new CompletionContext(EditorState.create({ doc }), pos, true));
 			return r ? r.options.map((o) => o.label) : [];
 		};
-		expect(done('---\nfinish: at')).toContain('atrium');
-		expect(done('---\nfinish: my-')).toContain('my-brand'); // the saved finish is offered
+		expect(done('---\nfinish: at')).toContain('atrium'); // built-in stays bare
+		expect(done('---\nfinish: finish-my')).toContain('finish-my-brand'); // saved offered prefixed
 		// only on a finish: line, and not out in prose
 		expect(done('Just prose finish: at', 21)).toEqual([]);
 	});
 
-	it('completes a finish CLASS on a _class: line — after a component, too', () => {
-		const withFinishes = makeStudioCompletion(COMPS, ['atrium', 'shu']);
+	it('completes a finish CLASS on a _class: line — from the class vocabulary', () => {
+		// 3rd arg is the `_class:` class vocabulary (all already `finish-` prefixed).
+		const withFinishes = makeStudioCompletion(COMPS, [], ['finish-atrium', 'finish-shu']);
 		const done = (doc: string, pos = doc.length) => {
 			const r = withFinishes(new CompletionContext(EditorState.create({ doc }), pos, true));
 			return r ? r.options.map((o) => o.label) : [];
@@ -66,7 +68,7 @@ describe('makeStudioCompletion', () => {
 		// A finish class is offered as `finish-<name>` alongside components…
 		expect(done('<!-- _class: ')).toContain('finish-shu');
 		expect(done('<!-- _class: ')).toContain('kpi');
-		// …and — the reported gap — on a SECOND token after a component name.
+		// …and on a SECOND token after a component name.
 		expect(done('<!-- _class: quote finish-')).toContain('finish-shu');
 		// `from` replaces just the current token, not the whole line.
 		const r = withFinishes(new CompletionContext(EditorState.create({ doc: '<!-- _class: quote finish-sh' }), 28, true));

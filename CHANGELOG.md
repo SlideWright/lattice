@@ -31,8 +31,19 @@ in patch versions.
   finish you created no longer trips an `unknown-finish` lint warning — your saved
   finish names are folded into the deck-lint's finish register — and the editor now
   completes `finish:` values from the built-in presets **plus** your own saved
-  finishes. (Follow-up to #669; the lint fix is reactive, the completion list
-  refreshes on the next editor mount, matching saved-component behavior.)
+  finishes. (Follow-up to #669.)
+- **A saved finish is named consistently by its `finish-<slug>` token everywhere in
+  the deck.** The `finish-` prefix is what isolates a user finish from the built-in
+  register, so it's now the single form the deck carries: `finish: finish-shu` in
+  front matter **and** `_class: … finish-shu` on a slide. Autocomplete offers user
+  finishes prefixed (built-ins stay bare), **Apply** writes the prefixed token, the
+  deck-wide `finish: finish-shu` **renders** (resolved to the saved finish's injected
+  CSS + stamped class), and it validates clean (the bare slug is still accepted, so a
+  pre-prefix deck doesn't false-warn).
+- **The editor's completion + inline lint now refresh the moment a finish is saved.**
+  They live in CodeMirror Compartments reconfigured on a vocab change, so a finish you
+  just fabricated stops underlining as `unknown-finish` and starts completing
+  immediately — no editor remount needed.
 - **The Studio deck editor is fully theme-aware (light + dark, AA-safe).** The
   saved-finish lint fold now reaches the editor's *inline* CodeMirror diagnostics
   (not just the Architect panel), so an applied saved finish no longer shows a wavy

@@ -51,15 +51,16 @@ function inFrontMatter(doc: string, pos: number): boolean {
  * Build a CodeMirror CompletionSource from the component catalog. Returns null
  * when nothing applies, so other sources (none, here) can take over.
  */
-export function makeStudioCompletion(components: CompletionComponent[], finishes: string[] = []) {
+export function makeStudioCompletion(components: CompletionComponent[], finishValues: string[] = [], finishClasses: string[] = []) {
 	const componentOptions: Completion[] = components.map((c) => ({ label: c.name, type: 'class', detail: c.bucket, info: c.description, boost: 1 }));
-	// The finish register — built-in presets PLUS the user's saved/fabricated
-	// finishes — completed after `finish:` so an authored value stays valid.
-	const finishOptions: Completion[] = finishes.map((f) => ({ label: f, type: 'constant', detail: 'finish' }));
-	// The same finishes as a `_class:` token — a finish also attaches at the slide
-	// level via its prefixed CSS class (`_class: closing finish-brand`), so offer
-	// each saved/built-in finish as `finish-<name>` alongside the component names.
-	const classFinishOptions: Completion[] = finishes.map((f) => ({ label: `finish-${f}`, type: 'constant', detail: 'finish' }));
+	// The `finish:` front-matter VALUE vocabulary — built-in presets (bare, e.g.
+	// `atrium`; the engine adds the prefix) PLUS the user's saved finishes, which
+	// carry their `finish-<slug>` prefix so the deck names them consistently.
+	const finishOptions: Completion[] = finishValues.map((f) => ({ label: f, type: 'constant', detail: 'finish' }));
+	// The `_class:` slide-level CLASS vocabulary — every finish as its `finish-<x>`
+	// class (`_class: closing finish-brand`). Built-ins gain the prefix upstream;
+	// saved finishes already carry it. Offered alongside the component names.
+	const classFinishOptions: Completion[] = finishClasses.map((f) => ({ label: f, type: 'constant', detail: 'finish' }));
 	const classOptions = [...componentOptions, ...classFinishOptions];
 
 	return function studioComplete(context: CompletionContext): CompletionResult | null {
