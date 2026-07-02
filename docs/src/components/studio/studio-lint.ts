@@ -15,11 +15,19 @@ let coreMod: any = null;
 /**
  * Every deterministic finding in `source`, newest-deck-order. `lintVocab` is the
  * build-time grammar vocabulary (from the page); `extraNames` are saved local
- * component names folded in so an authored `.<name>` isn't flagged unknown — the
- * same union the editor applies. Returns [] with no vocabulary or if the bundle
- * can't load (never throws into render).
+ * component names folded in so an authored `.<name>` isn't flagged unknown, and
+ * `extraFinishes` are the user's SAVED/fabricated finish names folded into the
+ * finish register so `finish: <my-saved-finish>` isn't flagged `unknown-finish`
+ * (the built-in vocab only knows the shipped presets). Same union the editor
+ * applies. Returns [] with no vocabulary or if the bundle can't load (never
+ * throws into render).
  */
-export async function listFindings(lintVocab: unknown, source: string, extraNames: string[] = []): Promise<Finding[]> {
+export async function listFindings(
+	lintVocab: unknown,
+	source: string,
+	extraNames: string[] = [],
+	extraFinishes: string[] = [],
+): Promise<Finding[]> {
 	const v = lintVocab as { names?: unknown } | null;
 	if (!v?.names) return [];
 	try {
@@ -30,6 +38,7 @@ export async function listFindings(lintVocab: unknown, source: string, extraName
 		if (!coreMod?.lintTextWith) return [];
 		const vocab = buildVocabSets(lintVocab);
 		for (const n of extraNames) vocab.names.add(n);
+		if (extraFinishes.length) vocab.finishNames = [...(vocab.finishNames || []), ...extraFinishes];
 		return coreMod.lintTextWith(source, vocab) as Finding[];
 	} catch {
 		return [];

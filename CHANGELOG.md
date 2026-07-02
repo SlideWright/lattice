@@ -25,6 +25,38 @@ in patch versions.
 
 ## Unreleased
 
+### Fixed
+
+- **Saved (fabricated) finishes are first-class in the Studio editor.** Applying a
+  finish you created no longer trips an `unknown-finish` lint warning — your saved
+  finish names are folded into the deck-lint's finish register — and the editor now
+  completes `finish:` values from the built-in presets **plus** your own saved
+  finishes. (Follow-up to #669.)
+- **A saved finish is named consistently by its `finish-<slug>` token everywhere in
+  the deck.** The `finish-` prefix is what isolates a user finish from the built-in
+  register, so it's now the single form the deck carries: `finish: finish-shu` in
+  front matter **and** `_class: … finish-shu` on a slide. Autocomplete offers user
+  finishes prefixed (built-ins stay bare), **Apply** writes the prefixed token, the
+  deck-wide `finish: finish-shu` **renders** (resolved to the saved finish's injected
+  CSS + stamped class), and it validates clean (the bare slug is still accepted, so a
+  pre-prefix deck doesn't false-warn).
+- **The editor's completion + inline lint now refresh the moment a finish is saved.**
+  They live in CodeMirror Compartments reconfigured on a vocab change, so a finish you
+  just fabricated stops underlining as `unknown-finish` and starts completing
+  immediately — no editor remount needed.
+- **The Studio deck editor is fully theme-aware (light + dark, AA-safe).** The
+  saved-finish lint fold now reaches the editor's *inline* CodeMirror diagnostics
+  (not just the Architect panel), so an applied saved finish no longer shows a wavy
+  `unknown-finish` underline. The autocomplete dropdown and the text caret are
+  palette-tokenized: the completion popup tracks the active theme/mode instead of a
+  fixed light chrome, and the native caret takes `--text-body` — the same
+  AA-against-`--bg` contract token as the text it marks, so it stays legible in dark
+  mode on every theme (accent is a brand color with no such contrast guarantee).
+- **`finish:` completes in one more place — the slide-level `_class:` line.** A
+  finish also attaches per slide via its prefixed class (`_class: closing finish-brand`),
+  so the editor now offers every built-in **and** saved finish as a `finish-<name>`
+  token there, on any position in the line — not just as a `finish:` front-matter value.
+
 ### Added
 
 - **The gallery PDF is served on the docs site at `/gallery.pdf`.** The
@@ -61,6 +93,14 @@ in patch versions.
 
 ### Added
 
+- **A finish applies to a single slide with one class — `_class: … finish-atrium`.**
+  A per-slide `finish-<name>` class (built-in **or** a saved `finish-<slug>`) now implies
+  the bare `finish` compositor class in all three render paths, so it activates the
+  backdrop on that slide by itself — no deck-wide `finish:` and no second `finish` token
+  required. The Studio also injects a saved finish's CSS whenever any slide references it,
+  not just when it's the deck-wide value. `finish-none` (the per-slide opt-out) and the
+  `finish-preview` specimen are not variants, so they don't activate. (Finishes are now
+  applied independently to slides, matching how `_class` modifiers work.)
 - **Restrain an overpowering finish — the backdrop layer + a `backdrop.strength` dial (#669).**
   A finish now composites onto a dedicated `.backdrop` wrapper behind content (injected across
   all three render paths), so it can be tuned as one layer. First control: deck-wide

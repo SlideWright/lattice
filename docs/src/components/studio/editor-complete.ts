@@ -51,17 +51,28 @@ function inFrontMatter(doc: string, pos: number): boolean {
  * Build a CodeMirror CompletionSource from the component catalog. Returns null
  * when nothing applies, so other sources (none, here) can take over.
  */
-export function makeStudioCompletion(components: CompletionComponent[]) {
+export function makeStudioCompletion(components: CompletionComponent[], finishValues: string[] = [], finishClasses: string[] = []) {
 	const componentOptions: Completion[] = components.map((c) => ({ label: c.name, type: 'class', detail: c.bucket, info: c.description, boost: 1 }));
+	// The `finish:` front-matter VALUE vocabulary — built-in presets (bare, e.g.
+	// `atrium`; the engine adds the prefix) PLUS the user's saved finishes, which
+	// carry their `finish-<slug>` prefix so the deck names them consistently.
+	const finishOptions: Completion[] = finishValues.map((f) => ({ label: f, type: 'constant', detail: 'finish' }));
+	// The `_class:` slide-level CLASS vocabulary — every finish as its `finish-<x>`
+	// class (`_class: closing finish-brand`). Built-ins gain the prefix upstream;
+	// saved finishes already carry it. Offered alongside the component names.
+	const classFinishOptions: Completion[] = finishClasses.map((f) => ({ label: f, type: 'constant', detail: 'finish' }));
+	const classOptions = [...componentOptions, ...classFinishOptions];
 
 	return function studioComplete(context: CompletionContext): CompletionResult | null {
 		const line = context.state.doc.lineAt(context.pos);
 		const before = line.text.slice(0, context.pos - line.from);
 
-		// 1. Component name on a `_class:` directive line.
-		if (/<!--\s*_class:\s*[\w-]*$/.test(before) && componentOptions.length) {
+		// 1. A `_class:` directive token — component name OR a `finish-<name>` class.
+		// Fires on ANY space-separated token (not just the first), so a finish class
+		// appended after a component (`_class: closing finish-brand`) still completes.
+		if (/<!--\s*_class:[\w\s-]*$/.test(before) && classOptions.length) {
 			const word = context.matchBefore(/[\w-]*/);
-			return { from: word ? word.from : context.pos, options: componentOptions, validFor: /^[\w-]*$/ };
+			return { from: word ? word.from : context.pos, options: classOptions, validFor: /^[\w-]*$/ };
 		}
 
 		// 2. Fenced-block language right after the opening ``` .
@@ -75,7 +86,13 @@ export function makeStudioCompletion(components: CompletionComponent[]) {
 			};
 		}
 
-		// 3. Front-matter directive key (start of a line inside the `---` block).
+		// 3. Finish register value on a `finish:` line — built-ins + saved finishes.
+		if (finishOptions.length && /^[ \t]*finish:[ \t]*[\w-]*$/.test(before) && inFrontMatter(context.state.doc.toString(), context.pos)) {
+			const word = context.matchBefore(/[\w-]*/);
+			return { from: word ? word.from : context.pos, options: finishOptions, validFor: /^[\w-]*$/ };
+		}
+
+		// 4. Front-matter directive key (start of a line inside the `---` block).
 		if (inFrontMatter(context.state.doc.toString(), context.pos) && /^[ \t]*[\w-]*$/.test(before)) {
 			const word = context.matchBefore(/[\w-]*/);
 			// Don't fire on the `---` fence lines themselves.

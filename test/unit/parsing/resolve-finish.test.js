@@ -17,6 +17,9 @@ const {
   isKnownFinish,
   finishClasses,
   finishClassesFromSource,
+  isFinishVariantClass,
+  sectionIsFinish,
+  normalizeSectionFinishClasses,
 } = require('../../../lib/core/resolve-finish');
 
 describe('resolve-finish', () => {
@@ -122,6 +125,28 @@ describe('resolve-finish', () => {
       if (escapes.has(cls)) continue;
       assert.ok(registered.has(cls), `.${cls} defined but unreachable from any finish (rot)`);
     }
+  });
+
+  test('a per-slide finish-<name> variant implies the bare `finish` compositor class', () => {
+    // A finish applied to a single slide (`<!-- _class: title finish-oct -->`, built-in
+    // or saved) must activate the compositor on its own.
+    assert.equal(isFinishVariantClass('finish-atrium'), true);
+    assert.equal(isFinishVariantClass('finish-oct'), true, 'a saved finish class is a variant');
+    assert.equal(isFinishVariantClass('finish-none'), false, 'the per-slide opt-out is NOT a variant');
+    assert.equal(isFinishVariantClass('finish-preview'), false, 'the specimen is NOT a variant');
+    assert.equal(isFinishVariantClass('finish'), false);
+    assert.equal(isFinishVariantClass('title'), false);
+
+    assert.equal(sectionIsFinish(['title', 'finish-oct']), true);
+    assert.equal(sectionIsFinish(['finish']), true);
+    assert.equal(sectionIsFinish(['title', 'finish-none']), false);
+    assert.equal(sectionIsFinish(['title']), false);
+
+    // Normalization adds the bare class exactly once, only when a variant is present.
+    assert.deepEqual(normalizeSectionFinishClasses(['title', 'finish-oct']), ['title', 'finish-oct', 'finish']);
+    assert.deepEqual(normalizeSectionFinishClasses(['finish', 'finish-atrium']), ['finish', 'finish-atrium'], 'no dup when finish already present');
+    assert.deepEqual(normalizeSectionFinishClasses(['title']), ['title'], 'a non-finish slide is untouched');
+    assert.deepEqual(normalizeSectionFinishClasses(['finish-none']), ['finish-none'], 'the opt-out does not gain a compositor');
   });
 
   test('readFrontMatterFinish accepts quotes and returns null when absent', () => {

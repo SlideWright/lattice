@@ -341,25 +341,50 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		() => savedFinishes.map((f) => ({ id: f.id, name: f.name, label: f.label, swatch: finishSwatch(f.recipe) })),
 		[savedFinishes],
 	);
+	// A saved finish's canonical deck token is its PREFIXED class name `finish-<slug>`
+	// (the `finish-` prefix is what isolates user finishes from the built-in register).
+	// That's the form the deck carries, autocomplete offers, and Apply writes — the
+	// SAME token in `finish:` front matter and per-slide `_class:` lines.
+	const builtinFinishNames = React.useMemo(() => ((lintVocab as { finishNames?: string[] } | null)?.finishNames) || [], [lintVocab]);
+	const savedFinishTokens = React.useMemo(() => savedFinishes.map((f) => `finish-${f.name}`), [savedFinishes]);
+	// The `finish:` VALUE vocabulary the editor completes: built-in presets bare (the
+	// engine adds the prefix) + saved finishes prefixed.
+	const editorFinishValues = React.useMemo(() => [...builtinFinishNames, ...savedFinishTokens], [builtinFinishNames, savedFinishTokens]);
+	// The `_class:` CLASS vocabulary — every finish as its `finish-<x>` class (built-ins
+	// gain the prefix here; saved finishes already carry it).
+	const editorFinishClasses = React.useMemo(() => [...builtinFinishNames.map((b) => `finish-${b}`), ...savedFinishTokens], [builtinFinishNames, savedFinishTokens]);
+	// Lint accepts BOTH the prefixed token and the bare slug of a saved finish (a deck
+	// authored before the prefix convention shouldn't false-warn).
+	const savedFinishLintNames = React.useMemo(() => savedFinishes.flatMap((f) => [`finish-${f.name}`, f.name]), [savedFinishes]);
 	// When the active `finish:` value names a SAVED finish (not a built-in register
 	// entry), it renders via injected CSS + an applied class — the engine doesn't
 	// know its name. `activeSavedFinish` is that record (or undefined).
-	const activeSavedFinish = React.useMemo(() => savedFinishes.find((f) => f.name === finish), [savedFinishes, finish]);
+	const activeSavedFinish = React.useMemo(() => savedFinishes.find((f) => finish === `finish-${f.name}` || finish === f.name), [savedFinishes, finish]);
 	function removeFinish(f: StudioFinish) {
 		deleteStudioFinish(f.id).then(() => {
 			refreshFinishes();
-			if (finish === f.name) setFinish('none');
+			if (finish === `finish-${f.name}` || finish === f.name) setFinish('none');
 			notify(`Removed “${f.label}” from your finish library.`);
 		});
 	}
 	// CONSUMPTION LOOP — a saved finish renders by injecting its generated CSS
-	// (section.finish.finish-<slug> { … }) into the preview's extraCss AND applying
-	// its `finish finish-<slug>` class to every section (the engine never learned the
-	// custom name, so we add the class ourselves). Built-ins flow through the engine's
-	// `finish:` register instead, untouched. The editor source still carries the slug
-	// in `finish:` for round-tripping; the class is injected only into the RENDERED
-	// front-matter, not the editable source.
-	const finishExtraCss = activeSavedFinish?.css;
+	// (section.finish.finish-<slug> { … }) into the preview's extraCss. Inject the CSS
+	// for EVERY saved finish the deck references — the deck-wide `finish:` value OR a
+	// per-slide `_class: … finish-<slug>` — so a finish applied to a single slide
+	// renders on its own (the engine now implies the `finish` compositor class from the
+	// per-slide `finish-<slug>`; deck-wide still also stamps the class via previewFm).
+	// Built-ins flow through the engine's `finish:` register, untouched.
+	const finishExtraCss = React.useMemo(() => {
+		if (!savedFinishes.length) return undefined;
+		const used = savedFinishes.filter((f) => {
+			const token = `finish-${f.name}`;
+			// the `finish-<slug>` class token as a whole word (front-matter value or a
+			// per-slide _class line), or the bare deck-wide slug (back-compat).
+			const esc = token.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+			return new RegExp(`\\b${esc}\\b`).test(source) || finish === f.name;
+		});
+		return used.map((f) => f.css).filter(Boolean).join('\n\n') || undefined;
+	}, [savedFinishes, source, finish]);
 	// The preview's extraCss = local-component CSS + (when active) the saved finish's
 	// rule. Combined so a deck can use both at once.
 	const previewExtraCss = React.useMemo(
@@ -377,6 +402,10 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	// onto the rendered FM only, never the editable source.
 	const previewFm = React.useMemo(() => {
 		if (!finishClass) return fm;
+		// A saved finish renders via the stamped `finish finish-<slug>` class + injected
+		// CSS — the engine's `finish:` register knows only built-ins and resolves any
+		// other value (bare slug OR prefixed token) to no class, so the `finish:` line is
+		// inert to the engine and we just merge the class that does the work.
 		return frontMatterBlock(mergeClassTokens(source, finishClass));
 	}, [fm, source, finishClass]);
 	const setDeckSize = (value: string) => setSource((s) => setFrontMatter(s, 'size', value));
@@ -621,13 +650,13 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			return;
 		}
 		let live = true;
-		listFindings(lintVocab, source, localNames).then((f) => {
+		listFindings(lintVocab, source, localNames, savedFinishLintNames).then((f) => {
 			if (live) setFindings(f);
 		});
 		return () => {
 			live = false;
 		};
-	}, [validation, source, lintVocab, localNames]);
+	}, [validation, source, lintVocab, localNames, savedFinishLintNames]);
 	// A clean proposal can outlive its finding after an edit; clear it when the
 	// finding set changes so a stale diff card never lingers.
 	// biome-ignore lint/correctness/useExhaustiveDependencies: intentionally keyed on findings identity only — clearing a stale proposal when the list changes.
@@ -1030,7 +1059,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				<button type="button" onClick={() => setNotesOpen(true)} aria-label="Speaker notes" title="Speaker notes" className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] hover:bg-[var(--accent-soft)]"><StickyNote className="size-3" /><span className="hidden lg:inline">Notes</span></button>
 				<span className="hidden items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-foreground lg:inline-flex"><FileText className="size-3" />Markdown</span>
 			</div>
-			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? knownWithLocal : NO_KNOWN} completionComponents={insertComponents} lintVocab={lintVocab} extraComponentNames={localNames} onCursorSlide={onEditorCursorSlide} onSelectionChange={setHasSelection} onUserEdit={onFirstUserEdit} className="flex-1" />
+			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? knownWithLocal : NO_KNOWN} completionComponents={insertComponents} completionFinishValues={editorFinishValues} completionFinishClasses={editorFinishClasses} lintVocab={lintVocab} extraComponentNames={localNames} onCursorSlide={onEditorCursorSlide} onSelectionChange={setHasSelection} onUserEdit={onFirstUserEdit} className="flex-1" />
 		</section>
 	);
 
@@ -1381,7 +1410,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				activeFinish={finish}
 				initialFilter={libInitialFilter}
 				onApplyTheme={applyPalette}
-				onApplyFinish={(name) => { setFinish(name); notify(`Applied ${name}.`); }}
+				onApplyFinish={(name) => { const token = `finish-${name}`; setFinish(token); notify(`Applied ${token}.`); }}
 				onInsert={(skeleton) => applyDeckOp(addSlideAfter(source, curIndex, skeleton))}
 				onChanged={() => { refreshThemes(); refreshComponents(); refreshFinishes(); }}
 				notify={notify}
