@@ -114,7 +114,7 @@ flowchart LR
 <!-- _class: cards-grid -->
 <!-- _footer: "Inline code in cards · cards-grid" -->
 
-## Code in card headers and body text.
+## The pipeline, by version number.
 
 - Signal Intake `v2.4`
   - Handles 94% of structured signals without manual intervention. Average latency: `4 min` from ingestion to scored entry.
@@ -293,7 +293,7 @@ The scoring model is the most configurable component, and therefore the most arg
 <!-- _class: cards-grid -->
 <!-- _footer: "Key insight + below-note · cards-grid" -->
 
-## Key insight works on any card-bearing layout.
+## Four parts, one insight — the loop is the product.
 
 - Signal Intake
   - Weekly structured collection across customer conversations, market data, and competitive moves.
@@ -306,14 +306,14 @@ The scoring model is the most configurable component, and therefore the most arg
 
 > The calibration loop is what separates teams that learn from teams that repeat the same mistakes.
 
-Trailing blockquote becomes a key insight; trailing paragraph becomes a below-note with a hairline rule above it.
+The insight survived three reviews unedited — a first for this deck.
 
 ---
 
 <!-- _class: cards-grid -->
 <!-- _footer: "Key insight + annotation · cards-grid" -->
 
-## A trailing italic-only paragraph becomes an annotation.
+## The same four parts, now with the source on the record.
 
 - Signal Intake
   - Weekly structured collection across customer conversations, market data, and competitive moves.
@@ -514,9 +514,9 @@ The pilot kept both — the feed for the two teams that mute nothing, the digest
 
 `Header And Footer`
 
-## Header stays uppercase — footer renders as written.
+## The chrome carries the labels, so the slides can carry the story.
 
-Set `header:` and `footer:` in frontmatter for deck-level labels, or use per-slide comment directives. The header uses uppercase text-transform automatically, so you write it in any case; it will be capitalized regardless of how strongly you feel about it. The footer renders exactly as written.
+Deck-wide `header:` and `footer:` put every slide's metadata in the margins — the layout name lives in the footer, and the header is capitalized regardless of how strongly you feel about it. The body stays free for content, a principle this deck enforces.
 
 ---
 
@@ -662,7 +662,7 @@ An extreme aspect would waste a card, so a tall photo shows whole in a full-heig
 
 `Dark Variant · Any Layout Class`
 
-## The dark modifier works on any layout.
+## Night falls on the offsite; the deck keeps working.
 
 Add `dark` alongside any class — the palette remaps automatically, which is more than can be said for the agenda
 
@@ -671,11 +671,11 @@ Add `dark` alongside any class — the palette remaps automatically, which is mo
 <!-- _class: content dark -->
 <!-- _footer: "Dark variant — prose · content dark" -->
 
-`Dark Variant · Content`
+`Offsite · Evening Session`
 
-## The token system handles dark without per-element overrides.
+## The evening session covered what the daytime one avoided.
 
-All colours reference CSS variables — `--bg`, `--text-heading`, `--text-body`, `--border` — that remap when `dark` is added. Cards, headings, body text, and borders all shift automatically. The spectrum bar is suppressed on dark slides. It returns at sunrise.
+Ownership of the weights, the CSV retirement date, and who carries the pager — worked item by item on the dark canvas, every color still `var()`-mapped, nobody able to see anyone check the time. The spectrum bar is suppressed after dark. It returns at sunrise.
 
 ---
 
@@ -685,7 +685,7 @@ All colours reference CSS variables — `--bg`, `--text-heading`, `--text-body`,
 
 ## By dinner, the mandate had survived its first sunset.
 
-Every composition is palette-blind — add `dark` and the card, scrim, and matte track the theme through the same tokens. The photo carries; the message, like the mandate, stays legible after dark.
+The mandate, projected after dinner, stayed legible — card, scrim, and matte all track the theme after dark, and the photo carries the rest.
 
 ![bg](../../../lib/components/imagery/image/sample-photo-pano.svg)
 
@@ -694,13 +694,13 @@ Every composition is palette-blind — add `dark` and the card, scrim, and matte
 <!-- _class: list dark -->
 <!-- _footer: "Dark variant — list · list dark" -->
 
-`Dark Variant · List`
+`Offsite · After Sunset`
 
-## The card stack renders cleanly on dark backgrounds.
+## Three things got decided after sunset.
 
-- Every card uses `--bg-alt` for fill and `--border` for the border — both remap in dark mode.
-- The accent left border uses `--accent` which is unchanged — the gold reads well against dark.
-- Body text shifts to `--text-body`, a warm light tone. Even dark mode declines to be dramatic.
+- The weights stay with the framework operator — one owner, one pager, no committee.
+- The CSV retirement gets a date, and the date gets an owner.
+- The exec dashboard stays unbuilt — reaffirmed nine to one, one abstention, one dashboard.
 
 ---
 
@@ -709,10 +709,10 @@ Every composition is palette-blind — add `dark` and the card, scrim, and matte
 
 `Dark Variant · Cards Stacked`
 
-## Two-card layouts work equally well inverted to dark.
+## The hard question kept its shape after dark.
 
 - One hard question — who owns the weights when they change. Forty slides now defer it, confidently, with resources.
-- Claim, then support — the pattern of any written argument. Dark changes the canvas, not the argument; the deferral reads identically at any hour.
+- The counter, for the record: four engineers costs less than either vendor's floor. The record was filed; the deferral held.
 
 ---
 
@@ -721,7 +721,7 @@ Every composition is palette-blind — add `dark` and the card, scrim, and matte
 
 `Modifier · list-steps phase`
 
-## The phase modifier renames the prefix word from STEP to PHASE.
+## Three phases stand between the decision and the habit.
 
 1. Architecture
    - Scope what we build, buy, and defer. Output: a decision record the platform owner signs.
@@ -737,7 +737,7 @@ Every composition is palette-blind — add `dark` and the card, scrim, and matte
 
 `Modifier · list-steps milestone lettered`
 
-## Modifiers compose: milestone renames the word, lettered swaps the format.
+## Three milestones, lettered, before the org believes it.
 
 1. Scoring policy in production
    - The first calibrated brief lands in leadership's inbox, which we are calling general availability.
@@ -753,7 +753,7 @@ Every composition is palette-blind — add `dark` and the card, scrim, and matte
 
 `Modifier · list-steps vertical`
 
-## Vertical stacks the steps as rows; the connector becomes a down-arrow.
+## Sense, score, decide — the loop in three verbs.
 
 1. Sense
    - Inputs are signals, observed and never invented — write down what you see, not what you conclude.
@@ -769,14 +769,14 @@ Every composition is palette-blind — add `dark` and the card, scrim, and matte
 
 `Modifier · compare-prose chosen`
 
-## Chosen flags the right-hand card as the winner.
+## The re-litigation lost to the weights on time alone.
 
 - Quarterly re-litigation
   - Every decision reopened from first principles. Average close 4 hours — longer when the board joins.
 - Calibrated weights
   - Decisions resolve against logged weights and outcomes. Average 18 minutes; the argument stops cascading — a property we discovered after building it.
 
-The right card carries an accent left-edge and accent-tinted background — the same visual contract used by other recommended-option cards.
+The accent edge marks the winner — the same contract every recommended card in this deck honors.
 
 ---
 
@@ -785,14 +785,14 @@ The right card carries an accent left-edge and accent-tinted background — the 
 
 `Modifier · compare-prose decision`
 
-## Decision composes chosen + rejected with a labelled connector.
+## Buy was considered, struck through, and kept for the record.
 
 - Buy a vendor
   - Two vendors evaluated; neither exposes the calibration weights to the customer. Six months to integrate, then per-seat licensing in perpetuity, renegotiated each year by whoever has not yet left.
 - Build in-house
   - Owns the architecture, the operating model, and the timeline. Also owns the on-call rota, which is the line item nobody put in the business case.
 
-The left card is struck through to read as the option considered then dropped; the right card carries the chosen visual; the connector is amplified and labelled DECISION.
+The struck card stays on the slide — the framework logs its rejected options too.
 
 ---
 
@@ -801,7 +801,7 @@ The left card is struck through to read as the option considered then dropped; t
 
 `Modifier · compare-prose vertical`
 
-## Vertical stacks the two cards; the arrow connector rotates 90°.
+## Recalibration went from a war room to a version bump.
 
 - Before — manual recalibration
   - Book a window, freeze decisions, swap weights, verify, unfreeze. Pause: 18 working hours. Post-mortem: ninety.
@@ -815,7 +815,7 @@ The left card is struck through to read as the option considered then dropped; t
 
 `Modifier · cards-grid three`
 
-## Three switches the grid from 2 columns to 3 columns.
+## Three nouns carry the whole system.
 
 - Signal
   - The observed input — frequently confused with "things the VP heard at a conference," which score a 5 on relevance every time.
@@ -831,7 +831,7 @@ The left card is struck through to read as the option considered then dropped; t
 
 `Modifier · cards-grid four`
 
-## Four switches to 4 columns; pair with compact for visual balance.
+## The loop, in four verbs, at meeting pace.
 
 - Sense
   - Signals are observed, never invented. Inputs are written down before they are interpreted.
@@ -849,7 +849,7 @@ The left card is struck through to read as the option considered then dropped; t
 
 `Modifier · cards-stack horizontal`
 
-## Horizontal flips cards-stack from a vertical stack to a row.
+## Claim, evidence, implication — the board reads left to right.
 
 - Claim
   - The framework buys calibrated prioritization with audit-grade decision custody — a sentence we will be repeating verbatim for two years.
@@ -863,11 +863,11 @@ The left card is struck through to read as the option considered then dropped; t
 <!-- _class: image mirror -->
 <!-- _footer: "Modifier — image mirror · image mirror" -->
 
-`Modifier · image mirror`
+`Offsite · Day Two`
 
-## Mirror flips the image side — same vocabulary as split-panel watermark, compare-prose.
+## Day two opened from the other shore.
 
-The image card moves from the right to the left, and the text padding swaps to match. `mirror` is the cross-cutting side flag in the Lattice grammar; `![bg left]` is preserved as a backwards-compatible alias. The lake is unchanged.
+Same lake, opposite bank, one session earlier than scheduled. The image card crosses to the left and the text pads to match — `![bg left]` still works, for the traditionalists. The lake is unchanged.
 
 ![bg left](../../../lib/components/imagery/image/sample-photo-wide.svg)
 
@@ -876,13 +876,13 @@ The image card moves from the right to the left, and the text padding swaps to m
 <!-- _class: split-panel watermark mirror -->
 <!-- _footer: "Modifier — split-panel watermark mirror · split-panel watermark mirror" -->
 
-## Section opener with the accent panel on the right.
+## The scoring model gets day two.
 
 `Section 02 · Mirror`
 
-### What this section covers
+### What day two covers
 
-Mirror moves the dark accent panel to the right. The watermark, eyebrow, and section number all stay anchored to the panel's own box — only the column position flips. The agenda, as ever, holds.
+The panel crosses to the right and takes its watermark, eyebrow, and section number with it. The dimensions below survived the night unedited; the agenda, as ever, holds.
 
 1. Confidence
    - How many independent sources corroborate the signal. Ranges 1–5.
@@ -896,14 +896,14 @@ Mirror moves the dark accent panel to the right. The watermark, eyebrow, and sec
 <!-- _class: compare-prose mirror chosen -->
 <!-- _footer: "Modifier — compare-prose mirror chosen · compare-prose mirror chosen" -->
 
-## Mirror composes with chosen — the accented card reads from the left.
+## Risk went first, and the room read it from the left.
 
-- Considered alternative
-  - Source order keeps this card first; `chosen` still targets the second card. Mirror flips only the rendering.
-- The choice
-  - With `mirror`, the chosen card lands on the left. Executives scan left first; plan accordingly.
+- Savings first
+  - The comfortable order — open on the per-seat delta, let the room warm up, land the weights question late and softened.
+- Risk first
+  - The chosen order — the weights question opens, the savings close. Executives scan left first; plan accordingly.
 
-The below-note still appears under both cards after the hairline rule.
+With `mirror`, the chosen card lands first in the scan path — the order of arguments turned out to be an argument.
 
 ---
 
@@ -913,7 +913,7 @@ The below-note still appears under both cards after the hairline rule.
 
 `Modifier · divider numbered`
 
-## Numbered stamps an auto-counter in the top-right corner.
+## The sections number themselves now.
 
 The CSS counter walks the whole deck once and increments on every `divider.numbered` slide. Authors do not number sections by hand — the layout does it, and unlike authors it can count.
 
@@ -925,7 +925,7 @@ The CSS counter walks the whole deck once and increments on every `divider.numbe
 
 `Modifier · divider light numbered`
 
-## Each bookend layout owns its own counter.
+## Every series keeps its own count.
 
 The divider light counter is independent of the dark-divider counter, so a mid-deck light divider stamps `01` even when the dark dividers are already at `04`. Each series keeps its own score, like the teams.
 
@@ -938,7 +938,7 @@ The divider light counter is independent of the dark-divider counter, so a mid-d
 
 `Closing · numbered`
 
-## The closing series gets its own auto-stamp too.
+## Each part earns its own ending.
 
 `Use it for multi-part decks where the closing slide of each part should carry the part number — this deck, for example, is a trilogy.`
 
@@ -1090,16 +1090,16 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 `Modifier · compact`
 
-## Compact tightens the spacing scale ~25 %, end-to-end.
+## The agenda grew; the spacing gave.
 
-- What changes
-  - `--sp-xs` through `--sp-2xl` shrink; gaps, gutters, and padding follow via `var()`.
-- What does not change
-  - Type ramp, palette, chrome. Compact is a density flag, not a layout.
-- When to reach for it
-  - One more card than fits, without rewriting copy — which nobody was going to do.
-- Composition
-  - Composes with `dark`, `accent`, most layouts. Silently incompatible with `title` and `divider`.
+- The added item
+  - Item five arrived Tuesday. `compact` absorbed it without a rewrite.
+- The unchanged part
+  - Type, palette, chrome — density moved, nothing else did.
+- The habit
+  - One more card than fits is how every deck ends up compact.
+- The limit
+  - Composes with `dark` and `accent`; `title` and `divider` decline politely.
 
 ---
 
@@ -1108,7 +1108,7 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 `Modifier · loose`
 
-## Loose is the inverse — more breathing room, same layout machinery.
+## One point, given the room it asked for.
 
 The spacing scale grows ~25 % rather than shrinks. Reach for `loose` when a slide carries one editorial point and should feel deliberately quiet — values pages, principles, closing lines. Used here, once, as restraint. The discipline mirrors `compact`: type ramp, chrome, and layout hold still; only the rhythm between elements moves.
 
@@ -1121,9 +1121,9 @@ The spacing scale grows ~25 % rather than shrinks. Reach for `loose` when a slid
 
 `Modifier · with-period`
 
-## Headings gain a closing period automatically
+## The offsite ended and the punctuation arrived on schedule
 
-Authors who prefer sentence-style heading punctuation can set `class: with-period` in front matter once and stop thinking about it. The transform appends a period to any heading that does not already end with terminal punctuation — `.` `!` `?` `:` `…` — so mixed slides are safe, and the style-guide argument ends here.
+Set `class: with-period` once and headings close themselves — this one arrived bare and shipped with a period. Mixed slides stay safe, and the style-guide argument ends here.
 
 The mirror modifier is `no-period`, which strips trailing periods instead. Both are deck-wide opt-ins via the global `class:` front-matter key; per-slide override with `<!-- _class: with-period -->` works too.
 
@@ -1135,11 +1135,11 @@ The mirror modifier is `no-period`, which strips trailing periods instead. Both 
 `Modifier · no-period`
 
 <!-- markdownlint-disable-next-line MD026 -->
-## Authors typed this heading with a period. It is gone.
+## The mandate lost its full stop somewhere after dinner.
 
-Some teams author headings with periods out of habit, then strip them in review, one comment at a time. `class: no-period` automates the strip so the source can stay as written and the output stays clean.
+Typed with a period, shipped without — `class: no-period` strips the trailing `.` so review threads about punctuation end, one comment at a time, at zero.
 
-Only a literal trailing `.` is removed — `!`, `?`, `:`, and `…` pass through untouched. Combine with any layout class; the modifier composes cleanly because it operates on the heading text alone and touches no structural chrome.
+Only a literal trailing `.` is removed — `!`, `?`, and `…` pass through untouched, as does the mandate.
 
 ---
 
@@ -1150,7 +1150,7 @@ Only a literal trailing `.` is removed — `!`, `?`, `:`, and `…` pass through
 
 `Treatment Library · Any Layout Class`
 
-## `tint-*` and `mark-*` classes add peripheral accents from the active palette
+## The annexes get decoration — rationed, tokenized, approved
 
 Add a tint or mark class alongside any layout class — gradient wash or SVG mark, light canvas or dark, single pattern or layered pair. Decoration, at last, with governance.
 
@@ -1161,7 +1161,7 @@ Add a tint or mark class alongside any layout class — gradient wash or SVG mar
 
 `Background · Corner Glow`
 
-## A radial glow anchored at the corner fades before reaching the content zone
+## A corner of warmth, held to 12% and away from the content
 
 `tint-corner at-tl` places an elliptical accent at the top-left — 12% opacity at the corner, transparent before mid-slide. The four `at-*` placements share the same weight and fade profile; only the anchor differs.
 
@@ -1174,9 +1174,9 @@ All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switchin
 
 `Background · SVG Marks · Dark`
 
-## SVG accent marks are painted through a mask in the active accent colour
+## Rings in the corner, orbiting nothing in particular
 
-`mark-orbit` places concentric rings and satellite dots in the bottom-right corner. The shapes render via `::before` + `mask-image`: the SVG defines the alpha channel (white = opaque, transparent = hidden) and the paint colour is `color-mix(in srgb, var(--accent) 28%, transparent)` — resolved from the theme at render time. Same class, light canvas or dark — always on-brand, and the rings orbit nothing in particular, which the strategy team found relatable.
+`mark-orbit` places concentric rings and satellite dots in the bottom-right corner. The shapes render via `::before` + `mask-image`: the SVG defines the alpha channel (white = opaque, transparent = hidden) and the paint colour is `color-mix(in srgb, var(--accent) 28%, transparent)` — resolved from the theme at render time. Same class, light canvas or dark — always on-brand. The strategy team, seeing the orbits, related.
 
 ---
 
@@ -1185,7 +1185,7 @@ All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switchin
 
 `Background · Layered`
 
-## One class from each slot layers without conflict
+## Two washes share one slide without a turf war
 
 Every tint class (and `mark-seeds`) writes to either `--_bg-radial` or `--_bg-linear`. A compositor rule assembles both slots into one `background-image`. Stack one class from each column and both render:
 
@@ -1853,9 +1853,9 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 
 `Modifier · accent`
 
-## Accent replaces the rainbow stripe with a single editorial colour.
+## The deck ends on one color, chosen on purpose.
 
-The default top border is a spectrum gradient — a signal that the page belongs to a wider deck. The `accent` modifier swaps that stripe for one solid colour and tints the heading. Use it when one slide carries a section's editorial weight and the chrome should say so.
+The default top border is a spectrum gradient — a signal that the page belongs to a wider deck. The `accent` modifier swaps that stripe for one solid color and tints the heading. Use it when one slide carries a section's editorial weight and the chrome should say so.
 
 It composes with `dark`: the dark canvas suppresses the spectrum stripe, so `accent.dark` restores a solid one in its place. Slide 115, for the record: decision logged, retrospective booked, attendance aspirational.
 
