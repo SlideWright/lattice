@@ -368,13 +368,23 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		});
 	}
 	// CONSUMPTION LOOP — a saved finish renders by injecting its generated CSS
-	// (section.finish.finish-<slug> { … }) into the preview's extraCss AND applying
-	// its `finish finish-<slug>` class to every section (the engine never learned the
-	// custom name, so we add the class ourselves). Built-ins flow through the engine's
-	// `finish:` register instead, untouched. The editor source still carries the slug
-	// in `finish:` for round-tripping; the class is injected only into the RENDERED
-	// front-matter, not the editable source.
-	const finishExtraCss = activeSavedFinish?.css;
+	// (section.finish.finish-<slug> { … }) into the preview's extraCss. Inject the CSS
+	// for EVERY saved finish the deck references — the deck-wide `finish:` value OR a
+	// per-slide `_class: … finish-<slug>` — so a finish applied to a single slide
+	// renders on its own (the engine now implies the `finish` compositor class from the
+	// per-slide `finish-<slug>`; deck-wide still also stamps the class via previewFm).
+	// Built-ins flow through the engine's `finish:` register, untouched.
+	const finishExtraCss = React.useMemo(() => {
+		if (!savedFinishes.length) return undefined;
+		const used = savedFinishes.filter((f) => {
+			const token = `finish-${f.name}`;
+			// the `finish-<slug>` class token as a whole word (front-matter value or a
+			// per-slide _class line), or the bare deck-wide slug (back-compat).
+			const esc = token.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+			return new RegExp(`\\b${esc}\\b`).test(source) || finish === f.name;
+		});
+		return used.map((f) => f.css).filter(Boolean).join('\n\n') || undefined;
+	}, [savedFinishes, source, finish]);
 	// The preview's extraCss = local-component CSS + (when active) the saved finish's
 	// rule. Combined so a deck can use both at once.
 	const previewExtraCss = React.useMemo(

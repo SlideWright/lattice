@@ -18,6 +18,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { createEngine } = require('../../../lib/engine');
+const { applyBackdropToHtml } = require('../../../lib/integrations/markdown-it/plugins');
 const { composeCss, parseSizes, scaffold, orientationFor, orientationCss } = require('../../../lib/engine/css');
 
 const ROOT = path.join(__dirname, '..', '..', '..');
@@ -500,5 +501,24 @@ describe('backdrop layer', () => {
     assert.match(dim, /<div class="backdrop" style="--backdrop-strength:0\.4"/);
     const plain = makeEngine().render('---\nfinish: atrium\n---\n\n# A\n', 'lattice').html;
     assert.doesNotMatch(plain, /--backdrop-strength/);
+  });
+
+  test('a PER-SLIDE finish class renders on its own — implies `finish` + injects .backdrop (no deck-wide finish:)', () => {
+    // The reported gap: `<!-- _class: title finish-atrium -->` with NO deck-wide
+    // `finish:` must activate the backdrop on that slide by itself.
+    const { html } = makeEngine().render('<!-- _class: title finish-atrium -->\n\n# A\n', 'lattice');
+    assert.match(html, /class="[^"]*\bfinish-atrium\b[^"]*"/, 'the variant class is present');
+    assert.match(html, /class="[^"]*\bfinish\b[^"]*"/, 'the bare `finish` compositor class is implied');
+    assert.match(html, /<section\b[^>]*\bfinish\b[^>]*>\s*<div class="backdrop"/, 'a .backdrop wrapper is injected');
+  });
+
+  test('applyBackdropToHtml is idempotent — re-processing rendered HTML (the emulator) does not double-inject', () => {
+    const once = makeEngine().render('<!-- _class: title finish-atrium -->\n\n# A\n', 'lattice').html;
+    const twice = applyBackdropToHtml(once, '');
+    const count = (s) => (s.match(/class="backdrop"/g) || []).length;
+    assert.equal(count(twice), count(once), 'no second .backdrop on re-processing');
+    // the bare `finish` class isn't re-added — the section carries exactly one.
+    const cls = twice.match(/<section\b[^>]*\sclass="([^"]*)"/)[1];
+    assert.equal(cls.split(/\s+/).filter((t) => t === 'finish').length, 1, 'exactly one bare `finish` token');
   });
 });

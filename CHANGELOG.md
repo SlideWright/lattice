@@ -93,6 +93,14 @@ in patch versions.
 
 ### Added
 
+- **A finish applies to a single slide with one class — `_class: … finish-atrium`.**
+  A per-slide `finish-<name>` class (built-in **or** a saved `finish-<slug>`) now implies
+  the bare `finish` compositor class in all three render paths, so it activates the
+  backdrop on that slide by itself — no deck-wide `finish:` and no second `finish` token
+  required. The Studio also injects a saved finish's CSS whenever any slide references it,
+  not just when it's the deck-wide value. `finish-none` (the per-slide opt-out) and the
+  `finish-preview` specimen are not variants, so they don't activate. (Finishes are now
+  applied independently to slides, matching how `_class` modifiers work.)
 - **Restrain an overpowering finish — the backdrop layer + a `backdrop.strength` dial (#669).**
   A finish now composites onto a dedicated `.backdrop` wrapper behind content (injected across
   all three render paths), so it can be tuned as one layer. First control: deck-wide
