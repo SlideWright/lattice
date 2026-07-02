@@ -59,6 +59,12 @@ in patch versions.
 
 ### Added
 
+- **The Fabricate finish designer previews at backdrop strength.** A "Preview strength"
+  control dials the specimen's `--backdrop-strength` (the same lever the deck-wide
+  `backdrop: strength:` axis pulls), so you can design and judge a finish at the restraint
+  it'll be shown with — instead of always at full intensity. Design-time only: the finish
+  stays a pure recipe (strength is a per-deck control, not baked into the saved finish —
+  the finish and backdrop axes are deliberately separate).
 - **The gallery PDF is served on the docs site at `/gallery.pdf`.** The
   committed baseline gallery is staged into the site at build time
   (`docs/scripts/sync-portal.mjs`), and the landing hero and introduction
