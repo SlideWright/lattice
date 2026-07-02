@@ -11,7 +11,6 @@ the deck's palette. You never set fonts, colors, or positions by hand.
 
 ```markdown
 ---
-marp: true
 theme: indaco       # palette (see Themes & palettes)
 paginate: true
 header: "Quarterly Review"

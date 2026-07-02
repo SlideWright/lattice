@@ -832,7 +832,11 @@ deviates from the doc, the deviation and its reason:
    §5.1 veto (never link the test path from the hero) is honored.
 3. **`marp: true` stays in the getting-started example.** §8.2's flag is a
    product/engine change (front-matter contract), out of scope for a copy
-   PR. Flag stays open.
+   PR. **Closed by the follow-up `feat/retire-marp-frontmatter` PR**: the
+   engine was verified to need no marp key (rendered the taught example
+   without it), so the four teaching surfaces drop it and getting-started
+   notes the one real use — the VS Code Marp extension activates on it.
+   Fixture decks and the playground's Marp-export interop keep the key.
 4. **The story page keeps its structure; the byline is one line** (*—
    Sharmarke Aden, who builds Lattice*, the name on the repo's commits).
    README's duplicated brand-story sections collapsed to one short

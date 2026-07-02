@@ -48,7 +48,6 @@ comment picks the layout.
 
 ```markdown
 ---
-marp: true
 theme: indaco
 paginate: true
 ---
@@ -81,7 +80,9 @@ npx lattice deck.md deck.png     # → deck.001.png, deck.002.png, …
 Need a copy someone can render with Marp? Use **Export to Marp** in the Drawing
 Board (or `npm run export:marp`) to produce a self-contained `.zip` — splits
 baked to literal `---`, themes, assets, and a zero-install bundled renderer.
-Lattice itself never renders through Marp.
+Lattice itself never renders through Marp, and its front matter never needs
+`marp: true` — add that key only if you preview decks with the VS Code Marp
+extension, which activates on it.
 
 ## What to read next
 
