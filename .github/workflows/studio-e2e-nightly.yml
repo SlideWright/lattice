@@ -65,3 +65,47 @@ jobs:
             docs/test-results/**
           if-no-files-found: warn
           retention-days: 14
+
+  # The AI-assisted scenario tier (docs/e2e/scenarios/ai-architect.spec.ts):
+  # drives the Architect against a LIVE OpenRouter model and asserts a real
+  # productivity outcome (source changed + checkpoint saved). A separate job so
+  # a paid-API flake can never redden the deterministic suite above. Gated on
+  # the OPEN_ROUTER_KEY secret — when it is unset the spec self-skips with a
+  # reason and this job stays green. Cost: three Haiku-tier completions over a
+  # two-slide deck (~a cent a night); the Studio's own hard-stop budget cap is
+  # armed by the spec as the runaway guard. The spec disables trace + video so
+  # the key never reaches an uploaded artifact.
+  e2e-ai:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install docs deps
+        run: npm ci
+        working-directory: docs
+
+      - name: Install Playwright browser (pinned to @playwright/test)
+        run: npx playwright install --with-deps chromium
+        working-directory: docs
+
+      - name: Run AI-assisted Studio scenarios (live OpenRouter)
+        run: npm run test:e2e -- e2e/scenarios/ai-architect.spec.ts --project=desktop
+        working-directory: docs
+        env:
+          CI: 'true'
+          OPEN_ROUTER_KEY: ${{ secrets.OPEN_ROUTER_KEY }}
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio-e2e-ai-${{ github.run_id }}
+          path: docs/playwright-report/**
+          if-no-files-found: warn
+          retention-days: 14

@@ -98,12 +98,43 @@ export async function typeInEditor(page: Page, text: string): Promise<void> {
 	await page.keyboard.type(text);
 }
 
-/** Replace the entire editor document with `text`. */
+/**
+ * Replace the entire editor document with `text`. Uses `insertText` (a single
+ * input event) rather than per-key typing: the editor's markdown niceties
+ * (list auto-continuation) would rewrite a multi-line deck typed key-by-key —
+ * `---` separators land inside auto-continued bullets and slides merge.
+ */
 export async function setEditorContent(page: Page, text: string): Promise<void> {
 	await focusEditor(page);
 	await page.keyboard.press('ControlOrMeta+a');
 	await page.keyboard.press('Delete');
-	await page.keyboard.type(text);
+	await page.keyboard.insertText(text);
+}
+
+/** Open the Architect panel (collapsed by default) and wait for its tabs. */
+export async function openArchitect(page: Page): Promise<void> {
+	await page.getByRole('button', { name: 'Toggle Architect' }).click();
+	await expect(page.getByRole('button', { name: 'Coach' })).toBeVisible();
+}
+
+/**
+ * The active deck's version-history checkpoint labels (newest first), from the
+ * persisted `lattice-studio-snap-<deckId>` store. Poll this — checkpoints are
+ * written synchronously with the edit, but the edit itself may still be settling.
+ * Like `persistedSource`, this reads the FIRST matching deck key — sound while a
+ * test edits only the active deck; a deck-switching test would need the deck id.
+ */
+export function checkpointLabels(page: Page): Promise<string[]> {
+	return page.evaluate(() => {
+		const key = Object.keys(window.localStorage).find((k) => k.startsWith('lattice-studio-snap-'));
+		if (!key) return [];
+		try {
+			const snaps = JSON.parse(window.localStorage.getItem(key) ?? '[]') as { label?: string }[];
+			return snaps.map((s) => s.label ?? '');
+		} catch {
+			return [];
+		}
+	});
 }
 
 export const test = base;
