@@ -758,6 +758,15 @@ in patch versions.
   picker can't drift (HARD RULE #1/#15). Also fixed: the model-status hook no longer blocks the
   whole panel on the account network call — the tier/picker render immediately, the balance folds
   in when it arrives.
+- **Studio E2E coverage with Playwright (`docs/e2e/`, #595).** A real-browser
+  end-to-end suite drives the Studio (`/studio/`) across desktop / tablet / mobile
+  — engine paint, slide ops, editor lint + Fix-all, the Deck inspector
+  (front-matter, speaker notes, version history), palette/theme, the ⌘K command
+  palette, insert-component, Present, Workspace, the Architect (honest offline),
+  Fabricate + the Layout gate, and reload persistence — each asserted on a real
+  cause-effect oracle. Consolidates the playground paint check onto Playwright.
+  Runs nightly (`studio-e2e-nightly.yml`) with trace + video on for a watchable
+  record. See `engineering/decisions/2026-06-28-experience-gating-playwright.md`.
 - **HARD RULE #3 now gated over shipped CSS — `checkHexLiterals` (#588).** The no-hex-literal rule
   (always `var(--token)` so colour follows the palette + keeps WCAG AA) was enforced only on the
   Layout-Studio authoring path; it now runs over the engine's layout CSS (`lib/**`, minus
@@ -1415,6 +1424,14 @@ in patch versions.
   full essentials + ramp-strategy set that derives AA-clean in both canvas modes. (Two further
   dead ids in the curated model picker are tracked separately in #614.)
 
+- **Studio: the Insert-component palette works in the built app again (#595).**
+  `studio.astro` read the component catalog (`dist/docs/components.json`) via an
+  `import.meta.url`-relative path that misses under `astro build` — the page
+  frontmatter is bundled into a chunk that no longer sits at `src/pages/`, so the
+  read silently caught and left the catalog empty, disabling Insert (and the
+  "Insert a component…" command) in the production build. Now resolved from
+  `process.cwd()`, matching the file's own lint-vocab read. Surfaced by the new
+  Studio E2E suite.
 - **The overflow ring no longer false-fires on a clean slide whose cell holds an
   absolutely-positioned footer (the #198 4K case).** The cell-aware probe measures how far a
   clip cell's children spill past the cell box (to catch centred content clipped off an edge),

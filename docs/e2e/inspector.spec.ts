@@ -1,0 +1,55 @@
+import { expect, gotoStudio, persistedByPrefix, persistedSource, test, toastText } from './studio-fixture';
+
+// The Deck inspector's front-matter controls, speaker notes, and version history.
+// Front-matter writes are asserted both on the immediate outer-DOM signal
+// (control label / aria-checked) and, where it matters, on the persisted source.
+
+test.beforeEach(async ({ page }) => {
+	await gotoStudio(page);
+	await page.getByRole('button', { name: 'Toggle Deck inspector' }).click();
+});
+
+test('size control writes the size front-matter', async ({ page }) => {
+	await page.getByRole('button', { name: /Widescreen 16 . 9/ }).click();
+	await page.getByRole('menuitem', { name: /Standard 4 . 3/ }).click();
+
+	await expect(page.getByRole('button', { name: /Standard 4 . 3/ })).toBeVisible();
+	await expect.poll(() => persistedSource(page)).toContain('size: standard');
+});
+
+test('page-numbers toggle writes paginate front-matter', async ({ page }) => {
+	const toggle = page.getByRole('switch', { name: 'Page numbers' });
+	await expect(toggle).toHaveAttribute('aria-checked', 'false');
+	await toggle.click();
+	await expect(toggle).toHaveAttribute('aria-checked', 'true');
+	await expect.poll(() => persistedSource(page)).toContain('paginate: true');
+});
+
+test('running-header toggle writes header front-matter', async ({ page }) => {
+	const toggle = page.getByRole('switch', { name: 'Running header' });
+	await toggle.click();
+	await expect(toggle).toHaveAttribute('aria-checked', 'true');
+	await expect.poll(() => persistedSource(page)).toContain('header:');
+});
+
+test('a speaker note is written into the slide source on blur', async ({ page }) => {
+	// The speaker-note field lives behind the topbar "Notes" toggle (it moved out
+	// of the inspector in the redesign).
+	await page.getByRole('button', { name: 'Notes' }).click();
+	const note = page.getByRole('textbox', { name: 'Speaker note for this slide' });
+	await note.click();
+	await note.fill('Open with the headline number.');
+	await note.blur();
+
+	await expect.poll(() => persistedSource(page)).toContain('note: Open with the headline number.');
+});
+
+test('saving a version records a checkpoint', async ({ page }) => {
+	await page.getByRole('button', { name: 'Save a version' }).click();
+	await expect(toastText(page)).toContainText('Version saved');
+
+	await expect.poll(async () => {
+		const snaps = await persistedByPrefix(page, 'snap');
+		return snaps ? JSON.parse(snaps).length : 0;
+	}).toBeGreaterThan(0);
+});

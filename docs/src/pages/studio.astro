@@ -13,7 +13,6 @@ import EngineWarm from '../components/site/EngineWarm.astro';
 import { joinBase } from '../lib/base-url.mjs';
 import { assetBase } from '../playground/asset-version.mjs';
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 
@@ -37,7 +36,12 @@ const options = {
 // the authored insert skeleton). Serialized into the island as a prop.
 let components = [];
 try {
-	const catalog = JSON.parse(readFileSync(fileURLToPath(new URL('../../../dist/docs/components.json', import.meta.url)), 'utf8'));
+	// Resolve from the repo root via process.cwd() (docs/ at build), NOT
+	// import.meta.url — under `astro build` the page frontmatter is bundled into a
+	// chunk whose URL no longer sits at src/pages/, so the relative walk misses and
+	// the catch silently empties the catalog (disabling Insert). This mirrors the
+	// lintVocab read below, which already resolves from process.cwd().
+	const catalog = JSON.parse(readFileSync(join(process.cwd(), '..', 'dist/docs/components.json'), 'utf8'));
 	components = (catalog.components || [])
 		.map((c) => ({ name: c.name, bucket: c.bucket, description: c.description || '', skeleton: String(c.skeleton || '') }))
 		.filter((c) => c.name && c.skeleton);
