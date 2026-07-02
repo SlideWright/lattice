@@ -22,6 +22,7 @@ import { dataSources } from './data-sources.js';
 import { AUTOSPLIT_VALUES, DIRECTIVE_NAMES, FENCE_LANGS, FOCUS_AXIS_VALUES, FOCUS_STYLE_VALUES, FORM_VALUES, MERMAID_KEYWORDS, PAGINATE_VALUES, SIZE_VALUES, SPLIT_VALUES } from './grammar-vocab.js';
 import {
 	autosplitValuePosition,
+	backdropAxisPosition,
 	blankBodyPartial,
 	classDirectiveCompletion,
 	classOptions,
@@ -131,6 +132,35 @@ function finishSource(finishes) {
 	};
 }
 
+// Completes the axes of the nested `backdrop:` front-matter map. Offers only the
+// SHIPPED axis (`strength`); `clearance`/`spotlight` join when those slices land.
+// Gated on the enclosing block header actually being `backdrop:` (scans upward
+// for the nearest less-indented line) so it never fires under an unrelated map.
+function backdropAxisSource() {
+	const options = [
+		{ label: 'strength', type: 'property', detail: 'backdrop', info: 'Dim the whole finish (0–1; 1 = full)' },
+	];
+	return (context) => {
+		const doc = context.state.doc;
+		const line = doc.lineAt(context.pos);
+		if (!inFrontMatter((n) => doc.line(n).text, line.number)) return null;
+		const before = context.state.sliceDoc(line.from, context.pos);
+		const spot = backdropAxisPosition(before);
+		if (!spot) return null;
+		// Confirm we're inside a `backdrop:` map: the nearest non-blank line above
+		// with LESS indentation must be exactly `backdrop:`.
+		let header = null;
+		for (let n = line.number - 1; n >= 2; n--) {
+			const t = doc.line(n).text;
+			if (!t.trim()) continue;
+			if (t.match(/^(\s*)/)[1].length < spot.indent) { header = t.trim(); break; }
+		}
+		if (header !== 'backdrop:') return null;
+		if (!spot.typed && !context.explicit) return null;
+		return { from: line.from + spot.from, options, validFor: TOKEN };
+	};
+}
+
 // Completes the component name and modifiers inside a `_class:` directive.
 function classDirectiveSource(catalog, universalModifiers) {
 	return (context) => {
@@ -225,6 +255,7 @@ export function latticeAutocomplete({ vocab, catalog, themes, finishes } = {}) {
 		override: [
 			themeSource(themes),
 			finishSource(finishes),
+			backdropAxisSource(),
 			lineLocalSource(directiveNameAt, DIRECTIVE_OPTIONS, DIRECTIVE_TOKEN),
 			lineLocalSource(paginateValuePosition, PAGINATE_OPTIONS),
 			lineLocalSource(focusStyleValuePosition, FOCUS_STYLE_OPTIONS),

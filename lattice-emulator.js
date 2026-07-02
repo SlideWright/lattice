@@ -1342,6 +1342,10 @@ const highlightedSlides = slidesWithNotes.map(s => applyHighlighting(s));
 // no-ops and the emulator runs it here, post-stamp. Same fn the owned engine's
 // render hook uses. Called on the joined HTML (not slide-by-slide) so the "first
 // slide" check in the logo rewriter (`logo-on: title`) sees source order.
+// NB: the `.backdrop` wrapper is NOT injected here — the engine's class-matching
+// applyBackdropToHtml already ran inside engine.render (like the watermark pass).
+// Only deck-logo re-runs, because it keys off the data-lattice-slide attribute
+// the emulator stamps after the engine pass.
 const { applyDeckLogoToHtml } = require('./lib/integrations/markdown-it/plugins');
 const slidesWithMeta2 = applyDeckLogoToHtml(highlightedSlides.join('\n'), rawMd);
 

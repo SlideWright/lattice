@@ -64,6 +64,26 @@
 	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
+/* Slider row (backdrop / finish strength) — a range input + a live % readout. */
+.deck-config .db-pref-slider {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+.deck-config .db-pref-range {
+	width: 8.5rem;
+	accent-color: var(--accent);
+	cursor: pointer;
+}
+.deck-config .db-pref-slider-value {
+	min-width: 2.6rem;
+	text-align: right;
+	font-size: 0.72rem;
+	font-variant-numeric: tabular-nums;
+	color: var(--text-muted, var(--text-body));
+}
+
 /* Stacked full-width text fields (header / footer / class / lang). */
 .deck-config .db-config-field {
 	display: flex;

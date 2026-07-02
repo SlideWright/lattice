@@ -27,6 +27,19 @@ in patch versions.
 
 ### Added
 
+- **Restrain an overpowering finish — the backdrop layer + a `backdrop.strength` dial (#669).**
+  A finish now composites onto a dedicated `.backdrop` wrapper behind content (injected across
+  all three render paths), so it can be tuned as one layer. First control: deck-wide
+  `backdrop:` front matter with a `strength` axis (0–1) that dims the whole finish uniformly —
+  `finish:` is unchanged (still the scalar preset selector), and a plain deck is byte-identical.
+  Export-safe (a plain `opacity` on the wrapper, verified in the vector PDF). Also frees
+  `section::after` for the paginator (the mark/edge moved onto the wrapper's pseudos), fixing
+  the contended vignette edges on halo/ledger/nimbus/gallery. The strength dial is surfaced in
+  the **Deck-setup drawer** (a slider), completed by the **editor autocomplete** (the `backdrop:`
+  key + its axes), and validated by the **deck linter** (`backdrop-strength-range` /
+  `unknown-backdrop-axis`). The `clearance` (content-safe zone) + `spotlight` (reveal window) axes
+  follow. See `engineering/decisions/2026-07-01-finish-restraint-controls.md`.
+
 - **Ground one AI generation in several reference docs at once (#656).** The reference-doc
   picker is now multi-select — toggle any number of saved docs (up to a cap) into the grounding
   set for a theme/component/deck-chat generation, e.g. brand guide + tone-of-voice + last

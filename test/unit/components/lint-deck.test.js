@@ -182,6 +182,19 @@ describe('deck linter', () => {
     assert.equal(lintText(src, { vocab }).filter((x) => x.rule === 'unknown-finish').length, 0);
   });
 
+  test('warns on an out-of-range backdrop.strength and an unknown backdrop axis; accepts valid ones', () => {
+    const bad = lintText('---\ntheme: indaco\nfinish: atrium\nbackdrop:\n  strength: 5\n  wobble: on\n---\n\n## H.\n', { vocab });
+    const range = bad.find((x) => x.rule === 'backdrop-strength-range');
+    const axis = bad.find((x) => x.rule === 'unknown-backdrop-axis');
+    assert.ok(range, 'strength: 5 should warn (out of 0–1)');
+    assert.equal(range.classToken, '5');
+    assert.ok(axis, 'wobble should warn as an unknown axis');
+    assert.equal(axis.classToken, 'wobble');
+    // a valid strength + a following flat key (dedent) → clean
+    const ok = lintText('---\ntheme: indaco\nfinish: atrium\nbackdrop:\n  strength: 0.4\npaginate: true\n---\n\n## H.\n', { vocab });
+    assert.equal(ok.filter((x) => /backdrop/.test(x.rule)).length, 0);
+  });
+
   test('every committed deck is completely lint-clean (no errors, no warnings)', () => {
     // The deck tree is clean and the gate is --strict, so warnings count too.
     // Locks in the fixes for the baseline gallery (cards-stack inline-title),
