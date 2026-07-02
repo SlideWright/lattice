@@ -1569,25 +1569,28 @@ Both paths are viable. The difference is where we spend the next 18 months.
 
 ---
 
-<!-- _class: statute-stack -->
-<!-- _footer: "Legal — statute-stack · statute-stack" -->
+<!-- _class: statute-stack dark -->
+<!-- _footer: "Legal — statute-stack · statute-stack dark" -->
 
 ## Children's data — three jurisdictions, three obligations.
 
 - Federal `15 U.S.C. §6501`
   - Verifiable parental consent for under-13 personal data.
+  - Operators must post a clear notice and a deletion route.
   - `In effect since 2000`
 - State `Cal. Civ. §1798.120`
   - Opt-in for selling or sharing under-16 data; opt-out for over-16.
+  - DSAR handling within 45 days; deletion verified.
   - `Enforced 2023`
 - Local `NYC §22-1201`
   - Bias-audit obligation for automated tools in employment decisions.
+  - Annual audit, candidate notice, and a public summary.
   - `Effective 2023`
 
 ---
 
-<!-- _class: authority-chain -->
-<!-- _footer: "Legal — authority-chain · authority-chain" -->
+<!-- _class: authority-chain dark -->
+<!-- _footer: "Legal — authority-chain · authority-chain dark" -->
 
 ## COPPA — the chain, tier by tier.
 
