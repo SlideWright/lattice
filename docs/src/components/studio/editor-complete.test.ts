@@ -40,6 +40,11 @@ describe('makeStudioCompletion', () => {
 		expect(labels(r)).toContain('paginate');
 	});
 
+	it('completes the backdrop + mode keys in the --- block', () => {
+		expect(labels(complete('---\nbackd', 9))).toContain('backdrop');
+		expect(labels(complete('---\nmod', 7))).toContain('mode');
+	});
+
 	it('does not fire in plain prose', () => {
 		expect(complete('Just some body text here')).toBeNull();
 	});

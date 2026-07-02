@@ -234,6 +234,16 @@ export function finishValuePosition(before) {
 	return { from: m[1].length, typed: m[2] };
 }
 
+// The cursor sits on an INDENTED axis line inside a `backdrop:` front-matter map
+// (e.g. `  stren|`). Returns the axis-name completion spot + this line's indent;
+// the caller confirms the enclosing block header is `backdrop:` via the document
+// (this line-local check can't see prior lines). Lattice's one nested key.
+export function backdropAxisPosition(before) {
+	const m = before.match(/^(\s+)([A-Za-z][\w-]*)?$/);
+	if (!m) return null;
+	return { indent: m[1].length, from: m[1].length, typed: m[2] || '' };
+}
+
 // ── Slide directives + fences (Tier 2) ───────────────────────────────────────
 
 // The cursor's position on a directive NAME being typed inside an HTML comment,
