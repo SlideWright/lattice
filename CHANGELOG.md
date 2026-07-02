@@ -25,6 +25,28 @@ in patch versions.
 
 ## Unreleased
 
+### Added
+
+- **Studio E2E — journeys + persona scenarios, with a live-OpenRouter AI tier
+  (`docs/e2e/journeys/`, `docs/e2e/scenarios/`, #694).** Two new layers on top
+  of the feature-level suite (#691), each asserted on a goal-level oracle
+  rather than a presence check: multi-feature journeys (author → Present with
+  the last slide's speaker note rendering; author → Share with a real PDF /
+  Markdown download, never a silent no-op) and persona scenarios (an exec's
+  deck scores board-ready and exports; a consultant's palette swap re-themes
+  every slide with zero overflow flags; a presenter traverses the whole deck
+  and the dual-screen presenter popup carries the note; a power user's
+  fabricated component/theme round-trips into authoring). The AI-assisted tier
+  drives the Architect against a **live OpenRouter model** — Rewrite lead,
+  chat instruct → Apply diff, and Refine → Shorten must actually change the
+  deck source AND save a History checkpoint (plus a moving spend tally, so the
+  silent offline floor can never masquerade as success). Gated on the
+  `OPEN_ROUTER_KEY` env var (self-skips with a reason when absent) and run as
+  a separate keyed job in `studio-e2e-nightly.yml`; cost-bounded by the cheap
+  Haiku-latest default, a two-slide deck, and the Studio's own hard-stop
+  budget cap. Injection path + guardrails:
+  `engineering/decisions/2026-07-02-studio-e2e-scenarios.md`.
+
 ### Fixed
 
 - **The common quadrant chart fills its slide again instead of rendering as a

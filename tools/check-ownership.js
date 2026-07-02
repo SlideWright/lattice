@@ -945,6 +945,12 @@ function listRepoTextFiles(dir = ROOT, out = []) {
       // the artifacts present). Same reason components.md is exempted below.
       // See engineering/decisions/2026-07-02-website-copy-positioning.md §8.5.
       if (rel === path.join('docs', 'public', 'playground', 'v')) continue;
+      // Playwright's gitignored run outputs (docs/.gitignore): the HTML report
+      // vendors Playwright's own viewer JS (which carries British spellings we
+      // don't author) and test-results holds failure snapshots of app copy.
+      // Same local-only false-red class as playground/v above — a clean
+      // checkout/CI never has them; any tree that RAN `npm run test:e2e` does.
+      if (rel === path.join('docs', 'playwright-report') || rel === path.join('docs', 'test-results')) continue;
       listRepoTextFiles(p, out);
     } else if (
       US_TEXT_EXTS.has(path.extname(e.name)) &&
