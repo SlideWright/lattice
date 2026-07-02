@@ -177,13 +177,14 @@ describe('applyDebug — lifecycle', () => {
 
 	test('hover mode wires capture-phase document listeners (debug owns input); always does not; teardown clears', async () => {
 		const { applyDebug } = await load();
-		// hover (the default) → the agent owns pointer input via document listeners
-		// (no fixed capture div — that broke on iOS); teardown removes them.
+		// hover (the default) → the agent owns input via document listeners: mouse hover
+		// + TOUCH events (not the pointer stream iOS cancels mid-scroll); teardown removes them.
 		const f1 = frameWith(deck('on'));
 		const d1 = f1.contentDocument;
 		applyDebug(f1, { force: null });
 		assert.ok(d1.__dbgListeners, 'hover mode wires the document listeners');
-		assert.equal(typeof d1.__dbgListeners.onUp, 'function');
+		assert.equal(typeof d1.__dbgListeners.onTouchStart, 'function');
+		assert.equal(typeof d1.__dbgListeners.onTouchEnd, 'function');
 		applyDebug(f1, { force: 'off' });
 		assert.equal(d1.__dbgListeners, null, 'teardown clears the listeners');
 
@@ -193,7 +194,7 @@ describe('applyDebug — lifecycle', () => {
 		assert.equal(f2.contentDocument.__dbgListeners, null, 'always mode does not capture input');
 	});
 
-	test('touch: a TAP reveals the box beneath (then dismisses); a SWIPE reveals nothing', async () => {
+	test('touch: PRESS-AND-HOLD reveals the box beneath, LIFT hides it; a SWIPE drops the peek', async () => {
 		const { applyDebug } = await load();
 		const frame = frameWith(deck('on'));
 		const doc = frame.contentDocument;
@@ -201,18 +202,20 @@ describe('applyDebug — lifecycle', () => {
 		const section = doc.querySelector('section');
 		doc.elementsFromPoint = () => [section]; // jsdom has no hit-testing
 		const L = doc.__dbgListeners;
-		const tap = (x = 5, y = 5) => {
-			L.onDown({ pointerType: 'touch', clientX: x, clientY: y });
-			L.onUp({ pointerType: 'touch', clientX: x, clientY: y });
-		};
-		tap();
-		assert.equal(doc.__dbgHot, section, 'a tap reveals the box beneath the finger');
-		tap();
-		assert.equal(doc.__dbgHot, null, 'a second tap dismisses');
-		// swipe: down → move past threshold → up ⇒ no reveal (the deck scrolled instead).
-		L.onDown({ pointerType: 'touch', clientX: 5, clientY: 5 });
-		L.onMove({ pointerType: 'touch', clientX: 5, clientY: 80 });
-		L.onUp({ pointerType: 'touch', clientX: 5, clientY: 80 });
-		assert.equal(doc.__dbgHot, null, 'a swipe reveals nothing');
+		const touch = (x, y) => ({ touches: [{ clientX: x, clientY: y }] });
+		// Press and hold → the box under the finger peeks; it PERSISTS while pressed.
+		L.onTouchStart(touch(5, 5));
+		assert.equal(doc.__dbgHot, section, 'press reveals the box beneath the finger');
+		L.onTouchMove(touch(6, 7)); // tiny jitter under threshold — still held
+		assert.equal(doc.__dbgHot, section, 'the peek persists while pressed');
+		L.onTouchEnd({});
+		assert.equal(doc.__dbgHot, null, 'lifting the finger hides the peek');
+		// Swipe: press → move past threshold ⇒ drop the peek and let the pan scroll.
+		L.onTouchStart(touch(5, 5));
+		assert.equal(doc.__dbgHot, section, 'press reveals before the move is classified');
+		L.onTouchMove(touch(5, 80));
+		assert.equal(doc.__dbgHot, null, 'a swipe drops the peek (it scrolls instead)');
+		L.onTouchEnd({});
+		assert.equal(doc.__dbgHot, null, 'still nothing after the swipe ends');
 	});
 });

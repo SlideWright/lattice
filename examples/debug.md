@@ -79,8 +79,8 @@ debugging — handy once a layout is settled and the boxes are just noise. `off`
 also the default everywhere: with no `debug:` key at all, the preview is clean.
 
 Because labels are summoned by default, a busy grid never becomes a wall of chips:
-you pull detail in only where you look — **hover** on desktop, **tap** on touch —
-one box (and its containers) at a time.
+you pull detail in only where you look — **hover** on desktop, **press and hold** on
+touch — one box (and its containers) at a time.
 
 ---
 

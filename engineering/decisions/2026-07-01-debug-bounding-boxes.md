@@ -115,20 +115,33 @@ Example label: `comparison-grid · grid · 720×360`.
 **Reveal mode is the mode keyword — and OFF is the default.** With no `debug:` key
 (or `debug: off`) the preview is clean: no outlines, no chips. Enabling always names
 the reveal mode. `on-hover` (the recommended default) draws the color-coded outlines
-always but keeps LABELS summoned: at rest you see only outlines; pointing at a box
-reveals its chip *and its container chain*. `on-always` pins every chip on at once for
-a static map. `verbose` (in either mode) adds the opt-in `class` + `box` facets. Summoned
-labels are what kill the wall-of-chips density — you pull detail in only where you look.
+always but keeps LABELS summoned: at rest you see only outlines; hovering (desktop) or
+**pressing-and-holding** (touch) a box reveals its chip *and its container chain*.
+`on-always` pins every chip on at once for a static map. `verbose` (in either mode)
+adds the opt-in `class` + `box` facets. Summoned labels are what kill the wall-of-chips
+density — you pull detail in only where you look.
 
-**Debug owns the pointer in `hover` mode — via document listeners, NOT a positioned
-layer.** In `hover` mode the agent binds CAPTURE-PHASE listeners on the iframe
-`document` (`pointerdown/move/up`, `mousemove`, and a `click` suppressor with
-`stopImmediatePropagation`): a mouse **hover** or a **tap** reveals the box beneath and
-its chain (hit-tested with `elementsFromPoint`), a vertical **swipe** scrolls untouched
-(we never `preventDefault` the pan), and the preview's own gestures (click-to-navigate,
-chart reveal) are suppressed so debug takes precedence. `always` mode stays passive
-(chips pinned, deck interactive). Owner directive (2026-07-01): "in debug + hover, debug
-takes precedence over everything else; swipe may stay, all other gestures off."
+**Debug owns input in `hover` mode — via document listeners, NOT a positioned layer,
+and TOUCH events, NOT the pointer stream.** In `hover` mode the agent binds
+CAPTURE-PHASE listeners on the iframe `document`. Desktop: `mousemove` gives live hover.
+Touch: **press-and-hold to peek** — `touchstart` reveals the box under the finger
+(hit-tested with `elementsFromPoint`), the label persists *while pressed*, and `touchend`
+hides it; a drag past a 10px threshold is a **scroll**, so the peek is dropped and the
+pan runs untouched (we never `preventDefault`). A `click` suppressor
+(`stopImmediatePropagation`) keeps the preview's own gestures (click-to-navigate, chart
+reveal) from firing. `always` mode stays passive (chips pinned, deck interactive). Owner
+directive (2026-07-01): "in debug + hover, debug takes precedence; swipe may stay, all
+other gestures off." Owner (2026-07-02): touch is **press-and-hold**, not tap-to-toggle.
+
+**Why touch events, not pointer events (the fix that finally worked).** The tap-to-reveal
+model used `pointerdown`→`pointerup` with a "was it a tap?" check. It passed every
+sandbox test (jsdom + headless Chromium both fire a clean pointer stream) but did
+**nothing on a real iPhone**: iOS Safari fires `pointercancel` the instant it suspects a
+scroll — which it does constantly inside a scrollable preview — wiping the pending tap
+before `pointerup`. `touchstart`/`touchmove`/`touchend` are NOT canceled that way (they
+always fire, even through a scroll), so hold-to-peek is reliable on iOS. Verified on the
+real Playground with CDP touch events (hold reveals, lift hides, swipe drops the peek);
+final iOS-Safari confirmation is on-device.
 
 **Root cause of the iOS touch failures (post-mortem — three wrong fixes before this).**
 The first touch attempts put a `position:fixed` chip overlay AND a `position:fixed`

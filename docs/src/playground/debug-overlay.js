@@ -36,7 +36,7 @@ const DEFAULT_FACETS = ['identity', 'layout', 'size'];
 // The `debug:` VOCABULARY (front matter + per-slide `_debug`). ONE name per concept —
 // no aliases, so there is nothing to second-guess. OFF is the default (absent or
 // `off` → no overlay). Enable with an explicit REVEAL mode:
-//   on-hover  → outlines always; labels appear when you hover/tap a box (the quiet one)
+//   on-hover  → outlines always; a label appears when you hover (desktop) or press-and-hold (touch) a box
 //   on-always → outlines + labels pinned on at once (the static map)
 // Add `verbose` for the extra detail (class + box). There is deliberately NO bare
 // `on` (it hid the mode).
@@ -266,60 +266,76 @@ export function applyDebug(frame, opts = {}) {
 		doc.__dbgResize = redraw;
 	}
 
-	// HOVER mode owns pointer input via CAPTURE-PHASE listeners on the DOCUMENT — the
-	// same house pattern the chart-interact + SYNC agents use (drawing-board-chart-
-	// interact.js, deck-preview.js). No positioned overlay div (a `position:fixed`
-	// layer does NOT track an iframe's internal scroll on iOS Safari, which is what
-	// broke touch). A tap reveals the box beneath (hit-tested via elementsFromPoint);
-	// a vertical swipe scrolls untouched (we never preventDefault the pan); and the
-	// synthesized click is suppressed so the preview's own gestures don't fire. `always`
-	// mode stays passive — chips pinned, the deck interactive.
+	// HOVER mode owns input via CAPTURE-PHASE listeners on the iframe DOCUMENT. Touch is
+	// PRESS-AND-HOLD to peek: hold a box to reveal its label + container chain, lift to
+	// hide. This is driven by touchstart/move/end — NOT pointer events — because iOS
+	// Safari fires `pointercancel` the instant it suspects a scroll (which it does inside
+	// a scrollable preview), wiping the gesture; the touch events ALWAYS fire, so the
+	// peek is reliable on iOS. A drag past the threshold is a scroll: we drop the peek
+	// and never preventDefault, so the pan lives. Mouse uses live hover. The synthesized
+	// click is suppressed so the preview's own click-to-navigate / chart reveal don't
+	// fire while debug owns the surface. `always` mode stays passive — chips pinned.
 	if (enabled.some((s) => s.cfg.reveal === 'hover') && doc.addEventListener) {
-		const reveal = (x, y, toggle) => {
+		const setHot = (x, y) => {
 			const hit = hitFromPoint(doc, overlay, x, y);
-			doc.__dbgHot = toggle && hit && hit === doc.__dbgHot ? null : hit; // tap again / empty → dismiss
-			renderChips(doc, win);
-		};
-		let tap = null;
-		const onMove = (e) => {
-			// Mouse hover reveals live; a touch drag past the threshold is a swipe (no reveal).
-			if (e.pointerType === 'mouse' || (!e.pointerType && e.type === 'mousemove')) {
-				reveal(e.clientX, e.clientY, false);
-			} else if (tap && (Math.abs(e.clientX - tap.x) > 10 || Math.abs(e.clientY - tap.y) > 10)) {
-				tap.moved = true;
+			if (hit !== doc.__dbgHot) {
+				doc.__dbgHot = hit;
+				renderChips(doc, win);
 			}
 		};
-		const onLeave = () => {
-			doc.__dbgHot = null;
-			renderChips(doc, win);
+		const clearHot = () => {
+			if (doc.__dbgHot) {
+				doc.__dbgHot = null;
+				renderChips(doc, win);
+			}
 		};
-		const onDown = (e) => {
-			tap = e.pointerType === 'mouse' ? null : { x: e.clientX, y: e.clientY, moved: false };
+		// TOUCH — press-and-hold. touchstart reveals the box under the finger; a move
+		// past the threshold is a pan, so drop the peek and stand down until the next
+		// touch; lift/cancel hides. `lastTouch` lets the mouse path ignore the synthetic
+		// mouse events iOS fires right after a touch (they'd re-reveal what the lift hid).
+		let touch = null;
+		let lastTouch = 0;
+		const onTouchStart = (e) => {
+			lastTouch = Date.now();
+			const t = e.touches?.[0];
+			if (!t) return;
+			touch = { x: t.clientX, y: t.clientY, scrolling: false };
+			setHot(t.clientX, t.clientY);
 		};
-		const onUp = (e) => {
-			const wasTap = tap && !tap.moved;
-			tap = null;
-			if (!wasTap) return; // a swipe — it already scrolled; reveal nothing
-			reveal(e.clientX, e.clientY, true);
+		const onTouchMove = (e) => {
+			lastTouch = Date.now();
+			const t = e.touches?.[0];
+			if (!t || !touch) return;
+			if (!touch.scrolling && (Math.abs(t.clientX - touch.x) > 10 || Math.abs(t.clientY - touch.y) > 10)) {
+				touch.scrolling = true; // a pan — let it scroll, drop the peek
+				clearHot();
+			} else if (!touch.scrolling) {
+				setHot(t.clientX, t.clientY); // still holding: track onto a neighbor under the finger
+			}
 		};
-		const onCancel = () => {
-			tap = null;
+		const onTouchEnd = () => {
+			lastTouch = Date.now();
+			touch = null;
+			clearHot(); // lift → hide (the peek persists only while pressed)
 		};
-		// Capture phase (true) so debug wins BEFORE the preview's own bubble-phase
-		// handlers; stopImmediatePropagation on the click a tap synthesizes suppresses
-		// click-to-navigate / chart reveal. We never preventDefault a move, so scroll lives.
+		// MOUSE — live hover. Skip the synthetic mouse events iOS emits after a touch.
+		const onMove = (e) => {
+			if (Date.now() - lastTouch < 700) return;
+			setHot(e.clientX, e.clientY);
+		};
+		const onLeave = () => clearHot();
 		const onClick = (e) => {
 			e.stopImmediatePropagation();
 			e.preventDefault();
 		};
 		doc.addEventListener('mousemove', onMove, true);
 		doc.addEventListener('mouseleave', onLeave, true);
-		doc.addEventListener('pointermove', onMove, true);
-		doc.addEventListener('pointerdown', onDown, true);
-		doc.addEventListener('pointerup', onUp, true);
-		doc.addEventListener('pointercancel', onCancel, true);
+		doc.addEventListener('touchstart', onTouchStart, { capture: true, passive: true });
+		doc.addEventListener('touchmove', onTouchMove, { capture: true, passive: true });
+		doc.addEventListener('touchend', onTouchEnd, true);
+		doc.addEventListener('touchcancel', onTouchEnd, true);
 		doc.addEventListener('click', onClick, true);
-		doc.__dbgListeners = { onMove, onLeave, onDown, onUp, onCancel, onClick };
+		doc.__dbgListeners = { onMove, onLeave, onTouchStart, onTouchMove, onTouchEnd, onClick };
 	}
 	if (win?.setTimeout) {
 		for (const t of [80, 320, 1200]) win.setTimeout(redraw, t);
@@ -441,15 +457,15 @@ function teardown(doc, win) {
 		win.removeEventListener('resize', doc.__dbgResize);
 		win.removeEventListener('scroll', doc.__dbgResize);
 	}
-	// Remove the capture-phase document listeners (matching addEventListener's `true`).
+	// Remove the capture-phase document listeners (matching addEventListener's capture).
 	const L = doc.__dbgListeners;
 	if (L && doc.removeEventListener) {
 		doc.removeEventListener('mousemove', L.onMove, true);
 		doc.removeEventListener('mouseleave', L.onLeave, true);
-		doc.removeEventListener('pointermove', L.onMove, true);
-		doc.removeEventListener('pointerdown', L.onDown, true);
-		doc.removeEventListener('pointerup', L.onUp, true);
-		doc.removeEventListener('pointercancel', L.onCancel, true);
+		doc.removeEventListener('touchstart', L.onTouchStart, true);
+		doc.removeEventListener('touchmove', L.onTouchMove, true);
+		doc.removeEventListener('touchend', L.onTouchEnd, true);
+		doc.removeEventListener('touchcancel', L.onTouchEnd, true);
 		doc.removeEventListener('click', L.onClick, true);
 	}
 	doc.__dbgListeners = doc.__dbgResize = doc.__dbgHot = null;
