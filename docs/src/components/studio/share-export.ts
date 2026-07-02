@@ -11,7 +11,7 @@
 import { ensureEngine } from '@/lib/load-engine';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { createThemeFetcher } from '@/lib/theme-fetch';
-import { mergeClassTokens } from './front-matter';
+import { mergeClassTokens, setFrontMatter } from './front-matter';
 
 type EngineRender = { html: string; css: string; width?: number; height?: number };
 type PG = {
@@ -108,19 +108,31 @@ export async function renderThemeShowcase(options: SingleSlideOptions, theme: { 
 }
 
 /**
- * Embed an active saved finish into a SOURCE handoff. A saved finish renders via a
- * `finish finish-<slug>` class the engine doesn't know + its generated CSS; on
- * another machine neither resolves from the bare `finish:` register. So — mirroring
- * `embedThemeInMarkdown` — we (a) MERGE the finish class into the deck's `class:`
- * (deduped, no clobber) so every section carries it, and (b) inline the generated
- * finish CSS as a Marp global `<style>` right after the front matter, so the
- * recipient renders the custom finish from the markup itself. No-op without an
- * active finish. Pure string surgery — keeps the user's editable source untouched
- * (this is applied only to the exported copy).
+ * Embed the deck's saved finishes into a SOURCE handoff. A saved finish renders via
+ * its `finish-<slug>` class + generated CSS; on another machine the CSS doesn't
+ * resolve (the bare `finish:` register knows only built-ins). So — mirroring
+ * `embedThemeInMarkdown` — we inline the generated finish CSS as a Marp global
+ * `<style>` right after the front matter, so the recipient renders the custom
+ * finish from the markup itself.
+ *
+ * `finishCss` is the COMBINED CSS of every saved finish the deck references (deck-wide
+ * `finish:` AND any per-slide `_class: … finish-<slug>`), so a per-slide-only finish
+ * is embedded too — not just a deck-wide one. `finishClass` (the deck-wide
+ * `finish finish-<slug>`) is additionally MERGED into `class:` when present, because a
+ * bare deck-wide `finish: finish-<slug>` value doesn't resolve to a class off-Studio;
+ * per-slide finishes already carry their class in the source, so they need only the CSS.
+ * No-op when the deck references no saved finish. Pure string surgery — the user's
+ * editable source stays untouched (this is applied only to the exported copy).
  */
-function embedFinishInMarkdown(source: string, finishClass?: string, finishCss?: string): string {
-	if (!finishClass || !finishCss) return source;
-	const classed = mergeClassTokens(source, finishClass);
+export function embedFinishInMarkdown(source: string, finishClass?: string, finishCss?: string): string {
+	if (!finishCss) return source;
+	// Deck-wide saved finish: merge its `finish finish-<slug>` class into `class:` AND
+	// drop the now-redundant `finish: finish-<slug>` front-matter value. The bare value
+	// names a finish the recipient's register doesn't know — it renders nothing on its
+	// own (the merged class + embedded CSS do the work) and would otherwise trip an
+	// `unknown-finish` lint warning in the shared artifact. Per-slide finishes carry
+	// their class in the source already, so they need neither the merge nor the strip.
+	const classed = finishClass ? setFrontMatter(mergeClassTokens(source, finishClass), 'finish', null) : source;
 	const block = `<style>\n/* Lattice Studio — embedded finish (self-contained: this deck keeps its surface\n   finish even where the saved finish is not installed). Generated on export. */\n${finishCss.trim()}\n</style>\n`;
 	const fm = /^(---[ \t]*\r?\n[\s\S]*?\r?\n---[ \t]*(?:\r?\n|$))/.exec(classed);
 	if (fm) return classed.slice(0, fm[0].length) + '\n' + block + '\n' + classed.slice(fm[0].length);
