@@ -27,6 +27,17 @@ in patch versions.
 
 ### Fixed
 
+- **The common quadrant chart fills its slide again instead of rendering as a
+  thumbnail.** When charts moved into the Form, `.chart-body` became a
+  size-query container, which silently re-based the quadrant SVG's
+  slide-relative `max-height: 50cqh` cap to *half the chart-body* — shrinking
+  the default/magic/bubble/trail/threshold variants to roughly a third of
+  their intended size (the cohort variant, already on the Form-aware sizing,
+  was unaffected). The common quadrant now mirrors the pie's proven in-form
+  pattern — figure collapsed with `display: contents`, SVG sized
+  `height: 100cqh` off the chart-body — so it fills the available body area
+  and scales with it. Refreshed quadrant + chart gallery goldens and the
+  affected example decks.
 - **Saved (fabricated) finishes are first-class in the Studio editor.** Applying a
   finish you created no longer trips an `unknown-finish` lint warning — your saved
   finish names are folded into the deck-lint's finish register — and the editor now

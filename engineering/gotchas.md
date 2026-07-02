@@ -58,6 +58,39 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 
 ---
 
+### Chart renders as a thumbnail after an ancestor gains `container-type` (cqh re-basing)
+
+- **Symptom:** A chart that used to fill its slide renders tiny — correct
+  proportions, correct chrome, just a fraction of its intended size. Every
+  automated gate stays green (the regression goldens were blessed *with* the
+  shrunken render, so nothing drifts). Hit the common quadrant
+  (default/magic/bubble/trail/threshold): it shrank to ~a third of its size
+  and shipped that way in the blessed gallery PDFs.
+- **Cause:** `cqi`/`cqh` resolve against the **nearest** `container-type`
+  ancestor, so giving any intermediate box size containment silently
+  re-bases every container unit below it. The quadrant SVG carried
+  `max-height: 50cqh` written when the slide `section` was the only query
+  container ("cap at half the slide"). The Form work later made
+  `.chart-body` a size container (`chart-family.css` §IN-FORM — needed so
+  in-form SVGs can size off the real available area), and the same `50cqh`
+  became "half the chart-body" ≈ a sixth of the slide. The cohort variant
+  was already on the Form-aware `100cqh` pattern and never shrank — the
+  discrepancy between variants is the tell.
+- **Mitigation:** The common quadrant now mirrors the pie's in-form pattern
+  (`piechart.styles.css` §IN-FORM, `2026-06-15-form-chart-clip.md`): figure
+  collapsed with `display:contents`, SVG `height:100cqh` off the chart-body
+  (`quadrant.styles.css`). When adding a `container-type` to any wrapper,
+  grep the subtree for `cq*` units first — each one's basis just changed.
+- **Triggered by:** Adding `container-type` to an element whose descendants
+  already use container units sized against a higher container; blessing
+  goldens without eyeballing the pages (HARD RULE #23 — a bless is a claim
+  you looked).
+- **Removable when:** Never — it's how container units scope. The guard is
+  the grep habit plus actually looking at re-blessed goldens.
+- **Commits:** the quadrant in-form fill fix.
+
+---
+
 ### Chart caption swallowed when `_footer` is set
 
 - **Symptom:** A trailing caption paragraph on a chart-frame slide
