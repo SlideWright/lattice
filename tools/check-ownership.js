@@ -1203,6 +1203,142 @@ function checkPreviewHtmlSinks(errors) {
   }
 }
 
+// ── HARD RULE #24: OpenRouter budget — our paid key stays off the site AND out of tests ──
+// Two separate invariants (engineering/workflow.md §OpenRouter budget):
+//   1. NO EXPOSURE — our server-side OPEN_ROUTER_KEY must never reach the deployed site.
+//      docs/ is a STATIC bundle shipped to the browser; the Playground uses the USER's own
+//      OpenRouter key via OAuth (bring-your-own-key), so docs/ has zero reason to name our
+//      key. A reference there would inline it into the bundle (leak) AND spend our budget on
+//      the live site. (docs/ legitimately calls openrouter.ai with the USER's key — only OUR
+//      key NAME is forbidden there, not the endpoint.)
+//   2. NO ABUSE — our key must never be spent by the automated suite: no `test/**` file reads
+//      it or hits the live API, no CI workflow injects it, no `test`-family npm script invokes
+//      a spender. The one sanctioned spender is on-demand + opt-in (OPENROUTER_ALLOW_SPEND).
+const OPENROUTER_KEY_NAME = /OPEN_ROUTER_KEY/; // the bare name catches bracket/destructure reads too
+// The gate's own test fixtures legitimately CONTAIN the key name as data (they build probe
+// files) — exempt them so the scan doesn't flag itself, same as the US-English dictionary.
+const OPENROUTER_SCAN_EXEMPT = new Set(['test/unit/cli/check-ownership.test.js']);
+// The ONLY paths allowed to spend our key — on-demand, opt-in, cost-printing (rule #24).
+const SANCTIONED_OPENROUTER_SPENDERS = ['tools/component-gen-eval.mjs'];
+
+// Workflows allowed to spend the key: sanctioned, budgeted, self-skipping when the secret is
+// unset, and — critically — OFF the PR/commit critical path (nightly schedule / workflow_dispatch,
+// never pull_request/push/merge_group, which fire constantly). This is the CI home for live E2E.
+const SANCTIONED_OPENROUTER_WORKFLOWS = [
+  '.github/workflows/studio-e2e-nightly.yml', // nightly Studio live-AI E2E — ~1c/night, self-skips without the secret (#696)
+];
+
+// docs/ CODE files, incl. `.astro` — whose build-time frontmatter runs at build and inlines
+// its result into the STATIC bundle, so a key read there ships to the browser. A DEDICATED
+// walk: the shared listSourceFiles omits `.astro` (and widening it would change what HARD
+// RULE #22 scans). Walks all of docs/ so docs/astro.config.* and build scripts are covered.
+// Prose `.md` is intentionally excluded — a doc may name the var without shipping it.
+const DOCS_CODE_EXT = /\.(?:astro|ts|tsx|js|mjs|cjs)$/;
+function listDocsCodeFiles(dir, out = []) {
+  if (!fs.existsSync(dir)) return out;
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    // Skip generated/vendor trees AND `e2e/` (Playwright specs are test code, not compiled
+    // into the shipped bundle) — invariant 1 guards the SITE BUILD, not tests.
+    if (['node_modules', 'dist', '.astro', 'e2e'].includes(e.name)) continue;
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) listDocsCodeFiles(p, out);
+    // `.spec`/`.test` files don't ship either — exclude them from the site-exposure scan.
+    else if (DOCS_CODE_EXT.test(e.name) && !/\.(?:spec|test)\.[jt]sx?$/.test(e.name)) out.push(p);
+  }
+  return out;
+}
+
+function checkOpenRouterBudget(errors) {
+  // Invariant 1 — no exposure to the deployed site (incl. `.astro` build-time frontmatter).
+  for (const file of listDocsCodeFiles(path.join(ROOT, 'docs'))) {
+    if (OPENROUTER_KEY_NAME.test(fs.readFileSync(file, 'utf8'))) {
+      errors.push(
+        `${path.relative(ROOT, file)} references OPEN_ROUTER_KEY — our server-side key must NEVER ` +
+        `reach the site (HARD RULE #24). The deployed docs are a static bundle; the Playground uses ` +
+        `the USER's own OpenRouter key via OAuth. A reference here leaks our key into the bundle and ` +
+        `spends our budget on the live site. Keep the site bring-your-own-key.`,
+      );
+    }
+  }
+  // Invariant 2a — no spend in the automated suite. We key on OUR env key NAME only, NOT the
+  // openrouter.ai endpoint: spending our budget REQUIRES our key, and forbidding the endpoint
+  // would wrongly flag the GOOD patterns — a Playwright/integration test that MOCKS the API
+  // (`page.route('**/openrouter.ai/**', …)`) or drives the Playground on the USER's own / a test
+  // key. Only a COMMITTED test that reads OUR key (and would then run in CI) is the budget hole.
+  // (The bare name also catches bracket/destructure reads.)
+  for (const file of listSourceFiles(path.join(ROOT, 'test'))) {
+    const rel = path.relative(ROOT, file);
+    if (OPENROUTER_SCAN_EXEMPT.has(rel)) continue;
+    if (OPENROUTER_KEY_NAME.test(fs.readFileSync(file, 'utf8'))) {
+      errors.push(
+        `${rel} reads OPEN_ROUTER_KEY (HARD RULE #24) — the automated suite must never spend our ` +
+        `budget. Mock the LLM (a page.route interceptor or the user-key Playground flow is fine), or ` +
+        `run a real eval on demand via ${SANCTIONED_OPENROUTER_SPENDERS.join(', ')}. A throwaway ` +
+        `prototype that hits the live API belongs in .scratch/ (gitignored, not shipped, not in CI).`,
+      );
+    }
+  }
+  // Invariant 2b — a workflow may spend the key ONLY if it's sanctioned AND runs off the
+  // PR/commit critical path (nightly schedule / workflow_dispatch, budgeted, self-skipping when
+  // the secret is unset). pull_request/push/merge_group fire constantly = the budget hole a
+  // sanction can't bless. See engineering/decisions/2026-06-13-gate-strategy-change-detection.md.
+  const wfDir = path.join(ROOT, '.github', 'workflows');
+  const seenWf = new Set();
+  if (fs.existsSync(wfDir)) {
+    for (const f of fs.readdirSync(wfDir)) {
+      if (!/\.ya?ml$/.test(f)) continue;
+      const rel = `.github/workflows/${f}`;
+      const src = fs.readFileSync(path.join(wfDir, f), 'utf8');
+      if (!OPENROUTER_KEY_NAME.test(src)) continue;
+      seenWf.add(rel);
+      const header = src.split(/^jobs:/m)[0]; // the `on:` triggers live above `jobs:`
+      const onPrPath = /^\s{1,4}(pull_request|push|merge_group)\s*:/m.test(header);
+      if (!SANCTIONED_OPENROUTER_WORKFLOWS.includes(rel)) {
+        errors.push(
+          `${rel} references OPEN_ROUTER_KEY (HARD RULE #24) — a workflow may spend our budget only if ` +
+          `it is a sanctioned, budgeted, nightly/dispatch live tier. Add it to ` +
+          `SANCTIONED_OPENROUTER_WORKFLOWS in tools/check-ownership.js with justification, keep it OFF ` +
+          `pull_request/push, and have it self-skip when the secret is unset.`,
+        );
+      } else if (onPrPath) {
+        errors.push(
+          `${rel} is a sanctioned OpenRouter workflow but triggers on pull_request/push/merge_group ` +
+          `(HARD RULE #24) — a live-key tier must run nightly/dispatch only, off the PR critical path, ` +
+          `or it spends our budget on every PR.`,
+        );
+      }
+    }
+  }
+  // Anti-rot: a sanctioned workflow must still exist and still use the key.
+  for (const rel of SANCTIONED_OPENROUTER_WORKFLOWS) {
+    if (!seenWf.has(rel)) {
+      errors.push(
+        `stale OpenRouter workflow sanction in tools/check-ownership.js — ${rel} no longer references ` +
+        `OPEN_ROUTER_KEY (or is gone). Remove the SANCTIONED_OPENROUTER_WORKFLOWS entry.`,
+      );
+    }
+  }
+  // Invariant 2c — no `test`-family npm script invokes a spender.
+  const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+  for (const [name, cmd] of Object.entries(pkg.scripts || {})) {
+    if (name.startsWith('test') && /component-gen-eval|OPEN_ROUTER_KEY/.test(cmd)) {
+      errors.push(
+        `package.json script "${name}" invokes an OpenRouter spender (HARD RULE #24) — a \`test\` ` +
+        `script must never spend our budget. Keep the eval on its own on-demand script.`,
+      );
+    }
+  }
+  // Anti-rot: every sanctioned spender must still exist.
+  for (const rel of SANCTIONED_OPENROUTER_SPENDERS) {
+    if (!fs.existsSync(path.join(ROOT, rel))) {
+      errors.push(
+        `stale OpenRouter sanction in tools/check-ownership.js — ${rel} no longer exists (HARD RULE #24). ` +
+        `Remove the SANCTIONED_OPENROUTER_SPENDERS entry.`,
+      );
+    }
+  }
+}
+
 // ── Runner ────────────────────────────────────────────────────────────────
 
 // Prose-density coverage — every TEXT-BEARING layout declares a `density` word
@@ -1302,6 +1438,7 @@ function run() {
   checkSolverIntentDeclared(manifests, errors);
   checkDensityCoverage(manifests, errors);
   checkPreviewHtmlSinks(errors);
+  checkOpenRouterBudget(errors);
   return {
     errors,
     counts: {
@@ -1359,6 +1496,9 @@ module.exports = {
   LAYOUT_MARGIN_BUDGET,
   SANCTIONED_MARGINS,
   checkPreviewHtmlSinks,
+  checkOpenRouterBudget,
+  SANCTIONED_OPENROUTER_SPENDERS,
+  SANCTIONED_OPENROUTER_WORKFLOWS,
   listSourceFiles,
   SANCTIONED_PREVIEW_BUILDERS,
   PREVIEW_BUILDER_MARKER,

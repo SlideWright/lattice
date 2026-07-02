@@ -331,6 +331,55 @@ the merge train would be flaky on shared runners (see HARD RULE #19's note and t
 reasoning that keeps the bench out of `npm test`). It's a tool you and the reviewer
 run; the baseline-diff + `## Performance` section are what make the claim auditable.
 
+## OpenRouter budget — our key stays cheap (HARD RULE #24)
+
+We have a paid `OPEN_ROUTER_KEY` in the environment. Two failure modes to prevent, and
+they are **separate**:
+
+1. **Don't expose it to the site.** The docs site is a **static** bundle shipped to the
+   browser; the Playground connects to the user's **own** OpenRouter account via OAuth
+   (bring-your-own-key — their wallet, their spend limit). Our server-side key has no
+   business in `docs/**`, and a reference there would both *leak* it into the shipped
+   bundle and *drain our budget on the live site*. The gate fails on any `OPEN_ROUTER_KEY`
+   in `docs/src`.
+2. **Don't abuse it in tests/dev.** The automated suite must never spend *our* budget: no
+   `test/**` file reads `OPEN_ROUTER_KEY`, no CI workflow injects it, no `test`-family npm
+   script invokes a spender. **Playwright e2e / integration tests are welcome** — they MOCK the
+   endpoint (`page.route('**/openrouter.ai/**', …)`) or drive the Playground on the user's own /
+   a dedicated test key, none of which is our key. The gate keys on the key NAME, not the
+   `openrouter.ai` endpoint, so mocking it never trips the gate. **Throwaway prototype tests**
+   that hit the live API go in `.scratch/` (gitignored, not scanned, not shipped) — or run as an
+   on-demand tool. The only thing barred is a *committed* `test/**` file reading our key, which
+   would then spend on every CI run.
+
+**Sanctioned spend is fine — but validate and budget first.** A tool that really needs the
+key (today only `tools/component-gen-eval.mjs`, the component-generation eval) is:
+
+- **on-demand + opt-in** — it prints its planned spend and *refuses to run* without
+  `OPENROUTER_ALLOW_SPEND=1`, so it can never fire by accident (or in CI);
+- **validated small first** — run `--limit 1` to confirm the prompt/model/parse assumptions
+  on one call before spending on the whole set;
+- **capped at the source** — set a hard per-key spend limit at
+  `https://openrouter.ai/settings/keys` so a bug can't run away with the wallet.
+
+Adding a NEW server-side key consumer? Follow the same shape (opt-in flag + printed cost +
+`--limit`), and add it to `SANCTIONED_OPENROUTER_SPENDERS` in `tools/check-ownership.js`
+with a one-line justification — the gate fails on a stale sanction, so the list can't rot.
+
+**Live E2E in CI — yes, but nightly, never per-PR.** A real-browser test that actually spends
+the key (the Studio live-AI tier, `docs/e2e/**` driven by `.github/workflows/studio-e2e-nightly.yml`)
+belongs **off the PR critical path**: a `schedule`/`workflow_dispatch` workflow that self-skips
+when the secret is unset, with a tiny per-run budget (~a cent a night) and a hard cap at the key.
+Such a workflow goes on `SANCTIONED_OPENROUTER_WORKFLOWS`; the gate **rejects it if it triggers on
+`pull_request`/`push`** (that would spend on every PR — the exact hole). Per-PR CI stays mock-only.
+
+*Scope of the gate: it scans `docs/` code (incl. `.astro` build-time frontmatter and the
+astro/build config), `test/**`, CI workflows, and `test`-family npm scripts for the key
+NAME. It is **name-based**, not a secret-scanner: it
+won't catch a raw key VALUE pasted as a literal, and can't follow a key read through an
+imported helper — which is exactly why any code that reads the key must be a sanctioned,
+opt-in spender, never a quiet `lib/` helper a test could import.*
+
 ## Two-renderer rule
 
 Any authoring transform must land in the shared kernels so every render path

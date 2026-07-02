@@ -11,7 +11,10 @@
  * and (c) declare adapt + capacity on a portrait-reflow case. The aesthetic 10/10
  * read still needs a human (the Quality Bar) — this proves the STRUCTURAL contract.
  *
- * Usage:  OPEN_ROUTER_KEY=… node tools/component-gen-eval.mjs [--model <id>]
+ * Usage:  OPEN_ROUTER_KEY=… OPENROUTER_ALLOW_SPEND=1 node tools/component-gen-eval.mjs [--model <id>] [--limit <n>]
+ *   Spends real credits on OUR key — opt-in only. Without OPENROUTER_ALLOW_SPEND=1 it prints the
+ *   planned spend and exits. Validate on --limit 1 first; set a per-key cap at openrouter.ai/settings/keys.
+ *   (HARD RULE #24 — see engineering/workflow.md §OpenRouter budget.)
  * The key is read ONLY from the environment and never printed. Exit 0 = all cases
  * met their expectation; 1 = a failure; 2 = no key (skipped).
  */
@@ -29,8 +32,26 @@ const { gateComponent } = require(path.join(ROOT, 'lib/layout/gate.js'));
 const KEY = process.env.OPEN_ROUTER_KEY;
 if (!KEY) { console.error('no OPEN_ROUTER_KEY in env — eval skipped'); process.exit(2); }
 const MODEL = process.argv.includes('--model') ? process.argv[process.argv.indexOf('--model') + 1] : (process.env.SMOKE_MODEL || 'anthropic/claude-sonnet-4.5');
+const LIMIT = process.argv.includes('--limit') ? Math.max(1, Number(process.argv[process.argv.indexOf('--limit') + 1]) || 1) : null;
 
 const SET = JSON.parse(fs.readFileSync(path.join(ROOT, 'test/fixtures/component-gen-prompts.json'), 'utf8'));
+const PROMPTS = LIMIT ? SET.prompts.slice(0, LIMIT) : SET.prompts;
+
+// Budget guardrail (HARD RULE #24): spending OUR OPEN_ROUTER_KEY is opt-in and cost-visible,
+// never accidental. Print the spend up front; require an explicit OPENROUTER_ALLOW_SPEND=1.
+// Validate assumptions on a tiny sample (--limit 1) and set a per-key spend cap at
+// https://openrouter.ai/settings/keys before any at-scale run. See workflow.md §OpenRouter budget.
+const MAX_TOK = 2500;
+if (process.env.OPENROUTER_ALLOW_SPEND !== '1') {
+  console.error(
+    'This eval SPENDS real OpenRouter credits on OUR key.\n' +
+    `  plan: ${PROMPTS.length} prompt(s) x 1 call x ${MODEL}, up to ${MAX_TOK} output tokens each ` +
+    `(~${(PROMPTS.length * MAX_TOK / 1000).toFixed(1)}k output tokens max).\n` +
+    '  Validate first on a tiny sample: --limit 1. Set a per-key spend cap at https://openrouter.ai/settings/keys.\n' +
+    '  Re-run with OPENROUTER_ALLOW_SPEND=1 to proceed.',
+  );
+  process.exit(2);
+}
 // A small stand-in catalog so the dedup-route case has something to match.
 const CATALOG = [
   { name: 'actors', bucket: 'inventory', description: 'Roster of responsibilities owned by named actors.', tags: ['ownership', 'roster'] },
@@ -63,7 +84,7 @@ function hasMath(md) { const s = String(md || ''); return /\$\$[\s\S]+?\$\$/.tes
 
 let pass = 0;
 const fails = [];
-for (const t of SET.prompts) {
+for (const t of PROMPTS) {
   const similar = rankSimilar(t.prompt, CATALOG, { limit: 3 });
   let reply = '';
   try { reply = await call(askComponentMessages(t.prompt, { similar })); } catch (e) { fails.push(`${t.id}: API ${e.message}`); console.log(`✗ ${t.id} — API error`); continue; }
