@@ -114,15 +114,41 @@ section.quadrant .quadrant-figure {
  * old square-ish `aspect-ratio:420/320` + `50cqh` cap (which would letterbox the
  * now-wider unit) must not reach it. */
 section.quadrant .quadrant-svg:not(.quadrant-svg--cohort) {
-  /* Section-relative fill, capped at 50cqh (50% slide height). The common
-   * quadrant is NOT in a query-container figure, so `cqh` here means the SLIDE;
-   * keep the resolution-stable cqh cap it shipped with (#180). */
+  /* Section-relative fill, capped at 50cqh (50% slide height). Outside the
+   * Form the common quadrant is NOT in a query-container figure, so `cqh`
+   * here means the SLIDE; keep the resolution-stable cqh cap it shipped
+   * with (#180). */
   height: 100%;
   max-height: 50cqh;
   width: auto;
   aspect-ratio: 420 / 320;
   flex: 0 1 auto;
   overflow: visible;
+}
+/* IN-FORM (section.form) — the pie's proven fill-the-parent pattern
+ * (piechart.styles.css §IN-FORM, 2026-06-15-form-chart-clip.md), which the
+ * cohort variant already inherited via chart-family.css §IN-FORM. Under the
+ * Form, `.chart-body` is a size-query container, which RE-BASES `cqh` from
+ * the slide to the chart-body's content box — so the slide-based
+ * `max-height:50cqh` above silently became "half the body" and shrank the
+ * common quadrant to a thumbnail. Mirror the pie exactly:
+ *   · `.chart-body` is already `container-type:size` (chart-family.css);
+ *   · collapse the figure's box with `display:contents` so the SVG sizes
+ *     straight off the chart-body (a flex figure can't mediate the height
+ *     of a replaced <svg> in print);
+ *   · `height:100cqh` on the SVG → fills the available body area, width
+ *     follows the 420/320 viewBox aspect, `max-width:100%` guards narrow
+ *     bodies. The chart-body's own centering flex column takes over the
+ *     figure's centering job.
+ * Non-form rendering keeps the slide-based rule above, byte-identical. */
+section.form.quadrant:not(.cover) .quadrant-figure {
+  display: contents;
+}
+section.form.quadrant:not(.cover) .quadrant-svg:not(.quadrant-svg--cohort) {
+  height: 100cqh;
+  max-height: none;
+  width: auto;
+  max-width: 100%;
 }
 
 /* ── Native 2×2 quadrant SVG chrome — appended Phase 4 ──
