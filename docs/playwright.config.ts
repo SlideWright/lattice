@@ -1,0 +1,85 @@
+import { defineConfig } from '@playwright/test';
+
+// Playwright E2E for the Studio (route `/studio/`). Governed by
+// engineering/decisions/2026-06-28-experience-gating-playwright.md.
+//
+// WHY a built site, not `astro dev`: the dev server's Vite dep-optimizer throws
+// 504 "Outdated Optimize Dep" on the Studio island's lazy imports (the engine +
+// heavy lint/chat bundles), which makes the preview flaky. `astro preview` on a
+// production build has no Vite optimizer — deterministic and prod-like. So the
+// webServer builds (without the slow `showcase:check` rasterization, irrelevant
+// to E2E) then previews. Locally, `reuseExistingServer` picks up a preview you
+// already have running so you don't rebuild every run.
+//
+// Browser: Chromium from the sandbox at PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers
+// (build 1194 ↔ @playwright/test 1.56.1). Do NOT run `playwright install` here.
+// In CI, provision the pinned browser explicitly (the version pin IS the browser
+// pin). See the decision doc §"Sandbox + CI browser provisioning".
+//
+// trace + video are ON by default (decision doc §"Watching a run") so every run
+// leaves an RPA-style, scrubable record — the same artifacts the nightly relies
+// on to make a failure reproducible without re-running.
+
+const PORT = 4321;
+const BASE_URL = `http://localhost:${PORT}`;
+const isCI = !!process.env.CI;
+
+export default defineConfig({
+	testDir: './e2e',
+	// One slow surface (engine paint inside a srcdoc iframe) sets the timeout floor.
+	timeout: 60_000,
+	// No committed pixel baselines yet (font-swap/runner variance would flake them
+	// in CI — see the perf-gating doc); the @visual specs attach screenshots as
+	// review artifacts instead. Pixel-diff baselines are a documented follow-up.
+	expect: { timeout: 15_000 },
+	fullyParallel: true,
+	forbidOnly: isCI,
+	// The E2E suite is nightly (not the PR critical path), so a single retry to
+	// absorb browser-launch jitter is acceptable; local runs get none so flake is
+	// visible immediately.
+	retries: isCI ? 1 : 0,
+	workers: isCI ? 2 : undefined,
+	reporter: isCI
+		? [['list'], ['html', { open: 'never' }], ['github']]
+		: [['list'], ['html', { open: 'never' }]],
+	outputDir: 'test-results',
+	use: {
+		baseURL: BASE_URL,
+		trace: 'on',
+		video: 'on',
+		screenshot: 'only-on-failure',
+		actionTimeout: 15_000,
+		navigationTimeout: 40_000,
+	},
+	// Tag routing:
+	//   (untagged)   functional oracles — desktop only (no need to re-run per width)
+	//   @mobile      mobile-layout-specific (single swappable pane) — mobile only;
+	//                the two-pane layout applies at ≥ tablet, so these can't run there
+	//   @crosswidth  same assertion worth running at desktop AND mobile (the paint check)
+	//   @visual      screenshot evidence — all three widths
+	projects: [
+		{
+			name: 'desktop',
+			use: { viewport: { width: 1440, height: 900 } },
+			grepInvert: /@mobile/,
+		},
+		{
+			name: 'tablet',
+			use: { viewport: { width: 820, height: 1180 } },
+			grep: /@visual/,
+		},
+		{
+			name: 'mobile',
+			use: { viewport: { width: 390, height: 844 } },
+			grep: /@mobile|@crosswidth|@visual/,
+		},
+	],
+	webServer: {
+		command: 'npm run build:e2e && npm run preview:e2e',
+		url: `${BASE_URL}/studio/`,
+		reuseExistingServer: !isCI,
+		timeout: 300_000,
+		stdout: 'ignore',
+		stderr: 'pipe',
+	},
+});

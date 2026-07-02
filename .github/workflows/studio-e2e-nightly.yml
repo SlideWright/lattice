@@ -1,0 +1,67 @@
+name: Studio E2E nightly (playwright)
+
+# NIGHTLY real-browser E2E for the Studio (`/studio/`) + the consolidated
+# playground paint check. Per the gate-strategy framework
+# (engineering/decisions/2026-06-13-gate-strategy-change-detection.md) and the
+# experience-gating doc (2026-06-28), a browser-dependent suite that needs a
+# built site + Chromium belongs OFF the PR critical path — it runs nightly on
+# `main`, like perf-nightly.yml and preview-e2e-nightly.yml. Promote a stable,
+# fast subset to PR-blocking only after an observed green streak.
+#
+# Browser provisioning: `@playwright/test`'s pinned version IS the browser pin
+# (1.56.1 ↔ Chromium build 1194). `playwright install` fetches exactly that, so
+# `toHaveScreenshot`-style comparisons would be reproducible. The Studio reads the
+# committed `dist/docs/components.json` at build time, so no root build is needed.
+
+on:
+  schedule:
+    - cron: '41 4 * * *' # daily 04:41 UTC — between preview-e2e (04:23) and perf (05:37)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: studio-e2e-nightly
+  cancel-in-progress: false
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install docs deps
+        run: npm ci
+        working-directory: docs
+
+      - name: Install Playwright browser (pinned to @playwright/test)
+        run: npx playwright install --with-deps chromium
+        working-directory: docs
+
+      # playwright.config.ts's webServer builds (without the slow showcase:check)
+      # then previews the production site, and the suite drives it across the
+      # desktop / tablet / mobile projects. trace + video are on, so the artifacts
+      # below are a full RPA-style record of every run.
+      - name: Run Studio E2E
+        run: npm run test:e2e
+        working-directory: docs
+        env:
+          CI: 'true'
+
+      - name: Upload Playwright report + trace/video artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio-e2e-${{ github.run_id }}
+          path: |
+            docs/playwright-report/**
+            docs/test-results/**
+          if-no-files-found: warn
+          retention-days: 14

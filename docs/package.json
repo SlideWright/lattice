@@ -19,7 +19,12 @@
     "perf:collect": "node scripts/perf-collect.mjs",
     "perf:compare": "node scripts/perf-regression.mjs",
     "check:overflow": "node scripts/check-overflow.mjs",
-    "check:preview": "node scripts/check-preview-render.mjs"
+    "check:preview": "node scripts/check-preview-render.mjs",
+    "build:e2e": "npm run sync:portal && npm run sync:playground && astro build",
+    "preview:e2e": "astro preview --port 4321",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.7",
@@ -67,6 +72,7 @@
   },
   "devDependencies": {
     "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.56.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
