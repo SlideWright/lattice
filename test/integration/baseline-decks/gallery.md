@@ -1253,6 +1253,209 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 <!-- _class: divider -->
 <!-- _header: '' -->
 <!-- _paginate: false -->
+<!-- _footer: "Chart — evidence suite · divider" -->
+
+`Chart Layouts · the evidence suite`
+
+## Ten more chart layouts — every one drawn from a plain list
+
+---
+
+<!-- _class: funnel -->
+<!-- _footer: "Chart — funnel · funnel" -->
+
+## Where the signup pipeline leaks.
+
+- Visitors `12,000`
+  - Two-thirds arrive from inbound, not outbound
+- Signups `4,800`
+- Activated `2,160`
+- Paid `864`
+- Renewed `670`
+
+---
+
+<!-- _class: piechart -->
+<!-- _footer: "Chart — piechart · piechart" -->
+
+`H1 2026 · 1,840 person-hours`
+
+## Where the planning quarter actually went.
+
+Nearly half went to producing decks; the deciding itself was the smallest slice.
+
+- Deck production `46%`
+  - 92 decks, averaging 18 slides each
+- Meetings about meetings `22%`
+- Realigning on priorities `18%`
+- Stakeholder management `9%`
+- Actually deciding `5%`
+
+---
+
+<!-- _class: progress -->
+<!-- _footer: "Chart — progress · progress" -->
+
+`H1 2026 · Phase 1 readiness`
+
+## Phase 1 readiness, by workstream.
+
+- Signal Intake `92%` `on-track`
+- Scoring policy `68%` `at-risk`
+- Decision Log `81%` `on-track`
+- Calibration cadence `34%` `deferred`
+- Adoption `12%` `blocked`
+
+---
+
+<!-- _class: radar -->
+<!-- _footer: "Chart — radar · radar" -->
+
+`Scale · 0–10`
+
+## How the vendors stack up across the buying criteria.
+
+- Meridian
+  - Performance `9`
+  - Pricing `7`
+  - Support `8`
+  - Ecosystem `6`
+  - Security `9`
+- Vantage
+  - Performance `7`
+  - Pricing `8`
+  - Support `6`
+  - Ecosystem `9`
+  - Security `7`
+- Helios
+  - Performance `6`
+  - Pricing `9`
+  - Support `7`
+  - Ecosystem `8`
+  - Security `8`
+
+---
+
+<!-- _class: quadrant -->
+<!-- _footer: "Chart — quadrant · quadrant" -->
+
+`Effort 0–10 → Reach 0–100`
+
+## Where to put the next quarter.
+
+Effort in analyst-weeks; reach as the percent of teams that would adopt it.
+
+- Quick Wins
+  - Weekly signal digest `2, 82`
+  - Slack intake bot `3, 72`
+- Strategic Bets
+  - Scoring model v2 `8, 88`
+  - Decision-log API `7, 74`
+- Defer
+  - Per-team weighting UI `2, 28`
+  - Maturity self-assessment `1, 20`
+- Time Sinks
+  - Bespoke board exports `8, 18`
+  - Custom calibration tooling `9, 26`
+
+---
+
+<!-- _class: map -->
+<!-- _footer: "Chart — map · map" -->
+
+## Where the pilot programs reached — unevenly.
+
+- India `48.2`
+  - Largest by volume, thinnest by margin
+- Nigeria `36.4`
+- Kenya `31.0`
+- Brazil `27.5`
+- Indonesia `19.3`
+- Ethiopia `14.1`
+- Bangladesh `11.8`
+- Peru `9.6`
+
+---
+
+<!-- _class: journey -->
+<!-- _footer: "Chart — journey · journey" -->
+
+## Customer onboarding · trial to activation.
+
+- Evaluate
+  - Read case study `@prospect` `:5`
+  - Book demo `@prospect` `:4`
+  - Live demo `@prospect` `@sales` `:4`
+- Trial
+  - Trial signup `@prospect` `:3`
+  - Workspace setup `@user` `@onboarding` `:1`
+- Activate
+  - First report `@user` `:3`
+  - Daily use `@user` `:5`
+
+---
+
+<!-- _class: timeline-list -->
+<!-- _footer: "Chart — timeline-list · timeline-list" -->
+
+`Decision framework`
+
+## How the framework arrived in production.
+
+1. `2024 Q3` First workshop
+   - The one where we agreed to agree on a definition of "signal."
+2. `2025 Q1` Framework approved `decision`
+   - The steering committee accepts the scoring model.
+3. `2025 Q3` Pilot live `live`
+   - Four product teams onboarded; the decision log opens.
+4. `2026 Q1` Operating rhythm `live`
+   - The weekly review lands on every team's calendar.
+
+---
+
+<!-- _class: state-chart lr -->
+<!-- _footer: "Chart — state-chart · state-chart lr" -->
+
+`Decision lifecycle`
+
+## How a call moves through the log.
+
+1. Logged `start`
+   - `score => 2`
+2. Scored `on-track`
+   - `review => 3`
+3. In Review `at-risk`
+   - `approve => 4`
+   - `reject => 1`
+   - `revise => self`
+4. Decided `decision`
+   - `calibrate => 5`
+5. Calibrated `end`
+
+*Rejected entries return to intake; revisions stay in review.*
+
+---
+
+<!-- _class: word-cloud -->
+<!-- _footer: "Chart — word-cloud · word-cloud" -->
+
+## What 38 win/loss interviews kept saying, by frequency.
+
+- time-to-value `5`
+- security `4`
+- onboarding `4`
+- pricing `3`
+- integrations `3`
+- support `2`
+- roadmap `2`
+- contracts `1`
+- residency `1`
+
+---
+
+<!-- _class: divider -->
+<!-- _header: '' -->
+<!-- _paginate: false -->
 <!-- _footer: "Split Layouts · split-panel + split-panel metric + split-panel steps + split-compare + split-panel pullquote" -->
 
 `Split Layouts · five variants`
@@ -1352,6 +1555,289 @@ Both paths are viable. The difference is where we spend the next 18 months.
   - The moment a user first succeeds defines their frame for everything that follows.
 - Understanding, not delight, is the retention driver at scale
   - Users who understand the system's logic stay through friction. Build for comprehension.
+
+---
+
+<!-- _class: divider -->
+<!-- _header: '' -->
+<!-- _paginate: false -->
+<!-- _footer: "Legal Layouts · statute-stack + authority-chain + obligation-matrix + citation-card + regulatory-update + redline" -->
+
+`Legal Layouts · six components`
+
+## The compliance review, in an actual legal vocabulary
+
+---
+
+<!-- _class: statute-stack -->
+<!-- _footer: "Legal — statute-stack · statute-stack" -->
+
+## Children's data — three jurisdictions, three obligations.
+
+- Federal `15 U.S.C. §6501`
+  - Verifiable parental consent for under-13 personal data.
+  - `In effect since 2000`
+- State `Cal. Civ. §1798.120`
+  - Opt-in for selling or sharing under-16 data; opt-out for over-16.
+  - `Enforced 2023`
+- Local `NYC §22-1201`
+  - Bias-audit obligation for automated tools in employment decisions.
+  - `Effective 2023`
+
+---
+
+<!-- _class: authority-chain -->
+<!-- _footer: "Legal — authority-chain · authority-chain" -->
+
+## COPPA — the chain, tier by tier.
+
+1. Statute
+   - `15 U.S.C. §6501`
+   - Congress, 1998 — verifiable parental consent for under-13 data.
+2. Regulation
+   - `16 C.F.R. Part 312`
+   - FTC implementing rule; 2013 rewrite expanded covered identifiers.
+3. Guidance
+   - `FTC Six-Step Compliance Plan`
+   - Staff guidance — non-binding, but cited in every consent order.
+4. Case
+   - `In re Epic Games · 2022`
+   - $245M consent order — operationalized the "actual knowledge" standard.
+
+---
+
+<!-- _class: obligation-matrix -->
+<!-- _footer: "Legal — obligation-matrix · obligation-matrix" -->
+
+## Privacy obligations across regimes — neutral grid.
+
+| Regulation | Notice | Consent | Retention | Breach | DSAR  |
+| ---------- | :----: | :-----: | :-------: | :----: | :---: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]   |
+
+Filled = applies, half = partial, empty = exempt. Neutral ink — data first.
+
+---
+
+<!-- _class: citation-card -->
+<!-- _footer: "Legal — citation-card · citation-card" -->
+
+## What counts as "personal information" under CCPA.
+
+`Cal. Civ. Code §1798.140(o) · CCPA/CPRA`
+
+> "Personal information" means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
+
+- **What we must do.**
+  - Treat household-level identifiers as PI in our notice, retention, and DSAR workflows. Audit pixel and tag inventory next quarter.
+
+---
+
+<!-- _class: regulatory-update -->
+<!-- _footer: "Legal — regulatory-update · regulatory-update" -->
+
+## Privacy and AI motion — Q1 2026.
+
+`Federal · State · International`
+
+1. EU AI Act
+   - `Title III`
+   - Conformity-assessment pre-market obligation took effect.
+   - `Effective Feb 2026`
+2. Colorado AI Act
+   - `SB 24-205`
+   - Developer and deployer duties for consequential-decision systems.
+   - `Effective Feb 2026`
+3. Texas DPSA
+   - `§541.151`
+   - DSAR opt-out portal mandatory; small-business safe-harbor narrowed.
+   - `Effective Mar 2026`
+
+---
+
+<!-- _class: redline -->
+<!-- _footer: "Legal — redline · redline" -->
+
+## SB-362 rewrote the opt-out link rule.
+
+`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+
+> A business that <del>collects</del> <ins>collects, sells, or shares</ins> consumers' personal information shall provide <del>two or more</del> <ins>at least one</ins> designated method for submitting requests to opt-out, <ins>including a clear and conspicuous link on the homepage,</ins> for use by consumers to <del>opt out of the sale of</del> <ins>direct the business not to sell or share</ins> their personal information.
+
+- **Why this matters.** Sale and sharing collapse into one duty with a pinned link title — homepage chrome and DSAR workflows both change.
+
+---
+
+<!-- _class: divider -->
+<!-- _header: '' -->
+<!-- _paginate: false -->
+<!-- _footer: "Operating Layouts · math + inventory + checklist + pricing + q-and-a + logo-wall" -->
+
+`Operating Layouts · six components`
+
+## The plan made operational — model, roster, readiness, and terms
+
+---
+
+<!-- _class: math -->
+<!-- _footer: "Math — closed form · math" -->
+
+`Scoring model · OLS`
+
+## The scoring model, formally.
+
+$$ \hat\beta = (X^\top X)^{-1} X^\top y $$
+
+- $\hat\beta$ — signal-weight vector the calibration loop refits
+- $X$ — design matrix of scored signals, $n \times p$
+- $y$ — observed outcomes, length $n$
+- $X^\top X$ — Gram matrix, $p \times p$, must be invertible
+
+---
+
+<!-- _class: inventory -->
+<!-- _footer: "Ops — inventory · inventory" -->
+
+`Framework · Four Components`
+
+## The system has four moving parts.
+
+- **Signal Intake.** Weekly structured collection across conversations and market data.
+- **Scoring Model.** Each signal scored on confidence, recency, and relevance.
+- **Decision Log.** Every call recorded with the signals that informed it.
+- **Calibration Loop.** Outcomes compared to predictions each cycle.
+
+> Signals without decisions are just noise.
+
+---
+
+<!-- _class: checklist -->
+<!-- _footer: "Ops — checklist · checklist" -->
+
+## Go-live readiness for the framework rollout.
+
+- [x] Signal taxonomy ratified, in workshop four of three
+- [x] Scoring weights agreed by the steering committee
+- [x] Decision log live in staging
+- [-] Pilot teams trained, two still "circling back"
+- [-] Operating rhythm on the calendar, attendance optional in practice
+- [ ] Exec sponsor confirmed for the launch comms
+- [/] Per-team weighting UI, descoped to next half
+
+---
+
+<!-- _class: pricing -->
+<!-- _footer: "Ops — pricing · pricing" -->
+
+## Pick the plan that fits the team.
+
+- Starter `$0`
+  - [x] Up to 3 seats
+  - [/] SSO
+  - [/] Dedicated support
+  - For evaluating, one team.
+- Growth `$49 / mo` *Most popular*
+  - [x] Up to 25 seats
+  - [x] SSO
+  - [/] Dedicated support
+  - For scaling teams.
+- Enterprise `Custom`
+  - [x] Unlimited seats
+  - [x] SSO + SCIM
+  - [x] Dedicated support
+  - For procurement and compliance.
+
+---
+
+<!-- _class: q-and-a -->
+<!-- _footer: "Ops — q-and-a · q-and-a" -->
+
+## What the board will press on.
+
+- Why not extend the current vendor one more year?
+  - The renewal lands in Q3 and locks us in through 2028. Switching now costs a single quarter of migration; switching after renewal costs three.
+- What happens to the team mid-migration?
+  - No headcount change. The same four engineers run both stacks through the eight-week overlap.
+- How confident are we in the savings?
+  - The $1.2M is contracted, not projected — the signed rate differential, before any usage growth.
+
+---
+
+<!-- _class: logo-wall -->
+<!-- _footer: "Ops — logo-wall · logo-wall" -->
+
+`In the pilot`
+
+## Eight teams already run the framework.
+
+- ![Acme](../../../lib/components/inventory/logo-wall/acme.svg)
+  - Acme
+  - `Series B`
+- ![Globex](../../../lib/components/inventory/logo-wall/globex.svg)
+  - Globex
+  - `Enterprise`
+- ![Vantage](../../../lib/components/inventory/logo-wall/vantage.svg)
+  - Vantage
+  - `Public`
+- ![Umbra](../../../lib/components/inventory/logo-wall/umbra.svg)
+  - Umbra
+  - `Series C`
+- ![Meridian](../../../lib/components/inventory/logo-wall/meridian.svg)
+  - Meridian
+  - `Seed`
+- ![Helios](../../../lib/components/inventory/logo-wall/helios.svg)
+  - Helios
+  - `Public`
+- ![Northwind](../../../lib/components/inventory/logo-wall/northwind.svg)
+  - Northwind
+  - `Anchor`
+- ![Cobalt](../../../lib/components/inventory/logo-wall/cobalt.svg)
+  - Cobalt
+  - `Series A`
+
+---
+
+<!-- _class: divider -->
+<!-- _header: '' -->
+<!-- _paginate: false -->
+<!-- _footer: "Connect Layouts · contact + wifi" -->
+
+`Connect Layouts · two components`
+
+## Scannable codes for the room — a person and a network
+
+---
+
+<!-- _class: contact -->
+<!-- _footer: "Connect — contact · contact" -->
+
+## Questions after the meeting?
+
+- Dana Reyes `name`
+- VP Strategy `title`
+- Northwind `org`
+- dana.reyes@northwind.example `email`
+- +1-555-0142 `phone`
+- northwind.example/strategy `url`
+- Scan to add me `caption`
+
+---
+
+<!-- _class: wifi -->
+<!-- _footer: "Connect — wifi · wifi" -->
+
+`Room Wi-Fi`
+
+## Join the room.
+
+- Offsite-Guest `ssid`
+- boardroom2026 `password`
+- WPA2 `security`
+- Scan to connect `caption`
 
 ---
 

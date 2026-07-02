@@ -18,8 +18,10 @@ const { runEmulator } = require('../../helpers/render');
 const { pageCount }   = require('../../helpers/pdf');
 
 const GALLERY = path.join(__dirname, '..', 'baseline-decks', 'gallery.md');
-// 87 since the `featured` purge removed 2 slides (was 89).
-const EXPECTED_PAGES = 87;
+// 115 since the full-coverage extension added the evidence-chart, legal,
+// operating, and connect modules (was 87) — every one of the 55 components
+// now appears at least once.
+const EXPECTED_PAGES = 115;
 
 describe('emulator.gallery', () => {
   test('emulator: gallery.md builds and produces expected page count', { timeout: 180000 }, () => {
