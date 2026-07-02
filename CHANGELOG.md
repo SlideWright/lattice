@@ -84,6 +84,17 @@ in patch versions.
   it'll be shown with — instead of always at full intensity. Design-time only: the finish
   stays a pure recipe (strength is a per-deck control, not baked into the saved finish —
   the finish and backdrop axes are deliberately separate).
+
+- **The gallery deck now exercises every component — all 55, in a 115-slide
+  tour** (was 87 slides covering 31). Four new narrative modules: the
+  evidence-suite charts (funnel, piechart, progress, radar, quadrant, map,
+  journey, timeline-list, state-chart, word-cloud), the legal review
+  (statute-stack, authority-chain, obligation-matrix, citation-card,
+  regulatory-update, redline), the operating plan (math, inventory,
+  checklist, pricing, q-and-a, logo-wall), and connect (contact, wifi).
+  Every page visually reviewed; pre-existing component render defects the
+  new coverage exposed are tracked in #680.
+
 - **The gallery PDF is served on the docs site at `/gallery.pdf`.** The
   committed baseline gallery is staged into the site at build time
   (`docs/scripts/sync-portal.mjs`), and the landing hero and introduction

@@ -13,9 +13,9 @@ header: "Lattice · Layout Gallery"
 
 # From Signal to Strategy
 
-`Product Strategy · Q3 2025`
+`Product Strategy · Q3 2026`
 
-A decision framework for product leaders navigating market uncertainty
+A decision framework for product leaders navigating market uncertainty, quarterly
 
 ---
 
@@ -49,7 +49,7 @@ The word is overloaded. We use it to mean anything from a customer complaint to 
 
 ## The window for differentiation is narrowing.
 
-Three converging forces — commoditized infrastructure, compressed release cycles, and rising customer switching costs — have reduced the average durable advantage window from 36 months to under 14. Teams that cannot identify signal from noise in that window will consistently miss timing.
+Three converging forces — commoditized infrastructure, compressed release cycles, and rising customer switching costs — have reduced the average durable advantage window from 36 months to under 14. Teams that cannot split signal from noise inside that window miss the timing — reliably, and then schedule a retrospective about it.
 
 ---
 
@@ -58,19 +58,19 @@ Three converging forces — commoditized infrastructure, compressed release cycl
 
 `Architecture · Signal Pipeline`
 
-## How signals move from input to decision.
+## Signals move through four stages; opinions skip to the end.
 
-`Four-stage processing pipeline — weekly cadence`
+`Four-stage processing pipeline — monthly cadence`
 
 ```mermaid
 ---
-title: processing pipeline — weekly cadence
+title: processing pipeline — monthly cadence
 ---
 flowchart LR
   A["Raw Signals"] --> B["Classify"]
   B --> C["Score & Weight"]
   C --> D["Decision Log"]
-  D -.->|"weekly retrospective"| B
+  D -.->|"monthly retrospective"| B
 ```
 
 ---
@@ -82,7 +82,7 @@ flowchart LR
 
 ## Six months of results across four product teams.
 
-`Measured against pre-framework baseline, same teams, same market conditions.`
+`Measured against pre-framework baseline, same teams, same market conditions. Alignment self-reported.`
 
 1. 73%
    - faster close
@@ -103,7 +103,7 @@ flowchart LR
 - Signal Intake
   - Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.
 - Scoring Model
-  - Each signal scored on three dimensions: confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.
+  - Each signal scored on three dimensions: confidence, recency, and strategic relevance. Weights are team-configurable — configured once, then defended forever.
 - Decision Log
   - Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.
 - Calibration Loop
@@ -114,12 +114,12 @@ flowchart LR
 <!-- _class: cards-grid -->
 <!-- _footer: "Inline code in cards · cards-grid" -->
 
-## Code in card headers and body text.
+## The pipeline, by version number.
 
 - Signal Intake `v2.4`
   - Handles 94% of structured signals without manual intervention. Average latency: `4 min` from ingestion to scored entry.
 - Scoring Model `configurable`
-  - Three dimensions: confidence, recency, relevance. Default weights are `33 / 33 / 33` — adjust after your first retrospective.
+  - Three dimensions: confidence, recency, relevance. Default weights are `33 / 33 / 33` — the diplomatic opening position.
 - Decision Log `required`
   - Every prioritization change above `P2` must carry a logged rationale. No log, no change.
 - Calibration Loop `monthly`
@@ -133,11 +133,11 @@ flowchart LR
 ## Signal Intake produces three outputs.
 
 1. Weekly Signal Brief
-   - A ranked list of the top 10 signals from the prior week, with confidence scores and source attribution. Distributed to product leads every Monday morning.
+   - The week's top ten signals, ranked and attributed. Lands Monday morning.
 2. Anomaly Alerts
-   - Real-time flags when a signal exceeds the 2σ threshold on any dimension. Routed directly to the accountable PM with a 4-hour response SLA.
+   - Real-time flags past the 2σ threshold, routed to the accountable PM. Four-hour response SLA, observed in spirit.
 3. Monthly Signal Index
-   - The source of truth for the calibration loop. A complete record of all signals logged, scored, and resolved in the prior month. Required reading before each retrospective.
+   - The calibration loop's source of truth. Required reading before each retrospective; skimming is detectable.
 
 ---
 
@@ -147,9 +147,9 @@ flowchart LR
 ## Two failure modes the framework is designed to prevent.
 
 - False signal amplification
-  - A single loud voice — one enterprise customer, one analyst report, one competitive announcement — dominates the decision without being weighed against the full signal set. The scoring model prevents any single source from exceeding 30% of the total signal weight in a given decision.
+  - One loud voice dominating the decision. The model caps any source at 30% — a ceiling one enterprise customer tests monthly.
 - Signal hoarding
-  - Teams collect signals but do not log decisions, so the calibration loop has nothing to learn from. The Decision Log is a required artifact for any prioritization change above P2 severity. No log, no change.
+  - Signals collected, decisions unlogged — the loop learns nothing. Above P2, the log is required. No log, no change.
 
 ---
 
@@ -159,9 +159,9 @@ flowchart LR
 ## Two intake modes for different signal types.
 
 - Structured Intake
-  - Signals with clear schema: NPS verbatims, support ticket categories, feature request volumes, win/loss notes. Ingested automatically via API connectors. Scored on arrival. Zero manual handling.
+  - Clear-schema signals — NPS verbatims, tickets, win/loss notes — ingested by connector, scored on arrival.
 - Unstructured Intake
-  - Signals without schema: field observations, conference conversations, analyst briefings, competitive demos. Require human classification before scoring. Routed to the signal owner for a 48-hour classification window.
+  - Schema-less signals — field notes, briefings, demos — need human classification. A 48-hour window; the productive hour is the forty-eighth.
 
 ---
 
@@ -171,11 +171,11 @@ flowchart LR
 ## Scoring model: before and after the calibration loop.
 
 - Before Calibration
-  - Equal weights across all three dimensions. Confidence, recency, and relevance each contribute 33% to the final score. Simple, consistent, but blind to what your market actually rewards.
+  - Equal weights, 33% each. Simple, consistent, and blind to what the market rewards — which nobody minded until the market did.
 - After Calibration
-  - Weights reflect your team's historical signal accuracy. If recency has consistently been the weakest predictor for your product, it gets downweighted. The model becomes a record of what you have learned.
+  - Weights track your historical accuracy; weak predictors get downweighted. The model becomes a record of what you have learned.
 
-The shift from equal weights to calibrated weights takes two retrospective cycles — roughly 60 days from adoption.
+The shift from equal weights to calibrated weights takes two retrospective cycles — roughly 60 days from adoption, both of which must occur.
 
 ---
 
@@ -202,7 +202,7 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 4. Decision Logged
    - _PM records rationale, signals, predicted outcome_
 5. Retrospective
-   - _Outcome scored, weights updated accordingly_
+   - _Outcome scored, weights updated, precedent quietly set_
 
 ---
 
@@ -214,7 +214,7 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 - It does not make decisions — it structures the information that humans use to decide.
 - It does not replace customer discovery — it scores and routes what discovery surfaces.
 - It does not work without the Decision Log — calibration requires outcome data to learn from.
-- It does not guarantee alignment — it surfaces disagreement earlier, which still requires resolution.
+- It does not guarantee alignment — it surfaces disagreement earlier, when it is cheaper and louder.
 - It does not scale down to individual feature decisions — it is designed for prioritization above P2.
 
 ---
@@ -227,7 +227,7 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 1. You have a regular prioritization cadence — at minimum monthly.
 2. At least one person owns signal collection full-time or as a primary responsibility.
 3. Leadership has agreed to log decisions with rationale, not just outcomes.
-4. You have 90 minutes per week to run the intake and scoring process.
+4. You have 90 minutes per week for intake and scoring — one standing meeting you already wanted to delete.
 
 ---
 
@@ -237,7 +237,7 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 `Calibration Result · 6-Month Pilot`
 
 - 14x
-  - Return on signal investment — measured as decisions that reached the right outcome on the first attempt, versus the baseline rate before the framework was adopted.
+  - Return on signal investment — measured as decisions that reached the right outcome on the first attempt, versus the baseline rate before the framework was adopted. The number survived two rounds of being asked to.
 
 ---
 
@@ -250,7 +250,7 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 ### What this section covers
 
-The scoring model is the most configurable component. This section covers the three dimensions, how weights are set initially, and how calibration updates them over time.
+The scoring model is the most configurable component, and therefore the most argued about. This section covers the three dimensions, how weights are set initially, and how calibration updates them over time.
 
 1. Confidence
    - How many independent sources corroborate the signal. Ranges 1–5.
@@ -270,7 +270,7 @@ The scoring model is the most configurable component. This section covers the th
 
 ## Next step is a working session, not a debate.
 
-`Walk these questions with me in 60–90 minutes. The output is either a design we can execute, or a shared list of what needs more work before we commit.`
+`Walk these questions with me in 60–90 minutes. The output is either a design we can execute, or a shared list of what needs more work before we commit. Both count as progress; only one becomes another deck.`
 
 ---
 
@@ -282,18 +282,18 @@ The scoring model is the most configurable component. This section covers the th
 ## Structured intake performed above expectations — volume and latency were not concerns.
 
 - What worked
-  - API connectors handled 94% of structured signals without manual intervention. Average scoring latency was 4 minutes from ingestion. Schema normalization held across all five connected sources.
+  - Connectors handled 94% of structured signals untouched; scoring latency averaged four minutes.
 - What required tuning
-  - NPS verbatim classification had an 18% error rate in the first two weeks. Required a training pass on the classification model before accuracy reached the 92% target.
+  - Verbatim classification opened at an 18% error rate; one training pass reached the 92% target.
 
-> Viable as designed — NLP classification requires a 2-week warm-up period on new deployments.
+> Viable as designed — the classifier needs a 2-week warm-up on new deployments, booked under "known issue."
 
 ---
 
 <!-- _class: cards-grid -->
 <!-- _footer: "Key insight + below-note · cards-grid" -->
 
-## Key insight works on any card-bearing layout.
+## Four parts, one insight — the loop is the product.
 
 - Signal Intake
   - Weekly structured collection across customer conversations, market data, and competitive moves.
@@ -306,14 +306,14 @@ The scoring model is the most configurable component. This section covers the th
 
 > The calibration loop is what separates teams that learn from teams that repeat the same mistakes.
 
-Trailing blockquote becomes a key insight; trailing paragraph becomes a below-note with a hairline rule above it.
+The insight survived three reviews unedited — a first for this deck.
 
 ---
 
 <!-- _class: cards-grid -->
 <!-- _footer: "Key insight + annotation · cards-grid" -->
 
-## A trailing italic-only paragraph becomes an annotation.
+## The same four parts, now with the source on the record.
 
 - Signal Intake
   - Weekly structured collection across customer conversations, market data, and competitive moves.
@@ -326,7 +326,7 @@ Trailing blockquote becomes a key insight; trailing paragraph becomes a below-no
 
 > The calibration loop is what separates teams that learn from teams that repeat the same mistakes.
 
-_Source: pilot retrospective, six months across four product teams._
+_Source: pilot retrospective — six months, four teams, one deck, this one._
 
 ---
 
@@ -336,11 +336,11 @@ _Source: pilot retrospective, six months across four product teams._
 ## Three scoring failure modes found in the pilot.
 
 1. Recency dominance
-   - High-recency noise crowding out durable signal. Teams set recency weight above 50% in the first calibration pass. Corrected by capping recency weight at 40% until two calibration cycles complete.
+   - Fresh noise crowding out durable signal. Corrected by capping recency at 40% for two cycles.
 2. Source concentration
-   - Single-customer signals inflating confidence scores. One enterprise customer's verbatims represented 34% of all structured intake in month one. Corrected by adding a source-diversity floor to the scoring model.
+   - One customer was 34% of month-one intake. Corrected with a source-diversity floor.
 3. Outcome misclassification
-   - PMs logging outcomes too vague to score. "Improve retention" is not scoreable. "Reduce 30-day churn from 8.2% to below 7%" is.
+   - Outcomes too vague to score. "Improve retention" is not scoreable. "Churn below 7%" is.
 
 ---
 
@@ -350,62 +350,62 @@ _Source: pilot retrospective, six months across four product teams._
 ## Four requirements every decision system must meet.
 
 - **Speed**
-  - Decisions must close within the window they are relevant to. Systems that add latency consume the value they exist to protect.
+  - Decisions close inside their window. Latency consumes the value the system protects.
 - **Auditability**
-  - Every prioritization decision above a threshold must carry a traceable rationale. Required for alignment and compliance.
+  - Every decision above the threshold carries a traceable rationale.
 - **Adoption**
-  - If the team won't use it weekly, calibration never runs and the model never improves. Ninety minutes per PM is the ceiling.
+  - Unused weekly, calibration never runs. Ninety minutes per PM is the ceiling.
 - **Calibration**
-  - The system must improve over time. A static scoring model is a spreadsheet with extra steps.
+  - It must improve over time. A static scoring model is a spreadsheet with extra steps.
 
 ---
 
 <!-- _class: verdict-grid -->
 <!-- _footer: "2×2 verdict grid · verdict-grid" -->
 
-## We evaluated four intake tools against the criteria.
+## We evaluated four paths against the criteria.
 
-- Tool A · Chorus
+- Path A · The spreadsheet
   - [x] Speed
-  - [-] Auditability
+  - [ ] Auditability
   - [x] Adoption
   - [ ] Calibration
-  - Strong call recording and summarization. No decision logging or calibration loop. Requires separate tooling for everything downstream of intake.
-- Tool B · Productboard
-  - [ ] Speed
+  - Open everywhere, version unknown. No trace — in fairness, the appeal.
+- Path B · Vendor North
+  - [x] Speed
+  - [x] Auditability
+  - [ ] Adoption
+  - [ ] Calibration
+  - Clean intake, real audit trail. The weights stay on their side of the contract.
+- Path C · Vendor West
+  - [x] Speed
   - [x] Auditability
   - [x] Adoption
   - [ ] Calibration
-  - Solid intake and prioritization. Decision logging exists but is manual and rarely used. No calibration mechanism. Setup takes 3–4 weeks.
-- Tool C · Notion
-  - [x] Speed
-  - [x] Auditability
-  - [-] Adoption
-  - [ ] Calibration
-  - Flexible enough to build the full system. But building it takes 40+ hours and the result is fragile. Teams abandon maintenance after the first quarter.
-- Tool D · Sprig + Decision Log
+  - The better demo, by some distance. The weights are theirs; so is §9.2.
+- Path D · Build in-house
   - [x] Speed
   - [x] Auditability
   - [x] Adoption
   - [x] Calibration
-  - Meets all four criteria within the 90-minute weekly budget. Reaches production in the same week it is adopted. Recommended.
+  - All four criteria, inside the budget, weights ours. Recommended.
 
 ---
 
 <!-- _class: compare-table -->
 <!-- _footer: "Comparison table · compare-table" -->
 
-## The four tools side by side.
+## The four paths side by side.
 
-| Criterion    | Chorus | Productboard | Notion    | Sprig + Log |
-| ------------ | ------ | ------------ | --------- | ----------- |
-| Speed        | ✓      | ✗            | ✓         | ✓           |
-| Auditability | ✗      | ✓            | ✓         | ✓           |
-| Adoption     | ✓      | ✓            | ✗         | ✓           |
-| Calibration  | ✗      | ✗            | ✗         | ✓           |
-| Setup time   | 1 day  | 3–4 weeks    | 40+ hours | Same day    |
+| Criterion    | Spreadsheet  | Vendor North | Vendor West | In-house build |
+| ------------ | ------------ | ------------ | ----------- | -------------- |
+| Speed        | ✓            | ✓            | ✓           | ✓              |
+| Auditability | ✗            | ✓            | ✓           | ✓              |
+| Adoption     | ✓            | ✗            | ✓           | ✓              |
+| Calibration  | ✗            | ✗            | ✗           | ✓              |
+| Setup time   | Already open | 3–4 weeks    | 6 weeks     | Same quarter   |
 
-_Evaluated against the same four teams and the same 90-minute weekly budget constraint._
+_Evaluated against the same four pilot teams and the same 90-minute weekly budget constraint._
 
 ---
 
@@ -421,13 +421,13 @@ _Evaluated against the same four teams and the same 90-minute weekly budget cons
 - Calibration
   - The retrospective comparison of predicted to observed outcomes, used to score the framework's accuracy.
 - Connector
-  - The integration layer between Sprig and your NPS / support platforms. Owns ingestion and tagging.
+  - The integration layer between signal intake and a source system. Owns ingestion and tagging.
 - Decision Log
   - The append-only record of every prioritization decision, its predicted outcome, and the actual outcome at retrospective time.
 - Eligible PM
   - A PM whose team has adopted the framework and is past the 30-day onboarding period.
 - Framework
-  - The four-criterion process: Speed, Auditability, Adoption, Calibration. The deck's central artifact.
+  - The four-part system — Signal Intake, Scoring Model, Decision Log, Calibration Loop — judged on four criteria: speed, auditability, adoption, calibration.
 
 ---
 
@@ -444,24 +444,24 @@ _Evaluated against the same four teams and the same 90-minute weekly budget cons
   - The 30-day review meeting where logged decisions are scored against observed outcomes.
 - Signal
   - Any qualitative or quantitative input to a decision — survey response, NPS comment, support ticket, sales call note.
-- Sprig
-  - The micro-survey product used by Tool D to capture qualitative signal in-product.
-- Tool D
-  - The recommended option in the four-tool comparison: Sprig combined with a lightweight Decision Log.
+- Scoring policy
+  - The weight set the calibration loop refits each cycle — the artifact neither vendor would expose.
+- Vendor West
+  - The stronger of the two vendors evaluated; the demo everyone remembers, and the author of §9.2.
 
 ---
 
 <!-- _class: compare-prose -->
 <!-- _footer: "Two options + connector · compare-prose" -->
 
-## Two options with a connector and an explanatory note below.
+## Two intake modes ran head to head for a quarter.
 
-- Option A · Label
-  - Body text describing the first option. Enough detail to fill the card naturally and show how the layout handles a few lines of prose.
-- Option B · Label
-  - Body text describing the second option. The connector arrow between them implies direction or causality — before/after, input/output, cause/effect.
+- Weekly Digest
+  - Signals batch into a Monday summary. Coverage is high; attention is not. The digest is where signals go to be acknowledged.
+- Live Feed
+  - Signals land in the channel as they are scored. Attention is immediate, and so is the muting, usually by Thursday.
 
-The below-note sits under the cards after a hairline rule. Use it for a single contextual sentence.
+The pilot kept both — the feed for the two teams that mute nothing, the digest for everyone honest about themselves.
 
 ---
 
@@ -471,13 +471,13 @@ The below-note sits under the cards after a hairline rule. Use it for a single c
 ## How to roll this out across your organization.
 
 1. Pick one team and one decision type
-   - Start with a team that already has a regular prioritization rhythm. Apply the framework only to a single decision category for the first 30 days.
+   - A team with an existing rhythm, one decision category, thirty days.
 2. Log everything, decide nothing differently
-   - In the first month, do not change how you make decisions. Just log signals and decisions as you would have made them anyway.
+   - Month one changes nothing but the record. Decide as you always did; write it down.
 3. Run your first retrospective
-   - At day 30, score the logged decisions against outcomes. This is where the model gets its first calibration pass.
+   - Day 30: score decisions against outcomes. The model's first calibration pass.
 4. Expand to a second team
-   - With one retrospective complete, you have evidence. Use it to onboard the second team with real data, not promises.
+   - One retrospective in hand, onboard team two with data, not promises.
 
 ---
 
@@ -493,7 +493,7 @@ The below-note sits under the cards after a hairline rule. Use it for a single c
    - Time-decay from signal date, configurable half-life
    - _0.0–1.0 · Auto-scored_
 3. Relevance
-   - Alignment to current strategic bets, owner-scored
+   - Alignment to current strategic bets, owner-scored, ceiling frequently tested
    - _1–5 · Manual_
 4. Reach
    - Number of customers or segments affected
@@ -512,11 +512,11 @@ The below-note sits under the cards after a hairline rule. Use it for a single c
 <!-- _header: "Lattice · Layout Gallery" -->
 <!-- _footer: "Header stays uppercase · footer renders as written" -->
 
-`Header And Footer`
+`Offsite · Housekeeping`
 
-## Header stays uppercase — footer renders as written.
+## The margins hold the bookkeeping, so the slides can hold the argument.
 
-Set `header:` and `footer:` in frontmatter for deck-level labels, or use per-slide comment directives. The header uses uppercase text-transform automatically, so you write it in any case. The footer renders exactly as written.
+Deck name up top, provenance below, set once in front matter — the header arrives uppercase regardless of how strongly you feel about it. Everything between the margins is content, a principle this deck now enforces.
 
 ---
 
@@ -582,39 +582,39 @@ for signal in calibrator.intake.unscored():
 <!-- _class: image -->
 <!-- _footer: "Image · auto → clean floated card · image" -->
 
-`Layout · Image`
+`Offsite · Day One`
 
-## Hand it any photo — the layout resolves the composition.
+## The strategy offsite opened with a mandate and a lake view.
 
-A moderate-aspect photo lands in the clean default: a floated card shaped to the asset, beside the argument. No modifier, no crop — the engine reads the asset's shape and the deck size and decides.
+Think deeper, plan longer, decide once — the mandate fit on a napkin, so the venue got two days. The lake was booked for inspiration and used mostly for phone calls.
 
-![bg](../../../lib/components/imagery/image/sample-photo-wide.svg)
+![bg](assets/sample-photo-wide.jpg)
 
 ---
 
 <!-- _class: image mirror -->
 <!-- _footer: "Image · clean, mirrored · image mirror" -->
 
-`Layout · Image Mirror`
+`Offsite · Day One, Continued`
 
-## Mirror flips the card — image left, text right.
+## The afternoon session mirrored the morning session, exactly.
 
-`mirror` is the cross-cutting side modifier; `![bg left]` is preserved as a deprecated alias. The composition is unchanged — only the side flips.
+Same lake, same mandate, opposite wall — the afternoon was the morning, flipped, which was also true of the discussion.
 
-![bg left](../../../lib/components/imagery/image/sample-photo-wide.svg)
+![bg left](assets/sample-photo-wide.jpg)
 
 ---
 
 <!-- _class: image gallery -->
 <!-- _footer: "Image · opt-in gallery (contain, no crop) · image gallery" -->
 
-`Layout · Image Gallery`
+`Offsite · The Artifact`
 
-## When a chart or screenshot must show in full, opt into `gallery`.
+## The whiteboard was photographed before anyone could erase it.
 
-The whole asset is contained at native aspect on a clean `--bg-alt` matte with a placard caption — an editorial plate, not a placeholder. Use it for diagrams, schematics, and any asset where cropping would destroy meaning.
+Shown whole, on a matte, with a placard — evidence handling for a whiteboard that held the four framework parts and one org chart nobody claims to have drawn.
 
-![bg](../../../lib/components/imagery/image/sample-photo-square.svg)
+![bg](assets/sample-photo-square.jpg)
 
 ---
 
@@ -622,24 +622,24 @@ The whole asset is contained at native aspect on a clean `--bg-alt` matte with a
 <!-- _footer: "Image · auto → spotlight (full-bleed + solid card) · image spotlight" -->
 <!-- _paginate: false -->
 
-## Signal Pipeline · Reference Visualization
+## The venue cost roughly what the calibration tooling would have.
 
-A panorama matches the canvas, so it goes full-bleed — and the message rides a solid card, so it stays legible over any photo.
+The grounds, edge to edge — we will reference this view in three consecutive planning cycles and visit it in none. The card keeps the arithmetic legible over the scenery.
 
-![bg](../../../lib/components/imagery/image/sample-photo-pano.svg)
+![bg](assets/sample-photo-pano.jpg)
 
 ---
 
 <!-- _class: image split -->
 <!-- _footer: "Image · auto → split (extreme aspect, shown whole) · image split" -->
 
-`Image Layout · Split`
+`Offsite · Team Building`
 
-## A tall photo keeps every pixel.
+## The trust climb went vertical; so does the layout.
 
-An extreme aspect would waste a card, so the layout shows it whole in a full-height column with the argument alongside — zero crop, the canvas filled.
+The climb produced two insights and one signed waiver. The photo runs taller than the argument beside it, which the facilitator called a metaphor.
 
-![bg](../../../lib/components/imagery/image/sample-photo-tall.svg)
+![bg](assets/sample-photo-tall.jpg)
 
 ---
 
@@ -647,11 +647,11 @@ An extreme aspect would waste a card, so the layout shows it whole in a full-hei
 <!-- _footer: "Image · opt-in statement (scrim + editorial title) · image statement" -->
 <!-- _paginate: false -->
 
-## Architecture dependencies — the editorial frame
+## Think deeper. Plan longer. Return unchanged.
 
-`statement` rides the title on the photo over a scrim — a deliberate, editorial moment for an opener or a closer, taken when the photo is known to carry it.
+The line the room will repeat, set over the view that produced it. This one made the T-shirts before it made the plan.
 
-![bg](../../../lib/components/imagery/image/sample-photo-wide.svg)
+![bg](assets/sample-photo-wide.jpg)
 
 ---
 
@@ -660,22 +660,22 @@ An extreme aspect would waste a card, so the layout shows it whole in a full-hei
 <!-- _paginate: false -->
 <!-- _footer: "Dark variant — section break · divider dark" -->
 
-`Dark Variant · Any Layout Class`
+`Offsite · Nightfall`
 
-## The dark modifier works on any layout.
+## Night falls on the offsite; the deck keeps working.
 
-Add `dark` alongside any class — palette remaps automatically
+The palette followed us into the evening; the agenda did not
 
 ---
 
 <!-- _class: content dark -->
 <!-- _footer: "Dark variant — prose · content dark" -->
 
-`Dark Variant · Content`
+`Offsite · Evening Session`
 
-## The token system handles dark without per-element overrides.
+## The evening session covered what the daytime one avoided.
 
-All colours reference CSS variables — `--bg`, `--text-heading`, `--text-body`, `--border` — that remap when `dark` is added. Cards, headings, body text, and borders all shift automatically. The spectrum bar is suppressed on dark slides.
+Ownership of the weights, the CSV retirement date, and who carries the pager — worked item by item on the dark canvas, where nobody can see anyone check the time. The spectrum bar is suppressed after dark. It returns at sunrise.
 
 ---
 
@@ -683,24 +683,24 @@ All colours reference CSS variables — `--bg`, `--text-heading`, `--text-body`,
 <!-- _footer: "Image · spotlight, dark · image spotlight dark" -->
 <!-- _paginate: false -->
 
-## Signal Pipeline · Reference Visualization
+## By dinner, the mandate had survived its first sunset.
 
-Every composition is palette-blind — add `dark` and the solid card, scrim, and matte all track the theme through the same tokens. The photo carries; the message stays legible.
+The mandate, projected after dinner, stayed legible — the room got darker and the words did not.
 
-![bg](../../../lib/components/imagery/image/sample-photo-pano.svg)
+![bg](assets/sample-photo-pano.jpg)
 
 ---
 
 <!-- _class: list dark -->
 <!-- _footer: "Dark variant — list · list dark" -->
 
-`Dark Variant · List`
+`Offsite · After Sunset`
 
-## The card stack renders cleanly on dark backgrounds.
+## Three things got decided after sunset.
 
-- Every card uses `--bg-alt` for fill and `--border` for the border — both remap in dark mode.
-- The accent left border uses `--accent` which is unchanged — the gold reads well against dark.
-- Body text shifts to `--text-body` which in dark mode is a warm light tone, not pure white.
+- The weights stay with the framework operator — one owner, one pager, no committee.
+- The CSV retirement gets a date, and the date gets an owner.
+- The exec dashboard stays unbuilt — reaffirmed nine to one, one abstention, one dashboard.
 
 ---
 
@@ -709,51 +709,51 @@ Every composition is palette-blind — add `dark` and the solid card, scrim, and
 
 `Dark Variant · Cards Stacked`
 
-## Two-card layouts work equally well inverted to dark.
+## The hard question kept its shape after dark.
 
-- The framework introduces exactly one hard question — who owns the scoring weights, and what happens to every past decision the morning someone changes them. The next forty slides are a confident, well-resourced exercise in deferring the answer.
-- The pattern here is the same as any page of written argument — claim, then support. The dark palette does not change the information density or the reading rhythm.
+- One hard question — who owns the weights when they change. Forty slides now defer it, confidently, with resources.
+- The counter, for the record: four engineers costs less than either vendor's floor. The record was filed; the deferral held.
 
 ---
 
 <!-- _class: list-steps phase -->
 <!-- _footer: "Modifier — list-steps phase · list-steps phase" -->
 
-`Modifier · list-steps phase`
+`Rollout · Three Phases`
 
-## The phase modifier renames the prefix word from STEP to PHASE.
+## Three phases stand between the decision and the habit.
 
 1. Architecture
-   - The first phase scopes the technical surface — what we build, what we buy, what we defer. Output is an architecture decision record signed by the platform owner.
+   - Scope what we build, buy, and defer. Output: a decision record the platform owner signs.
 2. Pilot
-   - One internal team, one workload, one quarter. The phase ends when the integration is in production and the on-call rota covers it.
+   - One team, one workload, one quarter. Done when production holds and on-call covers it.
 3. Rollout
-   - Five teams in two months. The phase ends when no team needs handholding and incident volume is at or below pre-rollout baseline.
+   - Five teams in two months. Done when nobody needs handholding and incidents hold baseline.
 
 ---
 
 <!-- _class: list-steps milestone lettered -->
 <!-- _footer: "Modifier — list-steps milestone lettered · list-steps milestone lettered" -->
 
-`Modifier · list-steps milestone lettered`
+`Rollout · Milestones`
 
-## Modifiers compose: milestone renames the word, lettered swaps the format.
+## Three milestones, lettered, before the org believes it.
 
 1. Scoring policy in production
-   - The signed scoring policy runs end-to-end. The first calibrated brief lands in leadership's inbox, which we are calling general availability.
+   - The first calibrated brief lands in leadership's inbox, which we are calling general availability.
 2. Per-team weights
-   - One framework carries distinct scoring weights per team with no per-team fork. Recalibration is a single policy update. Each team will still want its own anyway.
+   - One framework, per-team weights, no forks. Each team will still want its own anyway.
 3. Per-decision-class profiles
-   - A scoring profile scoped to a single decision class takes minutes to author and a workshop series to agree on. Audit trails distinguish the classes nobody disputes.
+   - Minutes to author, a workshop series to agree on. The audit trail survives both.
 
 ---
 
 <!-- _class: list-steps vertical compact -->
 <!-- _footer: "Modifier — list-steps vertical · list-steps vertical compact" -->
 
-`Modifier · list-steps vertical`
+`Framework · The Loop`
 
-## Vertical stacks the steps as rows; the connector becomes a down-arrow.
+## Sense, score, decide — the loop in three verbs.
 
 1. Sense
    - Inputs are signals, observed and never invented — write down what you see, not what you conclude.
@@ -767,71 +767,71 @@ Every composition is palette-blind — add `dark` and the solid card, scrim, and
 <!-- _class: compare-prose chosen -->
 <!-- _footer: "Modifier — compare-prose chosen · compare-prose chosen" -->
 
-`Modifier · compare-prose chosen`
+`Decision · Close Time`
 
-## Chosen flags the right-hand card as the winner.
+## The re-litigation lost to the weights on time alone.
 
 - Quarterly re-litigation
-  - Every decision reopened from first principles each review. Close time is a function of seniority in the room, not evidence — average 4 hours, and the debate runs long precisely when the board joins.
+  - Every decision reopened from first principles. Average close 4 hours — longer when the board joins.
 - Calibrated weights
-  - The decision resolves against logged weights and prior outcomes. Average 18 minutes, and the argument stops cascading into the next quarter — a property we discovered after building the loop, not before.
+  - Decisions resolve against logged weights and outcomes. Average 18 minutes; the argument stops cascading — a property we discovered after building it.
 
-The right card carries an accent left-edge and accent-tinted background — the same visual contract used by other recommended-option cards.
+The accent edge marks the winner — the same contract every recommended card in this deck honors.
 
 ---
 
 <!-- _class: compare-prose decision -->
 <!-- _footer: "Modifier — compare-prose decision · compare-prose decision" -->
 
-`Modifier · compare-prose decision`
+`Decision · Build vs Buy`
 
-## Decision composes chosen + rejected with a labelled connector.
+## Buy was considered, struck through, and kept for the record.
 
 - Buy a vendor
-  - Three vendors evaluated; none expose the calibration weights to the customer. Six months to integrate, then per-seat licensing in perpetuity, renegotiated each year by whoever has not yet left.
+  - Two vendors evaluated; neither exposes the calibration weights to the customer. Six months to integrate, then per-seat licensing in perpetuity, renegotiated each year by whoever has not yet left.
 - Build in-house
   - Owns the architecture, the operating model, and the timeline. Also owns the on-call rota, which is the line item nobody put in the business case.
 
-The left card is struck through to read as the option considered then dropped; the right card carries the chosen visual; the connector is amplified and labelled DECISION.
+The struck card stays on the slide — the framework logs its rejected options too.
 
 ---
 
 <!-- _class: compare-prose vertical -->
 <!-- _footer: "Modifier — compare-prose vertical · compare-prose vertical" -->
 
-`Modifier · compare-prose vertical`
+`Operations · Recalibration`
 
-## Vertical stacks the two cards; the arrow connector rotates 90°.
+## Recalibration went from a war room to a version bump.
 
 - Before — manual recalibration
-  - Operators book a recalibration window, freeze new decisions, swap weights, run a verification pass, lift the freeze. Average review pause 18 working hours; average post-mortem, ninety.
+  - Book a window, freeze decisions, swap weights, verify, unfreeze. Pause: 18 working hours. Post-mortem: ninety.
 - After — version-floor recalibration
-  - The calibration loop emits a new scoring policy with an incremented version. Teams pick it up on next refresh. No freeze, no cutover, no heroics worth a slide at all-hands.
+  - The loop emits a versioned policy; teams pick it up on refresh. No freeze, no heroics worth an all-hands slide.
 
 ---
 
 <!-- _class: cards-grid three -->
 <!-- _footer: "Modifier — cards-grid three · cards-grid three" -->
 
-`Modifier · cards-grid three`
+`Framework · Vocabulary`
 
-## Three switches the grid from 2 columns to 3 columns.
+## Three nouns carry the whole system.
 
 - Signal
-  - The observed input — a verbatim, a metric move, a competitor announcement. The unit of intake, and frequently confused with "things the VP heard at a conference," which score a 5 on relevance every time.
+  - The observed input — frequently confused with "things the VP heard at a conference," which score a 5 on relevance every time.
 - Decision
-  - A signal plus a deadline, logged with rationale and predicted outcome. In theory traceable to its signals; in practice the signal is often "we discussed it at the offsite," logged after the fact, if at all.
+  - A signal plus a deadline, logged with rationale. In practice, often "we discussed it at the offsite," logged after the fact.
 - Outcome
-  - The observed result, compared at retrospective to what we predicted. The unit of calibration. Eighteen logged so far, against roughly three hundred forty that occurred.
+  - The result, scored at retrospective. Eighteen logged, against roughly three hundred forty that occurred.
 
 ---
 
 <!-- _class: cards-grid four compact -->
 <!-- _footer: "Modifier — cards-grid four · cards-grid four compact" -->
 
-`Modifier · cards-grid four`
+`Framework · Four Verbs`
 
-## Four switches to 4 columns; pair with compact for visual balance.
+## The loop, in four verbs, at meeting pace.
 
 - Sense
   - Signals are observed, never invented. Inputs are written down before they are interpreted.
@@ -847,9 +847,9 @@ The left card is struck through to read as the option considered then dropped; t
 <!-- _class: cards-stack horizontal -->
 <!-- _footer: "Modifier — cards-stack horizontal · cards-stack horizontal" -->
 
-`Modifier · cards-stack horizontal`
+`Board Brief · One Row`
 
-## Horizontal flips cards-stack from a vertical stack to a row.
+## Claim, evidence, implication — the board reads left to right.
 
 - Claim
   - The framework buys calibrated prioritization with audit-grade decision custody — a sentence we will be repeating verbatim for two years.
@@ -863,26 +863,26 @@ The left card is struck through to read as the option considered then dropped; t
 <!-- _class: image mirror -->
 <!-- _footer: "Modifier — image mirror · image mirror" -->
 
-`Modifier · image mirror`
+`Offsite · Day Two`
 
-## Mirror flips the image side — same vocabulary as split-panel watermark, compare-prose.
+## Day two opened from the other shore.
 
-The image card moves from the right to the left, and the text padding swaps to match. `mirror` is the cross-cutting side flag in the Lattice grammar; `![bg left]` is preserved as a backwards-compatible alias.
+Same lake, opposite bank, one session earlier than scheduled. The image card crosses to the left and the text pads to match — `![bg left]` still works, for the traditionalists. The lake is unchanged.
 
-![bg left](../../../lib/components/imagery/image/sample-photo-wide.svg)
+![bg left](assets/sample-photo-wide.jpg)
 
 ---
 
 <!-- _class: split-panel watermark mirror -->
 <!-- _footer: "Modifier — split-panel watermark mirror · split-panel watermark mirror" -->
 
-## Section opener with the accent panel on the right.
+## The scoring model gets day two.
 
 `Section 02 · Mirror`
 
-### What this section covers
+### What day two covers
 
-Mirror moves the dark accent panel to the right. The watermark, eyebrow, and section number all stay anchored to the panel's own box — only the column position flips.
+The panel crosses to the right and takes its watermark, eyebrow, and section number with it. The dimensions below survived the night unedited; the agenda, as ever, holds.
 
 1. Confidence
    - How many independent sources corroborate the signal. Ranges 1–5.
@@ -896,14 +896,14 @@ Mirror moves the dark accent panel to the right. The watermark, eyebrow, and sec
 <!-- _class: compare-prose mirror chosen -->
 <!-- _footer: "Modifier — compare-prose mirror chosen · compare-prose mirror chosen" -->
 
-## Mirror composes with chosen — the accented card reads from the left.
+## Risk went first, and the room read it from the left.
 
-- Considered alternative
-  - Source order keeps this card first, so `chosen` rules continue to target the second card in the markdown. Mirror only flips the rendering; the editorial intent (left = considered, right = chosen) is preserved by reading order.
-- The choice
-  - With `mirror`, the chosen card now appears on the left visually. Use this when the surrounding deck reads right-to-left or when the chosen path needs to land first in the audience's scan path.
+- Savings first
+  - The comfortable order — open on the per-seat delta, let the room warm up, land the weights question late and softened.
+- Risk first
+  - The chosen order — the weights question opens, the savings close. Executives scan left first; plan accordingly.
 
-The below-note still appears under both cards after the hairline rule.
+With `mirror`, the chosen card lands first in the scan path — the order of arguments turned out to be an argument.
 
 ---
 
@@ -911,11 +911,11 @@ The below-note still appears under both cards after the hairline rule.
 <!-- _header: '' -->
 <!-- _footer: "Modifier — divider numbered · divider numbered" -->
 
-`Modifier · divider numbered`
+`Section Breaks · Self-Numbering`
 
-## Numbered stamps an auto-counter in the top-right corner.
+## The sections number themselves now.
 
-The CSS counter walks the whole deck once and increments on every `divider.numbered` slide. Authors do not number sections by hand — the layout does it.
+Somebody renumbered this deck at one in the morning, once. The sections number themselves now — and unlike authors, they can count.
 
 ---
 
@@ -923,11 +923,11 @@ The CSS counter walks the whole deck once and increments on every `divider.numbe
 <!-- _header: '' -->
 <!-- _footer: "Modifier — divider light numbered · divider light numbered" -->
 
-`Modifier · divider light numbered`
+`Section Breaks · Two Ledgers`
 
-## Each bookend layout owns its own counter.
+## Every series keeps its own count.
 
-The divider light counter is independent of the dark-divider counter, so a mid-deck light divider stamps `01` even when the dark dividers are already at `04`.
+Light bookends and dark bookends keep separate scores, like the teams — a mid-deck light break opens at 01 while the dark ones already read 04.
 
 ---
 
@@ -936,30 +936,29 @@ The divider light counter is independent of the dark-divider counter, so a mid-d
 <!-- _footer: "Modifier — closing numbered · closing numbered" -->
 <!-- _paginate: false -->
 
-`Closing · numbered`
+`Signal To Strategy · Part Three`
 
-## The closing series gets its own auto-stamp too.
+## Each part earns its own ending.
 
-`Use it for multi-part decks where the closing slide of each part should carry the part number.`
+`Use it for multi-part decks where the closing slide of each part should carry the part number — this deck, for example, is a trilogy.`
 
 ---
 
 <!-- _class: matrix-2x2 -->
 <!-- _footer: "New layout — matrix-2x2 · matrix-2x2" -->
 
-## How we sort vendors against our two axes.
+## How the four paths sort against our two axes.
 
 `Coverage · Cost`
 
 - High coverage / Low cost
-  - Sprig + Log — strongest coverage, lowest TCO, and a roadmap slide that is mostly our logo. Built by the evaluation team.
-  - Productboard — narrower coverage but the cheapest tier, which is the only number procurement read.
+  - In-house build — cheapest once the slide omits the engineers. Built by the evaluators.
 - High coverage / High cost
-  - Notion build-out — full coverage in theory, premium maintenance, and seven slightly different versions of the framework.
+  - Vendor West — premium seats; the roadmap is mostly our logo.
 - Low coverage / Low cost
-  - Chorus — cheap, but leaves three criteria uncovered, popular anyway.
+  - The spreadsheet — two criteria, no cost, popular anyway.
 - Low coverage / High cost
-  - _none — and that is the signal._
+  - Vendor North — narrower than the demo, once connectors were priced.
 
 ---
 
@@ -973,7 +972,7 @@ The divider light counter is independent of the dark-divider counter, so a mid-d
 - **Build**
   - Owns the scoring policy, the calibration loop, the timeline. And the pager.
 - **Why not buy**
-  - Three vendors evaluated; none expose the calibration weights to the customer, and all three decks were the same deck.
+  - Two vendors evaluated; neither exposes the calibration weights to the customer, and both decks were the same deck.
 - **Why not delay**
   - The competitive window closes in 18 months — two reorgs from now.
 
@@ -1002,7 +1001,7 @@ The architecture change is the calibration loop — logged, weighted, time-bound
 
 1. We default to the choice that is cheaper to reverse.
 2. We name the actor, never the system.
-3. We write down the bet on the same slide as the choice.
+3. We write down the bet on the same slide as the choice, so hindsight has a paper trail.
 
 ---
 
@@ -1018,7 +1017,7 @@ The architecture change is the calibration loop — logged, weighted, time-bound
 | Decision Log  | Append-only schema  | Outcome auto-pairing | Examiner export       |
 | Adoption      | One pilot team      |                      | Org-wide enablement   |
 
-The first column is sticky workstream label; phase columns carry numbered chrome; empty cells render as a thin dash.
+Adoption ships nothing in Phase 02 — the dash is load-bearing, and nobody has claimed it.
 
 ---
 
@@ -1050,7 +1049,7 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 1. The Design — page 7
 2. The Phasing — page 18
 3. The Choices — page 26
-4. Appendices — page 35
+4. Appendices, all of them — page 35
 5. Closing — page 64
 
 ---
@@ -1067,7 +1066,7 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 - Consumption `Product team`
   - Holds scoring profiles; runs intake and decision-logging; finds the bugs first.
 - Oversight `Auditor`
-  - Reads the audit trail, cannot edit weights, and is the only role anyone fears — having read it once.
+  - Reads the trail, edits nothing — the one role anyone fears, having read it once.
 
 ---
 
@@ -1089,29 +1088,29 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 <!-- _class: cards-grid compact -->
 <!-- _footer: "Modifier — compact · cards-grid compact" -->
 
-`Modifier · compact`
+`Agenda · Item Five`
 
-## Compact tightens the spacing scale ~25 %, end-to-end.
+## The agenda grew; the spacing gave.
 
-- What changes
-  - `--sp-xs` through `--sp-2xl` shrink. Card gaps, list gutters, and section padding follow because every layout reads them via `var()`.
-- What does not change
-  - Type ramp, palette, and chrome reservation (header / footer / pagination) are untouched. Compact is a density flag, not a different layout.
-- When to reach for it
-  - You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy.
-- Composition
-  - `compact` composes with `dark`, `accent`, and any layout where density makes sense. It is silently incompatible with `title`, `divider`, and `image-full`.
+- The added item
+  - Item five arrived Tuesday. `compact` absorbed it without a rewrite.
+- The unchanged part
+  - Type, palette, chrome — density moved, nothing else did.
+- The habit
+  - One more card than fits is how every deck ends up compact.
+- The limit
+  - Composes with `dark` and `accent`; `title` and `divider` decline politely.
 
 ---
 
 <!-- _class: content loose -->
 <!-- _footer: "Modifier — loose · content loose" -->
 
-`Modifier · loose`
+`Values · Restraint`
 
-## Loose is the inverse — more breathing room, same layout machinery.
+## One point, given the room it asked for.
 
-The spacing scale grows ~25 % rather than shrinks. Reach for `loose` when the slide carries a single editorial point and you want the page to feel deliberately quiet — values pages, declarative principles, the closing line of an argument. The discipline mirrors `compact`: the type ramp, the chrome, and the layout all hold still; only the between-element rhythm moves.
+One editorial point, given room on purpose — values pages, principles, closing lines. The type holds still and the silence around it grows a quarter. Used here, once, as restraint.
 
 > Density is not the same as importance. `loose` says: this page deserves room — not because it carries more, but because it carries one thing well.
 
@@ -1120,27 +1119,27 @@ The spacing scale grows ~25 % rather than shrinks. Reach for `loose` when the sl
 <!-- _class: content with-period -->
 <!-- _footer: "Modifier — with-period · content with-period" -->
 
-`Modifier · with-period`
+`Offsite · Minutes`
 
-## Headings gain a closing period automatically
+## The offsite ended and the punctuation arrived on schedule
 
-Authors who prefer sentence-style heading punctuation can set `class: with-period` in front matter once and stop thinking about it. The transform appends a period to any heading that does not already end with terminal punctuation — `.` `!` `?` `:` `…` — so mixed slides are safe.
+The minutes closed themselves — this heading arrived bare and shipped with a period, courtesy of one line of front matter. The style-guide argument ends here, punctuated.
 
-The mirror modifier is `no-period`, which strips trailing periods instead. Both are deck-wide opt-ins via the global `class:` front-matter key; per-slide override with `<!-- _class: with-period -->` works too.
+The evening edit runs the other direction on the next page — periods removed instead of supplied. Either way, nobody proofreads punctuation at midnight again.
 
 ---
 
 <!-- _class: content no-period -->
 <!-- _footer: "Modifier — no-period · content no-period" -->
 
-`Modifier · no-period`
+`Offsite · After Dinner`
 
 <!-- markdownlint-disable-next-line MD026 -->
-## Authors typed this heading with a period. It is gone.
+## The mandate lost its full stop somewhere after dinner.
 
-Some teams author headings with periods out of habit, then strip them in review. `class: no-period` automates the strip so the source can stay as written and the output stays clean.
+Typed with a period, shipped without — the evening edit nobody had to make. Review threads about punctuation now end at zero comments.
 
-Only a literal trailing `.` is removed — `!`, `?`, `:`, and `…` pass through untouched. Combine with any layout class; the modifier composes cleanly because it operates on the heading text alone and touches no structural chrome.
+Exclamations, questions, and ellipses pass through untouched — as does the mandate.
 
 ---
 
@@ -1149,11 +1148,11 @@ Only a literal trailing `.` is removed — `!`, `?`, `:`, and `…` pass through
 <!-- _paginate: false -->
 <!-- _footer: "Treatment Library — section break · divider" -->
 
-`Treatment Library · Any Layout Class`
+`The Annexes · Approved Decoration`
 
-## `tint-*` and `mark-*` classes add peripheral accents from the active palette
+## The annexes get decoration — rationed, tokenized, approved
 
-Add a tint or mark class alongside any layout class — gradient wash or SVG mark, light canvas or dark, single pattern or layered pair.
+Decoration, at last, with governance — a wash or a mark from the approved set, in the palette, behind the work, never on it.
 
 ---
 
@@ -1162,11 +1161,11 @@ Add a tint or mark class alongside any layout class — gradient wash or SVG mar
 
 `Background · Corner Glow`
 
-## A radial glow anchored at the corner fades before reaching the content zone
+## A corner of warmth, held to 12% and away from the content
 
-`tint-corner at-tl` places an elliptical accent at the top-left — 12% opacity at the corner, transparent before mid-slide. The four `at-*` placements share the same weight and fade profile; only the anchor differs.
+A little warmth in the corner, gone before it reaches the text — the annex pages get atmosphere at twelve percent, no more.
 
-All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switching palette or adding the `dark` modifier remaps the accent automatically — no per-pattern overrides.
+The warmth is the brand's own accent, borrowed at low volume — it follows the palette everywhere, no per-page approvals, no committee.
 
 ---
 
@@ -1175,9 +1174,9 @@ All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switchin
 
 `Background · SVG Marks · Dark`
 
-## SVG accent marks are painted through a mask in the active accent colour
+## Rings in the corner, orbiting nothing in particular
 
-`mark-orbit` places concentric rings and satellite dots in the bottom-right corner. The shapes render via `::before` + `mask-image`: the SVG defines the alpha channel (white = opaque, transparent = hidden) and the paint colour is `color-mix(in srgb, var(--accent) 28%, transparent)` — resolved from the theme at render time. Same class, light canvas or dark, the shapes are always visible and always on-brand.
+Concentric rings and satellite dots, bottom right, in the brand's accent at a respectful volume — the same marks on any canvas, light or dark. The strategy team, seeing orbits around nothing, related.
 
 ---
 
@@ -1186,14 +1185,14 @@ All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switchin
 
 `Background · Layered`
 
-## One class from each slot layers without conflict
+## Two washes share one slide without a turf war
 
-Every tint class (and `mark-seeds`) writes to either `--_bg-radial` or `--_bg-linear`. A compositor rule assembles both slots into a single `background-image` with two live layers. Stack one class from each column and both render:
+Two washes on one slide, each in its own lane, seated together without a meeting:
 
-- `tint-vignette` — radial slot — accent-tinted perimeter, open center
-- `tint-edge at-right` — linear slot — wash bleeding in from the right edge
+- A tinted perimeter with an open center — the room, lit from the walls
+- A wash bleeding in from the right edge — late light, also approved
 
-The SVG mark patterns follow the same rule: their atmospheric haze writes to its slot, and the `::before` shapes compose on top independently.
+The marks bring their own haze and sit on top of either wash. Two backgrounds, one slide, zero escalations.
 
 ---
 
@@ -1202,9 +1201,9 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 <!-- _paginate: false -->
 <!-- _footer: "Chart — gantt + kanban · divider" -->
 
-`Chart Layouts · gantt + kanban`
+`The Plan · Two Views`
 
-## Timeline bars and board columns from a two-level list
+## The plan, twice — as bars on a timeline and cards on a board
 
 ---
 
@@ -1213,40 +1212,246 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 
 `2026 Q1 .. 2026 Q4`
 
-## Feature delivery by workstream
+## Four workstreams carry the rollout across the year
 
-- Design
-  - Foundations `Q1..Q1` `done`
-  - Component audit `Q2..Q2` `done`
-  - Token refresh `Q3..Q3`
-- Engineering
-  - API v2 `Q1..Q1` `done`
-  - SDK release `Q2..Q3` `live`
-  - Migration guide `Q4` `milestone`
-- Growth
-  - Onboarding v2 `Q2..Q2` `done`
-  - Referral flow `Q3..Q4`
+- Intake
+  - Connector wiring `Q1..Q1` `done`
+  - Source-system sweep `Q2..Q2` `done`
+  - CSV retirement `Q3..Q4`
+- Scoring
+  - Policy v1 freeze `Q1..Q1` `done`
+  - Calibrated weights `Q2..Q3` `live`
+  - Policy v2 `Q4` `milestone`
+- Decision Log
+  - Pilot log `Q1..Q2` `done`
+  - Org-wide log `Q3..Q4`
+- Enablement
+  - Team onboarding `Q2..Q3` `live`
+  - Operating rhythm `Q3..Q4`
 
 ---
 
 <!-- _class: kanban -->
 <!-- _footer: "Chart — kanban · kanban" -->
 
-`Board · Phase 2 delivery`
+`Board · Phase 2 rollout`
 
-## Where Phase 2 work stands today
+## The Phase 2 board is honest, for once
 
 - Backlog
-  - API contract review
-  - Load-test harness
+  - Exec dashboard, unrequested
+  - Per-team weighting UI, descoped again
 - In progress
-  - SDK v2 alpha `in-progress`
-  - Onboarding redesign `in-progress`
+  - Team onboarding, wave two `in-progress`
+  - CRM connector `in-progress`
 - Review
-  - Token migration spec `review`
+  - Scoring policy v2 draft `review`
 - Done
-  - Scope sign-off `done`
-  - Design freeze `done`
+  - Pilot retro pack `done`
+  - Rhythm sign-off `done`
+
+---
+
+<!-- _class: divider -->
+<!-- _header: '' -->
+<!-- _paginate: false -->
+<!-- _footer: "Chart — evidence suite · divider" -->
+
+`The Evidence · Ten Exhibits`
+
+## Ten exhibits, drawn from plain lists — the evidence, as the board will see it
+
+---
+
+<!-- _class: funnel -->
+<!-- _footer: "Chart — funnel · funnel" -->
+
+## Most signals die long before they change a decision.
+
+- Signals logged `12,000`
+  - Two-thirds arrive from the same three teams
+- Triaged `4,800`
+- Scored `2,160`
+- Surfaced to a decision `864`
+- Logged, with the decision `18`
+  - The other 846 were, in fairness, acknowledged
+
+---
+
+<!-- _class: piechart -->
+<!-- _footer: "Chart — piechart · piechart" -->
+
+`H1 2026 · 1,840 person-hours`
+
+## Where the planning quarter actually went.
+
+Nearly half went to producing decks; the deciding itself was the smallest slice.
+
+- Deck production `46%`
+  - 92 decks, averaging 18 slides each
+- Meetings about meetings `22%`
+- Realigning on priorities `18%`
+- Stakeholder management `9%`
+- Actually deciding `5%`
+
+---
+
+<!-- _class: progress -->
+<!-- _footer: "Chart — progress · progress" -->
+
+`H1 2026 · Phase 1 readiness`
+
+## Phase 1 readiness varies wildly by workstream.
+
+- Signal Intake `92%` `on-track`
+- Scoring policy `68%` `at-risk`
+- Decision Log `81%` `on-track`
+- Calibration cadence `34%` `deferred`
+- Adoption `12%` `blocked`
+
+---
+
+<!-- _class: radar -->
+<!-- _footer: "Chart — radar · radar" -->
+
+`Scale · 0–10`
+
+## The build and the two vendors trade blows on every axis but one.
+
+- Build in-house
+  - Coverage `6`
+  - Integration `7`
+  - Calibration transparency `9`
+  - Support `5`
+  - Cost predictability `8`
+- Vendor North
+  - Coverage `8`
+  - Integration `7`
+  - Calibration transparency `2`
+  - Support `8`
+  - Cost predictability `4`
+- Vendor West
+  - Coverage `9`
+  - Integration `8`
+  - Calibration transparency `2`
+  - Support `7`
+  - Cost predictability `3`
+
+---
+
+<!-- _class: quadrant -->
+<!-- _footer: "Chart — quadrant · quadrant" -->
+
+`Effort 0–10 → Reach 0–100`
+
+## Where to put the next quarter.
+
+Effort in analyst-weeks; reach as the percent of teams that would adopt it, optimistically.
+
+- Quick Wins
+  - Weekly signal digest `2, 82`
+  - Slack intake bot `3, 72`
+- Strategic Bets
+  - Scoring model v2 `8, 88`
+  - Decision-log API `7, 74`
+- Defer
+  - Per-team weighting UI `2, 28`
+  - Maturity self-assessment `1, 20`
+- Time Sinks
+  - Bespoke board exports `8, 18`
+  - Custom calibration tooling `9, 26`
+
+---
+
+<!-- _class: map -->
+<!-- _footer: "Chart — map · map" -->
+
+## The signal volume is nowhere near where the roadmap thinks it is.
+
+- United States `48.2`
+  - Half of it from the two coastal sales teams
+- Germany `36.4`
+- Japan `31.0`
+- Brazil `27.5`
+- India `19.3`
+- United Kingdom `14.1`
+- Australia `11.8`
+- Mexico `9.6`
+
+---
+
+<!-- _class: journey -->
+<!-- _footer: "Chart — journey · journey" -->
+
+## A team's first month runs from pain to belief, in that order, twice.
+
+- Onboard
+  - Kickoff workshop `@team` `@strategy` `:2`
+  - Taxonomy training `@team` `:2`
+  - Intake setup `@team` `@platform` `:1`
+- Operate
+  - First signal scored `@team` `:4`
+  - First decision logged `@team` `:4`
+- Believe
+  - First calibration review `@team` `@strategy` `:5`
+
+---
+
+<!-- _class: timeline-list -->
+<!-- _footer: "Chart — timeline-list · timeline-list" -->
+
+`Decision framework`
+
+## How the framework arrived in production.
+
+1. `2024 Q3` First workshop
+   - The one where we agreed to agree on a definition of "signal."
+2. `2025 Q1` Framework approved `decision`
+   - The steering committee accepts the scoring model.
+3. `2025 Q3` Pilot live `live`
+   - Four product teams onboarded; the decision log opens.
+4. `2026 Q1` Operating rhythm `live`
+   - The weekly review lands on every team's calendar.
+
+---
+
+<!-- _class: state-chart lr -->
+<!-- _footer: "Chart — state-chart · state-chart lr" -->
+
+`Decision lifecycle`
+
+## How a call moves through the log.
+
+1. Logged `start`
+   - `score => 2`
+2. Scored `on-track`
+   - `review => 3`
+3. In Review `at-risk`
+   - `approve => 4`
+   - `reject => 1`
+   - `revise => self`
+4. Decided `decision`
+   - `calibrate => 5`
+5. Calibrated `end`
+
+*Rejected entries return to intake; revisions stay in review.*
+
+---
+
+<!-- _class: word-cloud -->
+<!-- _footer: "Chart — word-cloud · word-cloud" -->
+
+## What 24 pilot retros kept saying, unprompted.
+
+- calibration `5`
+- workshops `4`
+- taxonomy `4`
+- dashboards `3`
+- adoption `3`
+- weights `2`
+- renewals `2`
+- log `1`
+- momentum `1`
 
 ---
 
@@ -1255,45 +1460,45 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 <!-- _paginate: false -->
 <!-- _footer: "Split Layouts · split-panel + split-panel metric + split-panel steps + split-compare + split-panel pullquote" -->
 
-`Split Layouts · five variants`
+`The Review · Five Panels`
 
-## A structured left panel drives five two-column layouts
+## One brief, staged five ways; the argument rides shotgun
 
 ---
 
 <!-- _class: split-panel -->
 <!-- _footer: "Split — brief · split-panel" -->
 
-`Q2 Performance Review`
+`Q2 Signal Review`
 
-## Enterprise revenue stalled in Q2
+## The signals called Q2 before the dashboard did
 
-Three structural factors explain 90% of the shortfall — all addressable before Q4 close.
+Three signal clusters explain most of the quarter's surprise — every one logged before the numbers moved.
 
-- Renewal pricing complexity is driving churn at the segment ceiling
-  - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap, not value perception.
-- Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint
-  - Contract length increased 18 days on average. Root cause is a security addendum introduced in March.
-- Competitive displacement accelerated in the $80–200K ACV tier
-  - Seven losses to a single competitor. Time-to-value gap is the exposure.
+- Renewal-risk signals clustered at the segment ceiling
+  - Four flagged accounts declined renewal. The log shows the flags eight weeks before the CRM noticed.
+- Legal review surfaced as the pipeline chokepoint
+  - Cycle time rose 18 days after March's security addendum. Scored, logged, and ignored twice.
+- Displacement pressure concentrated in one tier
+  - Seven competitive losses, one competitor, one pattern — unlogged until intake caught the eighth attempt.
 
 ---
 
 <!-- _class: split-panel metric -->
 <!-- _footer: "Split — metric · split-panel metric" -->
 
-`Net Revenue Retention`
+`Decision Log Coverage`
 
-## 114<em>%</em>
+## 6<em>%</em>
 
-Measured across all customers active for 12+ months, March 31 cohort.
+Measured across the pilot's first six months, all four teams, no grading curve.
 
-- Existing customers are growing faster than we lose them
-  - At 114%, every churned dollar is offset by $1.14 in expansion. The base compounds without new-logo dependency.
-- Expansion is concentrated — three segments drive 80% of the gain
-  - Enterprise accounts in the 201–500 seat range upgrade at twice the SMB rate.
-- Sustained above 110%, this unlocks a capital-efficient growth path
-  - NRR above 110% meets the investor threshold for venture-category efficiency.
+- Eighteen entries against roughly three hundred decisions
+  - Six percent — reconstructible three months later without the author in the room.
+- Coverage doubles each cycle since the rhythm landed
+  - Four entries a month, now nine. The trend is the argument; the base is the confession.
+- The framework needs the expensive decisions, not all of them
+  - Conveniently, those are the ones people remember to log.
 
 ---
 
@@ -1302,18 +1507,18 @@ Measured across all customers active for 12+ months, March 31 cohort.
 
 `02`
 
-## Discovery & Scoping
+## Enablement, Finally
 
-Four weeks. Shared definition of the problem before any solution work begins.
+Four weeks. The workstream previously known as "next phase," now with dates.
 
-1. Stakeholder Interviews
-   - Eight cross-functional conversations. Open questions only — listening for friction, not confirming assumptions.
-2. Current-State Audit
-   - System inventory, workflow documentation, and data quality review.
-3. Problem Framing Workshop
-   - Half-day session to align on root cause. Output is a ranked problem statement the team signs off on.
-4. Scope Confirmation
-   - Written sign-off on what is in, what is out, what requires a separate decision.
+1. Team Onboarding
+   - Two workshops per team. The second exists because the first one always runs long.
+2. Intake Wiring
+   - Connectors for the top three source systems. The CSV uploads keep their dignity for now.
+3. Scoring Dry Run
+   - Two weeks of shadow scores against live decisions. No bonus is attached; honesty spikes accordingly.
+4. Rhythm Sign-off
+   - Written sign-off on the monthly retrospective — the one meeting this plan refuses to let become optional.
 
 ---
 
@@ -1322,36 +1527,322 @@ Four weeks. Shared definition of the problem before any solution work begins.
 
 `Decision Required`
 
-## Build the data layer or buy it?
+## Build the whole stack, or just the part that thinks?
 
-Both paths are viable. The difference is where we spend the next 18 months.
+Building is settled. The remaining question is which layers deserve our engineers.
 
-- Build in-house
-  - Full control over schema and roadmap
-  - 2–3 engineer-quarters to reach feature parity
-  - Ongoing maintenance burden stays internal
-- Buy + configure
-  - Ship in 6 weeks, not 9 months
-  - Engineering capacity redirects to product-layer features
-  - Exit risk manageable — data export contractually guaranteed
+- Build everything
+  - Owns the plumbing and the scoring alike
+  - Two engineer-quarters before anyone scores a signal
+  - The pager stays ours, all layers
+- Buy the plumbing
+  - Connectors ship in six weeks
+  - Engineering stays on the scoring and the log
+  - Exit stays honest — the weights never existed to lose
 
-> Buy the infrastructure. Build the differentiation. Revisit in 24 months.
+> Buy the plumbing. Build the framework. Revisit at the 24-month calibration review.
 
 ---
 
 <!-- _class: split-panel pullquote -->
 <!-- _footer: "Split — statement · split-panel pullquote" -->
 
-> The best product does not win. The most understood product does.
+> The framework did not make us smarter. It made us unable to pretend we had not known.
 
-`Morgan Chase · Head of Product, Vercel, 2024`
+`Head of Product · Pilot Team 3 · month five`
 
-- Clarity is a product decision, not a marketing one
-  - If a prospect cannot articulate our value in one sentence, the product has a communication architecture problem.
-- Onboarding is the product's first argument for itself
-  - The moment a user first succeeds defines their frame for everything that follows.
-- Understanding, not delight, is the retention driver at scale
-  - Users who understand the system's logic stay through friction. Build for comprehension.
+- The log is the memory the org declined to fund
+  - Decisions were reconstructible — from whoever was in the room and still employed.
+- Calibration turns opinion into a track record
+  - After two cycles, "I had a feeling" carries a batting average.
+- Belief arrived with the second retro
+  - The first produced attendance. The second produced behavior.
+
+---
+
+<!-- _class: divider -->
+<!-- _header: '' -->
+<!-- _paginate: false -->
+<!-- _footer: "Legal Layouts · statute-stack + authority-chain + obligation-matrix + citation-card + regulatory-update + redline" -->
+
+`The Compliance Review · Six Exhibits`
+
+## Whichever platform wins, the data obligations do not move
+
+---
+
+<!-- _class: statute-stack dark -->
+<!-- _footer: "Legal — statute-stack · statute-stack dark" -->
+
+## The signal store answers to three regimes on day one.
+
+- Federal `15 U.S.C. §45`
+  - Reasonable security for stored customer conversations.
+  - An FTC consent order follows the data, not the vendor.
+  - `In effect · FTC Act §5`
+- State `Cal. Civ. §1798.100`
+  - Access, deletion, and correction rights over logged signals.
+  - DSAR handling within 45 days; deletion verified.
+  - `Enforced 2023`
+- International `GDPR Art. 5`
+  - Purpose limitation and storage limits on intake data.
+  - Minimization applies to the transcript, not the summary.
+  - `In effect since 2018`
+
+---
+
+<!-- _class: authority-chain dark -->
+<!-- _footer: "Legal — authority-chain · authority-chain dark" -->
+
+## The retention rule on signal data has a chain of custody.
+
+1. Statute
+   - `GDPR Art. 5(1)(e)`
+   - Storage limitation — keep personal data no longer than the purpose needs.
+2. Regulation
+   - `EDPB Guidelines 03/2019`
+   - Retention criteria for recorded interactions; deletion must be demonstrable.
+3. Guidance
+   - `ICO Retention Guidance · 2023`
+   - "Because the vendor keeps it" is not a lawful basis.
+4. Policy
+   - `DATA-RET-004 · internal`
+   - Signals purge at 24 months; the decision log keeps the summary, not the transcript.
+
+---
+
+<!-- _class: obligation-matrix -->
+<!-- _footer: "Legal — obligation-matrix · obligation-matrix" -->
+
+## The signal store inherits every regime we sell into.
+
+| Regulation | Notice | Consent | Retention | Breach | DSAR  |
+| ---------- | :----: | :-----: | :-------: | :----: | :---: |
+| GDPR       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| CCPA/CPRA  | [x]    | [-]     | [x]       | [x]    | [x]   |
+| LGPD       | [x]    | [x]     | [x]       | [x]    | [x]   |
+| PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
+| HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]   |
+
+Filled = applies, half = partial, empty = exempt — a rare grid where empty is the good news. Neutral ink; data first.
+
+---
+
+<!-- _class: citation-card -->
+<!-- _footer: "Legal — citation-card · citation-card" -->
+
+## The signals we log are "personal information" under CCPA.
+
+`Cal. Civ. Code §1798.140(o) · CCPA/CPRA`
+
+> "Personal information" means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
+
+- **What we must do.**
+  - Treat the decision log as a PI store: device and household identifiers ride along with every intake transcript, whichever platform hosts it. The statute does not care who won the bake-off.
+
+---
+
+<!-- _class: regulatory-update -->
+<!-- _footer: "Legal — regulatory-update · regulatory-update" -->
+
+## The quarter moved three rules that touch the scoring model.
+
+`Federal · State · International`
+
+1. EU AI Act
+   - `Title III`
+   - Conformity assessment for high-risk systems — a scoring model that ranks people qualifies.
+   - `Effective Feb 2026`
+2. Colorado AI Act
+   - `SB 24-205`
+   - Deployer duties for consequential-decision systems; the decision log is the audit trail.
+   - `Effective Feb 2026`
+3. Texas DPSA
+   - `§541.151`
+   - DSAR opt-out portal mandatory; intake transcripts are in scope.
+   - `Effective Mar 2026`
+
+---
+
+<!-- _class: redline -->
+<!-- _footer: "Legal — redline · redline" -->
+
+## Vendor West's redlines moved the exit clause, quietly.
+
+`MSA §9.2 Data Return · Vendor West draft 3 (2026)`
+
+> Upon termination, Provider shall return Customer Data in <del>an open, machine-readable format</del> <ins>Provider's standard export format</ins> within <del>thirty (30)</del> <ins>ninety (90)</ins> days, <ins>subject to a data-processing fee at then-current rates,</ins> after which Provider <del>shall delete</del> <ins>may retain for archival purposes</ins> all Customer Data.
+
+- **Why this matters.** The exit clause is where per-seat pricing hides. Draft 3 makes leaving slower, billable, and optional for them — the calibration weights were never coming back anyway.
+
+---
+
+<!-- _class: divider -->
+<!-- _header: '' -->
+<!-- _paginate: false -->
+<!-- _footer: "Operating Layouts · math + inventory + checklist + pricing + q-and-a + logo-wall" -->
+
+`The Operating Plan · Six Exhibits`
+
+## The plan made operational — model, roster, readiness, and terms
+
+---
+
+<!-- _class: math -->
+<!-- _footer: "Math — closed form · math" -->
+
+`Scoring model · OLS`
+
+## The scoring model fits on one line.
+
+$$ \hat\beta = (X^\top X)^{-1} X^\top y $$
+
+- $\hat\beta$ — the signal-weight vector the vendors would not sell
+- $X$ — design matrix of scored signals, $n \times p$
+- $y$ — observed outcomes, length $n$
+- $X^\top X$ — Gram matrix, $p \times p$, must be invertible
+
+---
+
+<!-- _class: inventory -->
+<!-- _footer: "Ops — inventory · inventory" -->
+
+`Framework · Four Components`
+
+## The system has four moving parts.
+
+- **Signal Intake.** Weekly structured collection across conversations and market data.
+- **Scoring Model.** Each signal scored on confidence, recency, and relevance.
+- **Decision Log.** Every call recorded with the signals that informed it.
+- **Calibration Loop.** Outcomes compared to predictions each cycle. Run once so far; the once was humbling.
+
+> Signals without decisions are just noise.
+
+---
+
+<!-- _class: checklist -->
+<!-- _footer: "Ops — checklist · checklist" -->
+
+## The go-live checklist is honest about the gaps.
+
+- [x] Signal taxonomy ratified, in workshop four of three
+- [x] Scoring weights agreed by the steering committee
+- [x] Decision log live in staging
+- [-] Pilot teams trained, two still "circling back"
+- [-] Operating rhythm on the calendar, attendance optional in practice
+- [ ] Exec sponsor confirmed for the launch comms
+- [/] Per-team weighting UI, descoped to next half
+
+---
+
+<!-- _class: pricing -->
+<!-- _footer: "Ops — pricing · pricing" -->
+
+## What the vendors quoted, before procurement has its say.
+
+- Vendor North `$38 / seat / mo`
+  - [x] Signal-intake connectors
+  - [/] Calibration weights exposed
+  - [/] Exit without repricing
+  - For teams that enjoy renewals.
+- Vendor West `$52 / seat / mo` *Most popular*
+  - [x] Signal-intake connectors
+  - [/] Calibration weights exposed
+  - [/] Exit without repricing
+  - For teams that enjoy nicer renewals.
+- Build in-house `4 engineers`
+  - [x] Signal-intake connectors
+  - [x] Calibration weights exposed
+  - [x] Exit without repricing
+  - For us, apparently, again.
+
+---
+
+<!-- _class: q-and-a -->
+<!-- _footer: "Ops — q-and-a · q-and-a" -->
+
+## The board will press on three questions; here are the answers.
+
+- Why not just buy Vendor West?
+  - Neither vendor sells the weights — the framework itself. We would rent back our own judgment.
+- What does staying in-house actually cost?
+  - Four engineers, plus the enablement we kept deferring — now in the plan, with a date.
+- When do we revisit this decision?
+  - The 24-month review, log as evidence. If our scores stop winning, the log says so.
+
+---
+
+<!-- _class: logo-wall -->
+<!-- _footer: "Ops — logo-wall · logo-wall" -->
+
+`The intake wall`
+
+## Eight source systems already feed the intake — seven willingly.
+
+- ![Acme](../../../lib/components/inventory/logo-wall/acme.svg)
+  - Acme
+  - `API`
+- ![Globex](../../../lib/components/inventory/logo-wall/globex.svg)
+  - Globex
+  - `CSV`
+- ![Vantage](../../../lib/components/inventory/logo-wall/vantage.svg)
+  - Vantage
+  - `API`
+- ![Umbra](../../../lib/components/inventory/logo-wall/umbra.svg)
+  - Umbra
+  - `Webhook`
+- ![Meridian](../../../lib/components/inventory/logo-wall/meridian.svg)
+  - Meridian
+  - `CSV`
+- ![Helios](../../../lib/components/inventory/logo-wall/helios.svg)
+  - Helios
+  - `API`
+- ![Northwind](../../../lib/components/inventory/logo-wall/northwind.svg)
+  - Northwind
+  - `Manual`
+- ![Cobalt](../../../lib/components/inventory/logo-wall/cobalt.svg)
+  - Cobalt
+  - `API`
+
+---
+
+<!-- _class: divider -->
+<!-- _header: '' -->
+<!-- _paginate: false -->
+<!-- _footer: "Connect Layouts · contact + wifi" -->
+
+`Closing Logistics · Two Codes`
+
+## Two codes close the room out — a person and a network, one of them always on
+
+---
+
+<!-- _class: contact -->
+<!-- _footer: "Connect — contact · contact" -->
+
+## The framework has an owner, and she answers email.
+
+- Dana Reyes `name`
+- VP Strategy · framework owner `title`
+- Strategy Office `org`
+- dana.reyes@strategy.example `email`
+- +1-555-0142 `phone`
+- strategy.example/decision-log `url`
+- Scan to add me `caption`
+
+---
+
+<!-- _class: wifi -->
+<!-- _footer: "Connect — wifi · wifi" -->
+
+`Offsite · Room Wi-Fi`
+
+## The war room has its own network.
+
+- Offsite-Guest `ssid`
+- boardroom2026 `password`
+- WPA2 `security`
+- Scan to connect `caption`
 
 ---
 
@@ -1360,13 +1851,13 @@ Both paths are viable. The difference is where we spend the next 18 months.
 <!-- _paginate: false -->
 <!-- _footer: "Modifier — accent · closing accent" -->
 
-`Modifier · accent`
+`Signal To Strategy · The End`
 
-## Accent replaces the rainbow stripe with a single editorial colour.
+## The deck ends on one color, chosen on purpose.
 
-The default top border is a spectrum gradient — a system signal that the page is part of a wider deck. The `accent` modifier swaps that stripe for one solid colour and tints the slide heading. Use it when one slide carries the editorial weight of a section and you want the visual chrome to say so.
+Every other page wears the full spectrum on its top edge — the mark of belonging to a wider deck. The last page wears one color, because one thing got decided.
 
-It composes with `dark`: on the dark canvas the spectrum top-stripe is suppressed entirely, so `accent.dark` restores a solid accent stripe in its place — preserving the visual signal across both canvases.
+Slide 115, for the record: decision logged, retrospective booked, attendance aspirational.
 
 <!-- Import Mermaid and the Lattice runtime theme for VS Code / web preview.
      The build script (lattice-emulator.js) pre-renders Mermaid to SVG at build time

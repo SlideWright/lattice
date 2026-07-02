@@ -862,10 +862,16 @@ inspected). Its two HIGH findings were fixed before the PR opened:
 2. **"Every layout" was false.** Getting-started said the gallery
    "exercises every layout" and the introduction said it "shows every
    component the engine knows" — 24 of 55 components (the whole legal
-   bucket among them) are not in the deck. The copy now calls it "an
-   87-slide tour of the system," and "every component" points only at
-   `/components/`, which genuinely has all 55. Extending the fixture to
-   true full coverage stays open as follow-up work.
+   bucket among them) are not in the deck. The copy was corrected to "an
+   87-slide tour of the system," and "every component" pointed only at
+   `/components/`. **Closed by the follow-up `feat/gallery-full-coverage`
+   PR**: the gallery now exercises all 55 components (115 slides), every
+   new page was visually reviewed by two independent agents, the two
+   legal slides ship as `dark` variants (their tier labels ghost on the
+   mustard light canvas — a theme-pairing defect the dark canvas
+   sidesteps), and the pre-existing component render defects the new
+   coverage exposed (quadrant sizing + five polish items) are tracked in
+   issue #680. The "every layout" claims are restored, now true.
 
 Also fixed from the same pass: the stale `examples/gallery*` paths in the
 canonical internal docs (`engineering/workflow.md` regression table,

@@ -19,9 +19,10 @@ npm install
 
 ## Render the gallery deck
 
-The repository ships a gallery deck — an 87-slide tour of the system and
-the ground-truth fixture for what the renderer produces. Render it with
-the bundled `lattice` CLI (no network required):
+The repository ships a gallery deck that exercises every layout — all
+55, in one 115-slide tour — and serves as the ground-truth fixture for
+what the renderer produces. Render it with the bundled `lattice` CLI
+(no network required):
 
 ```sh
 npx lattice test/integration/baseline-decks/gallery.md gallery.pdf
