@@ -8,16 +8,58 @@ import { tags as t } from '@lezer/highlight';
 // Extracted here so the two editors share ONE look (#15 — reuse, don't fork).
 export const editorTheme = EditorView.theme({
 	'&': { backgroundColor: 'var(--bg)', color: 'var(--text-body)', height: '100%', fontSize: '13px' },
-	'.cm-content': { fontFamily: 'var(--font-mono, ui-monospace, monospace)', padding: '14px 4px', lineHeight: '1.85' },
+	// `caretColor` themes the NATIVE contentEditable caret (this editor has no
+	// drawSelection extension, so `.cm-cursor` never renders — the browser caret
+	// is what you see). It tracks `--text-body`, NOT `--accent`: the caret marks
+	// the insertion point among the text you're typing, so it must stay as legible
+	// as that text on every theme. `--text-body` is AA against `--bg` by contract
+	// (accent is a brand color with no such contrast guarantee — on a dark theme it
+	// can fall below AA), so this keeps the caret light + WCAG-safe in dark mode.
+	'.cm-content': {
+		fontFamily: 'var(--font-mono, ui-monospace, monospace)',
+		padding: '14px 4px',
+		lineHeight: '1.85',
+		caretColor: 'var(--text-body)',
+	},
 	'.cm-gutters': { backgroundColor: 'var(--bg)', color: 'var(--text-muted)', border: 'none', fontFamily: 'var(--font-mono)' },
 	'.cm-activeLine': { backgroundColor: 'color-mix(in srgb, var(--accent) 5%, transparent)' },
 	'.cm-activeLineGutter': { backgroundColor: 'transparent', color: 'var(--accent)' },
-	'.cm-cursor': { borderLeftColor: 'var(--accent)', borderLeftWidth: '2px' },
+	// Inert today (no drawSelection → the native caret above is what renders), but
+	// kept in sync with `caretColor` so a future drawn caret stays legible too.
+	'.cm-cursor': { borderLeftColor: 'var(--text-body)', borderLeftWidth: '2px' },
 	'&.cm-focused': { outline: 'none' },
 	'.cm-selectionBackground, &.cm-focused .cm-selectionBackground': {
 		backgroundColor: 'color-mix(in srgb, var(--accent) 18%, transparent)',
 	},
 	'.cm-lintRange-error': { textDecorationColor: '#b42318' },
+	// Autocomplete popup — palette-aware so the dropdown tracks the active theme +
+	// mode (CodeMirror's default is a fixed light chrome that clashes on dark/tinted
+	// palettes). Every color a token; the matched substring + selected row use accent.
+	'.cm-tooltip': {
+		backgroundColor: 'var(--bg)',
+		color: 'var(--text-body)',
+		border: '1px solid color-mix(in srgb, var(--text-heading) 18%, transparent)',
+		borderRadius: '8px',
+		boxShadow: '0 8px 28px color-mix(in srgb, var(--text-heading) 22%, transparent)',
+	},
+	'.cm-tooltip.cm-tooltip-autocomplete > ul': {
+		fontFamily: 'var(--font-mono, ui-monospace, monospace)',
+		maxHeight: '16em',
+	},
+	'.cm-tooltip-autocomplete > ul > li': { padding: '3px 8px', color: 'var(--text-body)' },
+	'.cm-tooltip-autocomplete > ul > li[aria-selected]': {
+		backgroundColor: 'color-mix(in srgb, var(--accent) 18%, transparent)',
+		color: 'var(--text-heading)',
+	},
+	'.cm-completionMatchedText': { color: 'var(--accent)', textDecoration: 'none', fontWeight: '600' },
+	'.cm-completionDetail': { color: 'var(--text-muted)', fontStyle: 'normal', marginLeft: '0.6em', fontSize: '0.85em' },
+	'.cm-completionInfo': {
+		backgroundColor: 'var(--bg)',
+		color: 'var(--text-body)',
+		border: '1px solid color-mix(in srgb, var(--text-heading) 18%, transparent)',
+		borderRadius: '6px',
+		padding: '6px 8px',
+	},
 });
 
 // Palette-cohesive syntax highlighting — every colour a theme token, so the code

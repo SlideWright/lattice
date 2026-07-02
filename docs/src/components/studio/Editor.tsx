@@ -132,17 +132,22 @@ export const Editor = React.forwardRef<EditorHandle, {
 	// Real grammar lint when a vocabulary is supplied; otherwise the unknown-
 	// component-only fallback (keeps tests + vocab-less surfaces working).
 	const useRealLint = !!lintVocab?.names;
-	// A stable join key so the memo only rebuilds when the local-name SET changes.
+	// Stable join keys so the memo only rebuilds when a SET changes (not identity).
 	const extraNamesKey = (extraComponentNames || []).join(',');
-	// biome-ignore lint/correctness/useExhaustiveDependencies: extraNamesKey is the stable content-proxy for extraComponentNames; depending on the array itself would rebuild every render.
+	const finishKey = (completionFinishes || []).join(',');
+	// biome-ignore lint/correctness/useExhaustiveDependencies: extraNamesKey / finishKey are the stable content-proxies; depending on the arrays themselves would rebuild every render.
 	const vocabSets = React.useMemo(() => {
 		if (!useRealLint) return null;
 		const sets = buildVocabSets(lintVocab);
 		// Union your saved local components into the known names so lint-core treats
 		// them as first-class, not unknown. (Built-in `names` stays authoritative.)
 		for (const n of extraComponentNames || []) sets.names.add(n);
+		// Likewise fold the finish vocabulary (built-in presets + your saved
+		// finishes) into the finish register, so `finish: <my-saved-finish>` isn't
+		// flagged `unknown-finish` inline — matching the Architect panel's lint.
+		if (completionFinishes.length) sets.finishNames = [...(sets.finishNames || []), ...completionFinishes];
 		return sets;
-	}, [lintVocab, useRealLint, extraNamesKey]);
+	}, [lintVocab, useRealLint, extraNamesKey, finishKey]);
 
 	React.useImperativeHandle(ref, () => ({
 		fixAll() {

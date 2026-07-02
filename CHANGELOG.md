@@ -33,6 +33,18 @@ in patch versions.
   completes `finish:` values from the built-in presets **plus** your own saved
   finishes. (Follow-up to #669; the lint fix is reactive, the completion list
   refreshes on the next editor mount, matching saved-component behavior.)
+- **The Studio deck editor is fully theme-aware (light + dark, AA-safe).** The
+  saved-finish lint fold now reaches the editor's *inline* CodeMirror diagnostics
+  (not just the Architect panel), so an applied saved finish no longer shows a wavy
+  `unknown-finish` underline. The autocomplete dropdown and the text caret are
+  palette-tokenized: the completion popup tracks the active theme/mode instead of a
+  fixed light chrome, and the native caret takes `--text-body` — the same
+  AA-against-`--bg` contract token as the text it marks, so it stays legible in dark
+  mode on every theme (accent is a brand color with no such contrast guarantee).
+- **`finish:` completes in one more place — the slide-level `_class:` line.** A
+  finish also attaches per slide via its prefixed class (`_class: closing finish-brand`),
+  so the editor now offers every built-in **and** saved finish as a `finish-<name>`
+  token there, on any position in the line — not just as a `finish:` front-matter value.
 
 ### Added
 

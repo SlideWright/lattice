@@ -57,6 +57,22 @@ describe('makeStudioCompletion', () => {
 		expect(done('Just prose finish: at', 21)).toEqual([]);
 	});
 
+	it('completes a finish CLASS on a _class: line — after a component, too', () => {
+		const withFinishes = makeStudioCompletion(COMPS, ['atrium', 'shu']);
+		const done = (doc: string, pos = doc.length) => {
+			const r = withFinishes(new CompletionContext(EditorState.create({ doc }), pos, true));
+			return r ? r.options.map((o) => o.label) : [];
+		};
+		// A finish class is offered as `finish-<name>` alongside components…
+		expect(done('<!-- _class: ')).toContain('finish-shu');
+		expect(done('<!-- _class: ')).toContain('kpi');
+		// …and — the reported gap — on a SECOND token after a component name.
+		expect(done('<!-- _class: quote finish-')).toContain('finish-shu');
+		// `from` replaces just the current token, not the whole line.
+		const r = withFinishes(new CompletionContext(EditorState.create({ doc: '<!-- _class: quote finish-sh' }), 28, true));
+		expect(r?.from).toBe('<!-- _class: quote '.length);
+	});
+
 	it('does not fire in plain prose', () => {
 		expect(complete('Just some body text here')).toBeNull();
 	});

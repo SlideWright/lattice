@@ -56,15 +56,22 @@ export function makeStudioCompletion(components: CompletionComponent[], finishes
 	// The finish register — built-in presets PLUS the user's saved/fabricated
 	// finishes — completed after `finish:` so an authored value stays valid.
 	const finishOptions: Completion[] = finishes.map((f) => ({ label: f, type: 'constant', detail: 'finish' }));
+	// The same finishes as a `_class:` token — a finish also attaches at the slide
+	// level via its prefixed CSS class (`_class: closing finish-brand`), so offer
+	// each saved/built-in finish as `finish-<name>` alongside the component names.
+	const classFinishOptions: Completion[] = finishes.map((f) => ({ label: `finish-${f}`, type: 'constant', detail: 'finish' }));
+	const classOptions = [...componentOptions, ...classFinishOptions];
 
 	return function studioComplete(context: CompletionContext): CompletionResult | null {
 		const line = context.state.doc.lineAt(context.pos);
 		const before = line.text.slice(0, context.pos - line.from);
 
-		// 1. Component name on a `_class:` directive line.
-		if (/<!--\s*_class:\s*[\w-]*$/.test(before) && componentOptions.length) {
+		// 1. A `_class:` directive token — component name OR a `finish-<name>` class.
+		// Fires on ANY space-separated token (not just the first), so a finish class
+		// appended after a component (`_class: closing finish-brand`) still completes.
+		if (/<!--\s*_class:[\w\s-]*$/.test(before) && classOptions.length) {
 			const word = context.matchBefore(/[\w-]*/);
-			return { from: word ? word.from : context.pos, options: componentOptions, validFor: /^[\w-]*$/ };
+			return { from: word ? word.from : context.pos, options: classOptions, validFor: /^[\w-]*$/ };
 		}
 
 		// 2. Fenced-block language right after the opening ``` .
