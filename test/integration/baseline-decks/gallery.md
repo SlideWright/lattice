@@ -1264,14 +1264,14 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 <!-- _class: funnel -->
 <!-- _footer: "Chart — funnel · funnel" -->
 
-## Where the signup pipeline leaks.
+## Most signals die long before they change a decision.
 
-- Visitors `12,000`
-  - Two-thirds arrive from inbound, not outbound
-- Signups `4,800`
-- Activated `2,160`
-- Paid `864`
-- Renewed `670`
+- Signals logged `12,000`
+  - Two-thirds arrive from the same three teams
+- Triaged `4,800`
+- Scored `2,160`
+- Surfaced to a decision `864`
+- Changed the decision `212`
 
 ---
 
@@ -1313,26 +1313,26 @@ Nearly half went to producing decks; the deciding itself was the smallest slice.
 
 `Scale · 0–10`
 
-## How the vendors stack up across the buying criteria.
+## The build and the two vendors trade blows on every axis but one.
 
-- Meridian
-  - Performance `9`
-  - Pricing `7`
+- Build in-house
+  - Coverage `6`
+  - Integration `7`
+  - Calibration transparency `9`
+  - Support `5`
+  - Cost predictability `8`
+- Vendor North
+  - Coverage `8`
+  - Integration `7`
+  - Calibration transparency `2`
   - Support `8`
-  - Ecosystem `6`
-  - Security `9`
-- Vantage
-  - Performance `7`
-  - Pricing `8`
-  - Support `6`
-  - Ecosystem `9`
-  - Security `7`
-- Helios
-  - Performance `6`
-  - Pricing `9`
+  - Cost predictability `4`
+- Vendor West
+  - Coverage `9`
+  - Integration `8`
+  - Calibration transparency `2`
   - Support `7`
-  - Ecosystem `8`
-  - Security `8`
+  - Cost predictability `3`
 
 ---
 
@@ -1363,35 +1363,34 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 <!-- _class: map -->
 <!-- _footer: "Chart — map · map" -->
 
-## Where the pilot programs reached — unevenly.
+## The signal volume is nowhere near where the roadmap thinks it is.
 
-- India `48.2`
-  - Largest by volume, thinnest by margin
-- Nigeria `36.4`
-- Kenya `31.0`
+- United States `48.2`
+  - Half of it from the two coastal sales teams
+- Germany `36.4`
+- Japan `31.0`
 - Brazil `27.5`
-- Indonesia `19.3`
-- Ethiopia `14.1`
-- Bangladesh `11.8`
-- Peru `9.6`
+- India `19.3`
+- United Kingdom `14.1`
+- Australia `11.8`
+- Mexico `9.6`
 
 ---
 
 <!-- _class: journey -->
 <!-- _footer: "Chart — journey · journey" -->
 
-## Customer onboarding · trial to activation.
+## A team's first month on the framework, mood included.
 
-- Evaluate
-  - Read case study `@prospect` `:5`
-  - Book demo `@prospect` `:4`
-  - Live demo `@prospect` `@sales` `:4`
-- Trial
-  - Trial signup `@prospect` `:3`
-  - Workspace setup `@user` `@onboarding` `:1`
-- Activate
-  - First report `@user` `:3`
-  - Daily use `@user` `:5`
+- Onboard
+  - Kickoff workshop `@team` `@strategy` `:2`
+  - Taxonomy training `@team` `:2`
+  - Intake setup `@team` `@platform` `:1`
+- Operate
+  - First signal scored `@team` `:4`
+  - First decision logged `@team` `:4`
+- Believe
+  - First calibration review `@team` `@strategy` `:5`
 
 ---
 
@@ -1439,17 +1438,17 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 <!-- _class: word-cloud -->
 <!-- _footer: "Chart — word-cloud · word-cloud" -->
 
-## What 38 win/loss interviews kept saying, by frequency.
+## What 38 pilot retros kept saying, by frequency.
 
-- time-to-value `5`
-- security `4`
-- onboarding `4`
-- pricing `3`
-- integrations `3`
-- support `2`
-- roadmap `2`
-- contracts `1`
-- residency `1`
+- calibration `5`
+- workshops `4`
+- taxonomy `4`
+- dashboards `3`
+- adoption `3`
+- weights `2`
+- renewals `2`
+- log `1`
+- momentum `1`
 
 ---
 
@@ -1565,54 +1564,54 @@ Both paths are viable. The difference is where we spend the next 18 months.
 
 `Legal Layouts · six components`
 
-## The compliance review, in an actual legal vocabulary
+## Whichever platform wins, the data obligations do not move
 
 ---
 
 <!-- _class: statute-stack dark -->
 <!-- _footer: "Legal — statute-stack · statute-stack dark" -->
 
-## Children's data — three jurisdictions, three obligations.
+## The signal store answers to three regimes on day one.
 
-- Federal `15 U.S.C. §6501`
-  - Verifiable parental consent for under-13 personal data.
-  - Operators must post a clear notice and a deletion route.
-  - `In effect since 2000`
-- State `Cal. Civ. §1798.120`
-  - Opt-in for selling or sharing under-16 data; opt-out for over-16.
+- Federal `15 U.S.C. §45`
+  - Reasonable security for stored customer conversations.
+  - An FTC consent order follows the data, not the vendor.
+  - `In effect · FTC Act §5`
+- State `Cal. Civ. §1798.100`
+  - Access, deletion, and correction rights over logged signals.
   - DSAR handling within 45 days; deletion verified.
   - `Enforced 2023`
-- Local `NYC §22-1201`
-  - Bias-audit obligation for automated tools in employment decisions.
-  - Annual audit, candidate notice, and a public summary.
-  - `Effective 2023`
+- International `GDPR Art. 5`
+  - Purpose limitation and storage limits on intake data.
+  - Minimization applies to the transcript, not the summary.
+  - `In effect since 2018`
 
 ---
 
 <!-- _class: authority-chain dark -->
 <!-- _footer: "Legal — authority-chain · authority-chain dark" -->
 
-## COPPA — the chain, tier by tier.
+## The retention rule on signal data has a chain of custody.
 
 1. Statute
-   - `15 U.S.C. §6501`
-   - Congress, 1998 — verifiable parental consent for under-13 data.
+   - `GDPR Art. 5(1)(e)`
+   - Storage limitation — keep personal data no longer than the purpose needs.
 2. Regulation
-   - `16 C.F.R. Part 312`
-   - FTC implementing rule; 2013 rewrite expanded covered identifiers.
+   - `EDPB Guidelines 03/2019`
+   - Retention criteria for recorded interactions; deletion must be demonstrable.
 3. Guidance
-   - `FTC Six-Step Compliance Plan`
-   - Staff guidance — non-binding, but cited in every consent order.
-4. Case
-   - `In re Epic Games · 2022`
-   - $245M consent order — operationalized the "actual knowledge" standard.
+   - `ICO Retention Guidance · 2023`
+   - "Because the vendor keeps it" is not a lawful basis.
+4. Policy
+   - `DATA-RET-004 · internal`
+   - Signals purge at 24 months; the decision log keeps the summary, not the transcript.
 
 ---
 
 <!-- _class: obligation-matrix -->
 <!-- _footer: "Legal — obligation-matrix · obligation-matrix" -->
 
-## Privacy obligations across regimes — neutral grid.
+## The signal store inherits every regime we sell into.
 
 | Regulation | Notice | Consent | Retention | Breach | DSAR  |
 | ---------- | :----: | :-----: | :-------: | :----: | :---: |
@@ -1629,35 +1628,35 @@ Filled = applies, half = partial, empty = exempt. Neutral ink — data first.
 <!-- _class: citation-card -->
 <!-- _footer: "Legal — citation-card · citation-card" -->
 
-## What counts as "personal information" under CCPA.
+## The signals we log are "personal information" under CCPA.
 
 `Cal. Civ. Code §1798.140(o) · CCPA/CPRA`
 
 > "Personal information" means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
 
 - **What we must do.**
-  - Treat household-level identifiers as PI in our notice, retention, and DSAR workflows. Audit pixel and tag inventory next quarter.
+  - Treat the decision log as a PI store: device and household identifiers ride along with every intake transcript, whichever platform hosts it.
 
 ---
 
 <!-- _class: regulatory-update -->
 <!-- _footer: "Legal — regulatory-update · regulatory-update" -->
 
-## Privacy and AI motion — Q1 2026.
+## The quarter moved three rules that touch the scoring model.
 
 `Federal · State · International`
 
 1. EU AI Act
    - `Title III`
-   - Conformity-assessment pre-market obligation took effect.
+   - Conformity assessment for high-risk systems — a scoring model that ranks people qualifies.
    - `Effective Feb 2026`
 2. Colorado AI Act
    - `SB 24-205`
-   - Developer and deployer duties for consequential-decision systems.
+   - Deployer duties for consequential-decision systems; the decision log is the audit trail.
    - `Effective Feb 2026`
 3. Texas DPSA
    - `§541.151`
-   - DSAR opt-out portal mandatory; small-business safe-harbor narrowed.
+   - DSAR opt-out portal mandatory; intake transcripts are in scope.
    - `Effective Mar 2026`
 
 ---
@@ -1665,13 +1664,13 @@ Filled = applies, half = partial, empty = exempt. Neutral ink — data first.
 <!-- _class: redline -->
 <!-- _footer: "Legal — redline · redline" -->
 
-## SB-362 rewrote the opt-out link rule.
+## Vendor West's redlines moved the exit clause, quietly.
 
-`Cal. Civ. Code §1798.135 · amendment SB-362 (2024)`
+`MSA §9.2 Data Return · Vendor West draft 3 (2026)`
 
-> A business that <del>collects</del> <ins>collects, sells, or shares</ins> consumers' personal information shall provide <del>two or more</del> <ins>at least one</ins> designated method for submitting requests to opt-out, <ins>including a clear and conspicuous link on the homepage,</ins> for use by consumers to <del>opt out of the sale of</del> <ins>direct the business not to sell or share</ins> their personal information.
+> Upon termination, Provider shall return Customer Data in <del>an open, machine-readable format</del> <ins>Provider's standard export format</ins> within <del>thirty (30)</del> <ins>ninety (90)</ins> days, <ins>subject to a data-processing fee at then-current rates,</ins> after which Provider <del>shall delete</del> <ins>may retain for archival purposes</ins> all Customer Data.
 
-- **Why this matters.** Sale and sharing collapse into one duty with a pinned link title — homepage chrome and DSAR workflows both change.
+- **Why this matters.** The exit clause is where per-seat pricing hides. Draft 3 makes leaving slower, billable, and optional for them — the calibration weights were never coming back anyway.
 
 ---
 
@@ -1736,71 +1735,71 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 <!-- _class: pricing -->
 <!-- _footer: "Ops — pricing · pricing" -->
 
-## Pick the plan that fits the team.
+## What the vendors quoted, before procurement has its say.
 
-- Starter `$0`
-  - [x] Up to 3 seats
-  - [/] SSO
-  - [/] Dedicated support
-  - For evaluating, one team.
-- Growth `$49 / mo` *Most popular*
-  - [x] Up to 25 seats
-  - [x] SSO
-  - [/] Dedicated support
-  - For scaling teams.
-- Enterprise `Custom`
-  - [x] Unlimited seats
-  - [x] SSO + SCIM
-  - [x] Dedicated support
-  - For procurement and compliance.
+- Vendor North `$38 / seat / mo`
+  - [x] Signal-intake connectors
+  - [/] Calibration weights exposed
+  - [/] Exit without repricing
+  - For teams that enjoy renewals.
+- Vendor West `$52 / seat / mo` *Most popular*
+  - [x] Signal-intake connectors
+  - [/] Calibration weights exposed
+  - [/] Exit without repricing
+  - For teams that enjoy nicer renewals.
+- Build in-house `4 engineers`
+  - [x] Signal-intake connectors
+  - [x] Calibration weights exposed
+  - [x] Exit without repricing
+  - For us, apparently, again.
 
 ---
 
 <!-- _class: q-and-a -->
 <!-- _footer: "Ops — q-and-a · q-and-a" -->
 
-## What the board will press on.
+## The board will press on three questions; here are the answers.
 
-- Why not extend the current vendor one more year?
-  - The renewal lands in Q3 and locks us in through 2028. Switching now costs a single quarter of migration; switching after renewal costs three.
-- What happens to the team mid-migration?
-  - No headcount change. The same four engineers run both stacks through the eight-week overlap.
-- How confident are we in the savings?
-  - The $1.2M is contracted, not projected — the signed rate differential, before any usage growth.
+- Why not just buy Vendor West and be done with it?
+  - Neither vendor exposes the calibration weights, and the weights are the framework. We would be renting our own judgment back at $52 a seat.
+- What does staying in-house actually cost?
+  - Four engineers and the enablement work we keep deferring to "next phase." That line is now in the plan with a date on it.
+- When do we revisit this decision?
+  - At the 24-month calibration review, with the decision log as evidence. If our scores stop beating the vendors' demos, the log will say so first.
 
 ---
 
 <!-- _class: logo-wall -->
 <!-- _footer: "Ops — logo-wall · logo-wall" -->
 
-`In the pilot`
+`The pilot cohort`
 
-## Eight teams already run the framework.
+## Eight portfolio brands already run the framework.
 
 - ![Acme](../../../lib/components/inventory/logo-wall/acme.svg)
   - Acme
-  - `Series B`
+  - `Cohort 1`
 - ![Globex](../../../lib/components/inventory/logo-wall/globex.svg)
   - Globex
-  - `Enterprise`
+  - `Cohort 1`
 - ![Vantage](../../../lib/components/inventory/logo-wall/vantage.svg)
   - Vantage
-  - `Public`
+  - `Cohort 2`
 - ![Umbra](../../../lib/components/inventory/logo-wall/umbra.svg)
   - Umbra
-  - `Series C`
+  - `Cohort 1`
 - ![Meridian](../../../lib/components/inventory/logo-wall/meridian.svg)
   - Meridian
-  - `Seed`
+  - `Cohort 2`
 - ![Helios](../../../lib/components/inventory/logo-wall/helios.svg)
   - Helios
-  - `Public`
+  - `Cohort 2`
 - ![Northwind](../../../lib/components/inventory/logo-wall/northwind.svg)
   - Northwind
-  - `Anchor`
+  - `Cohort 2`
 - ![Cobalt](../../../lib/components/inventory/logo-wall/cobalt.svg)
   - Cobalt
-  - `Series A`
+  - `Cohort 2`
 
 ---
 
@@ -1821,11 +1820,11 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 ## Questions after the meeting?
 
 - Dana Reyes `name`
-- VP Strategy `title`
-- Northwind `org`
-- dana.reyes@northwind.example `email`
+- VP Strategy · framework owner `title`
+- Strategy Office `org`
+- dana.reyes@strategy.example `email`
 - +1-555-0142 `phone`
-- northwind.example/strategy `url`
+- strategy.example/decision-log `url`
 - Scan to add me `caption`
 
 ---
@@ -1833,9 +1832,9 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 <!-- _class: wifi -->
 <!-- _footer: "Connect — wifi · wifi" -->
 
-`Room Wi-Fi`
+`Offsite · Room Wi-Fi`
 
-## Join the room.
+## The war room has its own network.
 
 - Offsite-Guest `ssid`
 - boardroom2026 `password`
