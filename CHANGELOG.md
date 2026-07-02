@@ -117,6 +117,18 @@ in patch versions.
   Every page visually reviewed; pre-existing component render defects the
   new coverage exposed are tracked in #680.
 
+- **New `video` component — a YouTube / Vimeo / TikTok / Instagram clip as a static,
+  PDF-safe embed.** Author a video URL as a bare bullet (`- https://youtube.com/watch?v=…`)
+  and the slide renders a poster that LINKS to the clip, a play badge, and the provider's
+  name — never an iframe (a PDF can't play video, and the engine bars iframes). Two
+  compositions: **`companion`** (a claim leads on the left, the clip proves it on the right)
+  and **`gallery`** (a contained, matted exhibit). Add the **`qr`** modifier
+  (`video companion qr`) for a scannable code to the same URL — a hairline-divided, centered
+  channel beside/under the poster; leave it off and the poster is just a clickable link.
+  Optional `- <text> `caption`` and `- <path> `poster`` bullets; provider is auto-detected.
+  Posters can be auto-fetched at build via `tools/fetch-video-oembed.js`
+  (YouTube/Vimeo/TikTok; Instagram needs an author poster), cached so render stays offline.
+  See `examples/video.md` and `engineering/decisions/2026-07-02-video-component.md`.
 - **The gallery PDF is served on the docs site at `/gallery.pdf`.** The
   committed baseline gallery is staged into the site at build time
   (`docs/scripts/sync-portal.mjs`), and the landing hero and introduction
