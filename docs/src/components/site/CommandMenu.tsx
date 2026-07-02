@@ -1,6 +1,7 @@
-import { ArrowRight, BookOpen, LayoutGrid, Moon, Palette, PencilRuler, Play, Sun, Wrench } from 'lucide-react';
+import { ArrowRight, BookOpen, LayoutGrid, Moon, Palette, PencilRuler, Play, Sparkles, Sun, Wrench } from 'lucide-react';
 import * as React from 'react';
 import { paletteLabel } from '@/components/site/PaletteSelectItems';
+import { Badge } from '@/components/ui/badge';
 import {
 	CommandDialog,
 	CommandEmpty,
@@ -13,7 +14,7 @@ import {
 } from '@/components/ui/command';
 import { setPalette, toggleMode } from '@/lib/site-chrome';
 
-export type NavLink = { label: string; href: string; desc?: string; current?: boolean };
+export type NavLink = { label: string; href: string; desc?: string; current?: boolean; badge?: string };
 
 // lucide v1 dropped brand glyphs, so the GitHub mark is a local inline SVG
 // (currentColor, sized like the lucide icons around it).
@@ -43,6 +44,7 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
 	Playground: Play,
 	'Drawing Board': PencilRuler,
 	Workbench: Wrench,
+	Studio: Sparkles,
 };
 
 /**
@@ -204,7 +206,14 @@ export function CommandMenu({
 									<CommandItem key={l.href} value={`go-${l.label}`} onSelect={() => go(l.href)}>
 										<Icon />
 										<span className="flex min-w-0 flex-col">
-											<span className="truncate">{l.label}</span>
+											<span className="flex items-center gap-1.5 truncate">
+												{l.label}
+												{l.badge && (
+													<Badge className="border-transparent bg-primary/15 px-1.5 py-0 text-[10px] font-semibold tracking-wide text-primary uppercase">
+														{l.badge}
+													</Badge>
+												)}
+											</span>
 											{l.desc && <span className="truncate text-xs text-muted-foreground">{l.desc}</span>}
 										</span>
 									</CommandItem>

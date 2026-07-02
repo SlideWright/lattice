@@ -33,6 +33,7 @@ const links = [{ label: 'Home', href: url(''), match: [] }, ...primaryNav(url)];
 				<li>
 					<a href={l.href} aria-current={isCurrent(l, here) ? 'page' : undefined}>
 						{l.label}
+						{l.badge && <span class="lx-sitenav-badge">{l.badge}</span>}
 					</a>
 				</li>
 			))
@@ -48,3 +49,23 @@ const links = [{ label: 'Home', href: url(''), match: [] }, ...primaryNav(url)];
 <div class="md:sl-hidden">
 	<MobileMenuFooter />
 </div>
+
+<style>
+	/* "Preview" (or any nav pill) on the mobile site-nav — a small accent-tinted
+	   chip, palette-token only so it tracks the theme. Scoped to this override so
+	   it never touches the engine's lattice.css. */
+	.lx-sitenav-badge {
+		display: inline-flex;
+		align-items: center;
+		margin-left: 0.4rem;
+		font-size: 0.6rem;
+		font-weight: 700;
+		line-height: 1;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		padding: 0.2rem 0.4rem;
+		border-radius: 999px;
+		color: var(--accent);
+		background: color-mix(in srgb, var(--accent) 14%, transparent);
+	}
+</style>
