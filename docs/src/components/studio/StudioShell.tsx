@@ -336,13 +336,6 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		if (!mode) return v; // an unrecognized hand-typed value shows verbatim
 		return verbose ? `${mode} · verbose` : mode;
 	})(debugValue);
-	// When debug is on, the preview iframe must RECEIVE touch so press-and-hold can
-	// peek a box. The preview normally sits under `pointer-events:none` so a swipe
-	// passes through to the slide-nav container; while debugging we drop that so the
-	// in-iframe debug agent owns touch (swipe-nav yields to debug — the ‹ › buttons and
-	// the slide rail still navigate). Matches the owner directive: in debug, debug takes
-	// precedence. See engineering/decisions/2026-07-01-debug-bounding-boxes.md.
-	const debugActive = debugLabel !== 'Off';
 	// The saved finishes, shaped for the picker (slug + label + a chip swatch).
 	const savedFinishMenu = React.useMemo<SavedFinishMenuEntry[]>(
 		() => savedFinishes.map((f) => ({ id: f.id, name: f.name, label: f.label, swatch: finishSwatch(f.recipe) })),
@@ -1060,9 +1053,10 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			    aspect ratio follows the deck's selected Size, not a fixed 16:9. */}
 			<div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-card p-4 sm:p-5" onTouchStart={onPreviewTouchStart} onTouchEnd={onPreviewTouchEnd} onWheel={onPreviewWheel}>
 				{/* pointer-events-none so a swipe over the slide (an engine iframe, which
-				    would otherwise swallow the touch) reaches the swipe container — EXCEPT
-				    while debugging, when the iframe must receive touch for press-and-hold. */}
-				<div className={cn('relative overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]', debugActive ? '' : 'pointer-events-none', previewPortrait ? 'h-full w-auto' : 'h-auto w-full max-w-[760px]')} style={{ aspectRatio: `${previewRatio[0]} / ${previewRatio[1]}` }}>
+				    would otherwise swallow the touch) reaches the swipe container. The debug
+				    overlay's press-and-hold rides a parent-hosted capture surface layered
+				    ABOVE this (debug-overlay.js), so it works regardless of this rule. */}
+				<div className={cn('pointer-events-none relative overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]', previewPortrait ? 'h-full w-auto' : 'h-auto w-full max-w-[760px]')} style={{ aspectRatio: `${previewRatio[0]} / ${previewRatio[1]}` }}>
 					<DeckPreview options={options} sample={previewFm ? previewFm + slide : slide} mermaid={false} paletteOverride={activeTheme?.name} extraTheme={extraTheme} extraCss={previewExtraCss} debounceMs={140} className="size-full" aria-label="Live deck preview" />
 				</div>
 			</div>

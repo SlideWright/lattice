@@ -16,11 +16,22 @@ async function load() {
 	return import('../../../docs/src/playground/debug-overlay.js');
 }
 
-// A frame whose contentDocument/Window come from jsdom. `pretendToBeVisual` gives
-// us requestAnimationFrame + a window that supports addEventListener/setTimeout.
+// A fake iframe element: its contentDocument/Window are the SLIDE jsdom, its
+// ownerDocument is a separate PARENT jsdom (where the input capture surface mounts —
+// input lives OUTSIDE the iframe, in the parent page). getBoundingClientRect +
+// offsetWidth/Height give the capture-surface math a 1:1 (unscaled) box so tapped
+// coordinates map straight through to the slide. `pretendToBeVisual` gives rAF etc.
 function frameWith(bodyHtml) {
-	const jd = new JSDOM(`<!doctype html><html><body>${bodyHtml}</body></html>`, { pretendToBeVisual: true });
-	return { contentDocument: jd.window.document, contentWindow: jd.window };
+	const slide = new JSDOM(`<!doctype html><html><body>${bodyHtml}</body></html>`, { pretendToBeVisual: true });
+	const parent = new JSDOM('<!doctype html><html><body></body></html>', { pretendToBeVisual: true });
+	return {
+		contentDocument: slide.window.document,
+		contentWindow: slide.window,
+		ownerDocument: parent.window.document,
+		offsetWidth: 1280,
+		offsetHeight: 720,
+		getBoundingClientRect: () => ({ left: 0, top: 0, right: 1280, bottom: 720, width: 1280, height: 720 }),
+	};
 }
 
 describe('resolveConfig', () => {
@@ -175,23 +186,26 @@ describe('applyDebug — lifecycle', () => {
 		assert.ok(frame.contentDocument.getElementById(DEBUG_OVERLAY_ID), 'overlay injected by override');
 	});
 
-	test('hover mode wires capture-phase document listeners (debug owns input); always does not; teardown clears', async () => {
-		const { applyDebug } = await load();
-		// hover (the default) → the agent owns input via document listeners: mouse hover
-		// + TOUCH events (not the pointer stream iOS cancels mid-scroll); teardown removes them.
+	test('hover mode mounts a PARENT capture surface + input handlers; always does not; teardown clears', async () => {
+		const { applyDebug, DEBUG_CAPTURE_ID } = await load();
+		// hover (the default) → input rides a capture surface in the PARENT document
+		// (not inside the iframe, which iOS won't hand a touch into); teardown removes it.
 		const f1 = frameWith(deck('on'));
 		const d1 = f1.contentDocument;
 		applyDebug(f1, { force: null });
-		assert.ok(d1.__dbgListeners, 'hover mode wires the document listeners');
+		assert.ok(f1.ownerDocument.getElementById(DEBUG_CAPTURE_ID), 'capture surface mounted in the parent doc');
+		assert.ok(d1.__dbgListeners, 'hover mode wires the input handlers');
 		assert.equal(typeof d1.__dbgListeners.onTouchStart, 'function');
 		assert.equal(typeof d1.__dbgListeners.onTouchEnd, 'function');
 		applyDebug(f1, { force: 'off' });
-		assert.equal(d1.__dbgListeners, null, 'teardown clears the listeners');
+		assert.equal(d1.__dbgListeners, null, 'teardown clears the handlers');
+		assert.equal(f1.ownerDocument.getElementById(DEBUG_CAPTURE_ID), null, 'teardown removes the capture surface');
 
-		// `on-always` mode pins the chips and leaves the deck interactive — no input capture.
+		// `on-always` mode pins the chips and leaves the deck interactive — no capture surface.
 		const f2 = frameWith(deck('on-always'));
 		applyDebug(f2, { force: null });
 		assert.equal(f2.contentDocument.__dbgListeners, null, 'always mode does not capture input');
+		assert.equal(f2.ownerDocument.getElementById(DEBUG_CAPTURE_ID), null, 'always mode mounts no capture surface');
 	});
 
 	test('touch: PRESS-AND-HOLD reveals the box beneath, LIFT hides it; a SWIPE drops the peek', async () => {

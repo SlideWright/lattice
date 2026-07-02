@@ -27,6 +27,10 @@
 
 export const DEBUG_STYLE_ID = 'lattice-debug-style';
 export const DEBUG_OVERLAY_ID = 'lattice-debug-overlay';
+// The parent-hosted input capture surface (lives in the PARENT document, over the
+// preview iframe — see applyDebug's hover-input block for why input can't sit inside
+// a transform-scaled iframe on iOS).
+export const DEBUG_CAPTURE_ID = 'lattice-debug-capture';
 
 // What a label says. The default triad (identity · layout · size) answers "what is
 // this box, how does it lay out, how big"; `verbose` adds the raw class list + box
@@ -200,7 +204,7 @@ export function applyDebug(frame, opts = {}) {
 
 	// Tear down any prior pass first — a redraw always rebuilds from scratch, so it
 	// holds no stale per-node state (survives patchSections' node swaps for free).
-	teardown(doc, win);
+	teardown(doc, win, frame);
 
 	const sections = Array.from(doc.querySelectorAll('.lattice > section'));
 	const enabled = sections
@@ -250,7 +254,10 @@ export function applyDebug(frame, opts = {}) {
 	// Redraw on relayout (async Mermaid/KaTeX, resize) and a couple of backstop
 	// timers — the same belt-and-braces the FIT agent uses. Store the observer so the
 	// next applyDebug / teardown disconnects it.
-	const redraw = () => renderChips(doc, win);
+	const redraw = () => {
+		renderChips(doc, win);
+		doc.__dbgCapturePlace?.(); // keep the parent capture surface aligned as the iframe grows/moves
+	};
 	if (win?.ResizeObserver) {
 		const ro = new win.ResizeObserver(redraw);
 		ro.observe(doc.documentElement);
@@ -266,16 +273,19 @@ export function applyDebug(frame, opts = {}) {
 		doc.__dbgResize = redraw;
 	}
 
-	// HOVER mode owns input via CAPTURE-PHASE listeners on the iframe DOCUMENT. Touch is
-	// PRESS-AND-HOLD to peek: hold a box to reveal its label + container chain, lift to
-	// hide. This is driven by touchstart/move/end — NOT pointer events — because iOS
-	// Safari fires `pointercancel` the instant it suspects a scroll (which it does inside
-	// a scrollable preview), wiping the gesture; the touch events ALWAYS fire, so the
-	// peek is reliable on iOS. A drag past the threshold is a scroll: we drop the peek
-	// and never preventDefault, so the pan lives. Mouse uses live hover. The synthesized
-	// click is suppressed so the preview's own click-to-navigate / chart reveal don't
-	// fire while debug owns the surface. `always` mode stays passive — chips pinned.
-	if (enabled.some((s) => s.cfg.reveal === 'hover') && doc.addEventListener) {
+	// HOVER mode owns input via a PARENT-HOSTED CAPTURE SURFACE — a transparent layer in
+	// the PARENT document, positioned over the preview iframe. The touch lands HERE, in
+	// the parent page (where iOS delivers it reliably), NOT inside the iframe: iOS Safari
+	// will not hand a touch INTO a CSS-transform-scaled iframe (the preview is scaled to
+	// ~0.28), which is why press-and-hold worked in the barely-scaled Present view but
+	// died in the small preview. We map the parent-viewport point into the iframe's own
+	// coordinates (undo the element scale) and hit-test with the IFRAME's elementsFromPoint;
+	// the chips still live inside the iframe. Same idea as the chart-interact hit-surface
+	// (drawing-board-chart-interact.js). Touch is PRESS-AND-HOLD to peek; mouse is live
+	// hover. `always` mode needs no input.
+	const pdoc = (() => { try { return frame?.ownerDocument || null; } catch { return null; } })();
+	if (enabled.some((s) => s.cfg.reveal === 'hover') && pdoc?.body && frame.getBoundingClientRect) {
+		const pwin = pdoc.defaultView;
 		const setHot = (x, y) => {
 			const hit = hitFromPoint(doc, overlay, x, y);
 			if (hit !== doc.__dbgHot) {
@@ -289,10 +299,32 @@ export function applyDebug(frame, opts = {}) {
 				renderChips(doc, win);
 			}
 		};
-		// TOUCH — press-and-hold. touchstart reveals the box under the finger; a move
-		// past the threshold is a pan, so drop the peek and stand down until the next
-		// touch; lift/cancel hides. `lastTouch` lets the mouse path ignore the synthetic
-		// mouse events iOS fires right after a touch (they'd re-reveal what the lift hid).
+		// A parent-viewport point → the iframe's INTERNAL coordinate (undo the element's
+		// transform scale). offsetWidth is the un-transformed layout width; the rect width
+		// is the visible (scaled) width, so their ratio is the scale.
+		const toIframe = (px, py) => {
+			const r = frame.getBoundingClientRect();
+			const sw = r.width / (frame.offsetWidth || r.width || 1) || 1;
+			const sh = r.height / (frame.offsetHeight || r.height || 1) || 1;
+			const inside = px >= r.left && px <= r.right && py >= r.top && py <= r.bottom;
+			return { x: (px - r.left) / sw, y: (py - r.top) / sh, inside };
+		};
+		// The capture surface: transparent, over the iframe, in the parent doc. `touch-
+		// action:none` so a hold is crisp (debug owns the surface); recreated on every
+		// applyDebug, so it self-heals if the host re-renders the iframe.
+		const cap = pdoc.createElement('div');
+		cap.id = DEBUG_CAPTURE_ID;
+		cap.style.cssText = 'position:fixed;background:transparent;pointer-events:auto;touch-action:none;z-index:2147483001;';
+		const place = () => {
+			const r = frame.getBoundingClientRect();
+			cap.style.left = `${r.left}px`;
+			cap.style.top = `${r.top}px`;
+			cap.style.width = `${r.width}px`;
+			cap.style.height = `${r.height}px`;
+			cap.style.display = r.width > 0 && r.height > 0 ? 'block' : 'none'; // hide over a collapsed pane
+		};
+		// TOUCH — press-and-hold. touchstart reveals the box under the finger; a move past
+		// the threshold is a pan, so drop the peek and stand down; lift/cancel hides.
 		let touch = null;
 		let lastTouch = 0;
 		const onTouchStart = (e) => {
@@ -300,17 +332,19 @@ export function applyDebug(frame, opts = {}) {
 			const t = e.touches?.[0];
 			if (!t) return;
 			touch = { x: t.clientX, y: t.clientY, scrolling: false };
-			setHot(t.clientX, t.clientY);
+			const m = toIframe(t.clientX, t.clientY);
+			setHot(m.x, m.y);
 		};
 		const onTouchMove = (e) => {
 			lastTouch = Date.now();
 			const t = e.touches?.[0];
 			if (!t || !touch) return;
 			if (!touch.scrolling && (Math.abs(t.clientX - touch.x) > 10 || Math.abs(t.clientY - touch.y) > 10)) {
-				touch.scrolling = true; // a pan — let it scroll, drop the peek
+				touch.scrolling = true; // a pan — drop the peek
 				clearHot();
 			} else if (!touch.scrolling) {
-				setHot(t.clientX, t.clientY); // still holding: track onto a neighbor under the finger
+				const m = toIframe(t.clientX, t.clientY);
+				setHot(m.x, m.y); // still holding: track onto a neighbor
 			}
 		};
 		const onTouchEnd = () => {
@@ -321,21 +355,29 @@ export function applyDebug(frame, opts = {}) {
 		// MOUSE — live hover. Skip the synthetic mouse events iOS emits after a touch.
 		const onMove = (e) => {
 			if (Date.now() - lastTouch < 700) return;
-			setHot(e.clientX, e.clientY);
+			const m = toIframe(e.clientX, e.clientY);
+			if (m.inside) setHot(m.x, m.y);
+			else clearHot();
 		};
 		const onLeave = () => clearHot();
-		const onClick = (e) => {
-			e.stopImmediatePropagation();
-			e.preventDefault();
-		};
-		doc.addEventListener('mousemove', onMove, true);
-		doc.addEventListener('mouseleave', onLeave, true);
-		doc.addEventListener('touchstart', onTouchStart, { capture: true, passive: true });
-		doc.addEventListener('touchmove', onTouchMove, { capture: true, passive: true });
-		doc.addEventListener('touchend', onTouchEnd, true);
-		doc.addEventListener('touchcancel', onTouchEnd, true);
-		doc.addEventListener('click', onClick, true);
-		doc.__dbgListeners = { onMove, onLeave, onTouchStart, onTouchMove, onTouchEnd, onClick };
+		cap.addEventListener('mousemove', onMove);
+		cap.addEventListener('mouseleave', onLeave);
+		cap.addEventListener('touchstart', onTouchStart, { passive: true });
+		cap.addEventListener('touchmove', onTouchMove, { passive: true });
+		cap.addEventListener('touchend', onTouchEnd);
+		cap.addEventListener('touchcancel', onTouchEnd);
+		pdoc.body.appendChild(cap);
+		place();
+		if (pwin) {
+			pwin.addEventListener('scroll', place, { passive: true, capture: true });
+			pwin.addEventListener('resize', place);
+		}
+		// Record on the PARENT doc (it outlives an iframe reload, so teardown can always
+		// reach the prior surface + its window listeners). __dbgListeners mirrors the
+		// handlers for the unit tests + teardown symmetry.
+		pdoc.__latticeDbgCapture = { cap, place, pwin };
+		doc.__dbgCapturePlace = place; // let the redraw timers keep it aligned
+		doc.__dbgListeners = { onMove, onLeave, onTouchStart, onTouchMove, onTouchEnd };
 	}
 	if (win?.setTimeout) {
 		for (const t of [80, 320, 1200]) win.setTimeout(redraw, t);
@@ -444,7 +486,7 @@ function deoverlap(overlay) {
 
 const num = (v) => Number.parseFloat(v) || 0;
 
-function teardown(doc, win) {
+function teardown(doc, win, frame) {
 	const style = doc.getElementById?.(DEBUG_STYLE_ID);
 	if (style) style.remove();
 	const overlay = doc.getElementById?.(DEBUG_OVERLAY_ID);
@@ -457,18 +499,24 @@ function teardown(doc, win) {
 		win.removeEventListener('resize', doc.__dbgResize);
 		win.removeEventListener('scroll', doc.__dbgResize);
 	}
-	// Remove the capture-phase document listeners (matching addEventListener's capture).
-	const L = doc.__dbgListeners;
-	if (L && doc.removeEventListener) {
-		doc.removeEventListener('mousemove', L.onMove, true);
-		doc.removeEventListener('mouseleave', L.onLeave, true);
-		doc.removeEventListener('touchstart', L.onTouchStart, true);
-		doc.removeEventListener('touchmove', L.onTouchMove, true);
-		doc.removeEventListener('touchend', L.onTouchEnd, true);
-		doc.removeEventListener('touchcancel', L.onTouchEnd, true);
-		doc.removeEventListener('click', L.onClick, true);
+	// Remove the parent-hosted capture surface + its window listeners. It's recorded on
+	// the PARENT document (which outlives an iframe reload), so it's reachable even when
+	// `doc` is a fresh post-reload document that never saw the prior surface.
+	let pdoc = null;
+	try { pdoc = frame?.ownerDocument || null; } catch { pdoc = null; }
+	const cap = pdoc?.__latticeDbgCapture;
+	if (cap) {
+		if (cap.pwin) {
+			cap.pwin.removeEventListener('scroll', cap.place, { capture: true });
+			cap.pwin.removeEventListener('resize', cap.place);
+		}
+		cap.cap?.remove();
+		pdoc.__latticeDbgCapture = null;
 	}
-	doc.__dbgListeners = doc.__dbgResize = doc.__dbgHot = null;
+	// Belt-and-braces: sweep any stray surface left by ID (e.g. a doc swap mid-flight).
+	const stray = pdoc?.getElementById?.(DEBUG_CAPTURE_ID);
+	if (stray && stray !== cap?.cap) stray.remove();
+	doc.__dbgListeners = doc.__dbgResize = doc.__dbgHot = doc.__dbgCapturePlace = null;
 	// Drop the per-element stamps so a toggled-off pass leaves the DOM pristine.
 	if (doc.querySelectorAll) {
 		for (const el of Array.from(doc.querySelectorAll('[data-dbg-layout]'))) el.removeAttribute('data-dbg-layout');

@@ -60,10 +60,11 @@ in patch versions.
   you see only the color-coded outlines, and hovering a box (desktop) or **pressing and
   holding** it (touch) reveals its label — and its container chain — in full detail, so
   a dense grid never becomes a wall of chips (`debug: on-always` pins every chip on at
-  once for a static map). Touch uses `touchstart`/`touchend` (press-and-hold to peek,
-  lift to hide) rather than the pointer stream iOS Safari cancels mid-scroll, so it
-  works on iPhone. Labels ride in a `pointer-events:none` overlay with **zero layout
-  impact**, de-overlapped so a container and its first cell don't collide. **Off is the
+  once for a static map). On touch it's **press-and-hold to peek** (lift to hide),
+  driven by a capture layer in the parent page rather than inside the iframe — iOS
+  Safari won't deliver a touch into a scaled iframe — so it works on iPhone. Labels ride
+  in a `pointer-events:none` overlay with **zero layout impact**, de-overlapped so a
+  container and its first cell don't collide. **Off is the
   default** — with no `debug:` key (or `debug: off`) the preview is clean. It is
   **preview-only**: the engine strips `data-debug` from every export, so exported
   PDF/PPTX/HTML bytes are identical whether a deck says `debug: on-hover` or not. A

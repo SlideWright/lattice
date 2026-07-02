@@ -121,42 +121,37 @@ always but keeps LABELS summoned: at rest you see only outlines; hovering (deskt
 adds the opt-in `class` + `box` facets. Summoned labels are what kill the wall-of-chips
 density — you pull detail in only where you look.
 
-**Debug owns input in `hover` mode — via document listeners, NOT a positioned layer,
-and TOUCH events, NOT the pointer stream.** In `hover` mode the agent binds
-CAPTURE-PHASE listeners on the iframe `document`. Desktop: `mousemove` gives live hover.
-Touch: **press-and-hold to peek** — `touchstart` reveals the box under the finger
-(hit-tested with `elementsFromPoint`), the label persists *while pressed*, and `touchend`
-hides it; a drag past a 10px threshold is a **scroll**, so the peek is dropped and the
-pan runs untouched (we never `preventDefault`). A `click` suppressor
-(`stopImmediatePropagation`) keeps the preview's own gestures (click-to-navigate, chart
-reveal) from firing. `always` mode stays passive (chips pinned, deck interactive). Owner
-directive (2026-07-01): "in debug + hover, debug takes precedence; swipe may stay, all
-other gestures off." Owner (2026-07-02): touch is **press-and-hold**, not tap-to-toggle.
+**Debug owns input in `hover` mode via a PARENT-HOSTED CAPTURE SURFACE — input never
+sits inside the iframe.** In `hover` mode the agent mounts a transparent
+`pointer-events:auto` div in the PARENT document, `position:fixed` over the preview
+iframe (`DEBUG_CAPTURE_ID`, `debug-overlay.js`). It maps a parent-viewport point into
+the iframe's own coordinates (undo the element's transform scale: `rect.width /
+offsetWidth`) and hit-tests with the IFRAME's `elementsFromPoint`; the chips still live
+inside the iframe. Desktop: `mousemove` gives live hover. Touch: **press-and-hold to
+peek** — `touchstart` reveals the box under the finger, the label persists *while
+pressed*, `touchend` hides it; a drag past a 10px threshold is a **scroll**, so the peek
+is dropped. The surface is recreated on every `applyDebug` (self-heals if the host
+re-renders the iframe) and torn down on disable; it's recorded on the PARENT document so
+teardown reaches it even after an iframe reload. `always` mode mounts no surface (chips
+pinned, deck interactive). Owner (2026-07-01): "in debug + hover, debug takes precedence."
+Owner (2026-07-02): touch is **press-and-hold**, not tap-to-toggle.
 
-**Why touch events, not pointer events (the fix that finally worked).** The tap-to-reveal
-model used `pointerdown`→`pointerup` with a "was it a tap?" check. It passed every
-sandbox test (jsdom + headless Chromium both fire a clean pointer stream) but did
-**nothing on a real iPhone**: iOS Safari fires `pointercancel` the instant it suspects a
-scroll — which it does constantly inside a scrollable preview — wiping the pending tap
-before `pointerup`. `touchstart`/`touchmove`/`touchend` are NOT canceled that way (they
-always fire, even through a scroll), so hold-to-peek is reliable on iOS. Verified on the
-real Playground with CDP touch events (hold reveals, lift hides, swipe drops the peek);
-final iOS-Safari confirmation is on-device.
-
-**The Studio preview `pointer-events:none` swipe-wrapper (the real reason it worked in
-Present but not the preview window).** After the touch model was right, press-and-hold
-worked in Studio's **Present** overlay but did nothing in the main **preview window** —
-same `DeckPreview`, same in-iframe agent. The difference was environmental: the main
-preview wraps the (touch-swallowing) engine iframe in a `pointer-events:none` div so a
-horizontal **swipe** passes through to the slide-nav container (`StudioShell.tsx`). But
-`pointer-events:none` blocks ALL input to the iframe — including the debug agent's
-press-and-hold (and desktop hover). Present has no such wrapper, so it worked. **Fix:**
-drop `pointer-events:none` from that wrapper *only while debug is active* (`debugActive`),
-so the iframe owns touch during debug (swipe-nav yields — the ‹ › buttons + slide rail
-still navigate; matches "in debug, debug takes precedence"). Universal CSS semantics, so
-it fixes every engine, not just iOS. Verified on the real Studio preview with CDP touch
-(off → `pointer-events:none`; on → `auto`; hold reveals the section). This wrapper is
-Studio-only — Playground/Drawing Board iframes receive touch directly.
+**Why the input moved OUT of the iframe (the fix that finally worked on iPhone).** Two
+earlier touch models both listened INSIDE the iframe and both died on real iOS:
+(1) `pointerdown`→`pointerup` tap detection — iOS fires `pointercancel` the instant it
+suspects a scroll, wiping the tap; (2) `touchstart`/`touchend` press-and-hold bound to
+the iframe `document` — worked in Studio's **Present** (barely scaled) but did nothing in
+the main **preview** (scaled ~0.28), because **iOS Safari will not deliver a touch INTO a
+CSS-transform-scaled iframe**. Both passed every sandbox test (jsdom has no layout;
+headless Chromium delivers iframe touch fine) — the classic "the engines I can run can't
+reproduce the iOS-only bug" trap. The parent-hosted capture surface removes the
+dependency entirely: the touch lands on a plain div in the MAIN page (reliable on every
+engine), and we map into the iframe with math, not event delivery. This is the codebase's
+own `chart-interact` hit-surface pattern (`drawing-board-chart-interact.js`). Verified on
+the real Studio with CDP touch — main preview AND Present both reveal on hold, lift hides,
+no leak; final iOS-Safari confirmation is on-device. (A brief interim fix toggled the
+Studio preview's `pointer-events:none` swipe-wrapper while debugging; the capture surface
+sits ABOVE that wrapper regardless, so the toggle was reverted as redundant.)
 
 **Root cause of the iOS touch failures (post-mortem — three wrong fixes before this).**
 The first touch attempts put a `position:fixed` chip overlay AND a `position:fixed`
