@@ -76,24 +76,26 @@ debug: on-hover           # whole deck: outlines always, labels on hover/tap
 ---
 
 <!-- _debug: on-always -->    # THIS slide only: pin every label on
-<!-- _debug: on-hover full --> # THIS slide only: hover reveal, every facet
+<!-- _debug: on-hover verbose --> # THIS slide only: hover reveal, every facet
 <!-- _debug -->               # THIS slide only, default (bare flag → on-hover)
 <!-- _debug: off -->          # mute THIS slide when the deck is debugging
 ```
 
-**Value = a reveal-mode keyword, optionally with `full`, or a list of facet tokens.**
+**Value = a reveal-mode keyword, optionally with `verbose`.**
 
-Base vocabulary (the "variants we support"):
-- `off` / `false` / `no` / `0` / **absent** → **disabled (the default, present or not)**
-- `on-hover` / `hover` / empty → **default: outlines always, labels on hover/tap**
-- `on-always` / `always` / `pinned` → outlines always, **every label pinned on**
-- `full` / `all` → add the opt-in facets (`class` + `box`) to either reveal mode
+Base vocabulary — **one name per concept, NO aliases** (aliases just make an author
+guess which spelling is right):
+- `off` / **absent** → **disabled (the default, present or not)**
+- `on-hover` / empty → **default: outlines always, labels on hover/tap**
+- `on-always` → outlines always, **every label pinned on**
+- `verbose` → add the opt-in facets (`class` + `box`) to either reveal mode
 
 There is deliberately **no bare `on`** — a debugger has to say *how* the labels
-appear (`on-hover` vs `on-always`), so the mode is never ambiguous. A stray `on`
-(or any typo) still enables in the safe `on-hover` default and raises a lint warning.
+appear (`on-hover` vs `on-always`), so the mode is never ambiguous. A stray `on`,
+a dropped alias (`hover`, `always`, `full`, `false`…), or any typo still enables in
+the safe `on-hover` default and raises a lint warning that names the one true value.
 
-Facets (the levers the label draws — selected as a SET by the reveal mode + `full`,
+Facets (the levers the label draws — selected as a SET by the reveal mode + `verbose`,
 not named individually; a bare facet name like `debug: identity` is a lint warning):
 
 | token | label shows | source |
@@ -106,7 +108,7 @@ not named individually; a bare facet name like `debug: identity` is a lint warni
 | `box` | padding + gap values | `getComputedStyle` |
 
 Default facet set: **`identity size layout`** (the useful triad — *what* the box is,
-*how* it arranges children, *how big* it is). **`full` adds `class` + `box`.**
+*how* it arranges children, *how big* it is). **`verbose` adds `class` + `box`.**
 
 Example label: `comparison-grid · grid · 720×360`.
 
@@ -115,7 +117,7 @@ Example label: `comparison-grid · grid · 720×360`.
 the reveal mode. `on-hover` (the recommended default) draws the color-coded outlines
 always but keeps LABELS summoned: at rest you see only outlines; pointing at a box
 reveals its chip *and its container chain*. `on-always` pins every chip on at once for
-a static map. `full` (in either mode) adds the opt-in `class` + `box` facets. Summoned
+a static map. `verbose` (in either mode) adds the opt-in `class` + `box` facets. Summoned
 labels are what kill the wall-of-chips density — you pull detail in only where you look.
 
 **Debug owns the pointer in `hover` mode — via document listeners, NOT a positioned
@@ -288,7 +290,7 @@ Outline hue encodes **layout mode**, the single most useful fact for layout debu
   exports.
 - **Slice 3 (agent):** `docs/src/playground/debug-overlay.js` — layout-mode outlines
   (Okabe-Ito AA/CVD palette), configurable levers (default `identity · layout · size`;
-  `full` adds `class` + `box`), zero-flow corner labels via a fixed
+  `verbose` adds `class` + `box`), zero-flow corner labels via a fixed
   `pointer-events:none` overlay (position from `getBoundingClientRect`, size from
   `offsetWidth/Height`), de-overlap cascade, hover-isolate. Labels are gated to the
   slide + grid/flex containers + grid cells (not flex leaf content) so a dense grid

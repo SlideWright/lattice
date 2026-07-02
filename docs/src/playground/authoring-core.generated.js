@@ -933,22 +933,7 @@ ${indent}   - ${body.trim()}`;
         fix: `Set front-matter \`split:\` to one of: ${[...splitNames].join(", ")}.`
       }];
     }
-    var DEBUG_VALID = /* @__PURE__ */ new Set([
-      "off",
-      "false",
-      "no",
-      "0",
-      // off
-      "on-hover",
-      "hover",
-      "on-always",
-      "always",
-      "pinned",
-      // reveal modes (+ synonyms)
-      "full",
-      "all"
-      // detail
-    ]);
+    var DEBUG_VALID = /* @__PURE__ */ new Set(["off", "on-hover", "on-always", "verbose"]);
     function findBadDebugFacets(source) {
       const out = [];
       const seen = /* @__PURE__ */ new Map();
@@ -970,7 +955,7 @@ ${indent}   - ${body.trim()}`;
             classToken: token,
             line,
             message: `'${token}' is not a known debug value \u2014 the overlay falls back to on-hover`,
-            fix: "Use `debug: on-hover` or `debug: on-always` (optionally `+ full`), or `off`."
+            fix: "Use `debug: on-hover` or `debug: on-always` (optionally `+ verbose`), or `off`."
           });
         }
       }

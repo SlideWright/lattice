@@ -317,15 +317,24 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const setRenderMode = (value: string) => setSource((s) => setFrontMatter(s, 'mode', value === 'boardroom' ? null : value));
 	// The layout DEBUG overlay — a real deck setting (`debug:` front matter), so it
 	// rides in previewFm to the render and is stripped from every export. Off is the
-	// default; the two reveal modes are on-hover and on-always (a hand-typed value
-	// like `on-hover full` shows verbatim).
+	// default; the reveal modes are on-hover / on-always, each with an optional
+	// `verbose` (adds the class + box levers). The menu offers every value; a
+	// hand-typed value we don't recognize shows verbatim. No aliases.
 	const debugValue = getFrontMatter(source, 'debug');
 	const setDebug = (value: string | null) => setSource((s) => setFrontMatter(s, 'debug', value));
+	const DEBUG_OPTIONS: Array<{ value: string | null; label: string }> = [
+		{ value: null, label: 'Off' },
+		{ value: 'on-hover', label: 'On hover' },
+		{ value: 'on-hover verbose', label: 'On hover · verbose' },
+		{ value: 'on-always', label: 'Always on' },
+		{ value: 'on-always verbose', label: 'Always on · verbose' },
+	];
 	const debugLabel = ((v) => {
-		if (v == null || /^(off|false|no)$/i.test(v)) return 'Off';
-		if (/^(on-always|always|pinned)\b/i.test(v)) return 'Always on';
-		if (/^(on-hover|hover)\b/i.test(v)) return 'On hover';
-		return v; // a hand-typed value (e.g. `on-hover full`) shows verbatim
+		if (v == null || /^off$/i.test(v)) return 'Off';
+		const verbose = /\bverbose\b/i.test(v);
+		const mode = /^on-always\b/i.test(v) ? 'Always on' : /^on-hover\b/i.test(v) ? 'On hover' : null;
+		if (!mode) return v; // an unrecognized hand-typed value shows verbatim
+		return verbose ? `${mode} · verbose` : mode;
 	})(debugValue);
 	// The saved finishes, shaped for the picker (slug + label + a chip swatch).
 	const savedFinishMenu = React.useMemo<SavedFinishMenuEntry[]>(
@@ -949,10 +958,13 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 						<DropdownMenuTrigger asChild>
 							<Control aria-label="Debug overlay">{debugLabel} <ChevronDown className="size-3.5" /></Control>
 						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end" className="w-44">
-							<DropdownMenuItem onSelect={() => setDebug(null)}>Off{debugLabel === 'Off' && <span className="ml-auto text-[var(--accent)]">✓</span>}</DropdownMenuItem>
-							<DropdownMenuItem onSelect={() => setDebug('on-hover')}>On hover{debugLabel === 'On hover' && <span className="ml-auto text-[var(--accent)]">✓</span>}</DropdownMenuItem>
-							<DropdownMenuItem onSelect={() => setDebug('on-always')}>Always on{debugLabel === 'Always on' && <span className="ml-auto text-[var(--accent)]">✓</span>}</DropdownMenuItem>
+						<DropdownMenuContent align="end" className="w-52">
+							{DEBUG_OPTIONS.map((o) => (
+								<DropdownMenuItem key={o.label} onSelect={() => setDebug(o.value)}>
+									{o.label}
+									{debugLabel === o.label && <span className="ml-auto text-[var(--accent)]">✓</span>}
+								</DropdownMenuItem>
+							))}
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</Field>

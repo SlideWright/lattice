@@ -55,7 +55,7 @@ in patch versions.
   mode** — grid (blue), flex (vermillion), flow (grey), an Okabe-Ito CVD-safe palette
   that clears WCAG-AA over both preview backgrounds — and label the structural boxes
   (the slide, grid/flex containers, grid cells) with a configurable set of levers:
-  `identity · layout · size` by default, plus opt-in `class` and `box` (add `full`
+  `identity · layout · size` by default, plus opt-in `class` and `box` (add `verbose`
   to show everything). Labels default to **hover reveal** (`debug: on-hover`): at rest
   you see only the color-coded outlines, and pointing at a box (or **tapping** it on
   touch) reveals its label — and its container chain — in full detail, so a dense grid

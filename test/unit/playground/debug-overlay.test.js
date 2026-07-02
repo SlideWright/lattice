@@ -27,29 +27,31 @@ describe('resolveConfig', () => {
 	const DFLT = { facets: ['identity', 'layout', 'size'], reveal: 'hover' };
 	const FULL = ['identity', 'layout', 'size', 'class', 'box'];
 
-	test('off is the default: absent / off / false → null', async () => {
+	test('off is the default: only `off` (and absent) → null', async () => {
 		const { resolveConfig } = await load();
 		assert.equal(resolveConfig(null, null), null); // no attribute
 		assert.equal(resolveConfig('off', null), null);
-		assert.equal(resolveConfig('false', null), null);
 	});
 
 	test('on-hover is the enable default; empty (bare _debug) also → on-hover', async () => {
 		const { resolveConfig } = await load();
 		assert.deepEqual(resolveConfig('on-hover', null), DFLT);
-		assert.deepEqual(resolveConfig('hover', null), DFLT); // lenient synonym
 		assert.deepEqual(resolveConfig('', null), DFLT); // bare _debug
-		// The removed bare `on` (and any typo) still enables in the safe default + lints.
+		// No aliases: the removed bare `on`, a dropped synonym (`hover`), a former off
+		// value (`false`), or any typo all safely fall back to on-hover (and lint).
 		assert.deepEqual(resolveConfig('on', null), DFLT);
+		assert.deepEqual(resolveConfig('hover', null), DFLT);
+		assert.deepEqual(resolveConfig('false', null), DFLT);
 	});
 
-	test('on-always pins the labels; `full` adds class + box', async () => {
+	test('on-always pins the labels; `verbose` adds class + box (canonical only)', async () => {
 		const { resolveConfig } = await load();
 		assert.equal(resolveConfig('on-always', null).reveal, 'always');
-		assert.equal(resolveConfig('always', null).reveal, 'always'); // synonym
-		assert.equal(resolveConfig('pinned', null).reveal, 'always'); // synonym
-		assert.deepEqual(resolveConfig('on-hover full', null), { facets: FULL, reveal: 'hover' });
-		assert.deepEqual(resolveConfig('on-always full', null), { facets: FULL, reveal: 'always' });
+		assert.deepEqual(resolveConfig('on-hover verbose', null), { facets: FULL, reveal: 'hover' });
+		assert.deepEqual(resolveConfig('on-always verbose', null), { facets: FULL, reveal: 'always' });
+		// Dropped aliases no longer carry meaning: `always`/`full` fall back to on-hover.
+		assert.equal(resolveConfig('always', null).reveal, 'hover');
+		assert.deepEqual(resolveConfig('on-hover full', null), DFLT);
 	});
 
 	test('session override: force off mutes; force on lights a plain deck (keeps the deck mode)', async () => {
@@ -185,8 +187,8 @@ describe('applyDebug — lifecycle', () => {
 		applyDebug(f1, { force: 'off' });
 		assert.equal(d1.__dbgListeners, null, 'teardown clears the listeners');
 
-		// `always` mode pins the chips and leaves the deck interactive — no input capture.
-		const f2 = frameWith(deck('always'));
+		// `on-always` mode pins the chips and leaves the deck interactive — no input capture.
+		const f2 = frameWith(deck('on-always'));
 		applyDebug(f2, { force: null });
 		assert.equal(f2.contentDocument.__dbgListeners, null, 'always mode does not capture input');
 	});

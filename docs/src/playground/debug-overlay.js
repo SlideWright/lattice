@@ -29,19 +29,20 @@ export const DEBUG_STYLE_ID = 'lattice-debug-style';
 export const DEBUG_OVERLAY_ID = 'lattice-debug-overlay';
 
 // What a label says. The default triad (identity · layout · size) answers "what is
-// this box, how does it lay out, how big"; `full` adds the raw class list + box
+// this box, how does it lay out, how big"; `verbose` adds the raw class list + box
 // (padding/gap). These are the render order on the chip.
 export const FACETS = ['identity', 'layout', 'size', 'class', 'box'];
 const DEFAULT_FACETS = ['identity', 'layout', 'size'];
-// The `debug:` VOCABULARY (front matter + per-slide `_debug`). OFF is the default —
-// absent or `off` means no overlay. Enable with an explicit REVEAL mode:
+// The `debug:` VOCABULARY (front matter + per-slide `_debug`). ONE name per concept —
+// no aliases, so there is nothing to second-guess. OFF is the default (absent or
+// `off` → no overlay). Enable with an explicit REVEAL mode:
 //   on-hover  → outlines always; labels appear when you hover/tap a box (the quiet one)
 //   on-always → outlines + labels pinned on at once (the static map)
-// Add `full` for the extra detail. There is deliberately NO bare `on` (it hid the
-// mode). `hover`/`always`/`pinned` are accepted as lenient synonyms.
-const OFF_VALUES = new Set(['off', 'false', 'no', '0']);
-const ALWAYS_TOKENS = new Set(['on-always', 'always', 'pinned']);
-const FULL_TOKENS = new Set(['full', 'all']);
+// Add `verbose` for the extra detail (class + box). There is deliberately NO bare
+// `on` (it hid the mode).
+const OFF_VALUES = new Set(['off']);
+const ALWAYS_TOKENS = new Set(['on-always']);
+const VERBOSE_TOKENS = new Set(['verbose']);
 
 // Layout-mode → outline hue. Okabe-Ito CVD-safe blue/vermillion + a neutral gray
 // for ordinary flow (deliberately low-emphasis so grid/flex containers pop). Every
@@ -96,14 +97,14 @@ export function resolveConfig(value, force) {
 	return parseConfig(norm);
 }
 
-// A reveal-mode value (+ optional `full`) → `{ facets, reveal }`. Empty or any
+// A reveal-mode value (+ optional `verbose`) → `{ facets, reveal }`. Empty or any
 // unrecognized value defaults to `on-hover` with the standard triad, so a typo (or
 // the removed bare `on`) still shows something useful — the lint gate flags it.
 function parseConfig(norm) {
 	const tokens = (norm || '').split(/[\s,]+/).filter(Boolean);
 	const reveal = tokens.some((t) => ALWAYS_TOKENS.has(t)) ? 'always' : 'hover';
-	const full = tokens.some((t) => FULL_TOKENS.has(t));
-	return { reveal, facets: full ? FACETS.slice() : DEFAULT_FACETS.slice() };
+	const verbose = tokens.some((t) => VERBOSE_TOKENS.has(t));
+	return { reveal, facets: verbose ? FACETS.slice() : DEFAULT_FACETS.slice() };
 }
 
 /**

@@ -55,12 +55,12 @@ at once instead? Use `debug: on-always`.
 
 ---
 
-<!-- _debug: on-hover full -->
+<!-- _debug: on-hover verbose -->
 
 ## Pull every lever on one slide.
 
-`<!-- _debug: on-hover full -->` turns on the full set — `identity · layout · size ·
-class · box` — for **this slide only**. The deck-wide `debug: on-hover` stays the
+`<!-- _debug: on-hover verbose -->` turns on the full set — `identity · layout · size
+· class · box` — for **this slide only**. The deck-wide `debug: on-hover` stays the
 default everywhere else; a spot directive just overrides the box it sits on.
 
 - Sizes are the **intrinsic** pixel box, read straight off the layout — not the

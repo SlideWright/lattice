@@ -380,9 +380,11 @@ describe('Studio — Inspector controls respond', () => {
 	it('the Debug overlay control writes a `debug` directive to the source', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
-		// The Debug overlay control is a preset menu; picking one writes the `debug:` key.
+		// The Debug overlay control is a preset menu with every value; picking the
+		// verbose variant writes `debug: on-always verbose`.
 		await user.click(await screen.findByRole('button', { name: 'Debug overlay' }));
-		await user.click(await screen.findByRole('menuitem', { name: /Always on/ }));
-		expect(screen.getByLabelText('Deck source').textContent).toMatch(/debug:\s*on-always/);
+		await user.click(await screen.findByRole('menuitem', { name: 'Always on · verbose' }));
+		// A multi-word value is YAML-quoted; the parser + lint both strip the quotes.
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/debug:\s*"?on-always verbose"?/);
 	});
 });
