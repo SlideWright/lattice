@@ -13,7 +13,7 @@ header: "Lattice · Layout Gallery"
 
 # From Signal to Strategy
 
-`Product Strategy · Q3 2025`
+`Product Strategy · Q3 2026`
 
 A decision framework for product leaders navigating market uncertainty
 
@@ -60,17 +60,17 @@ Three converging forces — commoditized infrastructure, compressed release cycl
 
 ## How signals move from input to decision.
 
-`Four-stage processing pipeline — weekly cadence`
+`Four-stage processing pipeline — monthly cadence`
 
 ```mermaid
 ---
-title: processing pipeline — weekly cadence
+title: processing pipeline — monthly cadence
 ---
 flowchart LR
   A["Raw Signals"] --> B["Classify"]
   B --> C["Score & Weight"]
   C --> D["Decision Log"]
-  D -.->|"weekly retrospective"| B
+  D -.->|"monthly retrospective"| B
 ```
 
 ---
@@ -363,49 +363,49 @@ _Source: pilot retrospective, six months across four product teams._
 <!-- _class: verdict-grid -->
 <!-- _footer: "2×2 verdict grid · verdict-grid" -->
 
-## We evaluated four intake tools against the criteria.
+## We evaluated four paths against the criteria.
 
-- Tool A · Chorus
+- Path A · The spreadsheet
   - [x] Speed
-  - [-] Auditability
+  - [ ] Auditability
   - [x] Adoption
   - [ ] Calibration
-  - Strong call recording and summarization. No decision logging or calibration loop. Requires separate tooling for everything downstream of intake.
-- Tool B · Productboard
-  - [ ] Speed
+  - Everyone has it open already; nobody can say which version. Decisions leave no trace, which was, in fairness, the appeal.
+- Path B · Vendor North
+  - [x] Speed
+  - [x] Auditability
+  - [ ] Adoption
+  - [ ] Calibration
+  - Clean intake and a real audit trail. The calibration weights stay on their side of the contract, priced per seat.
+- Path C · Vendor West
+  - [x] Speed
   - [x] Auditability
   - [x] Adoption
   - [ ] Calibration
-  - Solid intake and prioritization. Decision logging exists but is manual and rarely used. No calibration mechanism. Setup takes 3–4 weeks.
-- Tool C · Notion
-  - [x] Speed
-  - [x] Auditability
-  - [-] Adoption
-  - [ ] Calibration
-  - Flexible enough to build the full system. But building it takes 40+ hours and the result is fragile. Teams abandon maintenance after the first quarter.
-- Tool D · Sprig + Decision Log
+  - The best demo of the two, by some distance. The weights are also theirs, and §9.2 is in the contract for a reason.
+- Path D · Build in-house
   - [x] Speed
   - [x] Auditability
   - [x] Adoption
   - [x] Calibration
-  - Meets all four criteria within the 90-minute weekly budget. Reaches production in the same week it is adopted. Recommended.
+  - Meets all four criteria inside the 90-minute weekly budget, and the weights stay ours. Recommended.
 
 ---
 
 <!-- _class: compare-table -->
 <!-- _footer: "Comparison table · compare-table" -->
 
-## The four tools side by side.
+## The four paths side by side.
 
-| Criterion    | Chorus | Productboard | Notion    | Sprig + Log |
-| ------------ | ------ | ------------ | --------- | ----------- |
-| Speed        | ✓      | ✗            | ✓         | ✓           |
-| Auditability | ✗      | ✓            | ✓         | ✓           |
-| Adoption     | ✓      | ✓            | ✗         | ✓           |
-| Calibration  | ✗      | ✗            | ✗         | ✓           |
-| Setup time   | 1 day  | 3–4 weeks    | 40+ hours | Same day    |
+| Criterion    | Spreadsheet  | Vendor North | Vendor West | In-house build |
+| ------------ | ------------ | ------------ | ----------- | -------------- |
+| Speed        | ✓            | ✓            | ✓           | ✓              |
+| Auditability | ✗            | ✓            | ✓           | ✓              |
+| Adoption     | ✓            | ✗            | ✓           | ✓              |
+| Calibration  | ✗            | ✗            | ✗           | ✓              |
+| Setup time   | Already open | 3–4 weeks    | 6 weeks     | Same quarter   |
 
-_Evaluated against the same four teams and the same 90-minute weekly budget constraint._
+_Evaluated against the same four pilot teams and the same 90-minute weekly budget constraint._
 
 ---
 
@@ -421,13 +421,13 @@ _Evaluated against the same four teams and the same 90-minute weekly budget cons
 - Calibration
   - The retrospective comparison of predicted to observed outcomes, used to score the framework's accuracy.
 - Connector
-  - The integration layer between Sprig and your NPS / support platforms. Owns ingestion and tagging.
+  - The integration layer between signal intake and a source system. Owns ingestion and tagging.
 - Decision Log
   - The append-only record of every prioritization decision, its predicted outcome, and the actual outcome at retrospective time.
 - Eligible PM
   - A PM whose team has adopted the framework and is past the 30-day onboarding period.
 - Framework
-  - The four-criterion process: Speed, Auditability, Adoption, Calibration. The deck's central artifact.
+  - The four-part system — Signal Intake, Scoring Model, Decision Log, Calibration Loop — judged on four criteria: speed, auditability, adoption, calibration.
 
 ---
 
@@ -444,24 +444,24 @@ _Evaluated against the same four teams and the same 90-minute weekly budget cons
   - The 30-day review meeting where logged decisions are scored against observed outcomes.
 - Signal
   - Any qualitative or quantitative input to a decision — survey response, NPS comment, support ticket, sales call note.
-- Sprig
-  - The micro-survey product used by Tool D to capture qualitative signal in-product.
-- Tool D
-  - The recommended option in the four-tool comparison: Sprig combined with a lightweight Decision Log.
+- Scoring policy
+  - The weight set the calibration loop refits each cycle — the artifact neither vendor would expose.
+- Vendor West
+  - The stronger of the two vendors evaluated; the demo everyone remembers, and the author of §9.2.
 
 ---
 
 <!-- _class: compare-prose -->
 <!-- _footer: "Two options + connector · compare-prose" -->
 
-## Two options with a connector and an explanatory note below.
+## Two intake modes ran head to head for a quarter.
 
-- Option A · Label
-  - Body text describing the first option. Enough detail to fill the card naturally and show how the layout handles a few lines of prose.
-- Option B · Label
-  - Body text describing the second option. The connector arrow between them implies direction or causality — before/after, input/output, cause/effect.
+- Weekly Digest
+  - Signals batch into a Monday summary. Coverage is high; attention is not. The digest is where signals go to be acknowledged.
+- Live Feed
+  - Signals land in the channel as they are scored. Attention is immediate, and so is the muting, usually by Thursday.
 
-The below-note sits under the cards after a hairline rule. Use it for a single contextual sentence.
+The pilot kept both — the feed for the two teams that mute nothing, the digest for everyone honest about themselves.
 
 ---
 
@@ -788,7 +788,7 @@ The right card carries an accent left-edge and accent-tinted background — the 
 ## Decision composes chosen + rejected with a labelled connector.
 
 - Buy a vendor
-  - Three vendors evaluated; none expose the calibration weights to the customer. Six months to integrate, then per-seat licensing in perpetuity, renegotiated each year by whoever has not yet left.
+  - Two vendors evaluated; neither exposes the calibration weights to the customer. Six months to integrate, then per-seat licensing in perpetuity, renegotiated each year by whoever has not yet left.
 - Build in-house
   - Owns the architecture, the operating model, and the timeline. Also owns the on-call rota, which is the line item nobody put in the business case.
 
@@ -947,19 +947,18 @@ The divider light counter is independent of the dark-divider counter, so a mid-d
 <!-- _class: matrix-2x2 -->
 <!-- _footer: "New layout — matrix-2x2 · matrix-2x2" -->
 
-## How we sort vendors against our two axes.
+## How the four paths sort against our two axes.
 
 `Coverage · Cost`
 
 - High coverage / Low cost
-  - Sprig + Log — strongest coverage, lowest TCO, and a roadmap slide that is mostly our logo. Built by the evaluation team.
-  - Productboard — narrower coverage but the cheapest tier, which is the only number procurement read.
+  - In-house build — strongest coverage on the slide, cheapest on a slide that omits the four engineers. Built by the evaluation team.
 - High coverage / High cost
-  - Notion build-out — full coverage in theory, premium maintenance, and seven slightly different versions of the framework.
+  - Vendor West — full coverage, premium seats, and a roadmap slide that is mostly our logo.
 - Low coverage / Low cost
-  - Chorus — cheap, but leaves three criteria uncovered, popular anyway.
+  - The spreadsheet — covers two criteria, costs nothing, popular anyway.
 - Low coverage / High cost
-  - _none — and that is the signal._
+  - Vendor North — narrower than the demo implied, once the connectors were priced.
 
 ---
 
@@ -973,7 +972,7 @@ The divider light counter is independent of the dark-divider counter, so a mid-d
 - **Build**
   - Owns the scoring policy, the calibration loop, the timeline. And the pager.
 - **Why not buy**
-  - Three vendors evaluated; none expose the calibration weights to the customer, and all three decks were the same deck.
+  - Two vendors evaluated; neither exposes the calibration weights to the customer, and both decks were the same deck.
 - **Why not delay**
   - The competitive window closes in 18 months — two reorgs from now.
 
@@ -1213,40 +1212,43 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 
 `2026 Q1 .. 2026 Q4`
 
-## Feature delivery by workstream
+## Four workstreams carry the rollout across the year
 
-- Design
-  - Foundations `Q1..Q1` `done`
-  - Component audit `Q2..Q2` `done`
-  - Token refresh `Q3..Q3`
-- Engineering
-  - API v2 `Q1..Q1` `done`
-  - SDK release `Q2..Q3` `live`
-  - Migration guide `Q4` `milestone`
-- Growth
-  - Onboarding v2 `Q2..Q2` `done`
-  - Referral flow `Q3..Q4`
+- Intake
+  - Connector wiring `Q1..Q1` `done`
+  - Source-system sweep `Q2..Q2` `done`
+  - CSV retirement `Q3..Q4`
+- Scoring
+  - Policy v1 freeze `Q1..Q1` `done`
+  - Calibrated weights `Q2..Q3` `live`
+  - Policy v2 `Q4` `milestone`
+- Decision Log
+  - Pilot log `Q1..Q2` `done`
+  - Org-wide log `Q3..Q4`
+- Enablement
+  - Team onboarding `Q2..Q3` `live`
+  - Operating rhythm `Q3..Q4`
 
 ---
 
 <!-- _class: kanban -->
 <!-- _footer: "Chart — kanban · kanban" -->
 
-`Board · Phase 2 delivery`
+`Board · Phase 2 rollout`
 
-## Where Phase 2 work stands today
+## The Phase 2 board is honest, for once
 
 - Backlog
-  - API contract review
-  - Load-test harness
+  - Exec dashboard, unrequested
+  - Per-team weighting UI, descoped again
 - In progress
-  - SDK v2 alpha `in-progress`
-  - Onboarding redesign `in-progress`
+  - Team onboarding, wave two `in-progress`
+  - CRM connector `in-progress`
 - Review
-  - Token migration spec `review`
+  - Scoring policy v2 draft `review`
 - Done
-  - Scope sign-off `done`
-  - Design freeze `done`
+  - Pilot retro pack `done`
+  - Rhythm sign-off `done`
 
 ---
 
@@ -1271,7 +1273,8 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 - Triaged `4,800`
 - Scored `2,160`
 - Surfaced to a decision `864`
-- Changed the decision `212`
+- Logged, with the decision `18`
+  - The other 846 were, in fairness, acknowledged
 
 ---
 
@@ -1298,7 +1301,7 @@ Nearly half went to producing decks; the deciding itself was the smallest slice.
 
 `H1 2026 · Phase 1 readiness`
 
-## Phase 1 readiness, by workstream.
+## Phase 1 readiness varies wildly by workstream.
 
 - Signal Intake `92%` `on-track`
 - Scoring policy `68%` `at-risk`
@@ -1380,7 +1383,7 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 <!-- _class: journey -->
 <!-- _footer: "Chart — journey · journey" -->
 
-## A team's first month on the framework, mood included.
+## A team's first month runs from pain to belief.
 
 - Onboard
   - Kickoff workshop `@team` `@strategy` `:2`
@@ -1438,7 +1441,7 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 <!-- _class: word-cloud -->
 <!-- _footer: "Chart — word-cloud · word-cloud" -->
 
-## What 38 pilot retros kept saying, by frequency.
+## What 24 pilot retros kept saying, by frequency.
 
 - calibration `5`
 - workshops `4`
@@ -1466,36 +1469,36 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 <!-- _class: split-panel -->
 <!-- _footer: "Split — brief · split-panel" -->
 
-`Q2 Performance Review`
+`Q2 Signal Review`
 
-## Enterprise revenue stalled in Q2
+## The signals called Q2 before the dashboard did
 
-Three structural factors explain 90% of the shortfall — all addressable before Q4 close.
+Three signal clusters explain most of the quarter's surprise — every one logged before the numbers moved.
 
-- Renewal pricing complexity is driving churn at the segment ceiling
-  - Four accounts totaling $2.1M ARR declined renewal. Win/loss interviews point to a quote-to-contract gap, not value perception.
-- Pipeline conversion dropped 11 pp below Q1 — legal review is the chokepoint
-  - Contract length increased 18 days on average. Root cause is a security addendum introduced in March.
-- Competitive displacement accelerated in the $80–200K ACV tier
-  - Seven losses to a single competitor. Time-to-value gap is the exposure.
+- Renewal-risk signals clustered at the segment ceiling
+  - Four flagged accounts declined renewal. The log shows the flags eight weeks before the CRM noticed.
+- Legal review surfaced as the pipeline chokepoint
+  - Cycle time rose 18 days after March's security addendum. Scored, logged, and ignored twice.
+- Displacement pressure concentrated in one tier
+  - Seven competitive losses, one competitor, one pattern — unlogged until intake caught the eighth attempt.
 
 ---
 
 <!-- _class: split-panel metric -->
 <!-- _footer: "Split — metric · split-panel metric" -->
 
-`Net Revenue Retention`
+`Decision Log Coverage`
 
-## 114<em>%</em>
+## 6<em>%</em>
 
-Measured across all customers active for 12+ months, March 31 cohort.
+Measured across the pilot's first six months, all four teams, no grading curve.
 
-- Existing customers are growing faster than we lose them
-  - At 114%, every churned dollar is offset by $1.14 in expansion. The base compounds without new-logo dependency.
-- Expansion is concentrated — three segments drive 80% of the gain
-  - Enterprise accounts in the 201–500 seat range upgrade at twice the SMB rate.
-- Sustained above 110%, this unlocks a capital-efficient growth path
-  - NRR above 110% meets the investor threshold for venture-category efficiency.
+- The log holds eighteen entries against roughly three hundred decisions
+  - Coverage is six percent. The six percent, however, can be reconstructed three months later without the author in the room.
+- Coverage has doubled each cycle since the operating rhythm landed
+  - From four entries a month to nine. The trend is the argument; the base is the confession.
+- The framework does not need every decision — it needs the expensive ones
+  - Those are also, conveniently, the ones people remember to log.
 
 ---
 
@@ -1504,18 +1507,18 @@ Measured across all customers active for 12+ months, March 31 cohort.
 
 `02`
 
-## Discovery & Scoping
+## Enablement, Finally
 
-Four weeks. Shared definition of the problem before any solution work begins.
+Four weeks. The workstream previously known as "next phase," now with dates.
 
-1. Stakeholder Interviews
-   - Eight cross-functional conversations. Open questions only — listening for friction, not confirming assumptions.
-2. Current-State Audit
-   - System inventory, workflow documentation, and data quality review.
-3. Problem Framing Workshop
-   - Half-day session to align on root cause. Output is a ranked problem statement the team signs off on.
-4. Scope Confirmation
-   - Written sign-off on what is in, what is out, what requires a separate decision.
+1. Team Onboarding
+   - Two workshops per team. The second exists because the first one always runs long.
+2. Intake Wiring
+   - Connectors for the top three source systems. The CSV uploads keep their dignity for now.
+3. Scoring Dry Run
+   - Two weeks of shadow scores against live decisions. No bonus is attached; honesty spikes accordingly.
+4. Rhythm Sign-off
+   - Written sign-off on the monthly retrospective — the one meeting this plan refuses to let become optional.
 
 ---
 
@@ -1524,36 +1527,36 @@ Four weeks. Shared definition of the problem before any solution work begins.
 
 `Decision Required`
 
-## Build the data layer or buy it?
+## Build the whole stack, or just the part that thinks?
 
-Both paths are viable. The difference is where we spend the next 18 months.
+Building is settled. The remaining question is which layers deserve our engineers.
 
-- Build in-house
-  - Full control over schema and roadmap
-  - 2–3 engineer-quarters to reach feature parity
-  - Ongoing maintenance burden stays internal
-- Buy + configure
-  - Ship in 6 weeks, not 9 months
-  - Engineering capacity redirects to product-layer features
-  - Exit risk manageable — data export contractually guaranteed
+- Build everything
+  - Owns the intake plumbing and the scoring alike
+  - Two more engineer-quarters before anyone scores a signal
+  - The pager stays ours at every layer, including the boring ones
+- Buy the plumbing
+  - Intake connectors ship in six weeks
+  - Engineering stays on the scoring model and the log — the part that is the point
+  - Exit stays honest: transcripts export; the weights never existed to lose
 
-> Buy the infrastructure. Build the differentiation. Revisit in 24 months.
+> Buy the plumbing. Build the framework. Revisit at the 24-month calibration review.
 
 ---
 
 <!-- _class: split-panel pullquote -->
 <!-- _footer: "Split — statement · split-panel pullquote" -->
 
-> The best product does not win. The most understood product does.
+> The framework did not make us smarter. It made us unable to pretend we had not known.
 
-`Morgan Chase · Head of Product, Vercel, 2024`
+`Head of Product · Pilot Team 3 · month five`
 
-- Clarity is a product decision, not a marketing one
-  - If a prospect cannot articulate our value in one sentence, the product has a communication architecture problem.
-- Onboarding is the product's first argument for itself
-  - The moment a user first succeeds defines their frame for everything that follows.
-- Understanding, not delight, is the retention driver at scale
-  - Users who understand the system's logic stay through friction. Build for comprehension.
+- The log is the memory the org kept declining to fund
+  - Decisions could always be reconstructed — from whoever was in the room and still employed.
+- Calibration turns opinion into a track record
+  - After two cycles, "I had a feeling" comes with a batting average attached.
+- Belief arrived with the second retro, not the first
+  - The first retro produced attendance. The second produced behavior.
 
 ---
 
@@ -1690,7 +1693,7 @@ Filled = applies, half = partial, empty = exempt. Neutral ink — data first.
 
 `Scoring model · OLS`
 
-## The scoring model, formally.
+## The scoring model fits on one line.
 
 $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 
@@ -1720,7 +1723,7 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 <!-- _class: checklist -->
 <!-- _footer: "Ops — checklist · checklist" -->
 
-## Go-live readiness for the framework rollout.
+## The go-live checklist is honest about the gaps.
 
 - [x] Signal taxonomy ratified, in workshop four of three
 - [x] Scoring weights agreed by the steering committee
@@ -1772,34 +1775,34 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 <!-- _class: logo-wall -->
 <!-- _footer: "Ops — logo-wall · logo-wall" -->
 
-`The pilot cohort`
+`The intake wall`
 
-## Eight portfolio brands already run the framework.
+## Eight source systems already feed the intake.
 
 - ![Acme](../../../lib/components/inventory/logo-wall/acme.svg)
   - Acme
-  - `Cohort 1`
+  - `API`
 - ![Globex](../../../lib/components/inventory/logo-wall/globex.svg)
   - Globex
-  - `Cohort 1`
+  - `CSV`
 - ![Vantage](../../../lib/components/inventory/logo-wall/vantage.svg)
   - Vantage
-  - `Cohort 2`
+  - `API`
 - ![Umbra](../../../lib/components/inventory/logo-wall/umbra.svg)
   - Umbra
-  - `Cohort 1`
+  - `Webhook`
 - ![Meridian](../../../lib/components/inventory/logo-wall/meridian.svg)
   - Meridian
-  - `Cohort 2`
+  - `CSV`
 - ![Helios](../../../lib/components/inventory/logo-wall/helios.svg)
   - Helios
-  - `Cohort 2`
+  - `API`
 - ![Northwind](../../../lib/components/inventory/logo-wall/northwind.svg)
   - Northwind
-  - `Cohort 2`
+  - `Manual`
 - ![Cobalt](../../../lib/components/inventory/logo-wall/cobalt.svg)
   - Cobalt
-  - `Cohort 2`
+  - `API`
 
 ---
 
@@ -1817,7 +1820,7 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 <!-- _class: contact -->
 <!-- _footer: "Connect — contact · contact" -->
 
-## Questions after the meeting?
+## The framework has an owner, and she answers email.
 
 - Dana Reyes `name`
 - VP Strategy · framework owner `title`
