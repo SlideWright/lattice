@@ -14,7 +14,6 @@ Set `theme:` in the deck's front matter:
 
 ```yaml
 ---
-marp: true
 theme: indaco   # cool indigo (default)
 ---
 ```

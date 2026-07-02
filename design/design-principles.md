@@ -132,7 +132,6 @@ Accent colors for categories, levels, or themes extend this palette — they don
 
 ```yaml
 ---
-marp: true
 theme: uncover
 paginate: true
 html: true
