@@ -15,7 +15,7 @@ header: "Lattice · Layout Gallery"
 
 `Product Strategy · Q3 2026`
 
-A decision framework for product leaders navigating market uncertainty
+A decision framework for product leaders navigating market uncertainty, quarterly
 
 ---
 
@@ -147,7 +147,7 @@ flowchart LR
 ## Two failure modes the framework is designed to prevent.
 
 - False signal amplification
-  - A single loud voice — one enterprise customer, one analyst report, one competitive announcement — dominates the decision without being weighed against the full signal set. The scoring model prevents any single source from exceeding 30% of the total signal weight in a given decision.
+  - A single loud voice — one enterprise customer, one analyst report, one competitive announcement — dominates the decision without being weighed against the full signal set. The scoring model caps any single source at 30% of a decision's signal weight — a ceiling one enterprise customer tests monthly.
 - Signal hoarding
   - Teams collect signals but do not log decisions, so the calibration loop has nothing to learn from. The Decision Log is a required artifact for any prioritization change above P2 severity. No log, no change.
 
@@ -171,11 +171,11 @@ flowchart LR
 ## Scoring model: before and after the calibration loop.
 
 - Before Calibration
-  - Equal weights across all three dimensions. Confidence, recency, and relevance each contribute 33% to the final score. Simple, consistent, but blind to what your market actually rewards.
+  - Equal weights across all three dimensions. Confidence, recency, and relevance each contribute 33% to the final score. Simple, consistent, and blind to what the market rewards — which nobody minded until the market did.
 - After Calibration
   - Weights reflect your team's historical signal accuracy. If recency has consistently been the weakest predictor for your product, it gets downweighted. The model becomes a record of what you have learned.
 
-The shift from equal weights to calibrated weights takes two retrospective cycles — roughly 60 days from adoption.
+The shift from equal weights to calibrated weights takes two retrospective cycles — roughly 60 days from adoption, both of which must occur.
 
 ---
 
@@ -1001,7 +1001,7 @@ The architecture change is the calibration loop — logged, weighted, time-bound
 
 1. We default to the choice that is cheaper to reverse.
 2. We name the actor, never the system.
-3. We write down the bet on the same slide as the choice.
+3. We write down the bet on the same slide as the choice, so hindsight has a paper trail.
 
 ---
 
@@ -1110,7 +1110,7 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ## Loose is the inverse — more breathing room, same layout machinery.
 
-The spacing scale grows ~25 % rather than shrinks. Reach for `loose` when the slide carries a single editorial point and you want the page to feel deliberately quiet — values pages, declarative principles, the closing line of an argument. The discipline mirrors `compact`: the type ramp, the chrome, and the layout all hold still; only the between-element rhythm moves.
+The spacing scale grows ~25 % rather than shrinks. Reach for `loose` when a slide carries one editorial point and should feel deliberately quiet — values pages, principles, closing lines. Used here, once, as restraint. The discipline mirrors `compact`: type ramp, chrome, and layout hold still; only the rhythm between elements moves.
 
 > Density is not the same as importance. `loose` says: this page deserves room — not because it carries more, but because it carries one thing well.
 
@@ -1152,7 +1152,7 @@ Only a literal trailing `.` is removed — `!`, `?`, `:`, and `…` pass through
 
 ## `tint-*` and `mark-*` classes add peripheral accents from the active palette
 
-Add a tint or mark class alongside any layout class — gradient wash or SVG mark, light canvas or dark, single pattern or layered pair.
+Add a tint or mark class alongside any layout class — gradient wash or SVG mark, light canvas or dark, single pattern or layered pair. Decoration, at last, with governance.
 
 ---
 
@@ -1165,7 +1165,7 @@ Add a tint or mark class alongside any layout class — gradient wash or SVG mar
 
 `tint-corner at-tl` places an elliptical accent at the top-left — 12% opacity at the corner, transparent before mid-slide. The four `at-*` placements share the same weight and fade profile; only the anchor differs.
 
-All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switching palette or adding the `dark` modifier remaps the accent automatically — no per-pattern overrides.
+All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switching palette or adding the `dark` modifier remaps the accent automatically — no per-pattern overrides, no committee.
 
 ---
 
@@ -1176,7 +1176,7 @@ All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switchin
 
 ## SVG accent marks are painted through a mask in the active accent colour
 
-`mark-orbit` places concentric rings and satellite dots in the bottom-right corner. The shapes render via `::before` + `mask-image`: the SVG defines the alpha channel (white = opaque, transparent = hidden) and the paint colour is `color-mix(in srgb, var(--accent) 28%, transparent)` — resolved from the theme at render time. Same class, light canvas or dark — always visible, always on-brand, never load-bearing.
+`mark-orbit` places concentric rings and satellite dots in the bottom-right corner. The shapes render via `::before` + `mask-image`: the SVG defines the alpha channel (white = opaque, transparent = hidden) and the paint colour is `color-mix(in srgb, var(--accent) 28%, transparent)` — resolved from the theme at render time. Same class, light canvas or dark — always on-brand, and the rings orbit nothing in particular, which the strategy team found relatable.
 
 ---
 
@@ -1187,12 +1187,12 @@ All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switchin
 
 ## One class from each slot layers without conflict
 
-Every tint class (and `mark-seeds`) writes to either `--_bg-radial` or `--_bg-linear`. A compositor rule assembles both slots into a single `background-image` with two live layers. Stack one class from each column and both render:
+Every tint class (and `mark-seeds`) writes to either `--_bg-radial` or `--_bg-linear`. A compositor rule assembles both slots into one `background-image`. Stack one class from each column and both render:
 
 - `tint-vignette` — radial slot — accent-tinted perimeter, open center
 - `tint-edge at-right` — linear slot — wash bleeding in from the right edge
 
-The SVG mark patterns follow the same rule: their atmospheric haze writes to its slot, and the `::before` shapes compose on top independently.
+The SVG mark patterns follow the same rule: their atmospheric haze writes to its slot, and the `::before` shapes compose on top independently. Two backgrounds, one slide, zero escalations.
 
 ---
 
@@ -1203,7 +1203,7 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 
 `Chart Layouts · gantt + kanban`
 
-## Timeline bars and board columns from a two-level list
+## Timeline bars and board columns, from the same two-level list the plan was hiding in
 
 ---
 
@@ -1259,7 +1259,7 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 
 `Chart Layouts · the evidence suite`
 
-## Ten more chart layouts — every one drawn from a plain list
+## Ten chart layouts, drawn from plain lists — the evidence, as the board will see it
 
 ---
 
@@ -1383,7 +1383,7 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it, opti
 <!-- _class: journey -->
 <!-- _footer: "Chart — journey · journey" -->
 
-## A team's first month runs from pain to belief.
+## A team's first month runs from pain to belief, in that order, twice.
 
 - Onboard
   - Kickoff workshop `@team` `@strategy` `:2`
@@ -1462,7 +1462,7 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it, opti
 
 `Split Layouts · five variants`
 
-## A structured left panel drives five two-column layouts
+## A structured left panel drives five layouts; the argument rides shotgun
 
 ---
 
@@ -1714,7 +1714,7 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 - **Signal Intake.** Weekly structured collection across conversations and market data.
 - **Scoring Model.** Each signal scored on confidence, recency, and relevance.
 - **Decision Log.** Every call recorded with the signals that informed it.
-- **Calibration Loop.** Outcomes compared to predictions each cycle.
+- **Calibration Loop.** Outcomes compared to predictions each cycle. Run once so far; the once was humbling.
 
 > Signals without decisions are just noise.
 
@@ -1777,7 +1777,7 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 
 `The intake wall`
 
-## Eight source systems already feed the intake.
+## Eight source systems already feed the intake — seven willingly.
 
 - ![Acme](../../../lib/components/inventory/logo-wall/acme.svg)
   - Acme
@@ -1813,7 +1813,7 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 
 `Connect Layouts · two components`
 
-## Scannable codes for the room — a person and a network
+## Two codes close the room out — a person and a network, one of them always on
 
 ---
 
@@ -1855,9 +1855,9 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 
 ## Accent replaces the rainbow stripe with a single editorial colour.
 
-The default top border is a spectrum gradient — a system signal that the page is part of a wider deck. The `accent` modifier swaps that stripe for one solid colour and tints the slide heading. Use it when one slide carries the editorial weight of a section and you want the visual chrome to say so.
+The default top border is a spectrum gradient — a signal that the page belongs to a wider deck. The `accent` modifier swaps that stripe for one solid colour and tints the heading. Use it when one slide carries a section's editorial weight and the chrome should say so.
 
-It composes with `dark`: on the dark canvas the spectrum top-stripe is suppressed entirely, so `accent.dark` restores a solid accent stripe in its place — preserving the visual signal across both canvases.
+It composes with `dark`: the dark canvas suppresses the spectrum stripe, so `accent.dark` restores a solid one in its place. Slide 115, for the record: decision logged, retrospective booked, attendance aspirational.
 
 <!-- Import Mermaid and the Lattice runtime theme for VS Code / web preview.
      The build script (lattice-emulator.js) pre-renders Mermaid to SVG at build time
