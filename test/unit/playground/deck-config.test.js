@@ -248,6 +248,34 @@ describe('writeFrontMatter', () => {
     assert.ok(block.indexOf('finish: atrium') < block.indexOf('size: 4K'), block);
   });
 
+  test('backdrop.strength writes the NESTED block, clamps, defaults-out at 1, and survives other writes', async () => {
+    const { writeFrontMatter, readFrontMatter } = await import(MOD);
+    // writes as a nested backdrop: map (not a flat key)
+    const dim = writeFrontMatter(CLEAN, 'backdrop.strength', '0.4');
+    assert.match(dim, /\nbackdrop:\n {2}strength: 0\.4\n/);
+    assert.equal(readFrontMatter(dim)['backdrop.strength'], '0.4');
+    assert.equal(readFrontMatter(dim).configured, true);
+    // clamps to 0–1: a below-range value pins to 0 (still written, ≠ default)
+    assert.match(writeFrontMatter(CLEAN, 'backdrop.strength', '-0.5'), /\nbackdrop:\n {2}strength: 0\n/);
+    // an above-range value clamps to 1 = full = the default → no block
+    assert.equal(writeFrontMatter(CLEAN, 'backdrop.strength', '1.8'), CLEAN);
+    // 1 (full) is the default, as is empty → no backdrop block
+    assert.equal(writeFrontMatter(CLEAN, 'backdrop.strength', '1'), CLEAN);
+    assert.equal(writeFrontMatter(CLEAN, 'backdrop.strength', ''), CLEAN);
+    // survives an unrelated write — NOT flattened into stray scalars
+    const withPag = writeFrontMatter(dim, 'paginate', true);
+    assert.match(withPag, /\nbackdrop:\n {2}strength: 0\.4\n/);
+    assert.match(withPag, /\npaginate: true\n/);
+    // clearing it (→ 1) removes only the backdrop block
+    const cleared = writeFrontMatter(withPag, 'backdrop.strength', '1');
+    assert.doesNotMatch(cleared, /backdrop:/);
+    assert.match(cleared, /\npaginate: true\n/);
+    // coexists with a scalar finish:, in order (finish then backdrop)
+    const both = writeFrontMatter('---\nmarp: true\nfinish: atrium\nbackdrop:\n  strength: 0.3\n---\n\n# D\n', 'header', 'Board');
+    assert.ok(both.indexOf('finish: atrium') < both.indexOf('backdrop:'), both);
+    assert.ok(both.indexOf('backdrop:') < both.indexOf('header: Board'), both);
+  });
+
   test('a bespoke finish/mode counts as "configured"; the baselines do not', async () => {
     const { readFrontMatter } = await import(MOD);
     assert.equal(readFrontMatter('---\nmarp: true\nfinish: atrium\n---\n\n# Deck\n').configured, true);
@@ -454,5 +482,16 @@ describe('createConfigPanel (DOM)', () => {
     sel.value = 'atrium';
     sel.dispatchEvent(new dom.window.Event('change'));
     assert.ok(get().includes('finish: atrium'));
+  });
+
+  test('the Finish strength slider renders and writes the nested backdrop.strength', async () => {
+    const { panel, host, get } = await mountProfile(CLEAN, ['backdrop.strength']);
+    panel.render();
+    const range = host.querySelector('input[aria-label="Finish strength"]');
+    assert.ok(range, 'a range slider renders for the strength axis');
+    assert.equal(range.value, '1', 'defaults to full (1) on a clean deck');
+    range.value = '0.35';
+    range.dispatchEvent(new dom.window.Event('input'));
+    assert.match(get(), /\nbackdrop:\n {2}strength: 0\.35\n/);
   });
 });

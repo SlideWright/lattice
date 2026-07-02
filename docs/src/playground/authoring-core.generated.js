@@ -601,6 +601,7 @@ ${indent}   - ${body.trim()}`;
       if (vocab.mapRegions) findings.push(...findUnknownMapRegions(source, vocab.mapRegions));
       if (vocab.finishNames) findings.push(...findUnknownFinish(source, vocab.finishNames));
       if (vocab.modeNames) findings.push(...findUnknownMode(source, vocab.modeNames));
+      findings.push(...findBackdropIssues(source));
       if (vocab.splitNames) findings.push(...findUnknownSplit(source, vocab.splitNames));
       findings.push(...findGanttIssues(source));
       findings.push(...findAutosplitOrientationMismatch(source));
@@ -864,6 +865,54 @@ ${indent}   - ${body.trim()}`;
         message: `'${value}' is not a known mode register \u2014 the deck would silently render the boardroom baseline`,
         fix: `Set front-matter \`mode:\` to one of: ${[...modeNames].join(", ")}.`
       }];
+    }
+    var BACKDROP_AXES = /* @__PURE__ */ new Set(["strength", "clearance", "spotlight"]);
+    function findBackdropIssues(source) {
+      const fmBlock = String(source || "").match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+      if (!fmBlock) return [];
+      const lines = fmBlock[1].split(/\r?\n/);
+      const out = [];
+      let inBackdrop = false;
+      for (const line of lines) {
+        if (line.trim() === "backdrop:") {
+          inBackdrop = true;
+          continue;
+        }
+        if (!inBackdrop) continue;
+        if (!/^\s+\S/.test(line)) {
+          if (line.trim()) inBackdrop = false;
+          continue;
+        }
+        const kv = /^\s+([A-Za-z][\w-]*)\s*:\s*(.*?)\s*$/.exec(line);
+        if (!kv) continue;
+        const axis = kv[1];
+        const val = kv[2].replace(/\s+#.*$/, "").replace(/^["']|["']$/g, "").trim();
+        if (!BACKDROP_AXES.has(axis)) {
+          out.push({
+            slide: 0,
+            rule: "unknown-backdrop-axis",
+            severity: "warning",
+            classToken: axis,
+            line: line.trim(),
+            message: `'${axis}' is not a known backdrop axis \u2014 it silently no-ops`,
+            fix: `Use one of: ${[...BACKDROP_AXES].join(", ")}.`
+          });
+        } else if (axis === "strength") {
+          const n = Number.parseFloat(val);
+          if (!Number.isFinite(n) || n < 0 || n > 1) {
+            out.push({
+              slide: 0,
+              rule: "backdrop-strength-range",
+              severity: "warning",
+              classToken: val,
+              line: line.trim(),
+              message: `backdrop.strength must be a number from 0 to 1 (got '${val}')`,
+              fix: "Set backdrop.strength between 0 (hidden) and 1 (full)."
+            });
+          }
+        }
+      }
+      return out;
     }
     function findUnknownSplit(source, splitNames) {
       const fmBlock = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);

@@ -34,9 +34,10 @@ in patch versions.
   `finish:` is unchanged (still the scalar preset selector), and a plain deck is byte-identical.
   Export-safe (a plain `opacity` on the wrapper, verified in the vector PDF). Also frees
   `section::after` for the paginator (the mark/edge moved onto the wrapper's pseudos), fixing
-  the contended vignette edges on halo/ledger/nimbus/gallery. Clearance + spotlight controls,
-  and the Deck-setup UI + editor autocomplete, follow.
-  See `engineering/decisions/2026-07-01-finish-restraint-controls.md`.
+  the contended vignette edges on halo/ledger/nimbus/gallery. The strength dial is surfaced in
+  the **Deck-setup drawer** (a slider) and validated by the **deck linter** (`backdrop-strength-range`
+  / `unknown-backdrop-axis`). Editor autocomplete for the `backdrop:` axes, and the clearance +
+  spotlight controls, follow. See `engineering/decisions/2026-07-01-finish-restraint-controls.md`.
 
 - **Ground one AI generation in several reference docs at once (#656).** The reference-doc
   picker is now multi-select — toggle any number of saved docs (up to a cap) into the grounding
