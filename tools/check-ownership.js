@@ -919,6 +919,9 @@ const US_ENGLISH_SELF_EXEMPT = new Set([
   'test/unit/cli/check-ownership.test.js',
   'CHANGELOG.md',
   'docs/public/playground/lattice-playground.js',
+  // Gitignored copy staged by docs/scripts/sync-portal.mjs — a duplicate of
+  // the generated dist/docs/components.md, whose sources are already counted.
+  'docs/public/components.md',
 ]);
 
 const US_TEXT_EXTS = new Set(['.md', '.js', '.mjs', '.ts', '.tsx', '.css', '.json', '.yml', '.yaml', '.html', '.astro']);
@@ -935,6 +938,13 @@ function listRepoTextFiles(dir = ROOT, out = []) {
       if (US_SKIP_DIRS.has(e.name)) continue;
       if (e.name.startsWith('.') && e.name !== '.github') continue; // hidden dirs (.git/.vscode/.claude) — keep .github
       if (rel === path.join('engineering', 'decisions')) continue; // historical records
+      // Gitignored build artifacts the docs dev/build stages into public/ —
+      // duplicates of already-counted sources. A clean checkout doesn't have
+      // them, so counting them made the gate red on any tree that had merely
+      // RUN the docs site while CI stayed green (observed: 1351 → 1517 with
+      // the artifacts present). Same reason components.md is exempted below.
+      // See engineering/decisions/2026-07-02-website-copy-positioning.md §8.5.
+      if (rel === path.join('docs', 'public', 'playground', 'v')) continue;
       listRepoTextFiles(p, out);
     } else if (
       US_TEXT_EXTS.has(path.extname(e.name)) &&
@@ -967,7 +977,7 @@ function listRepoTextFiles(dir = ROOT, out = []) {
 // living text surfaces. EXCEED-only (mirrors the margin gate): a NEW British spelling
 // fails the build; the existing backlog is tracked in migration tickets and burned
 // down by lowering US_ENGLISH_BUDGET as it drops. Target zero.
-const US_ENGLISH_BUDGET = 1364;
+const US_ENGLISH_BUDGET = 1351;
 
 function checkUsEnglish(errors) {
   const re = new RegExp(`\\b(${UK_ENGLISH_FORMS.join('|')})\\b`, 'gi');

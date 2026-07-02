@@ -63,7 +63,7 @@ const SPECIMEN = [
   '',
   '`theme studio`',
   '',
-  '# The deck builds itself.',
+  '# The deck is already designed.',
   '',
   'A live specimen — surfaces, accent, signals, charts, code, diagrams.',
   '',

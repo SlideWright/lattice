@@ -8,6 +8,11 @@ import { Card, CardContent } from '@/components/ui/card';
 // or light/dark switch on <html> re-themes them for free. The interactive bits
 // (hero Preview/Source tabs, the restyle carousel, the live card previews) are
 // separate React islands that DO hydrate.
+//
+// Copy contract: marketing surfaces say "layout"; reference docs say
+// "component". Code-styled names (`big-number`) appear only where the copy
+// shows what you TYPE; plain English ("a verdict grid") where prose names the
+// idea. See engineering/decisions/2026-07-02-website-copy-positioning.md §7.2.
 
 /** Mono eyebrow line above each section heading. */
 export function Eyebrow({ children }: { children: React.ReactNode }) {
@@ -39,22 +44,64 @@ export function SectionHead({
 	);
 }
 
+// ── "How it works" strip ────────────────────────────────────────────────────
+// A slim three-step band under the hero. The hero preview already shows the
+// transform live; this strip's payload is the two facts missing from the
+// fold — you name a layout, and one command emits every delivery format.
+const HOW_STEPS: { verb: string; body: React.ReactNode }[] = [
+	{ verb: 'Write', body: 'a slide is a few lines of Markdown.' },
+	{
+		verb: 'Name a layout',
+		body: (
+			<>
+				call it <code className="font-mono text-[0.9em] text-primary">big-number</code>,{' '}
+				<code className="font-mono text-[0.9em] text-primary">gantt</code>, or{' '}
+				<code className="font-mono text-[0.9em] text-primary">verdict-grid</code>.
+			</>
+		),
+	},
+	{ verb: 'Build', body: 'one command renders the PDF, PPTX, PNG, or HTML.' },
+];
+
+export function HowItWorks() {
+	return (
+		<ol className="m-0 grid list-none grid-cols-1 gap-[18px] p-0 sm:grid-cols-3">
+			{HOW_STEPS.map((s, i) => (
+				<li key={s.verb} className="flex items-start gap-3.5">
+					<span
+						aria-hidden="true"
+						className="mt-0.5 inline-flex size-7 flex-none items-center justify-center rounded-full bg-primary font-mono text-[13px] font-bold"
+						style={{ color: 'var(--on-accent)' }}
+					>
+						{i + 1}
+					</span>
+					<p className="m-0 text-[15px] leading-[1.55] text-foreground">
+						<strong className="font-semibold text-[var(--text-heading)]">{s.verb}</strong> — {s.body}
+					</p>
+				</li>
+			))}
+		</ol>
+	);
+}
+
 // ── "Speaks your field" cards ───────────────────────────────────────────────
 // Each card carries a live-preview HOST (`data-live-card`) that the
 // FieldCardsLive island fills with a real slide, plus a real "Edit this deck"
 // link (its data-open-deck handoff seeds the playground via landing-handoff.ts).
+// Order leads with the broadest personas; math anchors late so the page
+// doesn't read "for academics" at first scroll.
 type FieldCard = { live: string; title: string; body: React.ReactNode };
 
 const FIELD_CARDS: FieldCard[] = [
 	{
-		live: 'math',
-		title: 'Mathematicians, quants & ML',
-		body: 'Real KaTeX equations — Definition / Theorem / Proof cards, derivation chains with a justification column, matrix decompositions, an equation beside its plot.',
-	},
-	{
 		live: 'gantt',
 		title: 'Project leads',
 		body: 'Gantt charts, kanban boards, roadmaps, journeys, and step ladders — native SVG rendered straight from a list, not pasted in from Visio.',
+	},
+	{
+		live: 'radar',
+		title: 'Analysts & consultants',
+		body: 'Radar, quadrant, KPI, stats, pie, and verdict grids — the evidence layouts that turn numbers into an argument. They carry the quarterly review, the board pack, the client readout.',
 	},
 	{
 		live: 'diagram',
@@ -67,21 +114,34 @@ const FIELD_CARDS: FieldCard[] = [
 		body: 'Statute stacks, authority chains, obligation matrices, citation cards, and regulatory-update layouts — an actual legal vocabulary.',
 	},
 	{
-		live: 'radar',
-		title: 'Analysts',
-		body: 'Radar, quadrant, KPI, stats, progress, pie, and word-cloud — the evidence layouts that turn numbers into an argument.',
+		live: 'math',
+		title: 'Mathematicians, quants & ML',
+		body: 'Real KaTeX equations — Definition / Theorem / Proof cards, derivation chains with a justification column, matrix decompositions, an equation beside its plot.',
 	},
 	{
 		live: 'cards-grid',
 		title: 'And the basics, for everyone',
-		body: 'A bullet list becomes a card grid; a table becomes a comparison matrix. Fifty-two layouts, one Markdown syntax.',
+		body: '', // filled below with the live layout count
 	},
 ];
 
-export function FieldCards({ playgroundHref }: { playgroundHref: string }) {
+export function FieldCards({ playgroundHref, layoutCount }: { playgroundHref: string; layoutCount: number }) {
+	const cards = FIELD_CARDS.map((c) =>
+		c.live === 'cards-grid'
+			? {
+					...c,
+					body: (
+						<>
+							A bullet list turns into a card grid. Tables become comparison matrices. {layoutCount} layouts, one
+							Markdown syntax.
+						</>
+					),
+				}
+			: c,
+	);
 	return (
 		<div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
-			{FIELD_CARDS.map((c) => (
+			{cards.map((c) => (
 				<Card key={c.live} className="gap-0 overflow-hidden py-6">
 					<CardContent className="flex flex-col">
 						{/* Live-preview host — filled by FieldCardsLive (data-live-card). */}
@@ -116,7 +176,7 @@ const WHY_CARDS: WhyCard[] = [
 		title: 'Brand colors live in one file.',
 		body: (
 			<>
-				Change a palette once; every deck picks it up on the next build. Layouts never name a colour — they read{' '}
+				Change a palette once; every deck picks it up on the next build. Layouts never name a color — they read{' '}
 				<code className="font-mono text-[0.88em] text-primary">var(--token)</code>.
 			</>
 		),
@@ -133,7 +193,7 @@ const WHY_CARDS: WhyCard[] = [
 	{
 		id: 'mermaid',
 		title: 'Mermaid diagrams render in the palette.',
-		body: 'Flowcharts and sequence diagrams pick up the deck’s tokens automatically. No per-diagram styling, no recolouring by hand.',
+		body: 'Flowcharts and sequence diagrams pick up the deck’s tokens automatically. No per-diagram styling, no recoloring by hand.',
 	},
 	{
 		id: 'contrast',
@@ -142,11 +202,11 @@ const WHY_CARDS: WhyCard[] = [
 	},
 	{
 		id: 'vocabulary',
-		title: 'Fifty-two layouts, one vocabulary.',
+		title: 'Layouts you ask for by name.',
 		body: (
 			<>
-				Function · Form · Substance · Finish organizes the catalog, so &ldquo;which layout do I want?&rdquo; has an answer
-				that isn&rsquo;t <em>scroll the gallery</em>.
+				You ask for a verdict grid, a derivation, a statute stack — the name says what the slide does. &ldquo;Which
+				layout do I want?&rdquo; has an answer that isn&rsquo;t <em>scroll the gallery</em>.
 			</>
 		),
 	},
@@ -177,13 +237,67 @@ export function WhyCards() {
 	);
 }
 
+// ── Proof strip ─────────────────────────────────────────────────────────────
+// One receipt from /comparison, promoted to the landing. The headline is a
+// protected line (copy-positioning doc §10) — promote verbatim, never rewrite.
+// The attribution carries the caveat; the full sourced treatment (with its
+// "read it as directional" footnote) lives one click away on /comparison.
+export function ProofStrip({ comparisonHref }: { comparisonHref: string }) {
+	return (
+		<div className="mx-auto max-w-[62ch] text-center">
+			<h2 className="mb-4 font-[var(--font-display)] text-[clamp(26px,3vw,38px)] leading-[1.12] tracking-[-0.02em] text-[var(--text-heading)]">
+				The artsy deck wins the demo. The deterministic deck wins the boardroom.
+			</h2>
+			<p className="m-0 mb-5 text-[16.5px] leading-[1.6] text-foreground">
+				When one team fact-checked six AI deck generators, the best got 20% of its claims right. Models predict
+				plausible text instead of looking facts up. Lattice never invents a number or reshuffles a layout — it renders
+				what you wrote, the same way every time.
+			</p>
+			<a
+				className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-primary hover:underline"
+				href={comparisonHref}
+			>
+				Read the comparison — including where Lattice loses <ArrowRight aria-hidden="true" className="size-4" />
+			</a>
+		</div>
+	);
+}
+
+// ── "Bring your own model" section ──────────────────────────────────────────
+// The agent-workflow wedge: the split-layers argument from /comparison,
+// surfaced on the landing. The eyebrow does the disclaiming at skim altitude —
+// this is NOT an AI deck generator, the model never renders anything.
+export function ByomSection({ featuresHref }: { featuresHref: string }) {
+	return (
+		<div className="max-w-[62ch]">
+			<div className="mb-3">
+				<Eyebrow>Bring your own model</Eyebrow>
+			</div>
+			<h2 className="mb-3.5 font-[var(--font-display)] text-[clamp(28px,3.4vw,42px)] leading-[1.08] tracking-[-0.02em] text-[var(--text-heading)]">
+				Point your copilot at Lattice.
+			</h2>
+			<p className="m-0 mb-5 text-[17px] leading-[1.6] text-foreground">
+				Lattice ships a machine-readable layout catalog and a published authoring spec, so Claude, Cursor, or any
+				agent can draft a valid deck. The engine renders that draft deterministically — the design was finished long
+				before the model arrived.
+			</p>
+			<a
+				className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-primary hover:underline"
+				href={featuresHref}
+			>
+				How AI authoring works <ArrowRight aria-hidden="true" className="size-4" />
+			</a>
+		</div>
+	);
+}
+
 // ── Next-step cards (whole card is a link) ──────────────────────────────────
 export function NextSteps({ links }: { links: { href: string; title: string; body: string; cta: string }[] }) {
 	return (
-		<div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
+		<div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-4">
 			{links.map((l) => (
 				<a
-					key={l.href}
+					key={l.href + l.title}
 					href={l.href}
 					className="group block rounded-xl border border-border bg-card p-[26px] text-card-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-lg"
 				>

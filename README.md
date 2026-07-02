@@ -10,7 +10,7 @@
 A Markdown slide-deck engine for boardroom-quality decks — PDF, HTML, PPTX, or PNG sets.
 
 Lattice produces decks where every slide is a deliberate component — title,
-diagram, compare-prose, split-panel, verdict-grid, and 20+ more —
+diagram, verdict-grid, and dozens more —
 themed through a single CSS palette and rendered to your delivery format
 with no manual formatting work. Decks read as ink-on-paper and pass
 WCAG AA throughout.
@@ -23,8 +23,8 @@ decompositions; project leads get gantt charts, kanban boards, and
 roadmaps; engineers and architects get all 25 Mermaid diagram types and
 side-by-side code diffs; lawyers and compliance get statute stacks,
 authority chains, and obligation matrices; analysts get radar, quadrant,
-and KPI components. Fifty-two components, one syntax you already know — no
-drawing tools, no boxes, no pasted screenshots.
+and KPI components. More than fifty components, one syntax you already
+know — no drawing tools, no boxes, no pasted screenshots.
 
 Lattice is the engine at the heart of **Lattice Style** — a project born
 from a refusal to keep fighting the slide tools we all use, building
@@ -36,51 +36,13 @@ identically.
 
 ## Why Lattice Style exists
 
-I built Lattice because I can't stand what the slide tools we all use do to
-the people who use them.
-
-PowerPoint was revolutionary when it arrived — and then three decades of
-tools, desktop and web alike, copied its shape without ever questioning it.
-The same blank canvas. The same master slide everything inherits from, until
-the first override sends the whole deck drifting. They make authors
-unproductive by design, and they have no guardrails — nothing stops poor
-taste or poor authorship, so the burden of consistency falls on you, slide
-after slide, the night before the meeting. You can't even tell what changed
-between two versions. And so we all sit through presentations that are worse
-than they needed to be — not because the author had nothing to say, but
-because the tool fought them the entire way.
-
-No amount of AI bolted on top can mask flaws that deep. The foundation is
-wrong for today's work.
-
-**Lattice is the answer I wanted to exist:** a deck as a text file, with the
-discipline of a design system and taste built into the engine instead of
-left to chance. You write the words. The structure holds. The finish is
-consistent by default — and swapping it is one line, not a thousand
-hand-edits. What changed shows up in a `git diff`, line by line. And poor
-taste runs out of places to hide. **Lattice Style** is the project I'm
-building around it.
-
-## The name
-
-A *lattice* is a frame of crossed members that holds everything it carries
-in alignment — rigid where it must be, open everywhere else. That's the
-engine: a structural frame for an argument, where every slide sits on the
-same grid, the same palette, the same deliberate components. You bring the
-meaning; the lattice keeps it straight.
-
-*Style* is the other half, and it means two things at once. The literal one:
-this is a styling engine — themes, palettes, one `lattice.css` contract, a
-whole deck restyled in a single line. The deeper one: **style as craft.**
-Lattice is built on four layers — **Function · Form · Substance · Finish** —
-and that isn't engineering jargon, it's the vocabulary of anyone who makes
-things well. A tailor talks about *form*. A shoemaker talks about *finish*.
-Take style seriously — the way you'd take a well-made shoe seriously — and
-those four words are exactly what it means: *does it work, what's its shape,
-what's it made of, how is it finished.*
-
-So **Lattice Style**: structure you can trust, with taste. The frame and the
-finish — and it lives where it should, at [lattice.style](https://lattice.style).
+I built Lattice because the slide tools we all use make authors
+unproductive by design — a blank canvas, no guardrails, and no way to see
+what changed between two versions. Lattice is the answer I wanted to
+exist: a deck as a text file, with the discipline of a design system and
+taste built into the engine instead of left to chance. The full story —
+and what the name means — is at
+[lattice.style/story](https://lattice.style/story/).
 
 > **Documentation:** <https://slidewright.github.io/lattice/> — intro,
 > getting started, authoring and theming guides, and the interactive
@@ -101,13 +63,13 @@ finish — and it lives where it should, at [lattice.style](https://lattice.styl
   variant. Authors pick one in front matter (`theme: indaco`). Each
   supplies pale fills, saturated brand borders, and dark ink; saturated
   red is reserved for alarm states. WCAG AA verified across every
-  text-bearing surface. Four additional **colour-blind-safe** palettes
+  text-bearing surface. Four additional **color-blind-safe** palettes
   (`a11y-deuteranopia`, `a11y-protanopia`, `a11y-tritanopia`,
   `a11y-achromatopsia`) re-tune the categorical hues for the common
-  colour-vision deficiencies and are selectable in the picker. Preview them all in the
+  color-vision deficiencies and are selectable in the picker. Preview them all in the
   [component reference](https://slidewright.github.io/lattice/components/).
-- **53 components.** Title, divider, content, diagram, cards-grid, compare-prose,
-  quote, timeline-list, big-number, split-panel, verdict-grid, more.
+- **More than fifty components.** Title, divider, content, diagram, cards-grid,
+  compare-prose, quote, timeline-list, big-number, split-panel, verdict-grid, more.
   Each component has an authoring contract documented in [design/skill.md](design/skill.md).
 - **Mermaid integration.** All 25 renderable Mermaid diagram types are
   themed to match the deck. Per-diagram CSS overrides for the nine that
@@ -153,7 +115,7 @@ The package also exposes these named entry points:
 | `@slidewright/lattice/engine` | `lib/engine/index.js` | the **canonical render kernel** (`render()` + the transform pipeline) — for embedding the engine directly (HARD RULE #1: this is the source of truth all render paths share) |
 | `@slidewright/lattice/runtime` | `dist/lattice-runtime.js` | the preview / web-export runtime transforms |
 | `@slidewright/lattice/runtime/min` | `dist/lattice-runtime.min.js` | minified runtime — production / CDN drop-in (no inline source map) |
-| `@slidewright/lattice/css` | `dist/lattice.css` | the engine bundle — **palette-blind** (components only, no colour tokens) |
+| `@slidewright/lattice/css` | `dist/lattice.css` | the engine bundle — **palette-blind** (components only, no color tokens) |
 | `@slidewright/lattice/css/min` | `dist/lattice.min.css` | minified engine bundle (Marp `@theme`/`@size` directives preserved) |
 | `@slidewright/lattice/themes/<name>.css` | `themes/<name>.css` | one palette — a **Marp theme file**, not a standalone stylesheet |
 | `lattice` bin · `@slidewright/lattice` (`main`/`.`) | `dist/lattice-emulator.js` | the bundled CLI renderer / PDF exporter (`npx lattice deck.md out.pdf`) |
@@ -226,17 +188,18 @@ swipe between them, so the same deck reads on a phone without pinch-zooming:
 lattice deck.md deck.html --fluid
 ```
 
-## Render the example galleries
+## Render the gallery deck
 
 ```sh
-node lattice-emulator.js examples/gallery.md examples/gallery.pdf
-node lattice-emulator.js examples/gallery-mermaid.md examples/gallery-mermaid.pdf
+npx lattice test/integration/baseline-decks/gallery.md gallery.pdf
 ```
 
-The two galleries are committed to `examples/` as ground-truth fixtures
-for what the renderer produces. Re-rendering them after an engine or
-palette change should produce visually equivalent output; they're the
-regression check for the project.
+The gallery is committed to `test/integration/baseline-decks/` as the
+ground-truth fixture for what the renderer produces (the docs site serves
+the rendered PDF at
+[/gallery.pdf](https://slidewright.github.io/lattice/gallery.pdf)).
+Re-rendering it after an engine or palette change should produce visually
+equivalent output; it's the regression check for the project.
 
 For other delivery formats from the same source, just change the output
 extension — the deck's `theme:` front matter selects the palette:
@@ -334,16 +297,15 @@ Two tiers, both built on Node's `node:test`:
 
 ```sh
 npm test                  # unit tier — palette, var-map contract, source parse
-npm run test:integration  # integration tier — rebuilds both galleries through
+npm run test:integration  # integration tier — rebuilds the galleries through
                           # lattice-emulator and the runtime; cross-renderer parity
 npm run test:all          # both tiers
 ```
 
 The unit tier finishes in under 100 ms and is the inner loop. The
-integration tier takes ~30 s (mostly the gallery-mermaid rebuild) and
-is what CI runs before merge. Both top-level galleries
-(`examples/gallery.md` and `examples/gallery-mermaid.md`) are the
-authoritative test fixtures; their committed PDFs are the regression
+integration tier takes ~30 s and is what CI runs before merge. The
+top-level gallery (`test/integration/baseline-decks/gallery.md`) is the
+authoritative test fixture; its committed PDF is the regression
 baseline. Expected page counts are inlined in each test file; the 58
 per-component galleries derive their counts from the manifest itself
 via `expectedGallerySlideCount()`.

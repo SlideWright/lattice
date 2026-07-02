@@ -27,6 +27,40 @@ in patch versions.
 
 ### Added
 
+- **The gallery PDF is served on the docs site at `/gallery.pdf`.** The
+  committed baseline gallery is staged into the site at build time
+  (`docs/scripts/sync-portal.mjs`), and the landing hero and introduction
+  link it — "show me a finished deck" is now one click from the fold.
+
+### Changed
+
+- **Website repositioning — the landing, features, comparison, introduction,
+  getting-started, and README copy** now lead with deterministic design
+  instead of auto-generation language (hero: "Write the *words*. The deck is
+  already designed."), per
+  `engineering/decisions/2026-07-02-website-copy-positioning.md`. The landing
+  gains a three-step how-it-works band, a proof strip with the sourced
+  AI-fact-check stat, a "Bring your own model" section for agent workflows,
+  and a fourth next-steps card for browser-only visitors; field cards lead
+  with project leads and name consultants. Component/bucket/palette counts on
+  the landing and features pages are now generated from the manifests at
+  build time (they had drifted to three conflicting published numbers);
+  hand-written prose says "more than fifty." British spellings on marketing
+  surfaces moved to US English (HARD RULE #21; budget ratcheted 1364 → 1351).
+
+### Fixed
+
+- **Getting-started's first-run commands actually run.** They referenced
+  `examples/gallery.md` / `examples/gallery-mermaid.md`, which don't exist —
+  a newcomer's first command exited with `error: source markdown not found`,
+  and the introduction's "See it first" link 404'd. Commands now use the
+  bundled `lattice` bin against the real fixture path, the dead
+  gallery-mermaid line is gone, and the introduction links the served
+  `/gallery.pdf`. README's matching stale paths and its "committed to
+  `examples/`" claim are fixed too.
+
+### Added
+
 - **Restrain an overpowering finish — the backdrop layer + a `backdrop.strength` dial (#669).**
   A finish now composites onto a dedicated `.backdrop` wrapper behind content (injected across
   all three render paths), so it can be tuned as one layer. First control: deck-wide
