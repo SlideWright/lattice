@@ -512,11 +512,11 @@ The pilot kept both — the feed for the two teams that mute nothing, the digest
 <!-- _header: "Lattice · Layout Gallery" -->
 <!-- _footer: "Header stays uppercase · footer renders as written" -->
 
-`Header And Footer`
+`Offsite · Housekeeping`
 
-## The chrome carries the labels, so the slides can carry the story.
+## The margins hold the bookkeeping, so the slides can hold the argument.
 
-Deck-wide `header:` and `footer:` put every slide's metadata in the margins — the layout name lives in the footer, and the header is capitalized regardless of how strongly you feel about it. The body stays free for content, a principle this deck enforces.
+Deck name up top, provenance below, set once in front matter — the header arrives uppercase regardless of how strongly you feel about it. Everything between the margins is content, a principle this deck now enforces.
 
 ---
 
@@ -586,7 +586,7 @@ for signal in calibrator.intake.unscored():
 
 ## The strategy offsite opened with a mandate and a lake view.
 
-Think deeper, plan longer, decide once — the mandate fit on a napkin, so the venue got two days. The layout resolves the composition itself: a moderate-aspect photo lands as a floated card beside the argument, no modifier, no crop.
+Think deeper, plan longer, decide once — the mandate fit on a napkin, so the venue got two days. The lake was booked for inspiration and used mostly for phone calls.
 
 ![bg](assets/sample-photo-wide.jpg)
 
@@ -599,7 +599,7 @@ Think deeper, plan longer, decide once — the mandate fit on a napkin, so the v
 
 ## The afternoon session mirrored the morning session, exactly.
 
-Same lake, same mandate, opposite wall. `mirror` flips the card — image left, text right — and the composition is otherwise unchanged, which was also true of the discussion.
+Same lake, same mandate, opposite wall — the afternoon was the morning, flipped, which was also true of the discussion.
 
 ![bg left](assets/sample-photo-wide.jpg)
 
@@ -612,7 +612,7 @@ Same lake, same mandate, opposite wall. `mirror` flips the card — image left, 
 
 ## The whiteboard was photographed before anyone could erase it.
 
-`gallery` contains the whole asset at native aspect on a matte with a placard — for artifacts where cropping would destroy meaning. The whiteboard held the four framework parts and one org chart nobody claims to have drawn.
+Shown whole, on a matte, with a placard — evidence handling for a whiteboard that held the four framework parts and one org chart nobody claims to have drawn.
 
 ![bg](assets/sample-photo-square.jpg)
 
@@ -624,7 +624,7 @@ Same lake, same mandate, opposite wall. `mirror` flips the card — image left, 
 
 ## The venue cost roughly what the calibration tooling would have.
 
-A panorama goes full-bleed — the message rides a solid card, so it stays legible over any photo, including this one of the grounds we will reference in three consecutive planning cycles.
+The grounds, edge to edge — we will reference this view in three consecutive planning cycles and visit it in none. The card keeps the arithmetic legible over the scenery.
 
 ![bg](assets/sample-photo-pano.jpg)
 
@@ -637,7 +637,7 @@ A panorama goes full-bleed — the message rides a solid card, so it stays legib
 
 ## The trust climb went vertical; so does the layout.
 
-An extreme aspect would waste a card, so a tall photo shows whole in a full-height column with the argument alongside. The climb produced two insights and one signed waiver.
+The climb produced two insights and one signed waiver. The photo runs taller than the argument beside it, which the facilitator called a metaphor.
 
 ![bg](assets/sample-photo-tall.jpg)
 
@@ -649,7 +649,7 @@ An extreme aspect would waste a card, so a tall photo shows whole in a full-heig
 
 ## Think deeper. Plan longer. Return unchanged.
 
-`statement` rides the title on the photo over a scrim — the editorial moment reserved for a line the room will repeat. This one made the T-shirts before it made the plan.
+The line the room will repeat, set over the view that produced it. This one made the T-shirts before it made the plan.
 
 ![bg](assets/sample-photo-wide.jpg)
 
@@ -660,11 +660,11 @@ An extreme aspect would waste a card, so a tall photo shows whole in a full-heig
 <!-- _paginate: false -->
 <!-- _footer: "Dark variant — section break · divider dark" -->
 
-`Dark Variant · Any Layout Class`
+`Offsite · Nightfall`
 
 ## Night falls on the offsite; the deck keeps working.
 
-Add `dark` alongside any class — the palette remaps automatically, which is more than can be said for the agenda
+The palette followed us into the evening; the agenda did not
 
 ---
 
@@ -675,7 +675,7 @@ Add `dark` alongside any class — the palette remaps automatically, which is mo
 
 ## The evening session covered what the daytime one avoided.
 
-Ownership of the weights, the CSV retirement date, and who carries the pager — worked item by item on the dark canvas, every color still `var()`-mapped, nobody able to see anyone check the time. The spectrum bar is suppressed after dark. It returns at sunrise.
+Ownership of the weights, the CSV retirement date, and who carries the pager — worked item by item on the dark canvas, where nobody can see anyone check the time. The spectrum bar is suppressed after dark. It returns at sunrise.
 
 ---
 
@@ -685,7 +685,7 @@ Ownership of the weights, the CSV retirement date, and who carries the pager —
 
 ## By dinner, the mandate had survived its first sunset.
 
-The mandate, projected after dinner, stayed legible — card, scrim, and matte all track the theme after dark, and the photo carries the rest.
+The mandate, projected after dinner, stayed legible — the room got darker and the words did not.
 
 ![bg](assets/sample-photo-pano.jpg)
 
@@ -719,7 +719,7 @@ The mandate, projected after dinner, stayed legible — card, scrim, and matte a
 <!-- _class: list-steps phase -->
 <!-- _footer: "Modifier — list-steps phase · list-steps phase" -->
 
-`Modifier · list-steps phase`
+`Rollout · Three Phases`
 
 ## Three phases stand between the decision and the habit.
 
@@ -735,7 +735,7 @@ The mandate, projected after dinner, stayed legible — card, scrim, and matte a
 <!-- _class: list-steps milestone lettered -->
 <!-- _footer: "Modifier — list-steps milestone lettered · list-steps milestone lettered" -->
 
-`Modifier · list-steps milestone lettered`
+`Rollout · Milestones`
 
 ## Three milestones, lettered, before the org believes it.
 
@@ -751,7 +751,7 @@ The mandate, projected after dinner, stayed legible — card, scrim, and matte a
 <!-- _class: list-steps vertical compact -->
 <!-- _footer: "Modifier — list-steps vertical · list-steps vertical compact" -->
 
-`Modifier · list-steps vertical`
+`Framework · The Loop`
 
 ## Sense, score, decide — the loop in three verbs.
 
@@ -767,7 +767,7 @@ The mandate, projected after dinner, stayed legible — card, scrim, and matte a
 <!-- _class: compare-prose chosen -->
 <!-- _footer: "Modifier — compare-prose chosen · compare-prose chosen" -->
 
-`Modifier · compare-prose chosen`
+`Decision · Close Time`
 
 ## The re-litigation lost to the weights on time alone.
 
@@ -783,7 +783,7 @@ The accent edge marks the winner — the same contract every recommended card in
 <!-- _class: compare-prose decision -->
 <!-- _footer: "Modifier — compare-prose decision · compare-prose decision" -->
 
-`Modifier · compare-prose decision`
+`Decision · Build vs Buy`
 
 ## Buy was considered, struck through, and kept for the record.
 
@@ -799,7 +799,7 @@ The struck card stays on the slide — the framework logs its rejected options t
 <!-- _class: compare-prose vertical -->
 <!-- _footer: "Modifier — compare-prose vertical · compare-prose vertical" -->
 
-`Modifier · compare-prose vertical`
+`Operations · Recalibration`
 
 ## Recalibration went from a war room to a version bump.
 
@@ -813,7 +813,7 @@ The struck card stays on the slide — the framework logs its rejected options t
 <!-- _class: cards-grid three -->
 <!-- _footer: "Modifier — cards-grid three · cards-grid three" -->
 
-`Modifier · cards-grid three`
+`Framework · Vocabulary`
 
 ## Three nouns carry the whole system.
 
@@ -829,7 +829,7 @@ The struck card stays on the slide — the framework logs its rejected options t
 <!-- _class: cards-grid four compact -->
 <!-- _footer: "Modifier — cards-grid four · cards-grid four compact" -->
 
-`Modifier · cards-grid four`
+`Framework · Four Verbs`
 
 ## The loop, in four verbs, at meeting pace.
 
@@ -847,7 +847,7 @@ The struck card stays on the slide — the framework logs its rejected options t
 <!-- _class: cards-stack horizontal -->
 <!-- _footer: "Modifier — cards-stack horizontal · cards-stack horizontal" -->
 
-`Modifier · cards-stack horizontal`
+`Board Brief · One Row`
 
 ## Claim, evidence, implication — the board reads left to right.
 
@@ -911,11 +911,11 @@ With `mirror`, the chosen card lands first in the scan path — the order of arg
 <!-- _header: '' -->
 <!-- _footer: "Modifier — divider numbered · divider numbered" -->
 
-`Modifier · divider numbered`
+`Section Breaks · Self-Numbering`
 
 ## The sections number themselves now.
 
-The CSS counter walks the whole deck once and increments on every `divider.numbered` slide. Authors do not number sections by hand — the layout does it, and unlike authors it can count.
+Somebody renumbered this deck at one in the morning, once. The sections number themselves now — and unlike authors, they can count.
 
 ---
 
@@ -923,11 +923,11 @@ The CSS counter walks the whole deck once and increments on every `divider.numbe
 <!-- _header: '' -->
 <!-- _footer: "Modifier — divider light numbered · divider light numbered" -->
 
-`Modifier · divider light numbered`
+`Section Breaks · Two Ledgers`
 
 ## Every series keeps its own count.
 
-The divider light counter is independent of the dark-divider counter, so a mid-deck light divider stamps `01` even when the dark dividers are already at `04`. Each series keeps its own score, like the teams.
+Light bookends and dark bookends keep separate scores, like the teams — a mid-deck light break opens at 01 while the dark ones already read 04.
 
 ---
 
@@ -936,7 +936,7 @@ The divider light counter is independent of the dark-divider counter, so a mid-d
 <!-- _footer: "Modifier — closing numbered · closing numbered" -->
 <!-- _paginate: false -->
 
-`Closing · numbered`
+`Signal To Strategy · Part Three`
 
 ## Each part earns its own ending.
 
@@ -1017,7 +1017,7 @@ The architecture change is the calibration loop — logged, weighted, time-bound
 | Decision Log  | Append-only schema  | Outcome auto-pairing | Examiner export       |
 | Adoption      | One pilot team      |                      | Org-wide enablement   |
 
-The first column is sticky workstream label; phase columns carry numbered chrome; empty cells render as a thin dash — see Adoption, Phase 02.
+Adoption ships nothing in Phase 02 — the dash is load-bearing, and nobody has claimed it.
 
 ---
 
@@ -1088,7 +1088,7 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 <!-- _class: cards-grid compact -->
 <!-- _footer: "Modifier — compact · cards-grid compact" -->
 
-`Modifier · compact`
+`Agenda · Item Five`
 
 ## The agenda grew; the spacing gave.
 
@@ -1106,11 +1106,11 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 <!-- _class: content loose -->
 <!-- _footer: "Modifier — loose · content loose" -->
 
-`Modifier · loose`
+`Values · Restraint`
 
 ## One point, given the room it asked for.
 
-The spacing scale grows ~25 % rather than shrinks. Reach for `loose` when a slide carries one editorial point and should feel deliberately quiet — values pages, principles, closing lines. Used here, once, as restraint. The discipline mirrors `compact`: type ramp, chrome, and layout hold still; only the rhythm between elements moves.
+One editorial point, given room on purpose — values pages, principles, closing lines. The type holds still and the silence around it grows a quarter. Used here, once, as restraint.
 
 > Density is not the same as importance. `loose` says: this page deserves room — not because it carries more, but because it carries one thing well.
 
@@ -1119,27 +1119,27 @@ The spacing scale grows ~25 % rather than shrinks. Reach for `loose` when a slid
 <!-- _class: content with-period -->
 <!-- _footer: "Modifier — with-period · content with-period" -->
 
-`Modifier · with-period`
+`Offsite · Minutes`
 
 ## The offsite ended and the punctuation arrived on schedule
 
-Set `class: with-period` once and headings close themselves — this one arrived bare and shipped with a period. Mixed slides stay safe, and the style-guide argument ends here.
+The minutes closed themselves — this heading arrived bare and shipped with a period, courtesy of one line of front matter. The style-guide argument ends here, punctuated.
 
-The mirror modifier is `no-period`, which strips trailing periods instead. Both are deck-wide opt-ins via the global `class:` front-matter key; per-slide override with `<!-- _class: with-period -->` works too.
+The evening edit runs the other direction on the next page — periods removed instead of supplied. Either way, nobody proofreads punctuation at midnight again.
 
 ---
 
 <!-- _class: content no-period -->
 <!-- _footer: "Modifier — no-period · content no-period" -->
 
-`Modifier · no-period`
+`Offsite · After Dinner`
 
 <!-- markdownlint-disable-next-line MD026 -->
 ## The mandate lost its full stop somewhere after dinner.
 
-Typed with a period, shipped without — `class: no-period` strips the trailing `.` so review threads about punctuation end, one comment at a time, at zero.
+Typed with a period, shipped without — the evening edit nobody had to make. Review threads about punctuation now end at zero comments.
 
-Only a literal trailing `.` is removed — `!`, `?`, and `…` pass through untouched, as does the mandate.
+Exclamations, questions, and ellipses pass through untouched — as does the mandate.
 
 ---
 
@@ -1148,11 +1148,11 @@ Only a literal trailing `.` is removed — `!`, `?`, and `…` pass through unto
 <!-- _paginate: false -->
 <!-- _footer: "Treatment Library — section break · divider" -->
 
-`Treatment Library · Any Layout Class`
+`The Annexes · Approved Decoration`
 
 ## The annexes get decoration — rationed, tokenized, approved
 
-Add a tint or mark class alongside any layout class — gradient wash or SVG mark, light canvas or dark, single pattern or layered pair. Decoration, at last, with governance.
+Decoration, at last, with governance — a wash or a mark from the approved set, in the palette, behind the work, never on it.
 
 ---
 
@@ -1163,9 +1163,9 @@ Add a tint or mark class alongside any layout class — gradient wash or SVG mar
 
 ## A corner of warmth, held to 12% and away from the content
 
-`tint-corner at-tl` places an elliptical accent at the top-left — 12% opacity at the corner, transparent before mid-slide. The four `at-*` placements share the same weight and fade profile; only the anchor differs.
+A little warmth in the corner, gone before it reaches the text — the annex pages get atmosphere at twelve percent, no more.
 
-All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switching palette or adding the `dark` modifier remaps the accent automatically — no per-pattern overrides, no committee.
+The warmth is the brand's own accent, borrowed at low volume — it follows the palette everywhere, no per-page approvals, no committee.
 
 ---
 
@@ -1176,7 +1176,7 @@ All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switchin
 
 ## Rings in the corner, orbiting nothing in particular
 
-`mark-orbit` places concentric rings and satellite dots in the bottom-right corner. The shapes render via `::before` + `mask-image`: the SVG defines the alpha channel (white = opaque, transparent = hidden) and the paint colour is `color-mix(in srgb, var(--accent) 28%, transparent)` — resolved from the theme at render time. Same class, light canvas or dark — always on-brand. The strategy team, seeing the orbits, related.
+Concentric rings and satellite dots, bottom right, in the brand's accent at a respectful volume — the same marks on any canvas, light or dark. The strategy team, seeing orbits around nothing, related.
 
 ---
 
@@ -1187,12 +1187,12 @@ All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switchin
 
 ## Two washes share one slide without a turf war
 
-Every tint class (and `mark-seeds`) writes to either `--_bg-radial` or `--_bg-linear`. A compositor rule assembles both slots into one `background-image`. Stack one class from each column and both render:
+Two washes on one slide, each in its own lane, seated together without a meeting:
 
-- `tint-vignette` — radial slot — accent-tinted perimeter, open center
-- `tint-edge at-right` — linear slot — wash bleeding in from the right edge
+- A tinted perimeter with an open center — the room, lit from the walls
+- A wash bleeding in from the right edge — late light, also approved
 
-The SVG mark patterns follow the same rule: their atmospheric haze writes to its slot, and the `::before` shapes compose on top independently. Two backgrounds, one slide, zero escalations.
+The marks bring their own haze and sit on top of either wash. Two backgrounds, one slide, zero escalations.
 
 ---
 
@@ -1201,9 +1201,9 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 <!-- _paginate: false -->
 <!-- _footer: "Chart — gantt + kanban · divider" -->
 
-`Chart Layouts · gantt + kanban`
+`The Plan · Two Views`
 
-## Timeline bars and board columns, from the same two-level list the plan was hiding in
+## The plan, twice — as bars on a timeline and cards on a board
 
 ---
 
@@ -1257,9 +1257,9 @@ The SVG mark patterns follow the same rule: their atmospheric haze writes to its
 <!-- _paginate: false -->
 <!-- _footer: "Chart — evidence suite · divider" -->
 
-`Chart Layouts · the evidence suite`
+`The Evidence · Ten Exhibits`
 
-## Ten chart layouts, drawn from plain lists — the evidence, as the board will see it
+## Ten exhibits, drawn from plain lists — the evidence, as the board will see it
 
 ---
 
@@ -1460,9 +1460,9 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it, opti
 <!-- _paginate: false -->
 <!-- _footer: "Split Layouts · split-panel + split-panel metric + split-panel steps + split-compare + split-panel pullquote" -->
 
-`Split Layouts · five variants`
+`The Review · Five Panels`
 
-## A structured left panel drives five layouts; the argument rides shotgun
+## One brief, staged five ways; the argument rides shotgun
 
 ---
 
@@ -1565,7 +1565,7 @@ Building is settled. The remaining question is which layers deserve our engineer
 <!-- _paginate: false -->
 <!-- _footer: "Legal Layouts · statute-stack + authority-chain + obligation-matrix + citation-card + regulatory-update + redline" -->
 
-`Legal Layouts · six components`
+`The Compliance Review · Six Exhibits`
 
 ## Whichever platform wins, the data obligations do not move
 
@@ -1682,7 +1682,7 @@ Filled = applies, half = partial, empty = exempt — a rare grid where empty is 
 <!-- _paginate: false -->
 <!-- _footer: "Operating Layouts · math + inventory + checklist + pricing + q-and-a + logo-wall" -->
 
-`Operating Layouts · six components`
+`The Operating Plan · Six Exhibits`
 
 ## The plan made operational — model, roster, readiness, and terms
 
@@ -1811,7 +1811,7 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 <!-- _paginate: false -->
 <!-- _footer: "Connect Layouts · contact + wifi" -->
 
-`Connect Layouts · two components`
+`Closing Logistics · Two Codes`
 
 ## Two codes close the room out — a person and a network, one of them always on
 
@@ -1851,13 +1851,13 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 <!-- _paginate: false -->
 <!-- _footer: "Modifier — accent · closing accent" -->
 
-`Modifier · accent`
+`Signal To Strategy · The End`
 
 ## The deck ends on one color, chosen on purpose.
 
-The default top border is a spectrum gradient — a signal that the page belongs to a wider deck. The `accent` modifier swaps that stripe for one solid color and tints the heading. Use it when one slide carries a section's editorial weight and the chrome should say so.
+Every other page wears the full spectrum on its top edge — the mark of belonging to a wider deck. The last page wears one color, because one thing got decided.
 
-It composes with `dark`: the dark canvas suppresses the spectrum stripe, so `accent.dark` restores a solid one in its place. Slide 115, for the record: decision logged, retrospective booked, attendance aspirational.
+Slide 115, for the record: decision logged, retrospective booked, attendance aspirational.
 
 <!-- Import Mermaid and the Lattice runtime theme for VS Code / web preview.
      The build script (lattice-emulator.js) pre-renders Mermaid to SVG at build time
