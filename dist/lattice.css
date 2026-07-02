@@ -15581,10 +15581,25 @@ section.treatment-none {
  */
 
 /* ── COMPOSITOR ───────────────────────────────────────────────────────
+ * The finish is composited onto a dedicated `.backdrop` wrapper — the FIRST
+ * child of every finish section, injected by all three render paths
+ * (applyBackdropToHtml + the runtime/emulator DOM mirrors). Hosting the whole
+ * finish on ONE layer lets a single `opacity` (backdrop STRENGTH) and the
+ * `.backdrop-mask` overlay (clearance / spotlight) address wash+texture+mark+edge
+ * together — and moves the mark/edge off the section pseudos, freeing
+ * `section::after` for the paginator. Presets still set `--fin-*` on the SECTION;
+ * `.backdrop` inherits them, so the preset bodies + the opaque flip are unchanged.
  * ONE rule assembles texture + wash into background-image (texture first =
  * visually on top of the wash) and lines up the auxiliary background props.
- * An unset slot defaults to a no-op so a preset only declares what it uses. */
-section.finish {
+ * An unset slot defaults to a no-op so a preset only declares what it uses.
+ * (engineering/decisions/2026-07-01-finish-restraint-controls.md, slice 1.) */
+section.finish > .backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* STRENGTH — one uniform dial over the whole finish (default 1 = unchanged). */
+  opacity: var(--backdrop-strength, 1);
   background-image: var(--fin-texture, none), var(--fin-wash, none);
   background-size: var(--fin-size, auto);
   background-position: var(--fin-position, top left);
@@ -15612,7 +15627,7 @@ section.finish:not(.overflow) {
 /* z3 — the MARK pseudo. A full-inset layer behind content; the preset fills
  * --fin-mark (a gradient) and/or --fin-mark-text (the ghost numeral glyph).
  * Always under content (z0); mirrors base.treatments.css mark ordering. */
-section.finish::before {
+section.finish > .backdrop::before {
   content: var(--fin-mark-text, "");
   position: absolute;
   inset: 0;
@@ -15648,7 +15663,7 @@ section.finish::before {
  * preset fills --fin-edge (a gradient). Above the mark, below content.
  * (No box-shadow vignette — an inset shadow's rgba alpha grays in the PDF the
  * same way; an opaque radial-edge gradient is the PDF-safe vignette.) */
-section.finish::after {
+section.finish > .backdrop::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -15660,8 +15675,21 @@ section.finish::after {
   background-size: var(--fin-edge-size, auto);
 }
 
-/* Keep slide content above every finish layer (the pseudos are z0/z1). */
-section.finish > * {
+/* The MASK overlay — topmost inside `.backdrop`, ABOVE the mark (z0) + edge (z1)
+ * pseudos, so the clearance / spotlight controls cover the WHOLE finish (no
+ * ghost-mark leak). Paints `var(--bg)` where the finish should be hidden; default
+ * `none` = no mask. Slices 3–4 fill `--backdrop-mask` (rich + `-opaque` hard-edge). */
+section.finish > .backdrop > .backdrop-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--backdrop-mask, none);
+}
+
+/* Keep slide content above the backdrop layer (the backdrop is z0, its internal
+ * pseudos/mask are contained in its stacking context). Excludes `.backdrop`
+ * itself, which must stay behind at z0. */
+section.finish > *:not(.backdrop) {
   position: relative;
   z-index: 2;
 }
