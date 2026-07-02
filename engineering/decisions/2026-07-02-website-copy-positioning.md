@@ -17,6 +17,16 @@ footer. Rendered landing screenshotted at 1440 / 820 / 390 via
 guarantee this site gets no traction?"), then per-surface from→to edits. An
 independent prose checker and an adversarial reviewer were run on this doc's
 proposed copy; their accepted findings are folded in (§9).
+**Grounding docs consulted:** `design/concepts.md` (vocabulary — bears on
+§7.2), `design/editorial.md` (house prose rules; the proposed copy conforms),
+`engineering/decisions/2026-06-14-competitive-analysis.md` (the comparison
+page's source of truth — its split-layers thesis and honesty guardrail are
+exactly what §5.5 promotes to the landing, and its "don't claim users demand
+git-diffable decks" rule is respected), `engineering/marp-independence.md`
+(grounds the §5.10 "Marp-based" finding), `engineering/workflow.md`
+(§Merging), and the decisions index (no prior copy/positioning decision this
+review could contradict; `2026-06-09-shadcn-migration.md` and
+`2026-06-18-unified-site-header.md` govern implementation, not copy).
 
 ---
 
@@ -403,7 +413,11 @@ on-ramp; math still gets its card.
   into polished, repeatable, version-controlled slide decks.` Why: the
   "What is Lattice?" page's search-visible description calls it "Marp-based"
   while getting-started and /comparison stress that Marp was dropped at
-  v1.0.0 — a first-touch contradiction on the exact point the brand leans on.
+  v1.0.0 — a first-touch contradiction on the exact point the brand leans
+  on. `engineering/marp-independence.md` is unambiguous ("We never use Marp
+  for anything"; the render path is retired). The same stale phrase also
+  opens CLAUDE.md ("Lattice is a Marp-based slide-deck engine…") — internal,
+  off this review's path, logged here for the docs-auditor per HARD RULE #18.
 - Everything else on /comparison: **keep the substance.** It is the best
   page on the site. The #21 spelling fixes still apply there too
   ("colour-blind-safe," "never name a colour" around line 483) — "keep"
@@ -493,7 +507,13 @@ while the features-page footer includes both — one footer nav, shared.
    features page says both. Pick per-surface and hold it — including within
    the landing itself: the next-steps card titled "Component reference"
    becomes "Browse the layouts" (the `/components/` URL can stay), or the
-   landing still carries both words on one page.
+   landing still carries both words on one page. One caveat from
+   `design/concepts.md`: internally, **component** is the canonical term of
+   art, and "layout" already names something else — the Form/Frame axis
+   (how a slide is composed). So "layout" is strictly a visitor-facing
+   simplification for marketing surfaces; reference docs, manifests, and
+   anything the concept map touches keep "component," and nothing in
+   `design/` adopts the marketing word.
 3. **Counts policy:** an exact component/palette count may appear only where
    it is generated from the manifests at build time (the landing already
    loads `loadAll()` — use `manifests.length`). Hand-written prose says
