@@ -47,6 +47,20 @@ in patch versions.
   budget cap. Injection path + guardrails:
   `engineering/decisions/2026-07-02-studio-e2e-scenarios.md`.
 
+### Changed
+
+- **The live filmstrip preview now scales slides with CSS `zoom` instead of
+  `transform: scale()`.** `zoom` is a real geometry scale, so hit-testing and
+  touch land at the displayed coordinates — the first step toward retiring the
+  iOS interaction tax (transform-scaled iframes drop iOS touch, which forced a
+  parent-hosted capture surface + `÷scale` coordinate math). Layout is unchanged:
+  `container-type: size` + `cqi`/`cqh` resolve identically under `zoom` (verified
+  by a zoom-vs-transform pixel diff — layout-identical, differing only on text
+  anti-alias). Prototype scope is the shared filmstrip (Playground + Drawing
+  Board); the other preview surfaces + the coordinate-math cleanup follow once
+  on-device iOS confirms. See
+  `engineering/decisions/2026-07-02-preview-scale-zoom.md`.
+
 ### Fixed
 
 - **Tapping an external link in the live preview no longer blanks it on iOS.** A

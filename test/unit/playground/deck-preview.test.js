@@ -31,8 +31,11 @@ describe('buildSrcdoc', () => {
 		// Anti-flash gate + the box pin that keeps container-type:size from collapsing.
 		assert.match(doc, /\.lattice\{visibility:hidden;\}/);
 		assert.match(doc, /\.lattice>section\{width:1280px;height:720px\}/);
-		// FIT agent: scales, reveals, and exposes the patch hook.
+		// FIT agent: scales via CSS zoom (real geometry, not transform:scale — so
+		// touch/hit-testing map at displayed coords), reveals, exposes the patch hook.
 		assert.match(doc, /window\.__latticeFit=fit/);
+		assert.match(doc, /s\.style\.zoom=sc/);
+		assert.doesNotMatch(doc, /transform="scale/);
 		assert.match(doc, /lattice\.style\.visibility="visible"/);
 		// Engine wiring + the deck's geometry globals.
 		assert.match(doc, /window\.__SLIDE_W=1280;window\.__SLIDE_H=720;/);
@@ -51,18 +54,22 @@ describe('buildSrcdoc', () => {
 		assert.match(doc, /addEventListener\("click",function\(e\)\{[\s\S]*?\},true\)/);
 	});
 
-	test('clamps the filmstrip tail by default and can be turned off', async () => {
+	test('clamp pins the filmstrip to its exact scaled height by default and can be turned off', async () => {
 		const { buildSrcdoc } = await load();
-		assert.match(buildSrcdoc({ ...BASE }), /lattice\.style\.overflow="clip"/);
-		assert.doesNotMatch(buildSrcdoc({ ...BASE, clamp: false }), /lattice\.style\.overflow="clip"/);
+		// Under zoom the height pin is a plain height set — no overflow:clip dead-space
+		// fix (that was a transform:scale artifact; zoomed boxes have their real size).
+		assert.match(buildSrcdoc({ ...BASE }), /lattice\.style\.height=\(secs\.length\*SH\*sc/);
+		assert.doesNotMatch(buildSrcdoc({ ...BASE }), /overflow="clip"/);
+		assert.doesNotMatch(buildSrcdoc({ ...BASE, clamp: false }), /lattice\.style\.height=\(secs\.length\*SH\*sc/);
 	});
 
 	test('the gap rides into BOTH the FIT margin and the SYNC slot pitch', async () => {
 		const { buildSrcdoc } = await load();
 		const doc = buildSrcdoc({ ...BASE, gap: 22, sync: true });
-		// FIT declares GAP once (marginBottom = SH*sc - SH + GAP).
+		// FIT declares GAP once; under zoom the section box is already scaled, so the
+		// inter-slide margin is a plain GAP (no negative-margin compensation).
 		assert.match(doc, /GAP=22;/);
-		assert.match(doc, /marginBottom=\(SH\*sc-SH\+GAP\)/);
+		assert.match(doc, /marginBottom=GAP\+"px"/);
 		// SYNC: slot pitch = SH*(w/SW) + GAP — must agree with FIT or the scroll drifts.
 		assert.match(doc, /SH\*\(w\/SW\)\+22/);
 	});
