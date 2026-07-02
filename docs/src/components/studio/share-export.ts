@@ -45,7 +45,7 @@ async function ensureReady(options: SingleSlideOptions): Promise<PG> {
 	return PG;
 }
 
-/** An in-memory theme (a saved Fabricate library theme) — registered, not fetched. */
+/** An in-memory theme (a saved Foundry library theme) — registered, not fetched. */
 export type ExtraTheme = { name: string; css: string };
 
 /**

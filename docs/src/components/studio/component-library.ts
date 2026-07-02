@@ -1,7 +1,7 @@
 // The Studio component library — a thin wrapper over the SHARED Workbench asset
 // store (asset-store.js, IndexedDB `lattice-workbench`) and the canonical
 // `componentAsset` record shape (layout-core). REUSE, DON'T REINVENT (HARD RULE
-// #15): a local component authored + saved in the Studio's Fabricate Layout tab
+// #15): a local component authored + saved in the Studio's Foundry Layout tab
 // lands in the SAME library the Workbench's Layout Studio saves into. The
 // persistence + record shapes are the trusted cores; this module only maps to
 // the Studio's view model and degrades gracefully when IndexedDB is unavailable.

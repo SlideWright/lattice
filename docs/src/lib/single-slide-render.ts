@@ -130,7 +130,7 @@ export function createSingleSlideRenderer(opts: SingleSlideOptions) {
 			bg +
 			'}' +
 			css +
-			// Author-supplied CSS appended AFTER the theme — the Fabricate Layout
+			// Author-supplied CSS appended AFTER the theme — the Foundry Layout
 			// Studio's live local-component styles, the same order the Workbench
 			// previews them (out.css + the component CSS).
 			(extraCss ? '\n/* studio-extra-css */\n' + extraCss : '') +
@@ -170,16 +170,16 @@ export function createSingleSlideRenderer(opts: SingleSlideOptions) {
 		markdown: string,
 		mermaid: boolean,
 		paletteOverride?: string,
-		// Opt-in: render against a RAW in-memory theme (e.g. Fabricate's live
+		// Opt-in: render against a RAW in-memory theme (e.g. Foundry's live
 		// derived theme) instead of fetching `<themeBase><name>.css`. Registered
 		// once per distinct name. Existing callers omit it → unchanged behaviour.
 		extra?: { name: string; css: string },
 		// Opt-in: render in a SPECIFIC light/dark mode instead of the global
 		// `<html data-mode>` — lets a surface audition a theme in both modes (the
-		// Fabricate specimen toggle) without flipping the whole page. Existing
+		// Foundry specimen toggle) without flipping the whole page. Existing
 		// callers omit it → mode still follows data-mode.
 		modeOverride?: 'light' | 'dark',
-		// Opt-in: raw author CSS appended after the theme (Fabricate's Layout Studio
+		// Opt-in: raw author CSS appended after the theme (Foundry's Layout Studio
 		// previews a live local component's styles). Existing callers omit it.
 		extraCss?: string,
 	): Promise<RenderStatus> {

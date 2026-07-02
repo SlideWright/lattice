@@ -138,11 +138,11 @@ describe('Studio — every top-bar control responds', () => {
 		expect(await screen.findByText(/UNIQUE-MARKER-XYZ/)).toBeInTheDocument();
 	});
 
-	it('⌘K runs a command (Fabricate) and a theme', async () => {
+	it('⌘K runs a command (Foundry) and a theme', async () => {
 		const user = setup();
 		await user.keyboard('{Meta>}k{/Meta}');
 		const dialog = await screen.findByRole('dialog', { name: /Studio commands/i });
-		await user.click(within(dialog).getByText(/Fabricate/));
+		await user.click(within(dialog).getByText(/Foundry/));
 		expect(await screen.findByPlaceholderText(/Describe a look/i)).toBeInTheDocument();
 		// Re-open and pick a theme command.
 		await user.keyboard('{Meta>}k{/Meta}');
@@ -195,11 +195,11 @@ describe('Studio — Architect + editor controls respond', () => {
 	});
 });
 
-describe('Studio — Fabricate + Present dock respond', () => {
-	it('Fabricate switches Theme/Component tabs and exports', async () => {
+describe('Studio — Foundry + Present dock respond', () => {
+	it('Foundry switches Theme/Component tabs and exports', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
-		await user.click(await screen.findByText('Fabricate'));
+		await user.click(await screen.findByText('Foundry'));
 		expect(await screen.findByPlaceholderText(/Describe a look/i)).toBeInTheDocument();
 		// The shared header Export (theme tab) confirms via toast.
 		await user.click(screen.getByRole('button', { name: /Export/ }));
@@ -214,7 +214,7 @@ describe('Studio — Fabricate + Present dock respond', () => {
 	it('Component tab: the shared header Save + Export ride the real gate', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
-		await user.click(await screen.findByText('Fabricate'));
+		await user.click(await screen.findByText('Foundry'));
 		await user.click(screen.getByRole('button', { name: /Component/ }));
 		// The starter is gate-clean → the SAME header Save the theme tab uses is enabled.
 		expect(await screen.findByText(/Gate — all clear/)).toBeInTheDocument();
@@ -228,7 +228,7 @@ describe('Studio — Fabricate + Present dock respond', () => {
 	it('Component tab: the Manifest JSON view two-way syncs and guards invalid JSON', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
-		await user.click(await screen.findByText('Fabricate'));
+		await user.click(await screen.findByText('Foundry'));
 		await user.click(screen.getByRole('button', { name: /Component/ }));
 		// Switch the manifest panel to the raw-JSON view.
 		await user.click(screen.getByRole('button', { name: 'JSON' }));
@@ -243,10 +243,10 @@ describe('Studio — Fabricate + Present dock respond', () => {
 		expect((screen.getByLabelText('Bucket') as HTMLSelectElement).value).toBe('comparison');
 	});
 
-	it('Fabricate derives a REAL token contract + WCAG audit from the engine', async () => {
+	it('Foundry derives a REAL token contract + WCAG audit from the engine', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
-		await user.click(await screen.findByText('Fabricate'));
+		await user.click(await screen.findByText('Foundry'));
 		// The token tree lists the real derived contract (12 roles) + the ten
 		// essentials (the three ink roles are unique to the essentials group) —
 		// proof the theme engine ran, not a mock.

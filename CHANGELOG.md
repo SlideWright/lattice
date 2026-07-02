@@ -91,6 +91,17 @@ in patch versions.
 
 ### Changed
 
+- **The Studio's theme / component / finish authoring view is now called
+  _Foundry_ (was _Fabricate_).** The launcher item, command-palette entry, and
+  loading state read "Foundry"; the `view` state and the `Foundry` component were
+  renamed to match. _Fabricate_ was retired for two reasons: it sat in the wrong
+  family — a view, not one of the Architect's roles — and _fabricate_ also means
+  _falsify_, the exact word the Architect uses when it refuses to invent an answer,
+  so naming the make-your-visual-system surface after it was a self-collision. The
+  weave/lattice metaphor was unavailable (it's owned by the `finish:` system —
+  `loom`, `lattice weave`, `mesh`), so the name honors the SlideWright maker identity
+  instead: a _type foundry_ is where design assets are cast. See
+  `engineering/decisions/2026-07-02-foundry-rename.md`.
 - **Website repositioning — the landing, features, comparison, introduction,
   getting-started, and README copy** now lead with deterministic design
   instead of auto-generation language (hero: "Write the *words*. The deck is

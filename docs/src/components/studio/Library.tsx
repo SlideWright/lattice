@@ -275,7 +275,7 @@ export function Library({ open, onOpenChange, options, activePalette, activeFini
 						<div className="grid h-full place-content-center gap-2 text-center text-muted-foreground">
 							<FileBox className="mx-auto size-7 opacity-40" />
 							<p className="text-[13px]">No saved assets yet.</p>
-							<p className="text-[11.5px]">Fabricate a theme or a component, or <button type="button" className="font-semibold text-[var(--accent)]" onClick={() => fileRef.current?.click()}>import a .zip</button>.</p>
+							<p className="text-[11.5px]">Create a theme or a component, or<button type="button" className="font-semibold text-[var(--accent)]" onClick={() => fileRef.current?.click()}>import a .zip</button>.</p>
 						</div>
 					) : (
 						<div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
