@@ -1,7 +1,7 @@
 // The Studio theme library — a thin wrapper over the SHARED Workbench asset
 // store (asset-store.js, IndexedDB `lattice-workbench`) and the canonical
 // `themeAsset` record shape (theme-core). REUSE, DON'T REINVENT (HARD RULE #15):
-// a theme you derive + save in the Studio's Fabricate lands in the SAME library
+// a theme you derive + save in the Studio's Foundry lands in the SAME library
 // the Workbench's Theme Studio saves into, so the two surfaces share one shelf
 // rather than each keeping a private silo.
 //
@@ -47,7 +47,7 @@ function toStudioTheme(a: ThemeAssetRecord): StudioTheme {
 
 /**
  * Save a derived theme to the shared library. `name` is preferred when it's
- * already a valid slug (Fabricate's content-hash name always is); otherwise we
+ * already a valid slug (Foundry's content-hash name always is); otherwise we
  * slug the label, then fall back to the given name. Re-saving the same name
  * UPDATES in place (asset-store keys on kind+name) rather than piling up dupes.
  * Resolves to the stored Studio theme; rejects if the store is unavailable.

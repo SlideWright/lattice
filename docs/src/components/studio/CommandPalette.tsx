@@ -4,7 +4,7 @@ import type { StudioDeck } from './decks';
 
 // The "type what you want" spine (plan §2.2). Every bar action is also a command.
 export function CommandPalette({
-	open, onOpenChange, decks, palettes, onPickDeck, onPalette, onPresent, onShare, onFabricate, onReshape, onInsert, onFocus,
+	open, onOpenChange, decks, palettes, onPickDeck, onPalette, onPresent, onShare, onFoundry, onReshape, onInsert, onFocus,
 }: {
 	open: boolean;
 	onOpenChange: (v: boolean) => void;
@@ -14,7 +14,7 @@ export function CommandPalette({
 	onPalette: (p: string) => void;
 	onPresent: () => void;
 	onShare: () => void;
-	onFabricate: () => void;
+	onFoundry: () => void;
 	onReshape: () => void;
 	onInsert?: () => void;
 	onFocus?: () => void;
@@ -34,7 +34,7 @@ export function CommandPalette({
 					<CommandItem onSelect={run(onReshape)}><Sparkles />Reshape for a reader</CommandItem>
 					{onInsert && <CommandItem onSelect={run(onInsert)}><Plus />Insert a component…</CommandItem>}
 					{onFocus && <CommandItem onSelect={run(onFocus)}><Focus />Focus mode — just editor &amp; preview</CommandItem>}
-					<CommandItem onSelect={run(onFabricate)}><PencilRuler />Fabricate — Theme &amp; Component Studio</CommandItem>
+					<CommandItem onSelect={run(onFoundry)}><PencilRuler />Foundry — Theme &amp; Component Studio</CommandItem>
 				</CommandGroup>
 				<CommandSeparator />
 				<CommandGroup heading="Switch deck">

@@ -36,7 +36,7 @@ import {
 import { saveStudioFinish } from './finish-library';
 import { Joystick } from './Joystick';
 
-// The Finish faculty — the third Fabricate workbench (beside Theme + Component),
+// The Finish faculty — the third Foundry workbench (beside Theme + Component),
 // now a real RIGHT-PANEL DESIGNER that mirrors them: a live preview specimen in
 // the center, the four-layer stack (Wash · Texture · Mark · Edge) as Inspector
 // groups on the right, a "Start from preset" row, an AI "describe a finish"
@@ -190,7 +190,7 @@ export function FinishStudio({
 
 	return (
 		<div className="flex min-h-0 flex-1 flex-col">
-			{/* Header — name + Export + Save (mirrors Fabricate's shared header shape). */}
+			{/* Header — name + Export + Save (mirrors Foundry's shared header shape). */}
 			<div className="flex h-[50px] shrink-0 items-center gap-2 border-b border-border bg-card px-3 sm:gap-3 sm:px-4">
 				<span className="size-2 shrink-0 rounded-full bg-[var(--accent)]" />
 				<div className={cn('flex min-w-0 max-w-[220px] flex-shrink items-center rounded-md border bg-transparent px-1.5 py-0.5 focus-within:border-[var(--accent)]', name && !nameOk ? 'border-[color-mix(in_srgb,var(--fail,#b3261e)_55%,var(--border))]' : 'border-transparent hover:border-border')}>
@@ -411,7 +411,7 @@ function LayerGroup({ label, hint, last, children }: { label: string; hint?: str
 	);
 }
 
-// A labeled control row (mirrors FinishStudio's earlier Control + Fabricate's
+// A labeled control row (mirrors FinishStudio's earlier Control + Foundry's
 // inspector rows).
 function Tuned({ label, value, children }: { label: string; value?: string; children: React.ReactNode }) {
 	return (

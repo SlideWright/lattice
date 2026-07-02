@@ -107,7 +107,7 @@ export function useReferenceDoc(notify?: (msg: string) => void, onManage?: () =>
 					</button>
 				</PopoverTrigger>
 				{/* Default side flips up automatically near the screen bottom (the chat), so
-				    the same picker works in the chat and in the Fabricate bars. */}
+				    the same picker works in the chat and in the Foundry bars. */}
 				<PopoverContent align="start" className="w-72 p-0">
 					<Command>
 						<CommandInput placeholder="Search your docs…" className="text-[12.5px]" />

@@ -41,14 +41,14 @@ function FinishItem({
 
 const LABEL = 'font-mono text-[10px] uppercase tracking-wider text-muted-foreground';
 
-// A saved (Fabricated) finish, shaped for the picker. Its `name` is NOT in the
+// A saved (Foundry) finish, shaped for the picker. Its `name` is NOT in the
 // engine FINISH_REGISTER, so it renders via injected CSS + an applied class (the
 // consumption loop in StudioShell), not the `finish:` register.
 export type SavedFinishMenuEntry = { id: string; name: string; label: string; swatch?: { background: string; backgroundSize?: string } };
 
 /**
  * The finish (BACKDROP) list, rendered inside any `<DropdownMenuContent>`:
- * None → Finishes (the layered field presets) → Saved (your Fabricated finishes).
+ * None → Finishes (the layered field presets) → Saved (your Foundry finishes).
  * The rendering MODE (boardroom / sketch) is a SEPARATE control now — the `mode:`
  * picker (ModeMenuItems). `finish` is the active selection — a register name for a
  * built-in, or a saved finish's slug. Picking a saved one renders it in the deck

@@ -3,10 +3,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { LayoutStudio, STARTER_CSS, STARTER_NAME, STARTER_SKELETON } from './LayoutStudio';
 
 // LayoutStudio is now the CONTROLLED component-tab body — naming, the gate run,
-// Save and Export live in Fabricate's shared header (see studio.controls). Here
+// Save and Export live in Foundry's shared header (see studio.controls). Here
 // we test the body in isolation: it renders the findings it's handed, gates the
 // preview on a valid name, and reports CSS/skeleton edits up. The real gate is
-// covered at the Fabricate level (studio.controls) and in the lib/layout units.
+// covered at the Foundry level (studio.controls) and in the lib/layout units.
 
 // Surface the threaded extraCss/sample so we can assert the local component is
 // what's previewed (the engine itself is never involved).

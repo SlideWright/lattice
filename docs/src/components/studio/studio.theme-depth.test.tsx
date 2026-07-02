@@ -5,7 +5,7 @@ import StudioShell from './StudioShell';
 
 // A DeckPreview stub that surfaces the theme-wiring props as data-attributes, so a
 // test can assert that selecting a saved theme threads it into the live preview
-// (and that Fabricate's specimen honors the light/dark mode override).
+// (and that Foundry's specimen honors the light/dark mode override).
 vi.mock('@/components/DeckPreview', () => ({
 	default: ({ 'aria-label': label, paletteOverride, extraTheme, modeOverride }: { 'aria-label'?: string; paletteOverride?: string; extraTheme?: { name: string }; modeOverride?: string }) => (
 		<div data-testid="deck-preview" data-label={label} data-palette-override={paletteOverride ?? ''} data-extra-theme={extraTheme?.name ?? ''} data-mode-override={modeOverride ?? ''}>
@@ -46,7 +46,7 @@ const options = { themeBase: '', runtimeUrl: '', engineUrl: '' };
 
 beforeEach(() => {
 	themeStore.length = 0;
-	// Fabricate is an advanced surface, hidden from the launcher for a fresh
+	// Foundry is an advanced surface, hidden from the launcher for a fresh
 	// newcomer. Seed onboarded:true so these depth tests can open it.
 	localStorage.setItem('lattice-studio-settings', JSON.stringify({ validation: true, pageNumbers: true, headerFooter: false, onboarded: true }));
 });
@@ -56,24 +56,24 @@ afterEach(() => {
 	localStorage.clear();
 });
 
-function openFabricate(user: ReturnType<typeof userEvent.setup>) {
+function openFoundry(user: ReturnType<typeof userEvent.setup>) {
 	return (async () => {
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
-		await user.click(await screen.findByText('Fabricate'));
-		// Fabricate is code-split (React.lazy) out of the initial Studio island, so
+		await user.click(await screen.findByText('Foundry'));
+		// Foundry is code-split (React.lazy) out of the initial Studio island, so
 		// its subtree arrives a tick after the click via Suspense — wait for the
 		// Theme Studio specimen before the callers assert against it.
 		await waitFor(() => {
-			if (!document.querySelector('[data-label="Theme specimen"]')) throw new Error('Fabricate not loaded yet');
+			if (!document.querySelector('[data-label="Theme specimen"]')) throw new Error('Foundry not loaded yet');
 		});
 	})();
 }
 
-describe('Studio — Fabricate Theme Studio depth', () => {
+describe('Studio — Foundry Theme Studio depth', () => {
 	it('edits all ten essentials and auditions the derived theme in light AND dark', async () => {
 		const user = userEvent.setup();
 		render(<StudioShell options={options} />);
-		await openFabricate(user);
+		await openFoundry(user);
 
 		// All ten engine essentials are listed in the token tree (the three ink roles
 		// are unique to the essentials group vs the contract's Heading/Body/Muted).
@@ -92,7 +92,7 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 	it('overrides a contract token side and re-derives the live specimen', async () => {
 		const user = userEvent.setup();
 		render(<StudioShell options={options} />);
-		await openFabricate(user);
+		await openFoundry(user);
 
 		const specimen = document.querySelector('[data-label="Theme specimen"]') as HTMLElement;
 		const before = specimen.getAttribute('data-extra-theme');
@@ -113,7 +113,7 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 	it('edits the data-viz band on the live canvas — slide·chart·diagram previews + selectable strip', async () => {
 		const user = userEvent.setup();
 		render(<StudioShell options={options} />);
-		await openFabricate(user);
+		await openFoundry(user);
 
 		// The canvas shows all three live previews so a band edit shows everywhere.
 		expect(document.querySelector('[data-label="Theme specimen"]')).toBeTruthy();
@@ -139,7 +139,7 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 	it('requires a name before saving — no magic default (consistent with components)', async () => {
 		const user = userEvent.setup();
 		render(<StudioShell options={options} />);
-		await openFabricate(user);
+		await openFoundry(user);
 		// No pre-filled name, and Save is disabled until you name it — the name is a
 		// first-class slug, IDENTICAL to the component tab (#57).
 		const nameInput = screen.getByLabelText('Theme name') as HTMLInputElement;
@@ -152,7 +152,7 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 	it('saves a named theme to the library, then lets you pick it for the deck', async () => {
 		const user = userEvent.setup();
 		render(<StudioShell options={options} />);
-		await openFabricate(user);
+		await openFoundry(user);
 
 		// Name it and save → the real save path runs with the full ten-key essential
 		// set + a serialized CSS (proof it's the engine derivation, not a stub).
@@ -188,7 +188,7 @@ describe('Studio — Fabricate Theme Studio depth', () => {
 	it('removes a saved theme and reverts the deck to a built-in palette', async () => {
 		const user = userEvent.setup();
 		render(<StudioShell options={options} />);
-		await openFabricate(user);
+		await openFoundry(user);
 		const nameInput = screen.getByLabelText('Theme name') as HTMLInputElement;
 		await user.clear(nameInput);
 		await user.type(nameInput, 'ocean');

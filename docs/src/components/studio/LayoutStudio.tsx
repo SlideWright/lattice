@@ -7,7 +7,7 @@ import { CodeField } from './CodeField';
 
 // A starter that PASSES the gate out of the box — palette-blind (every colour a
 // token), scoped to `.callout`, and invoked by its skeleton. Edit from here.
-// Exported so the unified Studio (Fabricate) can seed the component tab's state.
+// Exported so the unified Studio (Foundry) can seed the component tab's state.
 export const STARTER_NAME = 'callout';
 export const STARTER_DESCRIPTION = 'A centered callout — a big accent headline over a supporting line.';
 // A complete, gate-valid default manifest so the manual starter (and the panel)
@@ -48,7 +48,7 @@ A local component you styled here — palette-blind, scope-checked, live.`;
 export type Finding = { level: string; rule: string; line?: number; message: string };
 
 // The component-tab BODY of the unified Studio. Naming, description, save, and
-// export now live in Fabricate's shared header (so the Theme and Component tabs
+// export now live in Foundry's shared header (so the Theme and Component tabs
 // share one save/export UX), so this is a CONTROLLED editor: it owns no name or
 // save state — it renders the CSS + skeleton editors, the live gate findings,
 // and the preview, and reports edits up. `findings`/`nameOk` are computed by the

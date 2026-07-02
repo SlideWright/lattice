@@ -7,7 +7,7 @@ import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { cn } from '@/lib/utils';
 // The REAL layout gate — the deterministic core the engine uses for components
 // (lib/layout/*, bundled). The Component tab's Name/Save/Export now live in this
-// shared header, so Fabricate owns the gate run that the body renders.
+// shared header, so Foundry owns the gate run that the body renders.
 import { BUCKETS, CSS_ONLY_SUBSTANCES, FORMS, FUNCTIONS, gateCss, NAME_RE, scaffoldFiles, skeletonInvokes, validateManifest } from '@/playground/layout-core.generated.js';
 // The REAL theme engine — same maths as the Node tooling + the WCAG gate
 // (lib/theme/*, bundled browser-safe). deriveTheme → ~80 tokens (contrast-
@@ -159,7 +159,7 @@ const contractLabelOf = (id: string) => CONTRACT.find((c) => c.token === id)?.la
 const tokenLabel = (id: string) => contractLabelOf(id) ?? bandLabel(id);
 const tierOf = (ratio: number | null, ok: boolean) => ((ratio ?? 0) >= 7 ? 'AAA' : ok ? 'AA' : 'FAIL');
 
-export function Fabricate({ options, catalog = [], onClose, notify, onSaved, onOpenWorkspace }: { options: SingleSlideOptions; catalog?: { name: string; bucket?: string; description?: string; tags?: string[] }[]; onClose: () => void; notify: (msg: string) => void; onSaved?: () => void; onOpenWorkspace?: () => void }) {
+export function Foundry({ options, catalog = [], onClose, notify, onSaved, onOpenWorkspace }: { options: SingleSlideOptions; catalog?: { name: string; bucket?: string; description?: string; tags?: string[] }[]; onClose: () => void; notify: (msg: string) => void; onSaved?: () => void; onOpenWorkspace?: () => void }) {
 	const [tab, setTab] = React.useState<'theme' | 'layout' | 'finish'>('theme');
 	// All ten essentials in state, seeded from the first curated starter.
 	const [core, setCore] = React.useState<Record<EssKey, string>>(() => ({ ...(STARTERS[0].essentials as Record<EssKey, string>) }));

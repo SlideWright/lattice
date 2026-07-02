@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import StudioShell from './StudioShell';
 
 // Slice: insert + render a SAVED LOCAL component. A component authored in the
-// Fabricate Layout Studio (component-library, IndexedDB) must (1) appear in the
+// Foundry Layout Studio (component-library, IndexedDB) must (1) appear in the
 // Insert palette under a `local` group, (2) insert its skeleton as a new slide,
 // and (3) render styled — its `.<name>` CSS injected as `extraCss` everywhere the
 // deck renders (compose preview, Share exports, Present).

@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 // The Studio theme picker — every shipped theme, grouped, shared by the topbar
 // menu and the Inspector. The groups mirror how the deck author thinks about
-// them: the curated core, your own Fabricated themes, the AA color-blind-safe
+// them: the curated core, your own Foundry themes, the AA color-blind-safe
 // set (a real accessibility investment, not optional), then the rest of the
 // shipped palettes. REUSE (#15): `paletteLabel` is the same label formatter the
 // site-wide PaletteControls use; the engine fetches any of these by name.
@@ -14,7 +14,7 @@ export const CURATED = ['indaco', 'cuoio', 'burgundy', 'laguna', 'crepuscolo', '
 export const MORE_THEMES = ['ardesia', 'brina', 'carta', 'concrete', 'magnolia', 'mustard'];
 // AA / CVD color-blind-safe palettes (themes/a11y-*.css) — contrast-verified.
 export const A11Y_THEMES = ['a11y-achromatopsia', 'a11y-deuteranopia', 'a11y-protanopia', 'a11y-tritanopia'];
-// Every on-disk theme the Studio can drive through `data-palette` (a Fabricated
+// Every on-disk theme the Studio can drive through `data-palette` (a Foundry
 // theme is NOT here — it has no on-disk CSS and renders via extraTheme).
 export const BUILTIN_PALETTES = [...CURATED, ...MORE_THEMES, ...A11Y_THEMES];
 // US-English label (the shared site one uses the British "colour"); HARD RULE #21.
@@ -46,7 +46,7 @@ function ThemeItem({ name, label, color, active, onPick }: { name: string; label
 
 /**
  * The grouped theme list, rendered inside any `<DropdownMenuContent>`: Curated →
- * your Fabricated themes (if any) → the AA color-blind-safe set → the rest.
+ * your Foundry themes (if any) → the AA color-blind-safe set → the rest.
  */
 export function ThemeMenuItems({ palette, onPick, saved }: { palette: string; onPick: (name: string) => void; saved: SavedTheme[] }) {
 	return (

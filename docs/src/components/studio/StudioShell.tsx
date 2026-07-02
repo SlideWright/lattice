@@ -39,13 +39,13 @@ import { deleteStudioTheme, listStudioThemes, type StudioTheme } from './theme-l
 import { useBreakpoint } from './use-breakpoint';
 import { WorkspaceSheet } from './WorkspaceSheet';
 
-// The Fabricate studio (theme / component / finish fabrication) is a large,
+// The Foundry (theme / component / finish authoring) is a large,
 // self-contained subtree — FinishStudio, LayoutStudio, CodeField, the manifest
 // completion, and its own big lucide-icon set — reached only via the
-// `view === 'fabricate'` tab. Code-split it so its ~chunk stays out of the
+// `view === 'foundry'` tab. Code-split it so its ~chunk stays out of the
 // initial Studio island payload (the heaviest thing a mobile user waits on) and
 // loads on first open. It's already mount-on-view, so this is a drop-in.
-const Fabricate = React.lazy(() => import('./Fabricate').then((m) => ({ default: m.Fabricate })));
+const Foundry = React.lazy(() => import('./Foundry').then((m) => ({ default: m.Foundry })));
 
 // Offline FALLBACK known-components — used only when the real catalog (the
 // `components` prop, the full 53-component manifest) fails to load. The live known
@@ -138,7 +138,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	// feature is one keystroke away. Opt-in per session (not sticky, not a default).
 	const [focus, setFocus] = React.useState(false);
 	const [notesOpen, setNotesOpen] = React.useState(false); // speaker-notes drawer (own surface, not the Inspector)
-	const [view, setView] = React.useState<'compose' | 'fabricate'>('compose');
+	const [view, setView] = React.useState<'compose' | 'foundry'>('compose');
 	const [shareOpen, setShareOpen] = React.useState(false);
 	const [workspaceOpen, setWorkspaceOpen] = React.useState(false);
 	const [libraryOpen, setLibraryOpen] = React.useState(false);
@@ -162,7 +162,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	});
 	const [mobilePane, setMobilePane] = React.useState<'edit' | 'preview'>('preview');
 	// Saved themes from the SHARED Workbench library (asset-store, IndexedDB) — a
-	// theme derived + saved in Fabricate lands here and becomes selectable. Loaded
+	// theme derived + saved in Foundry lands here and becomes selectable. Loaded
 	// async (the store is IndexedDB); refreshed after a save/delete.
 	const [savedThemes, setSavedThemes] = React.useState<StudioTheme[]>([]);
 	// Current palette read through a ref so refreshThemes (a stable callback) can
@@ -186,7 +186,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	}, []);
 	React.useEffect(() => { refreshThemes(); }, [refreshThemes]);
 	// Saved LOCAL components from the same shared library (kind:'component') —
-	// authored + saved in the Fabricate Component Studio. They become insertable AND
+	// authored + saved in the Foundry Component Studio. They become insertable AND
 	// render styled (their CSS is injected where the deck uses them).
 	const [localComponents, setLocalComponents] = React.useState<StudioComponent[]>([]);
 	const refreshComponents = React.useCallback(() => {
@@ -200,7 +200,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			.catch(() => setLocalComponents((prev) => (prev.length ? [] : prev)));
 	}, []);
 	React.useEffect(() => { refreshComponents(); }, [refreshComponents]);
-	// Saved (Fabricated) FINISHES from the same shared library (kind:'finish') — a
+	// Saved (Foundry) FINISHES from the same shared library (kind:'finish') — a
 	// finish designed + saved in the Finish faculty lands here, becomes pickable in
 	// the Inspector Finish menu, and renders in the deck preview (its CSS injected +
 	// its class applied — the consumption loop). Loaded async; refreshed on save/delete.
@@ -491,7 +491,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	// is rendered/exported so a saved theme is honored, not just previewed.
 	const activeTheme = React.useMemo(() => savedThemes.find((t) => t.name === palette), [savedThemes, palette]);
 	const extraTheme = activeTheme ? { name: activeTheme.name, css: activeTheme.css } : undefined;
-	// Saved (Fabricated) themes shaped for the grouped picker.
+	// Saved (Foundry) themes shaped for the grouped picker.
 	const savedMenu = React.useMemo(() => savedThemes.map((t) => ({ id: t.id, name: t.name, label: t.label, accent: t.essentials?.accent })), [savedThemes]);
 	const activePalette = React.useMemo(() => activePaletteLabel(palette, savedMenu), [palette, savedMenu]);
 	const activeFin = React.useMemo(() => activeFinishLabel(finish, savedFinishMenu), [finish, savedFinishMenu]);
@@ -719,8 +719,8 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		window.addEventListener('keydown', onKey);
 		return () => window.removeEventListener('keydown', onKey);
 	}, []);
-	// Fabricate is its own full-screen surface; never sit "focused" behind it.
-	React.useEffect(() => { if (view === 'fabricate') setFocus(false); }, [view]);
+	// Foundry is its own full-screen surface; never sit "focused" behind it.
+	React.useEffect(() => { if (view === 'foundry') setFocus(false); }, [view]);
 
 	// Track the document's light/dark mode reactively so exports + the preview
 	// follow a mode flip while Studio is open (the topbar writes <html data-mode>).
@@ -1158,8 +1158,8 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 					<DropdownMenuContent align="start" className="w-60">
 						<DropdownMenuLabel className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Workspace</DropdownMenuLabel>
 						<DropdownMenuItem onSelect={() => setView('compose')}><Layers className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Decks</div><div className="text-[11px] text-muted-foreground">Your saved decks</div></div></DropdownMenuItem>
-						{/* Fabricate is advanced (theme/component authoring) — hidden until a newcomer engages. */}
-						{onboarded && <DropdownMenuItem onSelect={() => setView('fabricate')}><PencilRuler className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Fabricate</div><div className="text-[11px] text-muted-foreground">Theme &amp; Component Studio</div></div></DropdownMenuItem>}
+						{/* Foundry is advanced (theme/component authoring) — hidden until a newcomer engages. */}
+						{onboarded && <DropdownMenuItem onSelect={() => setView('foundry')}><PencilRuler className="size-4" /><div><div className="font-semibold text-[var(--text-heading)]">Foundry</div><div className="text-[11px] text-muted-foreground">Theme &amp; Component Studio</div></div></DropdownMenuItem>}
 						<DropdownMenuSeparator />
 						<DropdownMenuItem onSelect={() => newDeck()}><Plus className="size-4" />New deck</DropdownMenuItem>
 						<DropdownMenuItem onSelect={() => importInputRef.current?.click()}><Upload className="size-4" />Import deck…</DropdownMenuItem>
@@ -1285,9 +1285,9 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			)}
 
 			{/* ── Body ─────────────────────────────────────────────────── */}
-			{view === 'fabricate' ? (
-				<React.Suspense fallback={<div className="grid flex-1 place-items-center text-[13px] text-muted-foreground">Loading the Fabricate studio…</div>}>
-					<Fabricate options={options} catalog={components} onClose={() => setView('compose')} notify={notify} onSaved={() => { refreshThemes(); refreshComponents(); refreshFinishes(); }} onOpenWorkspace={() => setWorkspaceOpen(true)} />
+			{view === 'foundry' ? (
+				<React.Suspense fallback={<div className="grid flex-1 place-items-center text-[13px] text-muted-foreground">Loading the Foundry…</div>}>
+					<Foundry options={options} catalog={components} onClose={() => setView('compose')} notify={notify} onSaved={() => { refreshThemes(); refreshComponents(); refreshFinishes(); }} onOpenWorkspace={() => setWorkspaceOpen(true)} />
 				</React.Suspense>
 			) : mobile ? (
 				/* Mobile: one swappable Edit/Preview pane; panels live in sheets. */
@@ -1425,7 +1425,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				onPalette={applyPalette}
 				onPresent={() => setPresentOpen(true)}
 				onShare={() => setShareOpen(true)}
-				onFabricate={() => setView('fabricate')}
+				onFoundry={() => setView('foundry')}
 				onReshape={() => { setFocus(false); setInspectorOpen(true); }}
 				onInsert={insertComponents.length > 0 ? () => setInsertOpen(true) : undefined}
 				onFocus={() => setFocus(true)}

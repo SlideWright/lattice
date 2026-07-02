@@ -15,7 +15,7 @@ import { type GroundMsg, groundMessages, type MsgContent, type ReferenceDoc, ref
 import { languageDirective } from './studio-language';
 import { loadInstructions, loadSettings } from './studio-store';
 
-// Re-export so UI surfaces (Fabricate, the deck chat) import the doc type + reader
+// Re-export so UI surfaces (Foundry, the deck chat) import the doc type + reader
 // from one place alongside the generate functions they feed it to.
 export type { ReferenceDoc } from './reference-doc';
 export { REF_DOC_ACCEPT, readReferenceDoc } from './reference-doc';

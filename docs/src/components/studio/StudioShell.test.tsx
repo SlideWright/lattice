@@ -19,7 +19,7 @@ function seedReturningUser() {
 // The live preview loads the real engine by polling `window.LatticePlayground`
 // on a timer that never resolves in jsdom and leaks past teardown. These tests
 // assert shell behavior (text, labels, navigation), not the rendered slide, so
-// stub DeckPreview to a static element — also covers its use in Present/Fabricate.
+// stub DeckPreview to a static element — also covers its use in Present/Foundry.
 vi.mock('@/components/DeckPreview', () => ({
 	default: ({ 'aria-label': label }: { 'aria-label'?: string }) => <div data-testid="deck-preview">{label}</div>,
 }));
@@ -271,10 +271,10 @@ describe('StudioShell — e2e flows (jsdom)', () => {
 		expect(await screen.findByText(/Inline validation off/)).toBeInTheDocument();
 	});
 
-	it('reaches Fabricate from the launcher (not a deck mode)', async () => {
+	it('reaches Foundry from the launcher (not a deck mode)', async () => {
 		const user = setup();
 		await user.click(screen.getByRole('button', { name: 'Workspace launcher' }));
-		await user.click(await screen.findByText('Fabricate'));
+		await user.click(await screen.findByText('Foundry'));
 		expect(await screen.findByPlaceholderText(/Describe a look/i)).toBeInTheDocument();
 		expect(screen.getByText('Essentials')).toBeInTheDocument();
 	});
