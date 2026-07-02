@@ -951,6 +951,20 @@
     ],
     "description": "Options scored against criteria as a verdict matrix."
   },
+  "lattice: video": {
+    "prefix": "lattice-video",
+    "body": [
+      "<!-- _class: video companion -->",
+      "",
+      "## Watch the 90-second product tour.",
+      "",
+      "One screen, one story — the fastest way to see the product work.",
+      "",
+      "- https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+      "- A guided walkthrough `caption`"
+    ],
+    "description": "A video as a static, PDF-safe embed: a poster that links to the clip, a play badge, the provider's name, and a scannable QR to the same URL — never a live iframe."
+  },
   "lattice: wifi": {
     "prefix": "lattice-wifi",
     "body": [

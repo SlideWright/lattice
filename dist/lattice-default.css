@@ -12531,6 +12531,273 @@ section.verdict-grid[data-orientation="portrait"] > .cell-stage > ul > li { just
   section.verdict-grid.verdict-grid > .cell-stage > ul > li { width: auto; flex: 1; min-height: 0; justify-content: center; }
 }
 
+/* === lib/components/imagery/video/video.styles.css === */
+/* video.styles.css — the `video` component: a poster that links to the clip, a
+ * play badge, the provider label, and a scannable QR beside it. Injected by the
+ * video transform as
+ *   <figure class="video-embed"><a class="video-poster">…</a>
+ *     <div class="video-aside"><div class="video-qr">…</div><figcaption/></div></figure>
+ *
+ * Palette-blind: layout color goes through tokens. The two FIXED-contrast
+ * surfaces — the play badge and the QR chip — use the same --qr-paper/--qr-ink
+ * token-with-fallback the QR variants use, so the code scans and the badge reads
+ * on any poster (#3-exempt). Spacing is gap/padding only (HARD RULE #20). */
+
+section.video .video-embed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-lg, 2rem);
+  width: 100%;
+  /* No fixed height: the poster is capped by WIDTH (cqi) and its height follows
+   * via aspect-ratio, so the figure is a natural-flow block the frame's content
+   * cell measures correctly (a cqh height sized against the whole section
+   * over-reports to the cell's clip probe). */
+}
+
+/* Poster — a 16:9 tile carrying the author/oEmbed still as a cover background
+ * (set inline, like lib/core/bg-image.js). It is an <a>, so it's a live link in
+ * HTML and a clickable link annotation in the PDF. */
+section.video .video-poster {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 46cqi;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  flex: 0 1 auto;
+  min-width: 0;
+  border-radius: var(--radius-lg, 0.75rem);
+  background: var(--qr-ink, #14140f) center / cover no-repeat;
+  box-shadow: 0 12px 40px rgba(10, 22, 40, 0.28);
+  overflow: hidden;
+  text-decoration: none;
+}
+/* No still available → a dark, video-like placeholder (fixed --qr-ink blend, so
+ * it reads as a poster on ANY theme, light or dark) rather than a blank box. */
+section.video .video-poster.is-placeholder {
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb, var(--qr-ink, #14140f) 78%, var(--accent)),
+      color-mix(in srgb, var(--qr-ink, #14140f) 94%, var(--accent)));
+}
+
+/* Play badge — a fixed-contrast disc + a CSS triangle, centered on the poster. */
+section.video .video-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background: var(--qr-paper, #ffffff);
+  box-shadow: 0 6px 20px rgba(10, 22, 40, 0.35);
+}
+section.video .video-play::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  /* right-pointing triangle, optically nudged off-center */
+  border-style: solid;
+  border-width: 0.85rem 0 0.85rem 1.4rem;
+  border-color: transparent transparent transparent var(--qr-ink, #14140f);
+  transform: translate(-42%, -50%);
+}
+
+/* Provider label — a chip on the poster's lower-left. */
+section.video .video-provider {
+  position: absolute;
+  left: var(--sp-sm, 0.75rem);
+  bottom: var(--sp-sm, 0.75rem);
+  padding: 0.25em 0.7em;
+  border-radius: 999px;
+  font-size: var(--fs-meta, 0.8rem);
+  font-weight: 600;
+  color: var(--qr-ink, #14140f);
+  background: color-mix(in srgb, var(--qr-paper, #ffffff) 90%, transparent);
+}
+
+/* Aside — the QR + caption column beside the poster. */
+section.video .video-aside {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-sm, 0.75rem);
+  max-width: 13rem;
+}
+section.video .video-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-xs, 0.5rem);
+}
+section.video .video-qr .qr-tile {
+  width: 8rem;
+  padding: 0.6em;
+  background: var(--qr-paper, #ffffff);
+  color: var(--qr-ink, #14140f);
+  border-radius: 0.6em;
+  box-shadow: 0 2px 14px rgba(10, 22, 40, 0.22);
+}
+section.video .video-qr .qr-tile svg { display: block; width: 100%; height: auto; }
+section.video .video-qr-hint {
+  font-size: var(--fs-meta, 0.8rem);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+section.video .video-embed figcaption {
+  font-size: var(--fs-body-compact);
+  color: var(--text-heading);
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * COMPOSITIONS — each a candidate "killer" layout; `qr` is an opt-in modifier
+ * (the transform emits the QR only under `.qr`, so these mostly reveal/place it).
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── companion — claim/lead LEFT, poster RIGHT (this kernel splits them). ───── */
+section.video.companion {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-xl, 3rem);
+}
+section.video.companion .video-lead {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-sm, 1rem);
+}
+section.video.companion .video-lead::before {
+  content: "";
+  width: 2.5rem;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+section.video.companion .video-lead h2 {
+  font-size: var(--fs-h2);
+  font-weight: 800;
+  line-height: var(--lh-tight, 1.1);
+  color: var(--text-heading);
+  padding: 0;
+  margin: 0;
+}
+section.video.companion .video-lead p {
+  font-size: var(--fs-message);
+  line-height: 1.4;
+  color: var(--text-body);
+  max-width: 32ch;
+  padding: 0;
+  margin: 0;
+}
+section.video.companion .video-embed {
+  flex: 1.15 1 0;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-lg, 2rem);
+}
+section.video.companion .video-poster { max-width: 46cqi; }
+section.video.companion .video-aside { align-items: center; text-align: center; }
+section.video.companion.qr .video-poster { max-width: 40cqi; }
+/* With the QR on, a hairline rule (poster-width, centered) + a symmetric gap
+ * separates the poster from the scannable code, and both stay centered on the
+ * column's axis — a pleasing, deliberate channel, not a cramped stack. */
+section.video.companion.qr .video-embed { gap: var(--sp-xl, 3rem); }
+section.video.companion.qr .video-aside {
+  width: 40cqi;
+  max-width: 100%;
+  padding-top: var(--sp-xl, 3rem);
+  border-top: 1px solid var(--border);
+}
+section.video.companion .video-embed figcaption {
+  font-size: var(--fs-meta);
+  color: var(--text-muted);
+  line-height: 1.25;
+}
+
+/* ── gallery — contained-on-matte museum exhibit (CSS override to contain). ─── */
+section.video.gallery {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5cqh;
+  text-align: center;
+}
+section.video.gallery .video-embed {
+  flex-direction: column;
+  align-items: center;
+  /* generous air between the framed still and the placard below it */
+  gap: 5cqh;
+  width: auto;
+}
+section.video.gallery .video-poster {
+  box-sizing: border-box;
+  width: min(68cqi, 52cqh * 1.7778);
+  max-width: none;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 1.4cqi solid color-mix(in srgb, var(--text-heading) 8%, var(--bg));
+  border-radius: var(--radius-lg, 0.75rem);
+  background-color: color-mix(in srgb, var(--text-heading) 8%, var(--bg));
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow:
+    0 0 0 1px var(--border),
+    0.6cqi 0.8cqi 0 -0.1cqi color-mix(in oklab, var(--text-heading) 16%, transparent);
+}
+section.video.gallery .video-play { width: 9cqi; height: 9cqi; }
+section.video.gallery .video-play::before {
+  border-width: 1.7cqi 0 1.7cqi 2.8cqi;
+}
+section.video.gallery .video-aside {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-xl, 3rem);
+  max-width: 62cqi;
+}
+section.video.gallery .video-embed figcaption {
+  position: relative;
+  padding-top: var(--sp-sm);
+  font-size: var(--fs-body-compact);
+  color: var(--text-heading);
+  text-align: center;
+  line-height: 1.35;
+}
+section.video.gallery .video-embed figcaption::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3.2cqi;
+  height: 0.3cqi;
+  border-radius: 999px;
+  background: var(--accent);
+}
+section.video.gallery.qr .video-qr {
+  flex-direction: row;
+  gap: var(--sp-sm);
+  padding-right: var(--sp-xl, 3rem);
+  border-right: 1px solid var(--border);
+}
+section.video.gallery.qr .video-qr .qr-tile { width: 11cqi; padding: 0.5em; }
+section.video.gallery.qr .video-qr-hint { font-size: var(--fs-meta); }
+
 /* === lib/components/connect/wifi/wifi.styles.css === */
 /* wifi — a network join card: readable credentials beside a scannable QR.
  * Emitted structure (see wifi.transform.js):

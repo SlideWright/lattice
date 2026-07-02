@@ -1,0 +1,92 @@
+{
+  "$schema": "../../manifest.schema.json",
+  "name": "video",
+  "adapt": { "mode": "reflow", "priority": ["heading", "video", "body"] },
+  "function": "imagery",
+  "form": "canvas",
+  "substance": "prose",
+  "orientation": ["landscape", "portrait"],
+  "tags": ["visual", "showcase", "pitch"],
+  "description": "A video as a static, PDF-safe embed: a poster that links to the clip, a play badge, the provider's name, and a scannable QR to the same URL — never a live iframe.",
+  "purpose": "Use to put a YouTube / Vimeo / TikTok / Instagram video on a slide. Because the deck renders to a static PDF (and the engine bars iframes), a `video` slide shows a POSTER with a play badge + provider label — the poster is a clickable link in the HTML/PDF — and, when you add the `qr` modifier, a scannable code the room can scan to watch. Two compositions: `companion` (a claim leads on the left, the clip proves it on the right) and `gallery` (a contained, matted exhibit). Author the URL as a bare bullet; add an optional `caption` and an optional `poster` override. Provider is auto-detected.",
+  "variants": ["companion", "gallery", "qr"],
+  "slots": {
+    "heading": {
+      "selector": "h2",
+      "required": false,
+      "description": "Optional heading — the so-what of the clip, not 'Video'."
+    },
+    "video": {
+      "selector": ".video-embed",
+      "required": true,
+      "description": "The video URL, authored as a bare bullet (`- https://youtube.com/watch?v=…`). Provider is auto-detected; the transform builds the poster + play badge + QR."
+    },
+    "caption": {
+      "selector": ".video-embed figcaption",
+      "required": false,
+      "description": "Optional caption bullet — `- Scan to watch `caption``."
+    }
+  },
+  "skeleton": "<!-- _class: video companion -->\n\n## Watch the 90-second product tour.\n\nOne screen, one story — the fastest way to see the product work.\n\n- https://www.youtube.com/watch?v=aqz-KE-bpKQ\n- A guided walkthrough `caption`\n",
+  "sample": "<!-- _class: video companion -->\n\n## Onboarding that sticks — watch a customer do it live.\n\nNinety seconds, unscripted: signup to a published deck without touching support.\n\n- https://www.youtube.com/watch?v=aqz-KE-bpKQ\n- Ree A., Head of Ops at Northwind `caption`\n",
+  "whenToUse": [
+    {
+      "title": "A clip makes the point better than a screenshot",
+      "body": "A product walkthrough, a customer testimonial, a demo reel — anywhere motion carries the argument. The slide shows a clean poster; the room scans the QR (or clicks it in the HTML/PDF) to watch."
+    },
+    {
+      "title": "The URL is all you have to write",
+      "body": "Paste the YouTube / Vimeo / TikTok / Instagram link as a bare bullet; the provider is detected and the QR is generated for you. Add a `poster` bullet only when you want a specific still (required for Instagram, whose thumbnails aren't fetchable)."
+    },
+    {
+      "title": "Closing / hand-off slides",
+      "body": "A 'watch the full demo' or 'see the launch film' send-off pairs a poster with a scannable code the audience takes with them — the same pattern as the QR closing/divider variants."
+    }
+  ],
+  "antiPatterns": [
+    {
+      "title": "Expecting it to autoplay in the PDF",
+      "body": "A PDF is paper — it can't play video, and the engine bars iframes for security. `video` is a poster + scannable link by design. If you need in-app playback, that's a separate interactive surface, not a boardroom deck."
+    },
+    {
+      "title": "A wall of caption",
+      "body": "The caption is one line — 'Scan to watch', a title, a runtime. If you're writing a paragraph about the video, put it in a `content` slide and drop the clip in as a supporting `video`."
+    },
+    {
+      "title": "Instagram with no poster",
+      "body": "Instagram's public thumbnails aren't fetchable, so an Instagram `video` with no `poster` bullet falls back to a plain placeholder tile. Author a `poster` for a real still."
+    }
+  ],
+  "related": [
+    {
+      "name": "image",
+      "when": "the visual is a still photo or screenshot, not a video"
+    },
+    {
+      "name": "closing",
+      "when": "the send-off is a call to action with a QR, not a specific clip"
+    },
+    {
+      "name": "diagram",
+      "when": "the motion you want is an animated process — a Mermaid diagram may say it statically"
+    }
+  ],
+  "variantDocs": {
+    "companion": {
+      "label": "Companion — claim leads, the clip proves it",
+      "caption": "A split: the claim + one lead line lead on the left, the poster proves it on the right (mirrors split-panel's companion). The narrative+proof layout. `qr` reveals a code beneath the poster.",
+      "sample": "<!-- _class: video companion -->\n\n## Onboarding that sticks — watch a customer do it live.\n\nNinety seconds, unscripted: signup to a published deck without touching support.\n\n- https://www.youtube.com/watch?v=aqz-KE-bpKQ\n- Ree A., Head of Ops at Northwind `caption`\n- video-poster.svg `poster`\n"
+    },
+    "gallery": {
+      "label": "Gallery — a contained, matted exhibit",
+      "caption": "The still CONTAINED on a matte (zero-crop, letterboxed) with a placard caption below — for a diagram-ish or vertical clip where the whole frame matters. `qr` adds a code beside the placard.",
+      "sample": "<!-- _class: video gallery -->\n\n## Exhibit 1 — the onboarding flow, end to end.\n\n- https://vimeo.com/76979871\n- The reference onboarding walkthrough, contained on its matte. `caption`\n- video-poster.svg `poster`\n"
+    },
+    "qr": {
+      "label": "qr — add a scannable code (a modifier, combine with any composition)",
+      "caption": "An OPT-IN modifier, not a composition. Add `qr` to either composition (`video companion qr`, `video gallery qr`) and a scannable QR to the clip appears; without it the poster is a plain link + provider label. Reuses the palette-blind QR engine.",
+      "sample": "<!-- _class: video companion qr -->\n\n## Scan to watch the walkthrough.\n\nThe full 90-second tour — scan to open it on your phone.\n\n- https://www.youtube.com/watch?v=aqz-KE-bpKQ\n- Scan to watch `caption`\n- video-poster.svg `poster`\n"
+    }
+  },
+  "showcase": { "featured": false }
+}

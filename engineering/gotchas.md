@@ -1908,6 +1908,35 @@ spin out a `engineering/decisions/YYYY-MM-DD-topic.md` and link to it from here.
 - **Don't reintroduce:** any sheet/dialog that overlays a surface the user still
   needs to scroll (the live preview) must be non-modal, or it will scroll-lock iOS.
 
+### Tapping an in-slide link blanks the live preview on iOS
+
+- **Symptom:** On the **/playground** (or Drawing Board filmstrip) on an iPhone,
+  pick a component that carries a real link — the `video` poster is the obvious one
+  (a big `<a href="https://youtube…">` tap target), but `contact`/`qr`/`closing`
+  links do it too — the slide renders fine, then **tapping the link blanks the whole
+  preview** and it never comes back. Desktop Chromium never shows it (it opens a new
+  tab), so headless click tests can't repro it — the iOS-only trap again.
+- **Cause:** The slide's `<a>` is a genuine link (correct for the exported
+  HTML/PDF), but the preview is a CSS-transform-**scaled** `srcdoc` iframe. iOS
+  Safari follows the tap *into the iframe* and navigates the FRAME itself to the
+  external URL; the external site frame-blocks (X-Frame-Options / CSP), so the
+  iframe goes blank — and nothing re-renders it. Same "the frame is the wrong place
+  for the interaction" class as the debug-overlay touch saga
+  (`2026-07-01-debug-bounding-boxes.md`).
+- **Fix:** A preview-only **link guard** injected into every filmstrip srcdoc
+  (`linkGuardAgent` in `docs/src/playground/deck-preview.js`): a capture-phase click
+  listener that, for any `http(s)` anchor, `preventDefault()`s the frame navigation
+  and opens the URL in a real **top-level** tab (`window.top.open`) instead. In-page
+  (`#id`), `mailto:`, and `tel:` links are left alone; the **exported** artifact's
+  link is untouched (preview-only). If the popup is blocked the frame is still
+  preserved, so the worst case is an inert tap, never a blank.
+- **Don't reintroduce:** never let a preview iframe follow an external link — a
+  navigated preview frame can't recover. Any new preview builder that renders slide
+  links must carry the same guard (the single-slide Studio path,
+  `single-slide-render.ts`, scales the iframe ELEMENT rather than each section, but
+  is the same class — add the guard there if a linked component surfaces the blank
+  in Studio).
+
 ### A blurred `box-shadow` renders as a flat grey block in Apple PDFKit
 
 - **Symptom:** A soft drop-shadow (any `box-shadow` with a blur radius) that

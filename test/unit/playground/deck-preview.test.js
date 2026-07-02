@@ -39,6 +39,18 @@ describe('buildSrcdoc', () => {
 		assert.match(doc, /src="\/rt\.js"/);
 	});
 
+	test('always injects the link guard so an external tap cannot navigate (blank) the frame', async () => {
+		const { buildSrcdoc } = await load();
+		// The guard is unconditional (every filmstrip srcdoc), capture-phase, gated to
+		// http(s) hrefs, and opens a top-level tab instead of navigating the iframe.
+		const doc = buildSrcdoc({ ...BASE });
+		assert.match(doc, /addEventListener\("click"[\s\S]*?closest\("a\[href\]"\)/);
+		assert.match(doc, /\/\^https\?:\/i\.test\(href\)/);
+		assert.match(doc, /window\.top\|\|window\)\.open\(href,"_blank"/);
+		// It must run in capture phase (so it wins before the frame follows the link).
+		assert.match(doc, /addEventListener\("click",function\(e\)\{[\s\S]*?\},true\)/);
+	});
+
 	test('clamps the filmstrip tail by default and can be turned off', async () => {
 		const { buildSrcdoc } = await load();
 		assert.match(buildSrcdoc({ ...BASE }), /lattice\.style\.overflow="clip"/);

@@ -49,6 +49,17 @@ in patch versions.
 
 ### Fixed
 
+- **Tapping an external link in the live preview no longer blanks it on iOS.** A
+  slide can carry a real `<a href="https://…">` (the `video` poster links to the
+  clip; `contact`/`qr`/`closing` carry live URLs) — genuine, clickable links in the
+  exported HTML/PDF. But inside the scaled `srcdoc` preview iframe, iOS Safari
+  followed the tap *into the iframe*, navigated it to the external site, which
+  frame-blocks → the preview went blank and never returned (desktop opened a new
+  tab, so it was invisible). The shared filmstrip builder (`deck-preview.js`,
+  Playground + Drawing Board) now injects a preview-only link guard that opens
+  `http(s)` link taps in a real top-level tab instead of letting the frame
+  navigate; in-page (`#id`), `mailto:`, and `tel:` links are untouched, and the
+  exported artifact's link is unchanged.
 - **The common quadrant chart fills its slide again instead of rendering as a
   thumbnail.** When charts moved into the Form, `.chart-body` became a
   size-query container, which silently re-based the quadrant SVG's
@@ -117,6 +128,18 @@ in patch versions.
   Every page visually reviewed; pre-existing component render defects the
   new coverage exposed are tracked in #680.
 
+- **New `video` component — a YouTube / Vimeo / TikTok / Instagram clip as a static,
+  PDF-safe embed.** Author a video URL as a bare bullet (`- https://youtube.com/watch?v=…`)
+  and the slide renders a poster that LINKS to the clip, a play badge, and the provider's
+  name — never an iframe (a PDF can't play video, and the engine bars iframes). Two
+  compositions: **`companion`** (a claim leads on the left, the clip proves it on the right)
+  and **`gallery`** (a contained, matted exhibit). Add the **`qr`** modifier
+  (`video companion qr`) for a scannable code to the same URL — a hairline-divided, centered
+  channel beside/under the poster; leave it off and the poster is just a clickable link.
+  Optional `- <text> `caption`` and `- <path> `poster`` bullets; provider is auto-detected.
+  Posters can be auto-fetched at build via `tools/fetch-video-oembed.js`
+  (YouTube/Vimeo/TikTok; Instagram needs an author poster), cached so render stays offline.
+  See `examples/video.md` and `engineering/decisions/2026-07-02-video-component.md`.
 - **The gallery PDF is served on the docs site at `/gallery.pdf`.** The
   committed baseline gallery is staged into the site at build time
   (`docs/scripts/sync-portal.mjs`), and the landing hero and introduction
