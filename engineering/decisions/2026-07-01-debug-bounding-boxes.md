@@ -72,22 +72,29 @@ Front-matter (deck-wide) **and** per-slide comment form:
 
 ```md
 ---
-debug: on            # whole deck, default profile
+debug: on-hover           # whole deck: outlines always, labels on hover/tap
 ---
 
-<!-- _debug: size -->   # THIS slide only, just the size facet
-<!-- _debug -->         # THIS slide only, default profile (bare flag)
-<!-- _debug: off -->    # mute THIS slide when the deck is debugging
+<!-- _debug: on-always -->    # THIS slide only: pin every label on
+<!-- _debug: on-hover full --> # THIS slide only: hover reveal, every facet
+<!-- _debug -->               # THIS slide only, default (bare flag → on-hover)
+<!-- _debug: off -->          # mute THIS slide when the deck is debugging
 ```
 
-**Value = a profile keyword OR a space/comma list of facet tokens.**
+**Value = a reveal-mode keyword, optionally with `full`, or a list of facet tokens.**
 
-Base (the "variants we currently support"):
-- `off` / `false` / `no` / absent → disabled
-- `on` / `true` / `yes` / empty → **default profile**
-- `all` → every facet
+Base vocabulary (the "variants we support"):
+- `off` / `false` / `no` / `0` / **absent** → **disabled (the default, present or not)**
+- `on-hover` / `hover` / empty → **default: outlines always, labels on hover/tap**
+- `on-always` / `always` / `pinned` → outlines always, **every label pinned on**
+- `full` / `all` → add the opt-in facets (`class` + `box`) to either reveal mode
 
-Facets (the levers — each can be listed explicitly, e.g. `debug: identity size`):
+There is deliberately **no bare `on`** — a debugger has to say *how* the labels
+appear (`on-hover` vs `on-always`), so the mode is never ambiguous. A stray `on`
+(or any typo) still enables in the safe `on-hover` default and raises a lint warning.
+
+Facets (the levers the label draws — selected as a SET by the reveal mode + `full`,
+not named individually; a bare facet name like `debug: identity` is a lint warning):
 
 | token | label shows | source |
 |---|---|---|
@@ -98,18 +105,18 @@ Facets (the levers — each can be listed explicitly, e.g. `debug: identity size
 | `class` | raw CSS class list | `attr(class)` |
 | `box` | padding + gap values | `getComputedStyle` |
 
-Profiles: **`on` = `outline identity size layout`** (the useful triad — *what* the
-box is, *how* it arranges children, *how big* it is). **`all` = everything.**
+Default facet set: **`identity size layout`** (the useful triad — *what* the box is,
+*how* it arranges children, *how big* it is). **`full` adds `class` + `box`.**
 
 Example label: `comparison-grid · grid · 720×360`.
 
-**Reveal mode (added post-review — the resting default was too dense).** Outlines
-are always on, but the LABELS default to **`hover`**: at rest you see only the
-color-coded outlines; pointing at a box reveals its chip *and its container chain*,
-enriched to the full lever set. `debug: always` pins every chip on at once (the old
-behavior) for a static map. Reveal is a token in the same list, classified out from
-facets: `debug: always`, `debug: hover class box`. Default is `hover`. This is what
-kills the wall-of-chips density — you pull detail in only where you look.
+**Reveal mode is the mode keyword — and OFF is the default.** With no `debug:` key
+(or `debug: off`) the preview is clean: no outlines, no chips. Enabling always names
+the reveal mode. `on-hover` (the recommended default) draws the color-coded outlines
+always but keeps LABELS summoned: at rest you see only outlines; pointing at a box
+reveals its chip *and its container chain*. `on-always` pins every chip on at once for
+a static map. `full` (in either mode) adds the opt-in `class` + `box` facets. Summoned
+labels are what kill the wall-of-chips density — you pull detail in only where you look.
 
 **Debug owns the pointer in `hover` mode — via document listeners, NOT a positioned
 layer.** In `hover` mode the agent binds CAPTURE-PHASE listeners on the iframe
@@ -138,9 +145,6 @@ the content on every engine. Verified on the real Playground (absolute overlay, 
 tracks its box after scroll with delta 0, tap reveals); final iOS-Safari confirmation is
 on-device. Lesson: test the real surface + the real engine, never a harness that can't
 reproduce the target platform.
-
-Unknown facet tokens are a lint **warning** (not an error), listed by
-`lint-core.js`, mirroring how `finish` / `mode` / `split` vocab is validated.
 
 Unknown facet tokens are a lint **warning** (not an error), listed by
 `lint-core.js`, mirroring how `finish` / `mode` / `split` vocab is validated.
@@ -284,7 +288,7 @@ Outline hue encodes **layout mode**, the single most useful fact for layout debu
   exports.
 - **Slice 3 (agent):** `docs/src/playground/debug-overlay.js` — layout-mode outlines
   (Okabe-Ito AA/CVD palette), configurable levers (default `identity · layout · size`;
-  `debug: all` adds `class` + `box`), zero-flow corner labels via a fixed
+  `full` adds `class` + `box`), zero-flow corner labels via a fixed
   `pointer-events:none` overlay (position from `getBoundingClientRect`, size from
   `offsetWidth/Height`), de-overlap cascade, hover-isolate. Labels are gated to the
   slide + grid/flex containers + grid cells (not flex leaf content) so a dense grid

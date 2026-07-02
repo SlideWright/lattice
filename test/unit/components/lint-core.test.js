@@ -55,17 +55,19 @@ describe('lint-core: unknown-debug-facet', () => {
   const facetTokens = (src) =>
     core.lintTextWith(src, vocab).filter((f) => f.rule === 'unknown-debug-facet').map((f) => f.classToken);
 
-  test('valid profiles + facet lists + reveal modes do not warn', () => {
-    for (const v of ['on', 'off', 'all', 'identity size', 'class, box', 'always', 'hover', 'always class box']) {
+  test('the reveal modes + full + off are clean', () => {
+    for (const v of ['off', 'on-hover', 'on-always', 'hover', 'always', 'on-hover full', 'on-always full']) {
       assert.deepEqual(facetTokens(`---\ndebug: ${v}\n---\n\n# A\n`), [], `\`debug: ${v}\` should be clean`);
     }
   });
 
-  test('a typo in a facet list warns with the bad token(s)', () => {
-    assert.deepEqual(facetTokens('---\ndebug: sixe layout\n---\n\n# A\n'), ['sixe']);
+  test('the removed bare `on` (and typos / old lever names) warn', () => {
+    assert.deepEqual(facetTokens('---\ndebug: on\n---\n\n# A\n'), ['on']);
+    assert.deepEqual(facetTokens('---\ndebug: sixe\n---\n\n# A\n'), ['sixe']);
+    assert.deepEqual(facetTokens('---\ndebug: identity size\n---\n\n# A\n'), ['identity', 'size']);
   });
 
-  test('a per-slide `<!-- _debug: … -->` facet typo warns too', () => {
+  test('a per-slide `<!-- _debug: … -->` typo warns too', () => {
     assert.deepEqual(facetTokens('# A\n\n<!-- _debug: bogus -->\n'), ['bogus']);
   });
 });

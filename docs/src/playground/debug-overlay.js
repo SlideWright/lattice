@@ -28,20 +28,20 @@
 export const DEBUG_STYLE_ID = 'lattice-debug-style';
 export const DEBUG_OVERLAY_ID = 'lattice-debug-overlay';
 
-// The levers. `identity size layout` is the default profile (`debug: on`); `class`
-// and `box` are opt-in. Order here is the render order on the chip.
+// What a label says. The default triad (identity · layout · size) answers "what is
+// this box, how does it lay out, how big"; `full` adds the raw class list + box
+// (padding/gap). These are the render order on the chip.
 export const FACETS = ['identity', 'layout', 'size', 'class', 'box'];
 const DEFAULT_FACETS = ['identity', 'layout', 'size'];
-// Reveal mode — how the LABELS show (outlines are always on either way):
-//   hover  (default) → chips hold back until you point at a box, then that box +
-//                      its containers reveal the FULL detail. Keeps a dense slide
-//                      clean; you pull information in only where you look.
-//   always / pinned  → every structural box's chip is pinned on at once (a full
-//                      static map). Hover still enriches the box you point at.
-// Written as a token in the same `debug:` list (`debug: always`, `debug: hover class`),
-// classified out from facets in parseConfig().
+// The `debug:` VOCABULARY (front matter + per-slide `_debug`). OFF is the default —
+// absent or `off` means no overlay. Enable with an explicit REVEAL mode:
+//   on-hover  → outlines always; labels appear when you hover/tap a box (the quiet one)
+//   on-always → outlines + labels pinned on at once (the static map)
+// Add `full` for the extra detail. There is deliberately NO bare `on` (it hid the
+// mode). `hover`/`always`/`pinned` are accepted as lenient synonyms.
 const OFF_VALUES = new Set(['off', 'false', 'no', '0']);
-const ON_VALUES = new Set(['', 'on', 'true', 'yes', '1']);
+const ALWAYS_TOKENS = new Set(['on-always', 'always', 'pinned']);
+const FULL_TOKENS = new Set(['full', 'all']);
 
 // Layout-mode → outline hue. Okabe-Ito CVD-safe blue/vermillion + a neutral gray
 // for ordinary flow (deliberately low-emphasis so grid/flex containers pop). Every
@@ -57,8 +57,7 @@ export const LAYOUT_COLORS = Object.freeze({
 
 /**
  * Does a deck's front matter turn debug on? Reads the leading `---`…`---` block for
- * a `debug:` key with the same on/off vocabulary the engine directive uses (any
- * present, non-off value — incl. a bare `debug:` or a facet list — counts as on).
+ * a `debug:` key: absent or an off value → off; any other value (a reveal mode) → on.
  * Lets a surface seed its toggle's effective state without a render round-trip.
  */
 export function deckDebugOn(source) {
@@ -82,40 +81,29 @@ export function layoutMode(display) {
  * Resolve a section's `data-debug` value (+ a session override) to a config
  * `{ facets, reveal }`, or null when debug is off for this box.
  *   force==='off'          → always off.
- *   force==='on'           → on; use the deck's config if it named one, else default.
+ *   force==='on'           → on; use the deck's mode if it named one, else on-hover.
  *   force==null (follow)   → the deck's value decides (absent attr → off).
- * A `value` of null means the attribute is absent. Default reveal is `hover`.
+ * A `value` of null means the attribute is absent. Off is the default; the enable
+ * modes are `on-hover` (default) and `on-always`, optionally `+ full`.
  */
 export function resolveConfig(value, force) {
 	if (force === 'off') return null;
 	const has = value !== null && value !== undefined;
 	const norm = has ? String(value).trim().toLowerCase() : null;
-	const dflt = () => ({ facets: DEFAULT_FACETS.slice(), reveal: 'hover' });
-	if (force === 'on') {
-		if (!has || ON_VALUES.has(norm) || OFF_VALUES.has(norm)) return dflt();
-		return parseConfig(norm);
-	}
-	// follow the deck
+	if (force === 'on') return parseConfig(norm && !OFF_VALUES.has(norm) ? norm : '');
+	// follow the deck: absent or an off value → off; anything else enables.
 	if (!has || OFF_VALUES.has(norm)) return null;
-	if (ON_VALUES.has(norm)) return dflt();
 	return parseConfig(norm);
 }
 
-// A space/comma list → `{ facets, reveal }`. Tokens are classified: facet tokens
-// (identity/layout/size/class/box, or `all` for every facet) and reveal tokens
-// (hover/always/pinned). No facet token → the default profile; no reveal token →
-// hover. An all-unknown list still yields the default profile so a typo shows
-// something useful (the lint gate warns on unknown tokens separately).
+// A reveal-mode value (+ optional `full`) → `{ facets, reveal }`. Empty or any
+// unrecognized value defaults to `on-hover` with the standard triad, so a typo (or
+// the removed bare `on`) still shows something useful — the lint gate flags it.
 function parseConfig(norm) {
-	const tokens = norm.split(/[\s,]+/).filter(Boolean);
-	const facetToks = tokens.filter((t) => FACETS.includes(t));
-	const facets = tokens.includes('all')
-		? FACETS.slice()
-		: facetToks.length
-			? FACETS.filter((f) => facetToks.includes(f))
-			: DEFAULT_FACETS.slice();
-	const reveal = tokens.some((t) => t === 'always' || t === 'pinned') ? 'always' : 'hover';
-	return { facets, reveal };
+	const tokens = (norm || '').split(/[\s,]+/).filter(Boolean);
+	const reveal = tokens.some((t) => ALWAYS_TOKENS.has(t)) ? 'always' : 'hover';
+	const full = tokens.some((t) => FULL_TOKENS.has(t));
+	return { reveal, facets: full ? FACETS.slice() : DEFAULT_FACETS.slice() };
 }
 
 /**

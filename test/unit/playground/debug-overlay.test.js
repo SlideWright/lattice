@@ -24,40 +24,40 @@ function frameWith(bodyHtml) {
 }
 
 describe('resolveConfig', () => {
-	test('follow-the-deck: absent/off → null, on/empty → default profile in hover mode', async () => {
+	const DFLT = { facets: ['identity', 'layout', 'size'], reveal: 'hover' };
+	const FULL = ['identity', 'layout', 'size', 'class', 'box'];
+
+	test('off is the default: absent / off / false → null', async () => {
 		const { resolveConfig } = await load();
 		assert.equal(resolveConfig(null, null), null); // no attribute
 		assert.equal(resolveConfig('off', null), null);
 		assert.equal(resolveConfig('false', null), null);
-		assert.deepEqual(resolveConfig('on', null), { facets: ['identity', 'layout', 'size'], reveal: 'hover' });
-		assert.deepEqual(resolveConfig('', null), { facets: ['identity', 'layout', 'size'], reveal: 'hover' }); // bare _debug
 	});
 
-	test('a facet list is intersected with the known levers, in canonical order', async () => {
+	test('on-hover is the enable default; empty (bare _debug) also → on-hover', async () => {
 		const { resolveConfig } = await load();
-		assert.deepEqual(resolveConfig('layout identity', null), { facets: ['identity', 'layout'], reveal: 'hover' });
-		assert.deepEqual(resolveConfig('class, box', null), { facets: ['class', 'box'], reveal: 'hover' });
-		assert.deepEqual(resolveConfig('all', null), { facets: ['identity', 'layout', 'size', 'class', 'box'], reveal: 'hover' });
-		// unknown-only falls back to the default profile (lint warns on the typo separately)
-		assert.deepEqual(resolveConfig('bogus', null), { facets: ['identity', 'layout', 'size'], reveal: 'hover' });
+		assert.deepEqual(resolveConfig('on-hover', null), DFLT);
+		assert.deepEqual(resolveConfig('hover', null), DFLT); // lenient synonym
+		assert.deepEqual(resolveConfig('', null), DFLT); // bare _debug
+		// The removed bare `on` (and any typo) still enables in the safe default + lints.
+		assert.deepEqual(resolveConfig('on', null), DFLT);
 	});
 
-	test('reveal mode: `always`/`pinned` pin the chips; it composes with facets', async () => {
+	test('on-always pins the labels; `full` adds class + box', async () => {
 		const { resolveConfig } = await load();
-		assert.equal(resolveConfig('always', null).reveal, 'always');
-		assert.equal(resolveConfig('pinned', null).reveal, 'always');
-		assert.equal(resolveConfig('hover', null).reveal, 'hover');
-		assert.deepEqual(resolveConfig('always class box', null), { facets: ['class', 'box'], reveal: 'always' });
-		// a bare `always` keeps the default facet profile
-		assert.deepEqual(resolveConfig('always', null).facets, ['identity', 'layout', 'size']);
+		assert.equal(resolveConfig('on-always', null).reveal, 'always');
+		assert.equal(resolveConfig('always', null).reveal, 'always'); // synonym
+		assert.equal(resolveConfig('pinned', null).reveal, 'always'); // synonym
+		assert.deepEqual(resolveConfig('on-hover full', null), { facets: FULL, reveal: 'hover' });
+		assert.deepEqual(resolveConfig('on-always full', null), { facets: FULL, reveal: 'always' });
 	});
 
-	test('session override wins: force off mutes a debugging deck; force on lights a plain one', async () => {
+	test('session override: force off mutes; force on lights a plain deck (keeps the deck mode)', async () => {
 		const { resolveConfig } = await load();
-		assert.equal(resolveConfig('on', 'off'), null);
-		assert.equal(resolveConfig('always', 'off'), null);
-		assert.deepEqual(resolveConfig(null, 'on'), { facets: ['identity', 'layout', 'size'], reveal: 'hover' });
-		assert.deepEqual(resolveConfig('always class', 'on'), { facets: ['class'], reveal: 'always' }); // deck's own config kept
+		assert.equal(resolveConfig('on-hover', 'off'), null);
+		assert.equal(resolveConfig('on-always', 'off'), null);
+		assert.deepEqual(resolveConfig(null, 'on'), DFLT);
+		assert.equal(resolveConfig('on-always', 'on').reveal, 'always'); // deck's mode kept under force-on
 	});
 });
 

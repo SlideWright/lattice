@@ -382,7 +382,7 @@ describe('Studio — Inspector controls respond', () => {
 		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
 		// The Debug overlay control is a preset menu; picking one writes the `debug:` key.
 		await user.click(await screen.findByRole('button', { name: 'Debug overlay' }));
-		await user.click(await screen.findByRole('menuitem', { name: /On · always/ }));
-		expect(screen.getByLabelText('Deck source').textContent).toMatch(/debug:\s*always/);
+		await user.click(await screen.findByRole('menuitem', { name: /Always on/ }));
+		expect(screen.getByLabelText('Deck source').textContent).toMatch(/debug:\s*on-always/);
 	});
 });

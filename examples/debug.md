@@ -3,7 +3,7 @@ marp: true
 theme: indaco
 paginate: true
 header: "Lattice · layout debug"
-debug: on
+debug: on-hover
 ---
 
 <!-- _class: title silent -->
@@ -12,10 +12,10 @@ debug: on
 
 # See the boxes your layout is made of.
 
-Set `debug: on` in the front matter and every preview — Playground, Drawing Board,
-Studio — outlines each box by its **layout mode**; **hover** one to read its label.
-It travels with the deck, and it is **stripped from every export**, so a boardroom
-PDF is byte-identical whether debug is on or off.
+Set `debug: on-hover` in the front matter and every preview — Playground, Drawing
+Board, Studio — outlines each box by its **layout mode**; **hover** one to read its
+label. It travels with the deck, and it is **stripped from every export**, so a
+boardroom PDF is byte-identical whether debug is on or off.
 
 ---
 
@@ -24,7 +24,7 @@ PDF is byte-identical whether debug is on or off.
 At rest you see only the outlines — each box colored by how it lays its children
 out: **grid** (blue), **flex** (vermillion), **flow** (gray). **Hover** any box to
 reveal its label (and its containers') in full detail. Want the whole map pinned on
-at once instead? Use `debug: always`.
+at once instead? Use `debug: on-always`.
 
 - Tool A · Chorus
   - [x] Speed
@@ -55,13 +55,13 @@ at once instead? Use `debug: always`.
 
 ---
 
-<!-- _debug: all -->
+<!-- _debug: on-hover full -->
 
 ## Pull every lever on one slide.
 
-`<!-- _debug: all -->` turns on the full set — `identity · layout · size · class ·
-box` — for **this slide only**. The deck-wide `debug: on` stays the default
-everywhere else; a spot directive just overrides the box it sits on.
+`<!-- _debug: on-hover full -->` turns on the full set — `identity · layout · size ·
+class · box` — for **this slide only**. The deck-wide `debug: on-hover` stays the
+default everywhere else; a spot directive just overrides the box it sits on.
 
 - Sizes are the **intrinsic** pixel box, read straight off the layout — not the
   scaled-down thumbnail you see in the filmstrip.
@@ -75,7 +75,8 @@ everywhere else; a spot directive just overrides the box it sits on.
 ## Mute a slide you have already checked.
 
 `<!-- _debug: off -->` silences the overlay on one slide even while the deck is
-debugging — handy once a layout is settled and the boxes are just noise.
+debugging — handy once a layout is settled and the boxes are just noise. `off` is
+also the default everywhere: with no `debug:` key at all, the preview is clean.
 
 Because labels are summoned by default, a busy grid never becomes a wall of chips:
 you pull detail in only where you look — **hover** on desktop, **tap** on touch —
@@ -87,5 +88,5 @@ one box (and its containers) at a time.
 
 # Debug in the preview. Ship it clean.
 
-`debug: on` is an authoring aid, not a deck style — the engine strips it from the
-PDF, PPTX, and HTML exports, so it can never end up in front of a board.
+`debug: on-hover` is an authoring aid, not a deck style — the engine strips it from
+the PDF, PPTX, and HTML exports, so it can never end up in front of a board.

@@ -5,7 +5,7 @@
 // or off for THIS device without editing the deck — the quick flip while you work.
 // Three states:
 //   'on'   → force the overlay on even if the deck never asked
-//   'off'  → force it off even if the deck says `debug: on`
+//   'off'  → force it off even if the deck says `debug: on-hover`
 //   null   → follow the deck (the default; the key is absent from localStorage)
 //
 // Persisted (survives reloads) but never written into the deck and never exported.

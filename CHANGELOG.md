@@ -50,24 +50,25 @@ in patch versions.
   doc is framed as data; generated HTML still crosses the sanitizer).
 
 - **`debug:` front matter turns on the layout debug overlay in every authoring
-  preview.** Set `debug: on` (deck-wide) or `<!-- _debug -->` (one slide) and the
+  preview.** Set `debug: on-hover` (deck-wide) or `<!-- _debug -->` (one slide) and the
   Playground, Drawing Board, and Studio previews outline each box by its **layout
   mode** — grid (blue), flex (vermillion), flow (grey), an Okabe-Ito CVD-safe palette
   that clears WCAG-AA over both preview backgrounds — and label the structural boxes
   (the slide, grid/flex containers, grid cells) with a configurable set of levers:
-  `identity · layout · size` by default, plus opt-in `class` and `box` (`debug: all`
-  shows everything). Labels default to **hover reveal**: at rest you see only the
-  color-coded outlines, and pointing at a box (or **tapping** it on touch) reveals its
-  label — and its container chain — in full detail, so a dense grid never becomes a
-  wall of chips (`debug:
-  always` pins every chip on at once for a static map). Labels ride in a
-  `pointer-events:none` overlay with **zero layout impact**, de-overlapped so a
-  container and its first cell don't collide. It is **preview-only**: the engine strips
-  `data-debug` from every export, so exported PDF/PPTX/HTML bytes are identical whether
-  a deck says `debug: on` or not. A Playground toolbar toggle + Deck-setup switch give
-  a per-session override (`on`/`off`/follow-the-deck). Demo: `examples/debug.md`;
-  design: `engineering/decisions/2026-07-01-debug-bounding-boxes.md`. (Replaces the
-  former Playground-only "bounding boxes" viewer toggle.)
+  `identity · layout · size` by default, plus opt-in `class` and `box` (add `full`
+  to show everything). Labels default to **hover reveal** (`debug: on-hover`): at rest
+  you see only the color-coded outlines, and pointing at a box (or **tapping** it on
+  touch) reveals its label — and its container chain — in full detail, so a dense grid
+  never becomes a wall of chips (`debug: on-always` pins every chip on at once for a
+  static map). Labels ride in a `pointer-events:none` overlay with **zero layout
+  impact**, de-overlapped so a container and its first cell don't collide. **Off is the
+  default** — with no `debug:` key (or `debug: off`) the preview is clean. It is
+  **preview-only**: the engine strips `data-debug` from every export, so exported
+  PDF/PPTX/HTML bytes are identical whether a deck says `debug: on-hover` or not. A
+  Playground toolbar toggle + Deck-setup switch give a per-session override
+  (`on`/`off`/follow-the-deck). Demo: `examples/debug.md`; design:
+  `engineering/decisions/2026-07-01-debug-bounding-boxes.md`. (Replaces the former
+  Playground-only "bounding boxes" viewer toggle.)
 
 ### Fixed
 

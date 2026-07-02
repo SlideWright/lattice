@@ -316,20 +316,17 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	const renderMode = getFrontMatter(source, 'mode') || 'boardroom';
 	const setRenderMode = (value: string) => setSource((s) => setFrontMatter(s, 'mode', value === 'boardroom' ? null : value));
 	// The layout DEBUG overlay — a real deck setting (`debug:` front matter), so it
-	// rides in previewFm to the render and is stripped from every export. Presets map
-	// to the overlay's reveal modes; a hand-typed facet list shows verbatim.
+	// rides in previewFm to the render and is stripped from every export. Off is the
+	// default; the two reveal modes are on-hover and on-always (a hand-typed value
+	// like `on-hover full` shows verbatim).
 	const debugValue = getFrontMatter(source, 'debug');
 	const setDebug = (value: string | null) => setSource((s) => setFrontMatter(s, 'debug', value));
-	const debugLabel =
-		debugValue == null || /^(off|false|no)$/i.test(debugValue)
-			? 'Off'
-			: /^(on|true|yes)$/i.test(debugValue)
-				? 'On · hover'
-				: /^(always|pinned)$/i.test(debugValue)
-					? 'On · always'
-					: debugValue === 'all'
-						? 'All levers'
-						: debugValue;
+	const debugLabel = ((v) => {
+		if (v == null || /^(off|false|no)$/i.test(v)) return 'Off';
+		if (/^(on-always|always|pinned)\b/i.test(v)) return 'Always on';
+		if (/^(on-hover|hover)\b/i.test(v)) return 'On hover';
+		return v; // a hand-typed value (e.g. `on-hover full`) shows verbatim
+	})(debugValue);
 	// The saved finishes, shaped for the picker (slug + label + a chip swatch).
 	const savedFinishMenu = React.useMemo<SavedFinishMenuEntry[]>(
 		() => savedFinishes.map((f) => ({ id: f.id, name: f.name, label: f.label, swatch: finishSwatch(f.recipe) })),
@@ -954,9 +951,8 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end" className="w-44">
 							<DropdownMenuItem onSelect={() => setDebug(null)}>Off{debugLabel === 'Off' && <span className="ml-auto text-[var(--accent)]">✓</span>}</DropdownMenuItem>
-							<DropdownMenuItem onSelect={() => setDebug('on')}>On · hover{debugLabel === 'On · hover' && <span className="ml-auto text-[var(--accent)]">✓</span>}</DropdownMenuItem>
-							<DropdownMenuItem onSelect={() => setDebug('always')}>On · always{debugLabel === 'On · always' && <span className="ml-auto text-[var(--accent)]">✓</span>}</DropdownMenuItem>
-							<DropdownMenuItem onSelect={() => setDebug('all')}>All levers{debugLabel === 'All levers' && <span className="ml-auto text-[var(--accent)]">✓</span>}</DropdownMenuItem>
+							<DropdownMenuItem onSelect={() => setDebug('on-hover')}>On hover{debugLabel === 'On hover' && <span className="ml-auto text-[var(--accent)]">✓</span>}</DropdownMenuItem>
+							<DropdownMenuItem onSelect={() => setDebug('on-always')}>Always on{debugLabel === 'Always on' && <span className="ml-auto text-[var(--accent)]">✓</span>}</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</Field>

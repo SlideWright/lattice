@@ -119,7 +119,7 @@ function DebugPrefRow({ getSource }: { getSource: () => string }) {
 				<span className="db-pref-label">Debug overlay</span>
 				<span className="db-pref-hint">
 					Outline every box by layout mode (grid / flex / flow) and label the structural boxes. Set{' '}
-					<code>debug: on</code> in the deck to carry it; this switch overrides for this device only — never exported.
+					<code>debug: on-hover</code> in the deck to carry it; this switch overrides for this device only — never exported.
 				</span>
 			</span>
 			<span className="db-switch">
