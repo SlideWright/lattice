@@ -603,6 +603,7 @@ ${indent}   - ${body.trim()}`;
       if (vocab.modeNames) findings.push(...findUnknownMode(source, vocab.modeNames));
       findings.push(...findBackdropIssues(source));
       if (vocab.splitNames) findings.push(...findUnknownSplit(source, vocab.splitNames));
+      findings.push(...findBadDebugFacets(source));
       findings.push(...findGanttIssues(source));
       findings.push(...findAutosplitOrientationMismatch(source));
       return findings;
@@ -931,6 +932,34 @@ ${indent}   - ${body.trim()}`;
         message: `'${value}' is not a known split mode \u2014 the deck would silently fall back to 'rule' (split on ---)`,
         fix: `Set front-matter \`split:\` to one of: ${[...splitNames].join(", ")}.`
       }];
+    }
+    var DEBUG_VALID = /* @__PURE__ */ new Set(["off", "on-hover", "on-always", "verbose"]);
+    function findBadDebugFacets(source) {
+      const out = [];
+      const seen = /* @__PURE__ */ new Map();
+      const fmBlock = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+      if (fmBlock) {
+        const m = fmBlock[1].match(/^\s*debug:\s*(.*)$/m);
+        if (m) seen.set(m[1], m[0].trim());
+      }
+      for (const c of source.matchAll(/<!--\s*_?debug\s*:\s*([^>]*?)\s*-->/g)) seen.set(c[1], c[0].trim());
+      for (const [rawValue, line] of seen) {
+        const value = rawValue.trim().replace(/^["']|["']$/g, "");
+        if (value === "") continue;
+        const bad = value.toLowerCase().split(/[\s,]+/).filter(Boolean).filter((t) => !DEBUG_VALID.has(t));
+        for (const token of bad) {
+          out.push({
+            slide: 0,
+            rule: "unknown-debug-facet",
+            severity: "warning",
+            classToken: token,
+            line,
+            message: `'${token}' is not a known debug value \u2014 the overlay falls back to on-hover`,
+            fix: "Use `debug: on-hover` or `debug: on-always` (optionally `+ verbose`), or `off`."
+          });
+        }
+      }
+      return out;
     }
     module.exports = {
       CLASS_DIRECTIVE,

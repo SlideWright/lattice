@@ -1,0 +1,331 @@
+---
+status: in-progress
+summary: Promote the Playground-only debug bounding-box overlay into a first-class, deck-carried feature. A `debug` front-matter key (and per-slide `_debug`) turns on layout debugging across all five preview surfaces; it is PREVIEW-ONLY — the engine stamps `data-debug` for the previewers' overlay agent but render() strips it by default so exported PDF/PPTX/HTML bytes are unchanged (owner decision: preview-only, stripped from export). The value is a configurable set of "levers" (identity / size / layout / class / box), not just on/off. Each box gains an inside-corner label drawn by a JS overlay mirror layer (a pointer-events:none sibling of the deck) so it adds zero layout box — never `position:relative`+`::after`, which reflows absolutely-positioned descendants and CANNOT read computed size anyway. Outline color is recolored to encode layout mode (grid/flex/flow), WCAG-AA and CVD-safe, retiring the redundant 11-hue-by-tag rainbow. Slices: engine directive (done), export strip (done), overlay agent, wire five surfaces, session-override toggle, docs/demo.
+---
+
+# Debug bounding boxes — front-matter `debug` config + inside-corner labels
+
+**Date:** 2026-07-01
+**Status:** Design agreed (three forks confirmed with the owner); implementation in slices.
+**Related:** `docs/src/playground/bbox-overlay.js` (today's feature),
+`lib/engine/directives.js` (directive allowlist),
+`engineering/decisions/2026-06-22-the-fit-spine.md` (the measurement agent we reuse),
+`engineering/decisions/2026-06-16-colour-blindness-accessibility.md` (CVD palette we mirror),
+`engineering/decisions/2026-06-29-component-transformer-threat-model.md` (§5.1, the #22 sink rule).
+
+---
+
+## 1. Why this exists
+
+Today you can outline every element in a slide to eyeball layout — but only in the
+**Playground**, only as a **device-local toggle** (`localStorage['lattice-bbox']` +
+a toolbar button), and it draws a fixed **11-hue-by-HTML-tag** rainbow with **no
+labels**. It is invisible to Drawing Board and Studio, it does not travel with the
+deck, and once boxes are on you still have to *guess* what each box is, how big it
+is, or how it lays out its children.
+
+The ask: make debug a **first-class deck setting** (`debug:` in front matter) that
+works across the previewers, and give each box an **inside-corner label** that says
+something *useful* — without the label ever touching layout.
+
+---
+
+## 2. What ships today (verified)
+
+- **Mechanism:** `bbox-overlay.js` injects ONE `<style>` into the preview iframe
+  (`applyBbox()`), scoped to `.lattice`. Pure `outline` (zero layout box),
+  `outline-offset:-1px`. Never in `lattice.css`, never exported.
+- **Reach:** called from exactly one place — `PlaygroundApp.tsx`. Drawing Board and
+  Studio show **no** boxes today. "Make it work in all three" is *net-new wiring*,
+  not sharing an existing cross-surface feature.
+- **Surfaces that build a preview frame — there are FIVE, not three**
+  (`SANCTIONED_PREVIEW_BUILDERS`, `tools/check-ownership.js`):
+  `deck-preview.js` (Playground + Drawing Board filmstrip),
+  `single-slide-render.ts` (Studio), `presenter-window.js`,
+  `drawing-board-practice.js`, `drawing-board-focus.js`.
+- **Two render models:** the filmstrip CSS-scales **each `<section>`**
+  (`transform:scale(w/1280)`); the single-slide path scales the **iframe element**.
+  A `getBoundingClientRect`-driven label must account for scale to report real px.
+- **Directive plumbing:** front matter → `lib/engine/directives.js` allowlists →
+  `slides.js:160-176` stamps `data-<kebab>` (and `--<kebab>`, except `build`) on
+  each `<section>`. Adding a key here is a one-liner.
+
+---
+
+## 3. The three forks (owner decisions)
+
+| Fork | Decision | Consequence |
+|---|---|---|
+| **Export safety** | **Preview-only, stripped from export.** | `debug` is a real front-matter key, but the export pipeline strips it so exported PDF/PPTX/HTML bytes are *identical* whether debug is on or off. Keeps boardroom decks clean and stays OUT of the export sign-off gate. |
+| **Label content** | **Configurable "levers", not a fixed string.** | `debug` takes a *config* selecting which facets show (identity / size / layout / class / box). This is also the "variants we support". |
+| **Outline color** | **Must mean something AND pass WCAG AA.** | Color encodes **layout mode** (grid / flex / flow), not HTML tag; hues + label chips verified AA over light and dark, CVD-safe. |
+
+These override the independent checker's "don't put it in front matter at all"
+recommendation — the checker's export concern is real but *solved* by stripping on
+export (its own fallback suggestion), so we keep the deck-carried key the owner asked for.
+
+---
+
+## 4. The `debug` config grammar (the levers)
+
+Front-matter (deck-wide) **and** per-slide comment form:
+
+```md
+---
+debug: on-hover           # whole deck: outlines always, labels on hover/tap
+---
+
+<!-- _debug: on-always -->    # THIS slide only: pin every label on
+<!-- _debug: on-hover verbose --> # THIS slide only: hover reveal, every facet
+<!-- _debug -->               # THIS slide only, default (bare flag → on-hover)
+<!-- _debug: off -->          # mute THIS slide when the deck is debugging
+```
+
+**Value = a reveal-mode keyword, optionally with `verbose`.**
+
+Base vocabulary — **one name per concept, NO aliases** (aliases just make an author
+guess which spelling is right):
+- `off` / **absent** → **disabled (the default, present or not)**
+- `on-hover` / empty → **default: outlines always, labels on hover/tap**
+- `on-always` → outlines always, **every label pinned on**
+- `verbose` → add the opt-in facets (`class` + `box`) to either reveal mode
+
+There is deliberately **no bare `on`** — a debugger has to say *how* the labels
+appear (`on-hover` vs `on-always`), so the mode is never ambiguous. A stray `on`,
+a dropped alias (`hover`, `always`, `full`, `false`…), or any typo still enables in
+the safe `on-hover` default and raises a lint warning that names the one true value.
+
+Facets (the levers the label draws — selected as a SET by the reveal mode + `verbose`,
+not named individually; a bare facet name like `debug: identity` is a lint warning):
+
+| token | label shows | source |
+|---|---|---|
+| `outline` | the box outline itself | implied by every profile |
+| `identity` | semantic name — component (`_class` / root class) › Form › tag | element class list, prettified via `dist/docs/components.json` |
+| `size` | intrinsic (un-scaled) `W×H` in px | `getBoundingClientRect` ÷ section scale |
+| `layout` | display mode `grid` / `flex` / `flow` (+ gap, track count) | `getComputedStyle` |
+| `class` | raw CSS class list | `attr(class)` |
+| `box` | padding + gap values | `getComputedStyle` |
+
+Default facet set: **`identity size layout`** (the useful triad — *what* the box is,
+*how* it arranges children, *how big* it is). **`verbose` adds `class` + `box`.**
+
+Example label: `comparison-grid · grid · 720×360`.
+
+**Reveal mode is the mode keyword — and OFF is the default.** With no `debug:` key
+(or `debug: off`) the preview is clean: no outlines, no chips. Enabling always names
+the reveal mode. `on-hover` (the recommended default) draws the color-coded outlines
+always but keeps LABELS summoned: at rest you see only outlines; hovering (desktop) or
+**pressing-and-holding** (touch) a box reveals its chip *and its container chain*.
+`on-always` pins every chip on at once for a static map. `verbose` (in either mode)
+adds the opt-in `class` + `box` facets. Summoned labels are what kill the wall-of-chips
+density — you pull detail in only where you look.
+
+**Debug owns input in `hover` mode via a PARENT-HOSTED CAPTURE SURFACE — input never
+sits inside the iframe.** In `hover` mode the agent mounts a transparent
+`pointer-events:auto` div in the PARENT document, `position:fixed` over the preview
+iframe (`DEBUG_CAPTURE_ID`, `debug-overlay.js`). It maps a parent-viewport point into
+the iframe's own coordinates (undo the element's transform scale: `rect.width /
+offsetWidth`) and hit-tests with the IFRAME's `elementsFromPoint`; the chips still live
+inside the iframe. Desktop: `mousemove` gives live hover. Touch: **press-and-hold to
+peek** — `touchstart` reveals the box under the finger, the label persists *while
+pressed*, `touchend` hides it; a drag past a 10px threshold is a **scroll**, so the peek
+is dropped. The surface is recreated on every `applyDebug` (self-heals if the host
+re-renders the iframe) and torn down on disable; it's recorded on the PARENT document so
+teardown reaches it even after an iframe reload. `always` mode mounts no surface (chips
+pinned, deck interactive). Owner (2026-07-01): "in debug + hover, debug takes precedence."
+Owner (2026-07-02): touch is **press-and-hold**, not tap-to-toggle.
+
+**Why the input moved OUT of the iframe (the fix that finally worked on iPhone).** Two
+earlier touch models both listened INSIDE the iframe and both died on real iOS:
+(1) `pointerdown`→`pointerup` tap detection — iOS fires `pointercancel` the instant it
+suspects a scroll, wiping the tap; (2) `touchstart`/`touchend` press-and-hold bound to
+the iframe `document` — worked in Studio's **Present** (barely scaled) but did nothing in
+the main **preview** (scaled ~0.28), because **iOS Safari will not deliver a touch INTO a
+CSS-transform-scaled iframe**. Both passed every sandbox test (jsdom has no layout;
+headless Chromium delivers iframe touch fine) — the classic "the engines I can run can't
+reproduce the iOS-only bug" trap. The parent-hosted capture surface removes the
+dependency entirely: the touch lands on a plain div in the MAIN page (reliable on every
+engine), and we map into the iframe with math, not event delivery. This is the codebase's
+own `chart-interact` hit-surface pattern (`drawing-board-chart-interact.js`). Verified on
+the real Studio with CDP touch — main preview AND Present both reveal on hold, lift hides,
+no leak; final iOS-Safari confirmation is on-device. (A brief interim fix toggled the
+Studio preview's `pointer-events:none` swipe-wrapper while debugging; the capture surface
+sits ABOVE that wrapper regardless, so the toggle was reverted as redundant.)
+
+**Root cause of the iOS touch failures (post-mortem — three wrong fixes before this).**
+The first touch attempts put a `position:fixed` chip overlay AND a `position:fixed`
+capture div INSIDE the preview iframe. But the preview iframe's document scrolls
+**internally** (the FIT agent sets `.lattice{overflow:clip}` — non-scrolling — so the
+document is the scroller, `deck-preview.js`), and **iOS Safari does not track
+`position:fixed` to an iframe's internal scroll**. After any scroll the fixed layer
+stranded off the boxes and the tap target was uncovered → touch "did nothing." It was
+never reproduced because the harnesses ran on jsdom (no layout) and headless Chromium
+(which *honors* fixed-in-iframe) — the two engines that cannot surface an iOS-only bug.
+**The fix follows the codebase's OWN in-iframe interaction pattern** (`chart-interact`
++ the SYNC agent: document/window listeners + `elementFromPoint`, no fixed div): the
+overlay is now `position:absolute` anchored to the document with chips placed at
+**document coordinates** (`getBoundingClientRect + scroll offset`), which scroll with
+the content on every engine. Verified on the real Playground (absolute overlay, chip
+tracks its box after scroll with delta 0, tap reveals); final iOS-Safari confirmation is
+on-device. Lesson: test the real surface + the real engine, never a harness that can't
+reproduce the target platform.
+
+Unknown facet tokens are a lint **warning** (not an error), listed by
+`lint-core.js`, mirroring how `finish` / `mode` / `split` vocab is validated.
+
+---
+
+## 5. Architecture — preview-only, stripped from export
+
+**Engine (`lib/engine/directives.js` + `slides.js`):**
+- Add `debug` to `KNOWN_DIRECTIVES` and `FLAG_DIRECTIVES` (so bare `<!-- _debug -->`
+  works), and to `APPLIED_DIRECTIVES` (so it stamps `data-debug="<config>"`).
+- **Keep `debug` OUT of `GLOBAL_ONLY`** → per-slide `_debug` is allowed (the single
+  strongest lever against a "wall of noise"; a debugger usually wants *one* slide).
+- **Suppress the `--debug` custom prop** — extend the `key !== 'build'` guard at
+  `slides.js:166,175` to also exclude `debug`. Nothing reads a CSS var for debug;
+  it would just be dead bytes to strip later.
+
+**Export strip (single choke point in the export pipeline):**
+- Strip `data-debug` from every `<section>` before emitting bytes. Because the outline
+  CSS and label overlay live ONLY in the preview builders (never in `lattice.css` /
+  engine output), stripping the now-inert attribute makes exports **byte-identical**
+  regardless of `debug`. That is what keeps this change off the export sign-off gate.
+- *Rejected alternative:* don't stamp at all; return debug config in render metadata.
+  Loses per-slide granularity and forces every one of the five builders to re-parse
+  front matter. Stamp-then-strip is uniform and the builders already read section attrs.
+
+**Preview (the shared "debug overlay agent"):**
+- One runtime agent, injected into all five preview srcdocs **alongside the FIT
+  agent**, replaces the Playground-only `bbox-overlay.js`. It reads
+  `section[data-debug]`, parses the config, draws outlines + labels.
+- **The existing localStorage/toolbar toggle becomes a session override:** front
+  matter is the deck's *default*; the toggle forces debug on/off for *this viewer,
+  this session*, winning over the front-matter value. (Studio's settings copy
+  changes from "stored on this device" to "overrides the deck's `debug:` for this
+  session".)
+
+---
+
+## 6. The corner label — zero flow, guaranteed
+
+The label must not be part of the flow. The tidy CSS route (`position:relative` on
+content boxes + `::after`) is **rejected**: it re-anchors absolutely-positioned
+descendants (badges, focus rings, pagination), reorders paint, and risks the
+FIT/measuring layouts (#20). And CSS `content:` cannot read computed size anyway.
+
+**Technique: a JS overlay mirror layer.**
+- The agent appends ONE overlay container as a **sibling of `.lattice`**
+  (`position:absolute; inset:0; pointer-events:none;` own stacking context). It is
+  *outside* the measured content tree, so it adds zero layout box and cannot reflow a
+  slide or corrupt FIT (#20).
+- For each labeled box it computes `getBoundingClientRect` (relative to the overlay)
+  and places a label chip at the box's **inside** corner. **Fixed font-size** (not
+  scaled) so labels stay legible at any filmstrip scale; **intrinsic size** =
+  rect ÷ section-scale.
+- **Re-draw** piggybacks on FIT's existing `ResizeObserver` + backstop timers +
+  `patchSections`; the overlay holds no per-node state, so a node swap just triggers a
+  full re-render (no orphaned labels).
+- **Both render models** are handled because the overlay lives *inside* each iframe in
+  that iframe's own coordinate space; the only per-model detail is the scale factor for
+  intrinsic size (filmstrip: per-section `scale()`; single-slide: 1 inside the frame).
+
+**Anti-clutter (the inversion "make it useless" guardrails):**
+- **Labels only on structural boxes by default** (section, component roots, form
+  regions, grid/flex containers) — never every leaf, or a 6×4 grid becomes mush.
+  Outlines stay on all boxes (lines are cheap).
+- **Hover a box → isolate it** (reveal its label + immediate children, dim the rest).
+
+**#22 compliance:** labels are first-party chrome appended by the agent *after*
+`sanitizeSlideHtml`, never merged into the untrusted `html` string. Text pulled from
+deck content (identity/class) is inserted via `textContent`, never `innerHTML`.
+
+---
+
+## 7. Color — meaningful + AA
+
+Outline hue encodes **layout mode**, the single most useful fact for layout debugging:
+
+| mode | role |
+|---|---|
+| `grid` | display:grid containers |
+| `flex` | display:flex containers |
+| `flow` | normal block/inline flow |
+
+- Outlines are non-text UI → target **≥3:1** contrast against both light and dark
+  preview backgrounds.
+- Label **chips use a solid background** with foreground text at **≥4.5:1** (chosen
+  black/white per hue), so text is readable regardless of the slide behind it.
+- **CVD-safe:** reuse the palette approach from
+  `2026-06-16-colour-blindness-accessibility.md`; three modes are easy to keep
+  distinguishable under deuteranopia/protanopia, and the label carries the mode name as
+  a redundant (non-color) encoding.
+- The old 11-hue-by-tag rainbow is retired — once the label states identity, per-tag
+  hue was redundant noise.
+
+---
+
+## 8. Implementation slices
+
+1. **Engine directive** — recognize `debug`, stamp `data-debug`, suppress `--debug`,
+   allow per-slide + bare flag. Unit tests mirror `focus`/`build`. Lint: warn on
+   unknown facet tokens.
+2. **Export strip** — remove `data-debug` in the export choke point; test that export
+   bytes are identical with debug on vs off.
+3. **Debug overlay agent** — config parse, layout-mode AA/CVD palette, corner-label
+   overlay (zero flow), depth gating + hover-isolate. Extend
+   `bbox-overlay.test.js` for the CSS/DOM contract and config parser.
+4. **Wire the surfaces** — the three AUTHORING previews:
+   `PlaygroundApp.tsx` + `drawing-board-render.js` (both via the shared
+   `deck-preview.js` filmstrip) and `single-slide-render.ts` (Studio). Each calls
+   `applyDebug(frame, {force})` after a render/patch and on the fresh-frame load.
+   **Presentation/rehearsal frames (`presenter-window.js`,
+   `drawing-board-practice.js`, `drawing-board-focus.js`) are deliberately OUT of
+   scope** — you don't debug layout mid-present, and outlines there would be a
+   distraction, not an aid. The filmstrip surfaces honour the shared session
+   override; the single-slide path strictly follows the deck (so a landing/showcase
+   specimen can't inherit a viewer's Studio/Playground override).
+5. **Toggle = session override** — front-matter default; toolbar/localStorage overrides
+   for the session. Update DeckSetupSheet + Studio settings copy.
+6. **Docs + changelog + demo** — this doc, an engineering page section, `CHANGELOG`
+   `## Unreleased`, and a demo deck `examples/debug.md` (+ committed PDF) per #9.
+
+---
+
+## 9. Open questions / risks
+
+- **Export choke point:** confirm the exact module for the strip (candidate:
+  `lib/core/marp-bundle.js` / the pipeline). Locate during slice 2.
+- **Identity prettification:** components are class-based (no `data-component`); the
+  agent derives the name from the class list, prettified via `dist/docs/components.json`.
+  Heuristic — refine if names read poorly.
+- **Perf on huge decks:** only label *rendered* sections (the filmstrip already
+  lazy-renders via `content-visibility`); the agent must not walk off-screen slides.
+
+---
+
+## Status (2026-07-01) — shipped in this branch
+
+- **Slices 1–2 (engine):** `debug` directive recognized + applied; `render()`
+  strips `data-debug` unless `{preview:true}` (export choke point turned out to be
+  the shared engine `render()`, not `marp-bundle.js`). Unit-tested, byte-identical
+  exports.
+- **Slice 3 (agent):** `docs/src/playground/debug-overlay.js` — layout-mode outlines
+  (Okabe-Ito AA/CVD palette), configurable levers (default `identity · layout · size`;
+  `verbose` adds `class` + `box`), zero-flow corner labels via a fixed
+  `pointer-events:none` overlay (position from `getBoundingClientRect`, size from
+  `offsetWidth/Height`), de-overlap cascade, hover-isolate. Labels are gated to the
+  slide + grid/flex containers + grid cells (not flex leaf content) so a dense grid
+  stays readable.
+- **Slice 4 (surfaces):** wired into Playground, Drawing Board, and Studio (see §8);
+  presentation/rehearsal frames intentionally excluded.
+- **Slice 5 (toggle):** `debug-prefs.js` session override ('on'/'off'/follow); the
+  Playground toolbar toggle + Deck-setup switch drive it; Studio follows the deck.
+- **Slice 6:** `debug:` facet lint warning (`unknown-debug-facet`), `examples/debug.md`
+  demo, this doc, CHANGELOG. Verified in dark + light.
+
+**#9 (demo PDF) note:** debug is preview-only and stripped from export, so a committed
+demo PDF would be byte-identical to a non-debug deck. `examples/debug.md` ships without
+a committed `.pdf` for that reason — the demo's value is the *preview*, and the visual
+evidence is the review screenshots.

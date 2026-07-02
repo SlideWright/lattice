@@ -51,6 +51,30 @@ describe('lint-core: isKnownModifier', () => {
   });
 });
 
+describe('lint-core: unknown-debug-facet', () => {
+  const facetTokens = (src) =>
+    core.lintTextWith(src, vocab).filter((f) => f.rule === 'unknown-debug-facet').map((f) => f.classToken);
+
+  test('the canonical vocabulary — off / on-hover / on-always / verbose — is clean', () => {
+    for (const v of ['off', 'on-hover', 'on-always', 'on-hover verbose', 'on-always verbose']) {
+      assert.deepEqual(facetTokens(`---\ndebug: ${v}\n---\n\n# A\n`), [], `\`debug: ${v}\` should be clean`);
+    }
+  });
+
+  test('bare `on`, dropped aliases, and typos warn (one finding per bad token)', () => {
+    assert.deepEqual(facetTokens('---\ndebug: on\n---\n\n# A\n'), ['on']);
+    assert.deepEqual(facetTokens('---\ndebug: sixe\n---\n\n# A\n'), ['sixe']);
+    assert.deepEqual(facetTokens('---\ndebug: identity size\n---\n\n# A\n'), ['identity', 'size']);
+    // No aliases: the old synonyms now warn (steering authors to the one true name).
+    assert.deepEqual(facetTokens('---\ndebug: hover\n---\n\n# A\n'), ['hover']);
+    assert.deepEqual(facetTokens('---\ndebug: on-hover full\n---\n\n# A\n'), ['full']);
+  });
+
+  test('a per-slide `<!-- _debug: … -->` typo warns too', () => {
+    assert.deepEqual(facetTokens('# A\n\n<!-- _debug: bogus -->\n'), ['bogus']);
+  });
+});
+
 describe('lint-core: capacity-overflow ↔ autosplit', () => {
   const capVocab = {
     names: new Set(['checklist']),

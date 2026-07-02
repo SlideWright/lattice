@@ -43,11 +43,12 @@ vi.mock('@/lib/playground-engine', () => ({
 	}),
 }));
 
-vi.mock('@/playground/bbox-overlay.js', () => ({ applyBbox: () => {} }));
-vi.mock('@/playground/bbox-prefs.js', () => ({
-	bboxEnabled: () => false,
-	onBboxEnabledChange: () => () => {},
-	setBboxEnabled: () => {},
+vi.mock('@/playground/debug-overlay.js', () => ({ applyDebug: () => {}, deckDebugOn: () => false }));
+vi.mock('@/playground/debug-prefs.js', () => ({
+	getDebugOverride: () => null,
+	onDebugOverrideChange: () => () => {},
+	setDebugOverride: () => {},
+	debugEffectiveOn: (d: boolean) => d,
 }));
 vi.mock('@/playground/deck-config.js', () => ({
 	readFrontMatter: () => ({ configured: false }),

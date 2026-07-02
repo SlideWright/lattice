@@ -315,6 +315,27 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 	// Named `renderMode` locally to avoid clashing with the light/dark `mode` below.
 	const renderMode = getFrontMatter(source, 'mode') || 'boardroom';
 	const setRenderMode = (value: string) => setSource((s) => setFrontMatter(s, 'mode', value === 'boardroom' ? null : value));
+	// The layout DEBUG overlay — a real deck setting (`debug:` front matter), so it
+	// rides in previewFm to the render and is stripped from every export. Off is the
+	// default; the reveal modes are on-hover / on-always, each with an optional
+	// `verbose` (adds the class + box levers). The menu offers every value; a
+	// hand-typed value we don't recognize shows verbatim. No aliases.
+	const debugValue = getFrontMatter(source, 'debug');
+	const setDebug = (value: string | null) => setSource((s) => setFrontMatter(s, 'debug', value));
+	const DEBUG_OPTIONS: Array<{ value: string | null; label: string }> = [
+		{ value: null, label: 'Off' },
+		{ value: 'on-hover', label: 'On hover' },
+		{ value: 'on-hover verbose', label: 'On hover · verbose' },
+		{ value: 'on-always', label: 'Always on' },
+		{ value: 'on-always verbose', label: 'Always on · verbose' },
+	];
+	const debugLabel = ((v) => {
+		if (v == null || /^off$/i.test(v)) return 'Off';
+		const verbose = /\bverbose\b/i.test(v);
+		const mode = /^on-always\b/i.test(v) ? 'Always on' : /^on-hover\b/i.test(v) ? 'On hover' : null;
+		if (!mode) return v; // an unrecognized hand-typed value shows verbatim
+		return verbose ? `${mode} · verbose` : mode;
+	})(debugValue);
 	// The saved finishes, shaped for the picker (slug + label + a chip swatch).
 	const savedFinishMenu = React.useMemo<SavedFinishMenuEntry[]>(
 		() => savedFinishes.map((f) => ({ id: f.id, name: f.name, label: f.label, swatch: finishSwatch(f.recipe) })),
@@ -928,6 +949,25 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			</InspGroup>
 			<InspGroup icon={<Wand2 className="size-3.5" />} label="Authoring">
 				<Field label="Inline validation"><Toggle label="Inline validation" on={validation} onClick={() => { setValidation((v) => { notify(v ? 'Inline validation off — the editor stops flagging components.' : 'Inline validation on — unknown components are flagged again.'); return !v; }); }} /></Field>
+				{/* Debug overlay — outlines every box by layout mode and labels the
+				    structural ones on hover; `always` pins them. A deck setting (`debug:`
+				    front matter), preview-only, stripped from every export.
+				    engineering/decisions/2026-07-01-debug-bounding-boxes.md */}
+				<Field label="Debug overlay">
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Control aria-label="Debug overlay">{debugLabel} <ChevronDown className="size-3.5" /></Control>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end" className="w-52">
+							{DEBUG_OPTIONS.map((o) => (
+								<DropdownMenuItem key={o.label} onSelect={() => setDebug(o.value)}>
+									{o.label}
+									{debugLabel === o.label && <span className="ml-auto text-[var(--accent)]">✓</span>}
+								</DropdownMenuItem>
+							))}
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</Field>
 			</InspGroup>
 			<InspGroup icon={<History className="size-3.5" />} label="History">
 				<button type="button" onClick={saveVersion} className="mb-1.5 flex w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-[12.5px] font-semibold text-[var(--accent)] hover:bg-[var(--accent-soft)]"><Save className="size-3.5" />Save a version</button>
@@ -1013,7 +1053,9 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			    aspect ratio follows the deck's selected Size, not a fixed 16:9. */}
 			<div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-card p-4 sm:p-5" onTouchStart={onPreviewTouchStart} onTouchEnd={onPreviewTouchEnd} onWheel={onPreviewWheel}>
 				{/* pointer-events-none so a swipe over the slide (an engine iframe, which
-				    would otherwise swallow the touch) reaches the swipe container. */}
+				    would otherwise swallow the touch) reaches the swipe container. The debug
+				    overlay's press-and-hold rides a parent-hosted capture surface layered
+				    ABOVE this (debug-overlay.js), so it works regardless of this rule. */}
 				<div className={cn('pointer-events-none relative overflow-hidden rounded-xl border border-border bg-background shadow-[0_8px_24px_rgba(10,22,40,.10)]', previewPortrait ? 'h-full w-auto' : 'h-auto w-full max-w-[760px]')} style={{ aspectRatio: `${previewRatio[0]} / ${previewRatio[1]}` }}>
 					<DeckPreview options={options} sample={previewFm ? previewFm + slide : slide} mermaid={false} paletteOverride={activeTheme?.name} extraTheme={extraTheme} extraCss={previewExtraCss} debounceMs={140} className="size-full" aria-label="Live deck preview" />
 				</div>

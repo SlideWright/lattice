@@ -2,7 +2,8 @@ import { Settings } from 'lucide-react';
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { bboxEnabled, onBboxEnabledChange, setBboxEnabled } from '@/playground/bbox-prefs.js';
+import { deckDebugOn } from '@/playground/debug-overlay.js';
+import { debugEffectiveOn, onDebugOverrideChange, setDebugOverride } from '@/playground/debug-prefs.js';
 import { CONFIG_PROFILES, createConfigPanel } from '@/playground/deck-config.js';
 
 /**
@@ -84,7 +85,7 @@ export function DeckSetupSheet({
 				<div className="deck-config px-4 pb-4" ref={mountHost} />
 				<div className="deck-config border-t border-border/60 px-4 pb-4 pt-3">
 					<div className="db-settings-head">Preview · debug</div>
-					<BboxPrefRow />
+					<DebugPrefRow getSource={getSource} />
 				</div>
 			</SheetContent>
 		</Sheet>
@@ -92,38 +93,42 @@ export function DeckSetupSheet({
 }
 
 /**
- * The PERMANENT half of the bounding-box debug feature: a switch that persists
- * the default via bbox-prefs (localStorage), so it survives reloads. It is a
- * VIEWER preference, not deck front matter — it never writes the Markdown and is
- * never exported. The toolbar button is the temporary, session-only counterpart;
- * PlaygroundApp seeds its live state from this flag and follows it (onBboxEnabled-
- * Change), so flipping this switch updates the preview immediately. Reuses the
- * shared `.deck-config` switch markup/styling (deck-config.css).
+ * The SESSION OVERRIDE for the layout debug overlay. The deck's `debug:` front
+ * matter is the real setting (edit it in the deck source above / the editor); this
+ * switch just forces the overlay on or off for THIS device, winning over the deck
+ * for the session. It never writes the Markdown and is never exported. The toolbar
+ * button is the same override; both write debug-prefs (localStorage), so flipping
+ * either updates the preview immediately. Reuses the shared `.deck-config` switch
+ * markup/styling (deck-config.css).
  */
-function BboxPrefRow() {
-	const [on, setOn] = React.useState(() => bboxEnabled());
-	React.useEffect(() => {
-		const unsubscribe = onBboxEnabledChange(setOn);
-		return () => {
-			unsubscribe();
-		};
-	}, []);
+function DebugPrefRow({ getSource }: { getSource: () => string }) {
+	// Effective = the override if set, else the deck's own `debug:`. Recomputed on
+	// each open (the Sheet remounts this) and when the override changes elsewhere.
+	const deckOn = (() => {
+		try {
+			return deckDebugOn(getSource());
+		} catch {
+			return false;
+		}
+	})();
+	const [effective, setEffective] = React.useState(() => debugEffectiveOn(deckOn));
+	React.useEffect(() => onDebugOverrideChange(() => setEffective(debugEffectiveOn(deckOn))), [deckOn]);
 	return (
 		<label className="db-or-switch">
 			<span className="db-pref-text">
-				<span className="db-pref-label">Bounding boxes</span>
+				<span className="db-pref-label">Debug overlay</span>
 				<span className="db-pref-hint">
-					Outline every element in the preview for layout debugging. Stored on this device — not exported with the
-					deck.
+					Outline every box by layout mode (grid / flex / flow) and label the structural boxes. Set{' '}
+					<code>debug: on-hover</code> in the deck to carry it; this switch overrides for this device only — never exported.
 				</span>
 			</span>
 			<span className="db-switch">
 				<input
 					type="checkbox"
 					className="db-switch-input"
-					checked={on}
-					aria-label="Bounding boxes"
-					onChange={(e) => setBboxEnabled(e.target.checked)}
+					checked={effective}
+					aria-label="Debug overlay"
+					onChange={(e) => setDebugOverride(e.target.checked ? 'on' : 'off')}
 				/>
 				<span className="db-switch-knob" />
 			</span>
