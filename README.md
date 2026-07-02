@@ -9,11 +9,10 @@
 
 A Markdown slide-deck engine for boardroom-quality decks — PDF, HTML, PPTX, or PNG sets.
 
-Lattice produces decks where every slide is a deliberate component — title,
-diagram, verdict-grid, and dozens more —
-themed through a single CSS palette and rendered to your delivery format
-with no manual formatting work. Decks read as ink-on-paper and pass
-WCAG AA throughout.
+Lattice produces decks where every slide is a deliberate component
+(title, diagram, verdict-grid, and dozens more), all themed through a
+single CSS palette and rendered to your delivery format with no manual
+formatting work. Decks read as ink-on-paper and pass WCAG AA throughout.
 
 You author every slide as plain Markdown — bullet lists, tables, fenced
 code, `$…$` math — and Lattice renders it in the visual vocabulary your
@@ -27,8 +26,8 @@ and KPI components. More than fifty components, one syntax you already
 know — no drawing tools, no boxes, no pasted screenshots.
 
 Lattice is the engine at the heart of **Lattice Style** — a project born
-from a refusal to keep fighting the slide tools we all use, building
-deck-quality documents with the discipline of a design system.
+from a refusal to keep fighting the slide tools we all use, one that
+builds deck-quality documents with the discipline of a design system.
 ([Read the story](#why-lattice-style-exists).) The same Lattice engine that
 runs from the command line will also run inside **SlideWright**, the desktop
 app (under development), so a deck authored in either context renders
@@ -38,9 +37,9 @@ identically.
 
 I built Lattice because the slide tools we all use make authors
 unproductive by design — a blank canvas, no guardrails, and no way to see
-what changed between two versions. Lattice is the answer I wanted to
-exist: a deck as a text file, with the discipline of a design system and
-taste built into the engine instead of left to chance. The full story —
+what changed between two versions. Lattice is the fix I wanted: a deck as
+a text file, where the design system's discipline and taste live in the
+engine instead of being left to chance. The full story —
 and what the name means — is at
 [lattice.style/story](https://lattice.style/story/).
 
@@ -175,7 +174,7 @@ presentation mode** with a subtle cross-fade between slides:
 lattice deck.md deck.pdf --present
 ```
 
-Adobe Acrobat/Reader and most desktop viewers honour this (it's the same
+Adobe Acrobat/Reader and most desktop viewers honor this (it's the same
 document hint Keynote and PowerPoint emit); browser-embedded viewers and macOS
 Preview ignore it harmlessly. Slides stay presenter-driven — no auto-advance.
 A deck can also bake this in with a `present: true` front-matter key.

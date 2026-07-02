@@ -28,7 +28,7 @@ npx lattice test/integration/baseline-decks/gallery.md gallery.pdf
 ```
 
 Open `gallery.pdf` — that is the fastest answer to "what does this
-produce?". (Prefer not to render it yourself? The same deck is served on
+produce?" (Prefer not to render it yourself? The same deck is served on
 this site at [/gallery.pdf](/gallery.pdf).)
 
 The output extension picks the format — the same render, delivered as a
@@ -69,7 +69,7 @@ A decision framework for product leaders.
 of pipeline stalls trace to a single approval step.
 ```
 
-Build it with the same CLI — the output extension picks the format:
+Build it with the same CLI — same rule, the extension picks the format:
 
 ```sh
 npx lattice deck.md deck.pdf     # vector PDF

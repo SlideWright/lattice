@@ -81,7 +81,7 @@ export default defineConfig({
 			},
 			logo: { src: './public/favicon.svg', alt: 'Lattice' },
 			description:
-				'A Marp-based slide-deck engine that renders boardroom-quality PDFs from Markdown. Themed layouts, Mermaid diagrams, WCAG AA throughout.',
+				'A slide-deck engine that renders boardroom-ready PDFs from plain Markdown. Themed layouts, Mermaid diagrams, WCAG AA throughout.',
 			customCss: ['./src/styles/lattice.css'],
 			// Code blocks (Expressive Code). The frame/chrome already tracks the
 			// palette because `useStarlightUiThemeColors` binds it to --sl-color-*

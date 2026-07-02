@@ -65,7 +65,8 @@ const HOW_STEPS: { verb: string; body: React.ReactNode }[] = [
 
 export function HowItWorks() {
 	return (
-		<ol className="m-0 grid list-none grid-cols-1 gap-[18px] p-0 sm:grid-cols-3">
+		// biome-ignore lint/a11y/noRedundantRoles: list-style:none makes WebKit drop the implicit list role — the explicit role restores "list, 3 items" for VoiceOver.
+		<ol role="list" className="m-0 grid list-none grid-cols-1 gap-[18px] p-0 sm:grid-cols-3">
 			{HOW_STEPS.map((s, i) => (
 				<li key={s.verb} className="flex items-start gap-3.5">
 					<span
@@ -106,17 +107,17 @@ const FIELD_CARDS: FieldCard[] = [
 	{
 		live: 'diagram',
 		title: 'Engineers & architects',
-		body: 'All 25 Mermaid diagram types, auto-themed to the deck. State charts. Side-by-side code diffs, syntax-highlighted, from two fenced blocks.',
+		body: 'Every one of the 25 Mermaid diagram types renders auto-themed to the deck, state charts included — and two fenced blocks become a side-by-side, syntax-highlighted code diff.',
 	},
 	{
 		live: 'obligation-matrix',
 		title: 'Lawyers & compliance',
-		body: 'Statute stacks, authority chains, obligation matrices, citation cards, and regulatory-update layouts — an actual legal vocabulary.',
+		body: 'An actual legal vocabulary: build a statute stack, an authority chain, an obligation matrix, a citation card, or a regulatory update from a plain list.',
 	},
 	{
 		live: 'math',
 		title: 'Mathematicians, quants & ML',
-		body: 'Real KaTeX equations — Definition / Theorem / Proof cards, derivation chains with a justification column, matrix decompositions, an equation beside its plot.',
+		body: 'Real KaTeX everywhere it matters: Definition / Theorem / Proof cards, derivation chains that justify every step, and an equation set beside its plot.',
 	},
 	{
 		live: 'cards-grid',
@@ -193,7 +194,7 @@ const WHY_CARDS: WhyCard[] = [
 	{
 		id: 'mermaid',
 		title: 'Mermaid diagrams render in the palette.',
-		body: 'Flowcharts and sequence diagrams pick up the deck’s tokens automatically. No per-diagram styling, no recoloring by hand.',
+		body: 'Flowcharts and sequence diagrams pick up the deck’s tokens automatically, so a diagram never needs styling of its own.',
 	},
 	{
 		id: 'contrast',
