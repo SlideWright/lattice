@@ -438,3 +438,31 @@ describe('lattice-engine: CSS-pack (load-bearing rules)', () => {
     assert.equal(live(enginePack), false);
   });
 });
+
+// The .backdrop wrapper (the backdrop layer that hosts the finish compositor).
+// engineering/decisions/2026-07-01-finish-restraint-controls.md (#669).
+describe('backdrop layer', () => {
+  test('injects .backdrop as a direct child of a finish section', () => {
+    const { html } = makeEngine().render('---\nfinish: atrium\n---\n\n# A\n', 'lattice');
+    assert.match(html, /<section\b[^>]*\bfinish\b[^>]*>\s*<div class="backdrop"/);
+  });
+
+  test('image + finish: .backdrop survives applyImageStructure as a sibling BEFORE .image-text (not buried in it)', () => {
+    // Finding 1 regression guard: applyBackdropToHtml must run AFTER
+    // applyImageStructure, else wrapImageText folds .backdrop into .image-text and
+    // `section.finish > .backdrop` stops matching → the finish drops in export.
+    const md = '---\nfinish: atrium\n---\n\n<!-- _class: image -->\n\n![alt](pic.png)\n\n## Caption text here\n';
+    const { html } = makeEngine().render(md, 'lattice');
+    const bd = html.indexOf('class="backdrop"');
+    const it = html.indexOf('class="image-text"');
+    assert.ok(bd > -1, 'a .backdrop wrapper is injected on the image+finish slide');
+    assert.ok(it === -1 || bd < it, 'the .backdrop is a sibling BEFORE .image-text, not buried inside it');
+  });
+
+  test('backdrop.strength stamps the inline --backdrop-strength var; default omits it', () => {
+    const dim = makeEngine().render('---\nfinish: atrium\nbackdrop:\n  strength: 0.4\n---\n\n# A\n', 'lattice').html;
+    assert.match(dim, /<div class="backdrop" style="--backdrop-strength:0\.4"/);
+    const plain = makeEngine().render('---\nfinish: atrium\n---\n\n# A\n', 'lattice').html;
+    assert.doesNotMatch(plain, /--backdrop-strength/);
+  });
+});

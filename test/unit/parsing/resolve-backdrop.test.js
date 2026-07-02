@@ -58,4 +58,11 @@ describe('resolve-backdrop', () => {
   test('quoted values are unwrapped', () => {
     assert.deepEqual(readFrontMatterBackdrop(fm('backdrop:\n  spotlight: "84 30 40"')), { spotlight: '84 30 40' });
   });
+
+  test('strips a trailing inline comment from a bare value; keeps it inside quotes', () => {
+    assert.deepEqual(readFrontMatterBackdrop(fm('backdrop:\n  strength: 0.6 # the dial\n  clearance: on   # opt in')),
+      { strength: '0.6', clearance: 'on' });
+    // a `#` inside quotes is data, not a comment
+    assert.deepEqual(readFrontMatterBackdrop(fm('backdrop:\n  spotlight: "8 #3 40"')), { spotlight: '8 #3 40' });
+  });
 });
