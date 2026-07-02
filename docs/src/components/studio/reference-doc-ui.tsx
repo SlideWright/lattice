@@ -139,10 +139,11 @@ export function useReferenceDoc(notify?: (msg: string) => void, onManage?: () =>
 														<span className="block truncate text-[12.5px] font-medium text-[var(--text-heading)]">{rec.name}</span>
 														<span className="block font-mono text-[10px] text-muted-foreground">{rec.docKind === 'pdf' ? 'pdf' : 'text'} · {formatBytes(rec.bytes)} · {fmtAdded(rec.addedAt)}</span>
 													</span>
-													{active && <Check className="size-4 shrink-0 text-[var(--accent)] group-hover:hidden" />}
-													{/* Delete stays reachable for the ACTIVE doc too (reveals on hover over the
-													    check); always visible on touch (no hover) so it isn't a dead-end. */}
-													<button type="button" aria-label={`Delete ${rec.name}`} onClick={(e) => removeSaved(rec, e)} className={cn('shrink-0 rounded p-0.5 text-muted-foreground hover:text-[var(--fail,#b3261e)] focus-visible:opacity-100 group-hover:opacity-100 max-sm:opacity-100', active ? 'hidden group-hover:inline-flex' : 'opacity-0')}>
+													{active && <Check aria-label="Grounding this generation" className="size-4 shrink-0 text-[var(--accent)]" />}
+													{/* Delete is ALWAYS present (muted), prominent on hover/focus — reachable by
+													    mouse, touch, AND keyboard alike, incl. for the active doc. No hover-gating
+													    or width heuristic (a hover-less tablet ≥sm width would miss those). */}
+													<button type="button" aria-label={`Delete ${rec.name}`} onClick={(e) => removeSaved(rec, e)} className="shrink-0 rounded p-0.5 text-muted-foreground opacity-60 transition-opacity hover:text-[var(--fail,#b3261e)] hover:opacity-100 focus-visible:opacity-100">
 														<Trash2 className="size-3.5" />
 													</button>
 												</CommandItem>
