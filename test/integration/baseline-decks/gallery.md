@@ -49,7 +49,7 @@ The word is overloaded. We use it to mean anything from a customer complaint to 
 
 ## The window for differentiation is narrowing.
 
-Three converging forces — commoditized infrastructure, compressed release cycles, and rising customer switching costs — have reduced the average durable advantage window from 36 months to under 14. Teams that cannot identify signal from noise in that window will consistently miss timing.
+Three converging forces — commoditized infrastructure, compressed release cycles, and rising customer switching costs — have reduced the average durable advantage window from 36 months to under 14. Teams that cannot split signal from noise inside that window miss the timing — reliably, and then schedule a retrospective about it.
 
 ---
 
@@ -58,7 +58,7 @@ Three converging forces — commoditized infrastructure, compressed release cycl
 
 `Architecture · Signal Pipeline`
 
-## How signals move from input to decision.
+## Signals move through four stages; opinions skip to the end.
 
 `Four-stage processing pipeline — monthly cadence`
 
@@ -82,7 +82,7 @@ flowchart LR
 
 ## Six months of results across four product teams.
 
-`Measured against pre-framework baseline, same teams, same market conditions.`
+`Measured against pre-framework baseline, same teams, same market conditions. Alignment self-reported.`
 
 1. 73%
    - faster close
@@ -103,7 +103,7 @@ flowchart LR
 - Signal Intake
   - Weekly structured collection across customer conversations, market data, and competitive moves. Normalized into a common schema before scoring.
 - Scoring Model
-  - Each signal scored on three dimensions: confidence, recency, and strategic relevance. Weights are team-configurable and reviewed quarterly.
+  - Each signal scored on three dimensions: confidence, recency, and strategic relevance. Weights are team-configurable — configured once, then defended forever.
 - Decision Log
   - Every decision recorded with the signals that informed it, the options considered, and the criteria applied. Feeds the calibration loop.
 - Calibration Loop
@@ -119,7 +119,7 @@ flowchart LR
 - Signal Intake `v2.4`
   - Handles 94% of structured signals without manual intervention. Average latency: `4 min` from ingestion to scored entry.
 - Scoring Model `configurable`
-  - Three dimensions: confidence, recency, relevance. Default weights are `33 / 33 / 33` — adjust after your first retrospective.
+  - Three dimensions: confidence, recency, relevance. Default weights are `33 / 33 / 33` — the diplomatic opening position.
 - Decision Log `required`
   - Every prioritization change above `P2` must carry a logged rationale. No log, no change.
 - Calibration Loop `monthly`
@@ -135,7 +135,7 @@ flowchart LR
 1. Weekly Signal Brief
    - A ranked list of the top 10 signals from the prior week, with confidence scores and source attribution. Distributed to product leads every Monday morning.
 2. Anomaly Alerts
-   - Real-time flags when a signal exceeds the 2σ threshold on any dimension. Routed directly to the accountable PM with a 4-hour response SLA.
+   - Real-time flags when a signal exceeds the 2σ threshold on any dimension. Routed directly to the accountable PM with a 4-hour response SLA, observed in spirit.
 3. Monthly Signal Index
    - The source of truth for the calibration loop. A complete record of all signals logged, scored, and resolved in the prior month. Required reading before each retrospective.
 
@@ -161,7 +161,7 @@ flowchart LR
 - Structured Intake
   - Signals with clear schema: NPS verbatims, support ticket categories, feature request volumes, win/loss notes. Ingested automatically via API connectors. Scored on arrival. Zero manual handling.
 - Unstructured Intake
-  - Signals without schema: field observations, conference conversations, analyst briefings, competitive demos. Require human classification before scoring. Routed to the signal owner for a 48-hour classification window.
+  - Signals without schema: field observations, conference conversations, analyst briefings, competitive demos. Require human classification before scoring. Routed to the signal owner for a 48-hour classification window, of which the productive hour is the forty-eighth.
 
 ---
 
@@ -202,7 +202,7 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 4. Decision Logged
    - _PM records rationale, signals, predicted outcome_
 5. Retrospective
-   - _Outcome scored, weights updated accordingly_
+   - _Outcome scored, weights updated, precedent quietly set_
 
 ---
 
@@ -214,7 +214,7 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 - It does not make decisions — it structures the information that humans use to decide.
 - It does not replace customer discovery — it scores and routes what discovery surfaces.
 - It does not work without the Decision Log — calibration requires outcome data to learn from.
-- It does not guarantee alignment — it surfaces disagreement earlier, which still requires resolution.
+- It does not guarantee alignment — it surfaces disagreement earlier, when it is cheaper and louder.
 - It does not scale down to individual feature decisions — it is designed for prioritization above P2.
 
 ---
@@ -227,7 +227,7 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 1. You have a regular prioritization cadence — at minimum monthly.
 2. At least one person owns signal collection full-time or as a primary responsibility.
 3. Leadership has agreed to log decisions with rationale, not just outcomes.
-4. You have 90 minutes per week to run the intake and scoring process.
+4. You have 90 minutes per week for intake and scoring — one standing meeting you already wanted to delete.
 
 ---
 
@@ -237,7 +237,7 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 `Calibration Result · 6-Month Pilot`
 
 - 14x
-  - Return on signal investment — measured as decisions that reached the right outcome on the first attempt, versus the baseline rate before the framework was adopted.
+  - Return on signal investment — measured as decisions that reached the right outcome on the first attempt, versus the baseline rate before the framework was adopted. The number survived two rounds of being asked to.
 
 ---
 
@@ -250,7 +250,7 @@ The shift from equal weights to calibrated weights takes two retrospective cycle
 
 ### What this section covers
 
-The scoring model is the most configurable component. This section covers the three dimensions, how weights are set initially, and how calibration updates them over time.
+The scoring model is the most configurable component, and therefore the most argued about. This section covers the three dimensions, how weights are set initially, and how calibration updates them over time.
 
 1. Confidence
    - How many independent sources corroborate the signal. Ranges 1–5.
@@ -270,7 +270,7 @@ The scoring model is the most configurable component. This section covers the th
 
 ## Next step is a working session, not a debate.
 
-`Walk these questions with me in 60–90 minutes. The output is either a design we can execute, or a shared list of what needs more work before we commit.`
+`Walk these questions with me in 60–90 minutes. The output is either a design we can execute, or a shared list of what needs more work before we commit. Both count as progress; only one becomes another deck.`
 
 ---
 
@@ -286,7 +286,7 @@ The scoring model is the most configurable component. This section covers the th
 - What required tuning
   - NPS verbatim classification had an 18% error rate in the first two weeks. Required a training pass on the classification model before accuracy reached the 92% target.
 
-> Viable as designed — NLP classification requires a 2-week warm-up period on new deployments.
+> Viable as designed — the classifier needs a 2-week warm-up on new deployments, booked under "known issue."
 
 ---
 
@@ -326,7 +326,7 @@ Trailing blockquote becomes a key insight; trailing paragraph becomes a below-no
 
 > The calibration loop is what separates teams that learn from teams that repeat the same mistakes.
 
-_Source: pilot retrospective, six months across four product teams._
+_Source: pilot retrospective — six months, four teams, one deck, this one._
 
 ---
 
@@ -493,7 +493,7 @@ The pilot kept both — the feed for the two teams that mute nothing, the digest
    - Time-decay from signal date, configurable half-life
    - _0.0–1.0 · Auto-scored_
 3. Relevance
-   - Alignment to current strategic bets, owner-scored
+   - Alignment to current strategic bets, owner-scored, ceiling frequently tested
    - _1–5 · Manual_
 4. Reach
    - Number of customers or segments affected
@@ -516,7 +516,7 @@ The pilot kept both — the feed for the two teams that mute nothing, the digest
 
 ## Header stays uppercase — footer renders as written.
 
-Set `header:` and `footer:` in frontmatter for deck-level labels, or use per-slide comment directives. The header uses uppercase text-transform automatically, so you write it in any case. The footer renders exactly as written.
+Set `header:` and `footer:` in frontmatter for deck-level labels, or use per-slide comment directives. The header uses uppercase text-transform automatically, so you write it in any case; it will be capitalized regardless of how strongly you feel about it. The footer renders exactly as written.
 
 ---
 
@@ -664,7 +664,7 @@ An extreme aspect would waste a card, so a tall photo shows whole in a full-heig
 
 ## The dark modifier works on any layout.
 
-Add `dark` alongside any class — palette remaps automatically
+Add `dark` alongside any class — the palette remaps automatically, which is more than can be said for the agenda
 
 ---
 
@@ -675,7 +675,7 @@ Add `dark` alongside any class — palette remaps automatically
 
 ## The token system handles dark without per-element overrides.
 
-All colours reference CSS variables — `--bg`, `--text-heading`, `--text-body`, `--border` — that remap when `dark` is added. Cards, headings, body text, and borders all shift automatically. The spectrum bar is suppressed on dark slides.
+All colours reference CSS variables — `--bg`, `--text-heading`, `--text-body`, `--border` — that remap when `dark` is added. Cards, headings, body text, and borders all shift automatically. The spectrum bar is suppressed on dark slides. It returns at sunrise.
 
 ---
 
@@ -700,7 +700,7 @@ Every composition is palette-blind — add `dark` and the card, scrim, and matte
 
 - Every card uses `--bg-alt` for fill and `--border` for the border — both remap in dark mode.
 - The accent left border uses `--accent` which is unchanged — the gold reads well against dark.
-- Body text shifts to `--text-body` which in dark mode is a warm light tone, not pure white.
+- Body text shifts to `--text-body` — in dark mode a warm light tone, not pure white. Even the dark mode declines to be dramatic.
 
 ---
 
@@ -712,7 +712,7 @@ Every composition is palette-blind — add `dark` and the card, scrim, and matte
 ## Two-card layouts work equally well inverted to dark.
 
 - The framework introduces exactly one hard question — who owns the scoring weights, and what happens to every past decision the morning someone changes them. The next forty slides are a confident, well-resourced exercise in deferring the answer.
-- The pattern here is the same as any page of written argument — claim, then support. The dark palette does not change the information density or the reading rhythm.
+- The pattern is the same as any page of written argument — claim, then support. Dark changes the canvas, not the argument; the deferral above reads identically at any hour.
 
 ---
 
@@ -867,7 +867,7 @@ The left card is struck through to read as the option considered then dropped; t
 
 ## Mirror flips the image side — same vocabulary as split-panel watermark, compare-prose.
 
-The image card moves from the right to the left, and the text padding swaps to match. `mirror` is the cross-cutting side flag in the Lattice grammar; `![bg left]` is preserved as a backwards-compatible alias.
+The image card moves from the right to the left, and the text padding swaps to match. `mirror` is the cross-cutting side flag in the Lattice grammar; `![bg left]` is preserved as a backwards-compatible alias. The lake is unchanged.
 
 ![bg left](../../../lib/components/imagery/image/sample-photo-wide.svg)
 
@@ -882,7 +882,7 @@ The image card moves from the right to the left, and the text padding swaps to m
 
 ### What this section covers
 
-Mirror moves the dark accent panel to the right. The watermark, eyebrow, and section number all stay anchored to the panel's own box — only the column position flips.
+Mirror moves the dark accent panel to the right. The watermark, eyebrow, and section number all stay anchored to the panel's own box — only the column position flips. The agenda, as ever, holds.
 
 1. Confidence
    - How many independent sources corroborate the signal. Ranges 1–5.
@@ -901,7 +901,7 @@ Mirror moves the dark accent panel to the right. The watermark, eyebrow, and sec
 - Considered alternative
   - Source order keeps this card first, so `chosen` rules continue to target the second card in the markdown. Mirror only flips the rendering; the editorial intent (left = considered, right = chosen) is preserved by reading order.
 - The choice
-  - With `mirror`, the chosen card now appears on the left visually. Use this when the surrounding deck reads right-to-left or when the chosen path needs to land first in the audience's scan path.
+  - With `mirror`, the chosen card now appears on the left visually. Use this when the surrounding deck reads right-to-left or when the chosen path needs to land first in the audience's scan path. Executives scan left first; plan accordingly.
 
 The below-note still appears under both cards after the hairline rule.
 
@@ -915,7 +915,7 @@ The below-note still appears under both cards after the hairline rule.
 
 ## Numbered stamps an auto-counter in the top-right corner.
 
-The CSS counter walks the whole deck once and increments on every `divider.numbered` slide. Authors do not number sections by hand — the layout does it.
+The CSS counter walks the whole deck once and increments on every `divider.numbered` slide. Authors do not number sections by hand — the layout does it, and unlike authors it can count.
 
 ---
 
@@ -927,7 +927,7 @@ The CSS counter walks the whole deck once and increments on every `divider.numbe
 
 ## Each bookend layout owns its own counter.
 
-The divider light counter is independent of the dark-divider counter, so a mid-deck light divider stamps `01` even when the dark dividers are already at `04`.
+The divider light counter is independent of the dark-divider counter, so a mid-deck light divider stamps `01` even when the dark dividers are already at `04`. Each series keeps its own score, like the teams.
 
 ---
 
@@ -940,7 +940,7 @@ The divider light counter is independent of the dark-divider counter, so a mid-d
 
 ## The closing series gets its own auto-stamp too.
 
-`Use it for multi-part decks where the closing slide of each part should carry the part number.`
+`Use it for multi-part decks where the closing slide of each part should carry the part number — this deck, for example, is a trilogy.`
 
 ---
 
@@ -1017,7 +1017,7 @@ The architecture change is the calibration loop — logged, weighted, time-bound
 | Decision Log  | Append-only schema  | Outcome auto-pairing | Examiner export       |
 | Adoption      | One pilot team      |                      | Org-wide enablement   |
 
-The first column is sticky workstream label; phase columns carry numbered chrome; empty cells render as a thin dash.
+The first column is sticky workstream label; phase columns carry numbered chrome; empty cells render as a thin dash — see Adoption, Phase 02.
 
 ---
 
@@ -1049,7 +1049,7 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 1. The Design — page 7
 2. The Phasing — page 18
 3. The Choices — page 26
-4. Appendices — page 35
+4. Appendices, all of them — page 35
 5. Closing — page 64
 
 ---
@@ -1097,7 +1097,7 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 - What does not change
   - Type ramp, palette, and chrome reservation (header / footer / pagination) are untouched. Compact is a density flag, not a different layout.
 - When to reach for it
-  - You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy.
+  - You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy, which nobody was going to do.
 - Composition
   - `compact` composes with `dark`, `accent`, and any layout where density makes sense. It is silently incompatible with `title`, `divider`, and `image-full`.
 
@@ -1123,7 +1123,7 @@ The spacing scale grows ~25 % rather than shrinks. Reach for `loose` when the sl
 
 ## Headings gain a closing period automatically
 
-Authors who prefer sentence-style heading punctuation can set `class: with-period` in front matter once and stop thinking about it. The transform appends a period to any heading that does not already end with terminal punctuation — `.` `!` `?` `:` `…` — so mixed slides are safe.
+Authors who prefer sentence-style heading punctuation can set `class: with-period` in front matter once and stop thinking about it. The transform appends a period to any heading that does not already end with terminal punctuation — `.` `!` `?` `:` `…` — so mixed slides are safe, and the style-guide argument ends here.
 
 The mirror modifier is `no-period`, which strips trailing periods instead. Both are deck-wide opt-ins via the global `class:` front-matter key; per-slide override with `<!-- _class: with-period -->` works too.
 
@@ -1137,7 +1137,7 @@ The mirror modifier is `no-period`, which strips trailing periods instead. Both 
 <!-- markdownlint-disable-next-line MD026 -->
 ## Authors typed this heading with a period. It is gone.
 
-Some teams author headings with periods out of habit, then strip them in review. `class: no-period` automates the strip so the source can stay as written and the output stays clean.
+Some teams author headings with periods out of habit, then strip them in review, one comment at a time. `class: no-period` automates the strip so the source can stay as written and the output stays clean.
 
 Only a literal trailing `.` is removed — `!`, `?`, `:`, and `…` pass through untouched. Combine with any layout class; the modifier composes cleanly because it operates on the heading text alone and touches no structural chrome.
 
@@ -1176,7 +1176,7 @@ All gradients use `color-mix(in srgb, var(--accent) 12%, transparent)`. Switchin
 
 ## SVG accent marks are painted through a mask in the active accent colour
 
-`mark-orbit` places concentric rings and satellite dots in the bottom-right corner. The shapes render via `::before` + `mask-image`: the SVG defines the alpha channel (white = opaque, transparent = hidden) and the paint colour is `color-mix(in srgb, var(--accent) 28%, transparent)` — resolved from the theme at render time. Same class, light canvas or dark, the shapes are always visible and always on-brand.
+`mark-orbit` places concentric rings and satellite dots in the bottom-right corner. The shapes render via `::before` + `mask-image`: the SVG defines the alpha channel (white = opaque, transparent = hidden) and the paint colour is `color-mix(in srgb, var(--accent) 28%, transparent)` — resolved from the theme at render time. Same class, light canvas or dark — always visible, always on-brand, never load-bearing.
 
 ---
 
@@ -1346,7 +1346,7 @@ Nearly half went to producing decks; the deciding itself was the smallest slice.
 
 ## Where to put the next quarter.
 
-Effort in analyst-weeks; reach as the percent of teams that would adopt it.
+Effort in analyst-weeks; reach as the percent of teams that would adopt it, optimistically.
 
 - Quick Wins
   - Weekly signal digest `2, 82`
@@ -1441,7 +1441,7 @@ Effort in analyst-weeks; reach as the percent of teams that would adopt it.
 <!-- _class: word-cloud -->
 <!-- _footer: "Chart — word-cloud · word-cloud" -->
 
-## What 24 pilot retros kept saying, by frequency.
+## What 24 pilot retros kept saying, unprompted.
 
 - calibration `5`
 - workshops `4`
@@ -1624,7 +1624,7 @@ Building is settled. The remaining question is which layers deserve our engineer
 | PIPEDA     | [x]    | [x]     | [-]       | [x]    | [-]   |
 | HIPAA      | [x]    | [x]     | [x]       | [x]    | [-]   |
 
-Filled = applies, half = partial, empty = exempt. Neutral ink — data first.
+Filled = applies, half = partial, empty = exempt — a rare grid where empty is the good news. Neutral ink; data first.
 
 ---
 
@@ -1638,7 +1638,7 @@ Filled = applies, half = partial, empty = exempt. Neutral ink — data first.
 > "Personal information" means information that identifies, relates to, describes, is reasonably capable of being associated with, or could reasonably be linked, directly or indirectly, with a particular consumer or household.
 
 - **What we must do.**
-  - Treat the decision log as a PI store: device and household identifiers ride along with every intake transcript, whichever platform hosts it.
+  - Treat the decision log as a PI store: device and household identifiers ride along with every intake transcript, whichever platform hosts it. The statute does not care who won the bake-off.
 
 ---
 
@@ -1697,7 +1697,7 @@ Filled = applies, half = partial, empty = exempt. Neutral ink — data first.
 
 $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 
-- $\hat\beta$ — signal-weight vector the calibration loop refits
+- $\hat\beta$ — the signal-weight vector the vendors would not sell
 - $X$ — design matrix of scored signals, $n \times p$
 - $y$ — observed outcomes, length $n$
 - $X^\top X$ — Gram matrix, $p \times p$, must be invertible
