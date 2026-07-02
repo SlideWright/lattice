@@ -14,9 +14,13 @@ last-updated: 2026-07-02
 footer. Rendered landing screenshotted at 1440 / 820 / 390 via
 `tools/screenshot.js` against the local Astro dev server.
 **Method:** persona-first read, then a Munger inversion pass ("how would we
-guarantee this site gets no traction?"), then per-surface from→to edits. An
-independent prose checker and an adversarial reviewer were run on this doc's
-proposed copy; their accepted findings are folded in (§9).
+guarantee this site gets no traction?"), then per-surface from→to edits —
+then two rounds of independent checking (§9): round 1, a prose checker and
+an adversarial fact reviewer on the first draft; round 2, a red team of four
+agents against the revised doc (fact re-verifier, internal-consistency
+auditor, inversion-driven red-team strategist, fresh prose re-check). All
+accepted findings are folded in; §9 records what each round changed and
+what was rejected.
 **Grounding docs consulted:** `design/concepts.md` (vocabulary — bears on
 §7.2), `design/editorial.md` (house prose rules; the proposed copy conforms),
 `engineering/decisions/2026-06-14-competitive-analysis.md` (the comparison
@@ -40,7 +44,8 @@ by AI deck roulette — reads the headline and files it with the tools that
 burned them. Meanwhile the site's strongest material (the comparison page's
 receipts, the determinism argument, the agent-era split of "the AI writes, the
 engine renders") sits two clicks deep. And a product whose entire pitch is
-*consistency* publishes four different component counts across five surfaces.
+*consistency* publishes three different component counts across five surfaces —
+none of them the engine's actual 55.
 Fix the aim, surface the receipts, make the numbers agree, and give the
 non-terminal majority something to do besides leave.
 
@@ -102,13 +107,13 @@ Each item below is followed by where the current site stands.
    (§3). *Worst offender; fix first.*
 2. **Contradict your own core promise in the copy.** A consistency product
    with inconsistent numbers: landing says "Fifty-two layouts" (twice), the
-   introduction and features page say 53, and the README manages three counts
-   by itself — "20+ more" (line 13), "Fifty-two components" (line 26), and
-   "53 components." (line 109). The engine actually ships **55** (`loadAll()`
-   count; `contact` and `wifi` are in no marketing count), across **13**
-   buckets — the features page still says 12 in three places. It even prints
-   "Counts are live against the engine" over hardcoded numbers. ← Present on
-   five surfaces.
+   introduction and features page say 53, and the README manages all three
+   published counts by itself — "20+ more" (line 13), "Fifty-two components"
+   (line 26), and "53 components." (line 109). The engine actually ships
+   **55** (`loadAll()` count; `contact` and `wifi` are in no marketing
+   count), across **13** buckets — the features page still says 12 in three
+   places. It even prints "Counts are live against the engine" over
+   hardcoded numbers. ← Present on five surfaces.
 3. **Mix dialects mid-card.** One Why card is titled "Brand colors live in
    one file" and its body says "never name a colour." British spellings on
    the landing also violate HARD RULE #21. ← Present (landing, features).
@@ -131,8 +136,10 @@ Each item below is followed by where the current site stands.
 6. **Make the first command feel like a prototype.** Even once the paths are
    fixed, the first thing a newcomer types is `node lattice-emulator.js` —
    "emulator" reads as stand-in, not product — after a front-matter block
-   whose first line is a competitor's name (`marp: true`). ← Present
-   (getting-started, README). Product-level, not copy-level; flagged in §8.
+   whose first line is a competitor's name (`marp: true`). ← Present: the
+   emulator filename in both getting-started and README; the `marp: true`
+   front-matter in getting-started only (the README's examples show only
+   `theme:`). Product-level, not copy-level; flagged in §8.
 7. **Keep your best evidence off the page that gets the traffic.** The
    fact-check receipts (best AI tool: 20% of claims verified), the Tome
    shutdown, the Copilot brand-violation story — the strongest conversion
@@ -144,10 +151,11 @@ Each item below is followed by where the current site stands.
    slides; `examples/gallery.pdf` is linked only from a docs page. ← Present.
 9. **Give the majority persona nothing to do.** A consultant who can't
    install Node gets no waitlist, no "star to follow," no email capture —
-   only a footnote that a desktop app is "under development." ← Present.
+   and the landing never mentions the desktop app that will eventually serve
+   them at all (SlideWright appears only on README/intro/story). ← Present.
 10. **Ship three brand names before shipping one product.** Lattice, Lattice
-   Style, SlideWright — tripled surface area for a first-timer's confusion.
-   ← Present (README hero, story, intro).
+    Style, SlideWright — tripled surface area for a first-timer's confusion.
+    ← Present (README hero, story; the intro carries two of the three).
 11. **Have an anonymous founder voice.** "I built Lattice because…" with no
     name attached anywhere. First-person conviction with no person. ← Present
     (story.md, README).
@@ -163,21 +171,24 @@ superlatives. Counts follow the policy in §7.3.
 
 **H1**
 - From: `Write the *words*. The deck builds itself.`
-- To: `Write the *words*. The design is settled.`
-- Why: keeps the cadence, kills the Gamma echo, and states the actual
-  mechanism — the design decisions were made before you arrived, and they
-  hold. The checker pass rejected two earlier candidates for real defects:
-  "The design is already done" misreads as a release note ("we finished
-  designing the product"), and "Nothing drifts." uses "drift" as jargon at
-  headline altitude, before the page has defined it. "Settled" carries both
-  pre-built and won't-move, which is the deterministic claim §3 asks for.
+- To: `Write the *words*. The deck is already designed.`
+- Why: keeps the cadence, kills the Gamma echo, and keeps the visitor's own
+  noun — the *deck* — instead of an abstraction. It states the claim as a
+  small paradox (my deck doesn't exist yet; how is it designed?), which is
+  the curiosity hook the page then resolves. The two checker rounds retired
+  three candidates in turn: "The design is already done" (misreads as a
+  release note — "we finished designing the product"), "Nothing drifts."
+  ("drift" is jargon at headline altitude, before the page defines it), and
+  "The design is settled." ("settled" is low-energy, drags the
+  settle-for-less idiom along, and "the design" has no antecedent — the
+  same defect the checkers killed in "Point your copilot at it").
 
 **Hero paragraph**
 - From: `You write the deck as a Markdown file and pick a named layout for
   each slide. Lattice assembles every page against one shared palette — no
   dragging, no nudging, no formatting drift.`
-- To: `Your deck is one plain text file — a few lines of Markdown per slide,
-  and the name of a layout for it. Lattice sets every page in the same
+- To: `Your deck is one plain text file — a few lines of Markdown for each
+  slide, plus that slide's layout name. Lattice sets every page in the same
   palette and type scale: no dragging, no nudging, no drift.`
 - Why: "one plain text file" is the concrete image; "named layout" was doing
   quiet work that "the name of a layout" does plainly; "palette and type
@@ -195,20 +206,27 @@ text link under the trust line:
 - Why: answers "show me a real deck" without leaving the fold (inversion #8).
 - **Prerequisite:** there is currently no committed `examples/gallery.pdf` to
   link (inversion #5) — the gallery lives at
-  `test/integration/baseline-decks/gallery.pdf`. Either restore an
-  `examples/gallery.pdf` (or copy the built PDF into `docs/public/`) and link
-  that, or link the baseline-decks path directly. Do not ship this link
-  before the artifact exists at a stable URL.
+  `test/integration/baseline-decks/gallery.pdf`. Restore an
+  `examples/gallery.pdf`, or publish the built PDF at a stable site URL
+  (`docs/public/gallery.pdf`). Do **not** link the baseline-decks path from
+  the hero — a marketing CTA into a test directory is the same prototype
+  smell §8.1 diagnoses (red-team veto). Longer-term the better target is a
+  lightweight gallery page that embeds the PDF (a raw multi-megabyte
+  download is a first-touch dead end — it leaves the site with no way back);
+  the direct PDF link is the acceptable v1. Do not ship the link before the
+  artifact exists at a stable URL.
 
 ### 5.2 Landing "speaks your field" section (`index.astro`, `sections.tsx`)
 
 **Section title**
 - From: `Plain Markdown — in the native language of your work.`
-- To: `Write plain Markdown. Get the notation your field already uses.`
+- To: `Your field already has a notation. Lattice speaks it.`
 - Why: the current line reads as if Markdown *is* the native language; the
-  point is the output notation. (An earlier "Markdown in / notation out"
-  draft was cut by the prose check — it echoed the garbage-in-garbage-out
-  template.)
+  point is the output notation. Two earlier drafts were cut by the prose
+  checks: "Markdown in / notation out" echoed the garbage-in-garbage-out
+  template, and "Write plain Markdown. Get the notation…" opened with the
+  same imperative "Write" as the H1 two sections up — two headline-weight
+  lines sharing an opener reads as a template.
 
 **Card order** — from: math → project leads → engineers → lawyers → analysts
 → basics; to: **project leads → analysts & consultants → engineers → lawyers
@@ -220,21 +238,31 @@ on-ramp; math still gets its card.
 - From: title `Analysts`, body `Radar, quadrant, KPI, stats, progress, pie,
   and word-cloud — the evidence layouts that turn numbers into an argument.`
 - To: title `Analysts & consultants`, body `Radar, quadrant, KPI, stats,
-  progress, pie, and verdict grids: the evidence layouts that turn numbers
-  into an argument. Built for the QBR, the board pack, the client readout.`
+  pie, and verdict grids — the evidence layouts that turn numbers into an
+  argument. They carry the quarterly review, the board pack, the client
+  readout.`
 - Why: consultants are the deck-heaviest profession alive and currently
-  unnamed; the named artifacts (QBR, board pack, readout) are the search
-  terms in their heads. `verdict-grid` really exists and earns its spot;
-  `word-cloud` was the weakest name-drop. Keep `pie` — it is the one chart
-  name every reader recognizes (checker catch). Split into two sentences so
-  the list doesn't bury the verb.
+  unnamed; the named artifacts are the search terms in their heads.
+  `verdict-grid` really exists and earns its spot; `word-cloud` was the
+  weakest name-drop. Keep `pie` — the one chart name every reader knows
+  (checker catch). Round-2 prose fixes: "QBR" spelled out (jargon outside
+  consulting), the closing fragment given a verb, and the list trimmed to
+  six terms so it doesn't bury the point.
 
 **Basics card**
 - From: `A bullet list becomes a card grid; a table becomes a comparison
   matrix. Fifty-two layouts, one Markdown syntax.`
-- To: `A bullet list becomes a card grid; a table becomes a comparison
-  matrix. More than fifty layouts, one Markdown syntax.`
-- Why: §7.3 counts policy — the hardcoded 52 is already wrong twice over.
+- To: `A bullet list turns into a card grid. Tables become comparison
+  matrices. 55 layouts, one Markdown syntax.` — with the count injected from
+  `manifests.length` at build time (the landing already calls `loadAll()`),
+  so the number is exact today and self-updating forever.
+- Why: §7.3 counts policy — the hardcoded 52 is already wrong twice over,
+  and the red-team round sharpened the policy: where a surface *can*
+  generate the exact number for free, vagueness ("more than fifty") reads
+  coy next to competitors who state numbers — be vague only where exact is
+  impossible. The prose round also broke the sentence's balanced-couplet
+  shape ("X becomes A; Y becomes B"), a third unprotected instance of the
+  page's signature device.
 
 ### 5.3 Landing "Why" cards (`sections.tsx`)
 
@@ -268,54 +296,81 @@ on-ramp; math still gets its card.
   colour, so a whole deck restyles by editing one theme: line.`
 - To: `Watch a single slide move through every palette — in light or dark.
   Brand colors live in one file and the layouts never name a color, so a
-  whole deck restyles by editing one theme: line.`
+  whole deck restyles by editing one` `` `theme:` `` `line.` (The `theme:`
+  stays code-formatted, as it already is on the site — without the code
+  styling the mid-sentence colon doesn't parse.)
 - Why: #21 again, plus "components"→"layouts" per the terminology decision
   (§7.2).
 
 ### 5.5 Landing — two new sections (see §6 for placement)
 
-**"How it works" strip** (after the hero; three steps, one line each):
+**"How it works" strip** (after the hero; three steps, one line each — a
+slim band, not a full section: the hero preview already demonstrates the
+transform live; this strip's payload is the layout names and the output
+formats, which are missing from the current fold):
 1. `Write — a slide is a few lines of Markdown.`
-2. `Name a layout — big-number, gantt, verdict-grid, statute-stack.`
+2. `Name a layout — call it` `` `big-number` ``, `` `gantt` ``, `or`
+   `` `verdict-grid` ``.
 3. `Build — one command renders the PDF, PPTX, PNG, or HTML.`
+(Line 2's earlier bare noun-dump broke the strip's parallelism — lines 1 and
+3 pair the verb with a clause; now line 2 does too. The names stay
+code-styled because this line shows what you *type*; see §7.2.)
 
 **Proof strip** (after "Why"; one stat + one link):
 - Headline (reused from /comparison, its best line): `The artsy deck wins the
   demo. The deterministic deck wins the boardroom.`
 - Body: `When one team fact-checked six AI deck generators, the best got 20%
-  of its claims right — a one-shot test, but the mechanism is the point: a
-  model predicts plausible text; it doesn't look facts up. Lattice never
-  invents a number or reshuffles a layout. It renders what you wrote, the
-  same way every time.`
+  of its claims right. Models predict plausible text instead of looking
+  facts up. Lattice never invents a number or reshuffles a layout — it
+  renders what you wrote, the same way every time.`
 - Link: `Read the comparison — including where Lattice loses. →`
 - Why: the receipts are the site's highest-converting material (inversion
-  #7), and "including where Lattice loses" is the credibility hook. Two
-  checker corrections folded in: the stat keeps the source's own "one test,
-  directional" hedge (/comparison hedges it; the landing must not promote it
-  harder than the source), and "honest" was cut from the link — material
-  that calls itself honest undercuts the clause that proves it.
+  #7), and "including where Lattice loses" is the credibility hook. The two
+  rounds pulled this copy in opposite directions and the red team settled
+  it: round 1 added the source's "one-shot test" hedge inline; round 2 cut
+  it — the attribution ("when one team fact-checked…") already *is* the
+  hedge, the comparison link carries the full caveat, and a landing that
+  cross-examines its own evidence mid-sentence reads like a deposition.
+  /comparison keeps its italic "read it as directional" footnote — the
+  landing just stops repeating it. "Honest" was also cut from the link —
+  material that calls itself honest undercuts the clause that proves it.
 
 **Agent-era section** (after the proof strip; serves P2):
-- Eyebrow: `AI authoring`
+- Eyebrow: `Bring your own model`
 - Title: `Point your copilot at Lattice.`
 - Body: `Lattice ships a machine-readable layout catalog and a published
-  authoring spec, so Claude, Cursor, or any agent can draft a valid deck —
-  and the engine renders it deterministically, on brand, without the model
-  touching a single visual decision.`
+  authoring spec, so Claude, Cursor, or any agent can draft a valid deck.
+  The engine renders that draft deterministically — the design was finished
+  long before the model arrived.`
 - Link: `How AI authoring works →` (features page § AI authoring, or the spec)
 - Why: the argument already exists on /comparison ("So split the layers");
-  P2 should not have to find it there. Prose-check corrections folded in:
-  the original eyebrow and closing sentence were the third and fourth
-  "X verbs. Y verbs." couplets on one page — the device stays reserved for
-  the two protected lines (§10); and "it" in the title had no antecedent.
+  P2 should not have to find it there. Checker corrections across both
+  rounds: the original eyebrow and closing sentence were the third and
+  fourth "X verbs. Y verbs." couplets on one page — the device stays
+  reserved for the two protected lines (§10); "it" in the title had no
+  antecedent; the 42-word body was split and "on brand" (buzzword filler)
+  cut. The eyebrow matters most: an `AI authoring` eyebrow one section after
+  a strip attacking AI deck tools makes the skeptic — the page's best
+  prospect — bounce at skim altitude. `Bring your own model` is the framing
+  /comparison already proved, and it puts the split-layers disclaimer where
+  skimmers actually read. The closing line also re-lands the H1's claim.
 
-**Early-access strip** (before "Pick a starting point"):
-- `Lattice is in early access. The engine is stable and MIT-licensed, and it
-  runs from the command line today; the SlideWright desktop app is on the
-  way. Star the repo to follow along — or open the playground and make a
-  slide right now.` CTAs: `Star on GitHub` / `Open the playground`.
-- Why: inversion #9 — gives P3 an action that isn't "install Node." This is
-  the page's *only* early-access mention (see §5.1 trust line).
+**Early-access → folded into "Pick a starting point", not a standalone
+strip.** An earlier draft made this its own section 8; the red-team round
+killed that twice over — a standalone strip at that scroll depth parks the
+majority persona's only usable CTA where the least-scrolling persona never
+arrives, and labeling a stable v1 engine "early access" invites "I'll wait
+for GA" from the one audience that can adopt today. Instead:
+- One preface line on the next-steps section: `The engine ships today; the
+  SlideWright desktop app is on the way.`
+- A fourth next-steps card: title `Can't install anything?`, body `Open the
+  playground — the full engine runs in your browser. Leave your email and
+  we'll tell you when the desktop app lands.`, CTA `Open the playground`.
+- A `Star on GitHub` link rides along as secondary, but it is not the
+  follow mechanism: **GitHub never notifies stargazers of anything** — a
+  star is a vanity counter you cannot recontact. The email field is the
+  actual capture, which makes §8.3 load-bearing (a prerequisite of shipping
+  this card), not a later upgrade.
 
 ### 5.6 Page metadata (`index.astro`)
 
@@ -325,8 +380,10 @@ on-ramp; math still gets its card.
   boardroom-quality slide deck. Pick a named component per slide; the engine
   assembles every deck against one palette.`
 - To: `Write plain Markdown, pick a layout per slide, and Lattice renders a
-  polished PDF, PPTX, or HTML deck — one palette, no drift, no design work.
+  polished PDF, PPTX, or HTML deck with one palette and zero design work.
   Free, offline, MIT-licensed.`
+  (Round-2 prose fix: the earlier draft stacked two rule-of-three lists in
+  one 30-word description; the first is now a plain sentence, leaving one.)
 - Why: nobody searches "boardroom-quality"; they search "markdown to
   slides/pptx/pdf." Put the searched phrase in the title, keep the positioning
   word ("boardroom-ready") as the modifier.
@@ -359,10 +416,11 @@ on-ramp; math still gets its card.
 - From: `Lattice runs on Node.js. npm install pulls in the Mermaid CLI and
   Puppeteer (which downloads a matching Chromium); it does **not** pull Marp —
   the owned engine renders every first-party path. Requires **Node 22+**.`
-- To: `Fastest first look: the [playground](/playground/) runs the full
-  engine in your browser — no install. To render locally you need **Node 22
-  or newer**; npm install pulls in everything else, including a headless
-  Chromium for rendering. There's no account and nothing to configure.`
+- To: `The quickest first look is the [playground](/playground/) — the full
+  engine, in your browser, nothing to install. To render locally you need
+  **Node 22 or newer**; npm install pulls in everything else, including a
+  headless Chromium for rendering. You won't need an account or any
+  configuration.`
 - Why: the Marp disclaimer answers a question no newcomer asked and plants a
   doubt they didn't have ("wait, what's Marp, and why are we defensive about
   it?"). "The owned engine" is team speak. And the page should open with the
@@ -381,7 +439,8 @@ on-ramp; math still gets its card.
 - From: `…every slide is a deliberate component — title, diagram,
   compare-prose, split-panel, verdict-grid, and 20+ more —`
 - To: `…every slide is a deliberate component — title, diagram,
-  compare-prose, split-panel, verdict-grid, and dozens more —`
+  verdict-grid, and dozens more —` (also trims the five-item em-dash pile
+  the prose round flagged as too much for one breath)
 - From: `Fifty-two components, one syntax you already know`
 - To: `More than fifty components, one syntax you already know`
 - Also fix line 109's `**53 components.**` to the same "more than fifty"
@@ -389,10 +448,11 @@ on-ramp; math still gets its card.
   more", "Fifty-two", "53"), the doc's single best exhibit for §4 item 2.
 - Why: "20+ more" undersells by 30; every fixed number rots (§7.3 — and note
   "fifty more" would just be 55 in disguise, which is why it's "dozens").
-- README's Testing section repeats the broken-path claims (§4 item 5):
-  lines ~344–347 call `examples/gallery.md` and `examples/gallery-mermaid.md`
-  "the authoritative test fixtures" and say "The two galleries are committed
-  to examples/" — neither is true; the fixture is
+- README repeats the broken-path claims (§4 item 5) in two places: the
+  Testing section (lines ~344–346) calls `examples/gallery.md` and
+  `examples/gallery-mermaid.md` "the authoritative test fixtures," and line
+  236 (in the render-the-galleries section) says "The two galleries are
+  committed to examples/" — neither is true; the fixture is
   `test/integration/baseline-decks/gallery.md`. Fix together with §5.8's P0.
 
 ### 5.10 Introduction (`introduction.md`) and comparison (`comparison.astro`)
@@ -441,6 +501,11 @@ on-ramp; math still gets its card.
   what the README doesn't (checker catch).
 - From: `4 colour-blind-safe palettes` / `Components never name a colour` /
   other British spellings → US forms per #21.
+- The generated-counts fix covers palette counts too: "14 palettes" and the
+  color-blind-safe "4" are hand-fixed numbers under the same §7.3 policy —
+  a hand-fixed "4" rots exactly the way the "52" did (checker catch: an
+  earlier draft fixed only the spelling and would have shipped the hardcoded
+  count).
 
 ### 5.12 Story (`story.md`) and branding
 
@@ -470,21 +535,28 @@ moves:
   deck assembles itself.") → `…write the words, pick a component, and the
   engine does the rest.`
 - `docs/src/playground/theme-studio.js` sample slide headline
-  (`# The deck builds itself.`) → `# The design is settled.` — the sample a
-  visitor actually edits should model the same claim the hero makes.
+  (`# The deck builds itself.`) → `# The deck is already designed.` — the
+  sample a visitor actually edits should model the same claim the hero
+  makes.
 
 ## 6. Landing information architecture (proposed order)
 
 1. Hero (revised, §5.1) — with the gallery-PDF text link
-2. **How it works** — new, three steps (§5.5)
+2. **How it works** — new, a slim three-step band (§5.5)
 3. Speaks your field — reordered cards (§5.2)
 4. Why decks drift — revised cards (§5.3); keep the section head verbatim,
    it's the best line on the site
-5. **Proof strip** — new (§5.5)
-6. **Point your copilot at it** — new (§5.5)
+5. **Proof strip** — new, a slim band (§5.5)
+6. **Point your copilot at Lattice** — new (§5.5)
 7. Change one line, restyle the deck (§5.4)
-8. **Early access / star** — new (§5.5)
-9. Pick a starting point (§5.7)
+8. Pick a starting point — with the early-access preface line and the
+   fourth "Can't install anything?" card folded in (§5.5, §5.7)
+
+An earlier draft ran nine sections with a standalone early-access strip at
+position 8; the red-team round cut it — scroll-depth decay put the majority
+persona's only CTA below where that persona ever reaches, and two of the
+additions (how-it-works, proof) work as slim bands rather than full
+sections, keeping the page's read length close to today's.
 
 Docs IA: `overview.mdx` and `introduction.md` open with the same "you have
 been on the receiving end…" narrative nearly verbatim. Keep the narrative in
@@ -503,22 +575,35 @@ while the features-page footer includes both — one footer nav, shared.
    auto-generation language ("builds itself," "instantly," "magic").
 2. **One word for the thing: "layout" on marketing surfaces, "component" in
    reference docs**, glossed on first use in docs ("components — the named
-   slide layouts"). Today the hero says layout, the intro says component, the
-   features page says both. Pick per-surface and hold it — including within
-   the landing itself: the next-steps card titled "Component reference"
-   becomes "Browse the layouts" (the `/components/` URL can stay), or the
-   landing still carries both words on one page. One caveat from
-   `design/concepts.md`: internally, **component** is the canonical term of
-   art, and "layout" already names something else — the Form/Frame axis
-   (how a slide is composed). So "layout" is strictly a visitor-facing
-   simplification for marketing surfaces; reference docs, manifests, and
-   anything the concept map touches keep "component," and nothing in
-   `design/` adopts the marketing word.
+   slide layouts"). Today the hero says layout, the intro and features page
+   say component, and the landing itself carries both (checker correction:
+   an earlier draft claimed the features page "says both" — it doesn't; grep
+   finds only "component" there). Pick per-surface and hold it — including
+   within the landing: the next-steps card titled "Component reference"
+   becomes "Browse the layouts" (the `/components/` URL can stay). The
+   README sits on the *reference* side and keeps "component" — it's the
+   front door for people about to read code. Two execution caveats:
+   - From `design/concepts.md`: internally, **component** is the canonical
+     term of art, and "layout" already names something else — the Form/Frame
+     axis (how a slide is composed). "Layout" is strictly a visitor-facing
+     simplification; reference docs, manifests, and anything the concept map
+     touches keep "component," and nothing in `design/` adopts the marketing
+     word. Because it's a false friend, the gloss must appear at **every**
+     marketing→docs seam (the "Browse the layouts" card, the getting-started
+     opener), not just once (red-team flag).
+   - Name styling: hyphenated code-style (`verdict-grid`) only where the
+     copy shows what you *type* (the how-it-works strip); plain English
+     ("a verdict grid") where prose names the idea (cards). The prose round
+     caught the same names flipping register within one scroll — its own
+     little drift on a no-drift page.
 3. **Counts policy:** an exact component/palette count may appear only where
-   it is generated from the manifests at build time (the landing already
-   loads `loadAll()` — use `manifests.length`). Hand-written prose says
-   "more than fifty." This turns inversion #2 off permanently instead of
-   patching today's numbers.
+   it is generated from the manifests at build time — and where a surface
+   *can* generate it, prefer the exact live number over prose vagueness (the
+   landing already calls `loadAll()`; print `manifests.length` — 55 today,
+   self-updating). Hand-written prose with no build step (README, intro)
+   says "more than fifty" / "dozens." Exact where generated, vague only
+   where exact is impossible. This turns inversion #2 off permanently
+   instead of patching today's numbers.
 4. **Every first-touch surface gets a "what to do if you can't install this
    yet" action** (playground, gallery PDF, star/watch) until SlideWright
    ships.
@@ -531,15 +616,21 @@ while the features-page footer includes both — one footer nav, shared.
    package" section documents `npx lattice …` (checker correction to an
    earlier draft of this flag). The actual gaps are that getting-started
    teaches the raw filename instead of the alias, and the package isn't on
-   npm yet, so `npx lattice` only works inside a clone. Fix the docs today;
-   publish when ready.
+   npm yet (verified: the registry returns 404 for `@slidewright/lattice`),
+   so `npx lattice` only works inside a clone. Fix the docs today; publish
+   when ready.
 2. **`marp: true` is the first line of front-matter a newcomer writes.**
    Whatever the engine needs for compatibility, the *authored* example
    should not open with a competitor's brand. If the engine can accept
    `lattice: true` (or nothing), the examples and docs should switch.
-3. **No newsletter/waitlist mechanism for SlideWright.** Stars and
-   release-watching are the free stand-in; a one-field email capture on the
-   early-access strip is the upgrade when there's somewhere to point it.
+3. **No email capture for SlideWright — and this is load-bearing, not a
+   nice-to-have.** The "Can't install anything?" card (§5.5) is the doc's
+   answer to inversion #9, and it cannot ship star-only: GitHub never
+   notifies stargazers, so a star is a vanity counter with zero recontact
+   ability — on launch day you cannot email a star. A one-field email
+   capture is the minimum viable follow mechanism and a prerequisite for
+   claiming P3 is being "collected" at all (red-team correction to an
+   earlier draft that deferred this as a later upgrade).
 4. **Restyle carousel rendered as an empty gray panel** in the full-page
    1440px screenshot (client:visible island; IntersectionObserver may simply
    not fire in a full-page headless capture). **UNVERIFIED as a real-user
@@ -553,59 +644,130 @@ while the features-page footer includes both — one footer nav, shared.
    `build:check` and the pre-push hook at 1529 > 1364 through no change of
    its own. Reproduced both ways during this review (clean worktree of the
    same main commit: green; this tree with the artifacts present: red;
-   deleting the artifacts: green). Fix direction: skip gitignored paths (or
-   add these two generated paths to the scan's skip list).
+   deleting the artifacts: green). The 1529 is the observed value from this
+   session with the artifacts present — not re-reproducible after their
+   deletion — while the mechanism is code-verified: `listRepoTextFiles` is a
+   raw `readdirSync` walk with a hard-coded skip list and no gitignore
+   consultation, and `docs/.gitignore` ignores both paths. Fix direction:
+   skip gitignored paths (or add these two generated paths to the scan's
+   skip list).
 
 ## 9. Independent checks run on this review
 
-Two independent agents reviewed the draft; everything accepted below is
-already folded into the sections above.
+Two rounds, six independent agents total. Everything recorded as accepted
+is folded into the sections above.
 
-**Prose check (AI-tell / read-aloud audit of every proposed "To:" string).**
+### Round 1 — prose check + adversarial review of the first draft
+
+**Prose check** (AI-tell / read-aloud audit of every proposed "To:" string).
 Accepted: the agent-era section had re-created the doc's own protected
-"owns the pixels" couplet twice more (eyebrow + closing sentence) — three
-"X verbs. Y verbs." constructions on one page; both rewritten (§5.5).
-"Point your copilot at it" had no antecedent for "it" → "at Lattice." The
-field-section title echoed the garbage-in-garbage-out template → rewritten
-as two plain sentences (§5.2). Card 5 carried an X-not-Y reversal → cut
-(§5.3). The analysts card stacked two list-recitations in one sentence →
-split (§5.2). The how-it-works strip ended a middle line on an ellipsis →
-period (§5.5). "Read the *honest* comparison" self-applied the compliment →
-cut (§5.5). The early-access strip recited a false-parallel rule-of-three →
-split (§5.5). The doc's own verdict paragraph used the "not X; it is Y"
-reversal template this review polices → rewritten (§1). Noted, partially
-accepted: the "no X, no Y" negation-doublet recurs across the proposed copy;
-kept as the hero's flagship move, removed from getting-started (§5.8), left
-in the meta description (not read aloud). Rejected: rewriting §1's closing
-four-part sentence (internal analysis prose, not shipping copy).
+"owns the pixels" couplet twice more (eyebrow + closing sentence) — with
+the two protected lines, four "X verbs. Y verbs." constructions on one
+page; both recreations rewritten (§5.5). "Point your copilot at it" had no
+antecedent for "it" → "at Lattice." The field-section title echoed the
+garbage-in-garbage-out template → rewritten (§5.2; round 2 revised it
+again). Card 5's "not a template to redecorate" X-not-Y clause → cut
+(§5.3; the pre-existing "an answer that isn't *scroll the gallery*" stays —
+it's the live site's own line). The analysts card stacked two
+list-recitations in one sentence → split (§5.2). The how-it-works strip
+ended a middle line on an ellipsis → period (§5.5). "Read the *honest*
+comparison" self-applied the compliment → cut (§5.5). The early-access
+strip recited a false-parallel rule-of-three → split (§5.5; the strip
+itself was later cut by round 2). The doc's own verdict paragraph used the
+"not X; it is Y" reversal template this review polices → rewritten (§1).
+Rejected: rewriting §1's closing four-part sentence (internal analysis
+prose, not shipping copy).
 
-**Adversarial review (refute-first, claims re-verified against the tree).**
+**Adversarial review** (refute-first, claims re-verified against the tree).
 Confirmed: every quoted "From:" string verbatim at its cited path; the
-55-manifest count; `contact`/`wifi` absent from all marketing counts;
-`pricing`/`verdict-grid` exist; the features bucket sum (53) and the stale
-"12 buckets"; the `marp: true` + emulator-filename first-run; the dialect
-clashes; the overview/introduction duplication; the missing byline.
-Accepted corrections to this doc: an earlier draft *claimed* verification
-that `examples/gallery.pdf` was committed — it is not (no `examples/gallery*`
-is tracked), exactly the unverified-"verified" HARD RULE #23 bars; §5.1 now
-carries the prerequisite and §4 item 5 the P0 (this reviewer and my own
-re-check found the broken funnel independently). The §8.1 bin-alias flag
-misstated the gap (the alias exists; the docs and npm publishing are the
-gaps). "Fifty more" was an exact count in disguise → "dozens more" (§5.9).
-README line 109's third count, the Testing-section stale fixture claims, the
-README↔story duplication, the "Marp-based" introduction meta description,
-the comparison-page spellings, the carbone dark-variant overclaim, the
-landing-footer drift, the theme-studio sample headline, and the
-landing-internal layout/component mix (§7.2) were all missed by the draft →
-added. Judgment challenges accepted: "The design is already done" misreads
-as a release note → "The design is settled" (§5.1); the 20% stat needed its
-source's own hedge (§5.5); early-access appeared twice on one page → once
-(§5.1/§5.5); keep "pie" in the analysts card; "hide your best evidence"
-overstated a one-click nav link → reworded (§4 item 7); "fastest-growing
-wedge" was an unsourced claim in a doc that trades on receipts → stated as
-judgment (§2). Rejected: dropping "boardroom" entirely (it stays as the
-category modifier, §5.6); treating the agent-section-after-anti-AI-hero
-tension as disqualifying (the split-layers framing carries it, §2).
+55-manifest count; `contact`/`wifi` absent from all marketing counts; the
+features bucket sum (53) and the stale "12 buckets"; the `marp: true` +
+emulator-filename first-run; the dialect clashes; the
+overview/introduction duplication; the missing byline. Accepted
+corrections: an earlier draft *claimed* verification that
+`examples/gallery.pdf` was committed — it is not, exactly the
+unverified-"verified" HARD RULE #23 bars; §5.1 now carries the prerequisite
+and §4 item 5 the P0 (this reviewer and my own re-check found the broken
+funnel independently). The §8.1 bin-alias flag misstated the gap. "Fifty
+more" was an exact count in disguise → "dozens more" (§5.9). README line
+109's third count, the stale fixture claims, the README↔story duplication,
+the "Marp-based" introduction meta description, the comparison-page
+spellings, the carbone dark-variant overclaim, the landing-footer drift,
+the theme-studio sample headline, and the landing-internal
+layout/component mix were all missed by the first draft → added. Judgment
+challenges accepted: "The design is already done" misreads as a release
+note; early-access appeared twice on one page → once; keep "pie"; "hide
+your best evidence" overstated a one-click nav link → reworded; the
+"fastest-growing wedge" claim → stated as judgment (§2). Rejected:
+dropping "boardroom" entirely (it stays as the category modifier, §5.6);
+treating the agent-section-after-anti-AI-hero tension as disqualifying
+(the split-layers framing carries it, §2).
+
+### Round 2 — red team: four agents against the revised doc
+
+**Fact re-verifier** (re-ran every check; trusted nothing from round 1).
+Outcome: the factual core held — every "From:" quote, every line number
+(13, 26, 109, 232, 344–346, intro:30, comparison:483), the 55/13/53
+counts, the broken funnel (re-reproduced), carbone, the grounding-doc
+quotes. One claim **refuted**: "the features page says both
+layout/component" — it says only "component"; corrected in §7.2. Four
+imprecisions corrected: "four different counts" → three published counts
+none matching the engine's 55 (§1, §4.2); `marp: true` attributed to
+README, which doesn't contain it (§4.6); "Lattice Style" attributed to the
+intro, which never names it (§4.10); README line 236 misattributed to the
+Testing section (§5.9). Upgraded: the npm-unpublished claim is now
+registry-verified (§8.1); the §8.5 1529 figure marked as a historical
+session observation with the mechanism code-verified.
+
+**Internal-consistency auditor** (hunting edit damage). Accepted: §6
+re-shipped the agent-section title round 1 had fixed → corrected; §9's own
+couplet arithmetic was wrong (said three, is four) → fixed above; §9
+recorded verifying `pricing`, a name the copy no longer uses (the current
+name-drops — `big-number`, `gantt`, `verdict-grid`, `statute-stack` — are
+all real manifests; "a derivation" in card 5 is deliberate shorthand for
+the math component's derivation chains); the "cut" X-not-Y record clarified
+(above); §7.3's palette-count coverage was missing from §5.11 → added;
+§7.2 didn't assign the README a side → assigned (reference side);
+list-indentation normalized. Clean: all §N / inversion-#N
+cross-references, the protect list, front matter, markdown mechanics.
+
+**Red-team strategist** (Munger inversion on the recommendations
+themselves — assume they ship, make them fail). The core strategy
+**held**: the Gamma-echo diagnosis, surfacing the receipts, the persona
+order (P3 can't be retained pre-capture), the P0-first sequencing, the
+metadata swap, the jargon purge, and the protect list all survived
+inversion. Four executions **failed and were amended**: "The design is
+settled." (low-energy, settle-for-less idiom, antecedent-free "the
+design") → "The deck is already designed." (§5.1, cascaded to §5.13); the
+standalone early-access strip (labels a stable v1 "early access," parks
+the P3 CTA below their scroll depth, star-as-follow is non-functional —
+GitHub never notifies stargazers) → folded into next steps with email
+capture made load-bearing (§5.5, §7 IA, §8.3); the `AI authoring` eyebrow
+(bounces the AI-burned skeptic at skim altitude one section after the
+proof strip) → `Bring your own model` (§5.5); the inline one-shot-test
+hedge on the proof strip (a landing cross-examining its own evidence) →
+cut, attribution + link carry the caveat (§5.5). One recommendation
+**vetoed**: linking `test/integration/baseline-decks/` from the hero
+(§5.1). One sharpened: exact generated counts beat "more than fifty"
+wherever a surface can compute them (§5.2, §7.3).
+
+**Prose re-check** (fresh audit of the revised "To:" strings). Verdict on
+round 1's fixes: the reversal template was genuinely gone, but the two
+flagged tics were *thinned, not cleared* — the negation construction
+survived in five strings and a third unprotected balanced-couplet lived in
+the basics card. Accepted: basics-card couplet broken (§5.2); hero-
+paragraph antecedent fixed ("that slide's layout name," §5.1); how-it-works
+line 2 made grammatically parallel and code-styled (§5.5); proof-strip
+four-pivot sentence split (§5.5); agent body split, "on brand" cut (§5.5);
+analysts card de-jargoned and given a verb (§5.2); meta-description double
+rule-of-three trimmed (§5.6); README em-dash pile trimmed (§5.9);
+early-access double-"and" resolved by the strip's removal; `theme:`
+code-styling made explicit (§5.4); the H1/section-title shared "Write"
+opener broken (§5.2); getting-started negation-doublet rewritten (§5.8).
+Consciously retained, not missed: the hero's "no dragging, no nudging, no
+drift" triplet (the page's one flagship negation run), "No install to try
+it." in the kept trust line, and the pre-existing "polished, repeatable,
+version-controlled" in the intro description (inherited, not introduced).
 
 ## 10. What NOT to change (protect list)
 
@@ -620,15 +782,22 @@ tension as disqualifying (the split-layers framing carries it, §2).
 
 ## 11. Verification note
 
-- Copy quotes were read from source files at the paths cited, and the
-  adversarial pass re-verified each quoted "From:" string verbatim.
+- Copy quotes were read from source files at the paths cited, and two
+  independent passes (rounds 1 and 2) re-verified each quoted "From:"
+  string verbatim.
 - The rendered landing was screenshotted at 1440 / 820 / 390 from the local
-  dev server (artifacts in the session scratchpad, shared in the PR
-  conversation).
+  dev server. The screenshots live in the session scratchpad and the PR
+  conversation, not the repo — a reader of this doc alone is trusting that
+  claim, not checking it.
 - The 55-component / 13-bucket counts came from executing `loadAll()` and
   `tools/check-ownership.js` in this repo; the broken getting-started
   commands were reproduced by running them (`error: source markdown not
-  found`).
+  found`) in both rounds; the npm-unpublished claim was verified against
+  the registry (404).
+- The introduction's gallery.pdf link is verified to the limit checkable
+  from here: the file is absent from the local tree and from origin/main's
+  tracked tree, so the GitHub blob URL must 404 — the live URL itself was
+  not fetched.
 - No claim in this doc about live production behavior (lattice.style) was
   tested against production; all rendering evidence is from the local dev
   server build of this commit.
