@@ -588,7 +588,7 @@ for signal in calibrator.intake.unscored():
 
 Think deeper, plan longer, decide once — the mandate fit on a napkin, so the venue got two days. The layout resolves the composition itself: a moderate-aspect photo lands as a floated card beside the argument, no modifier, no crop.
 
-![bg](../../../lib/components/imagery/image/sample-photo-wide.svg)
+![bg](assets/sample-photo-wide.jpg)
 
 ---
 
@@ -601,7 +601,7 @@ Think deeper, plan longer, decide once — the mandate fit on a napkin, so the v
 
 Same lake, same mandate, opposite wall. `mirror` flips the card — image left, text right — and the composition is otherwise unchanged, which was also true of the discussion.
 
-![bg left](../../../lib/components/imagery/image/sample-photo-wide.svg)
+![bg left](assets/sample-photo-wide.jpg)
 
 ---
 
@@ -614,7 +614,7 @@ Same lake, same mandate, opposite wall. `mirror` flips the card — image left, 
 
 `gallery` contains the whole asset at native aspect on a matte with a placard — for artifacts where cropping would destroy meaning. The whiteboard held the four framework parts and one org chart nobody claims to have drawn.
 
-![bg](../../../lib/components/imagery/image/sample-photo-square.svg)
+![bg](assets/sample-photo-square.jpg)
 
 ---
 
@@ -626,7 +626,7 @@ Same lake, same mandate, opposite wall. `mirror` flips the card — image left, 
 
 A panorama goes full-bleed — the message rides a solid card, so it stays legible over any photo, including this one of the grounds we will reference in three consecutive planning cycles.
 
-![bg](../../../lib/components/imagery/image/sample-photo-pano.svg)
+![bg](assets/sample-photo-pano.jpg)
 
 ---
 
@@ -639,7 +639,7 @@ A panorama goes full-bleed — the message rides a solid card, so it stays legib
 
 An extreme aspect would waste a card, so a tall photo shows whole in a full-height column with the argument alongside. The climb produced two insights and one signed waiver.
 
-![bg](../../../lib/components/imagery/image/sample-photo-tall.svg)
+![bg](assets/sample-photo-tall.jpg)
 
 ---
 
@@ -651,7 +651,7 @@ An extreme aspect would waste a card, so a tall photo shows whole in a full-heig
 
 `statement` rides the title on the photo over a scrim — the editorial moment reserved for a line the room will repeat. This one made the T-shirts before it made the plan.
 
-![bg](../../../lib/components/imagery/image/sample-photo-wide.svg)
+![bg](assets/sample-photo-wide.jpg)
 
 ---
 
@@ -687,7 +687,7 @@ Ownership of the weights, the CSV retirement date, and who carries the pager —
 
 The mandate, projected after dinner, stayed legible — card, scrim, and matte all track the theme after dark, and the photo carries the rest.
 
-![bg](../../../lib/components/imagery/image/sample-photo-pano.svg)
+![bg](assets/sample-photo-pano.jpg)
 
 ---
 
@@ -869,7 +869,7 @@ The struck card stays on the slide — the framework logs its rejected options t
 
 Same lake, opposite bank, one session earlier than scheduled. The image card crosses to the left and the text pads to match — `![bg left]` still works, for the traditionalists. The lake is unchanged.
 
-![bg left](../../../lib/components/imagery/image/sample-photo-wide.svg)
+![bg left](assets/sample-photo-wide.jpg)
 
 ---
 
