@@ -36,6 +36,14 @@ in patch versions.
   preamble and attaches each PDF as its own file part — the #22 threat model is unchanged (every
   doc is framed as data; generated HTML still crosses the sanitizer).
 
+### Fixed
+
+- **The reference-doc picker's delete is now reachable on touch and by keyboard (#651
+  follow-up).** Each row's trash was hover-revealed (and the active doc's was hidden
+  outright until hover) — invisible on touch and awkward for keyboard users. It's now
+  always present but muted, prominent on hover/focus, uniform for active and inactive
+  docs; the active-row "grounding" check gained a screen-reader label.
+
 ### Changed
 
 - **Breaking: `boardroom` and `sketch` moved off `finish:` onto a new `mode:` axis.**
