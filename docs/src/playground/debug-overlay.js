@@ -27,7 +27,6 @@
 
 export const DEBUG_STYLE_ID = 'lattice-debug-style';
 export const DEBUG_OVERLAY_ID = 'lattice-debug-overlay';
-export const DEBUG_CAPTURE_ID = 'lattice-debug-capture';
 
 // The levers. `identity size layout` is the default profile (`debug: on`); `class`
 // and `box` are opt-in. Order here is the render order on the chip.
@@ -147,16 +146,14 @@ export function debugCss() {
 		outline('grid'),
 		outline('flex'),
 		outline('flow'),
-		// The overlay layer: a non-interactive sibling of the deck content. Fixed so
-		// chips ignore the deck's own transforms/scroll containers and sit in viewport
-		// space (positions are computed from getBoundingClientRect each redraw).
-		`#${DEBUG_OVERLAY_ID}{position:fixed;inset:0;pointer-events:none;z-index:2147483000;font:600 11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;}`,
-		// In HOVER mode, this transparent layer OWNS pointer input so debug takes
-		// precedence over the preview's own gestures (click-to-navigate, chart reveal):
-		// a tap reveals the box beneath, and `touch-action:pan-y` lets a vertical swipe
-		// still scroll the filmstrip. pointer-events:auto (a div's default) so it
-		// intercepts; skipped by elementsFromPoint via its id when we hit-test beneath.
-		`#${DEBUG_CAPTURE_ID}{position:fixed;inset:0;z-index:2147482999;background:transparent;touch-action:pan-y;cursor:crosshair;}`,
+		// The overlay layer: a non-interactive sibling of the deck content, anchored to
+		// the DOCUMENT (position:absolute, not fixed). The preview iframe scrolls its own
+		// document internally, and iOS Safari does NOT track `position:fixed` to an
+		// iframe's internal scroll — a fixed layer would strand chips off their boxes
+		// after a scroll. Absolute-to-document scrolls WITH the content, so chips (placed
+		// at document coords: getBoundingClientRect + scroll offset) track reliably on
+		// every engine. See engineering/decisions/2026-07-01-debug-bounding-boxes.md.
+		`#${DEBUG_OVERLAY_ID}{position:absolute;top:0;left:0;pointer-events:none;z-index:2147483000;font:600 11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;}`,
 		`#${DEBUG_OVERLAY_ID} .dbg-chip{position:absolute;transform:translateY(0);background:rgba(12,15,22,.92);color:#fff;padding:1px 5px;border-radius:0 0 4px 0;border-left:3px solid #fff;white-space:nowrap;max-width:60vw;overflow:hidden;text-overflow:ellipsis;}`,
 		`#${DEBUG_OVERLAY_ID} .dbg-chip[data-dbg-layout="grid"]{border-left-color:${LAYOUT_COLORS.grid};}`,
 		`#${DEBUG_OVERLAY_ID} .dbg-chip[data-dbg-layout="flex"]{border-left-color:${LAYOUT_COLORS.flex};}`,
@@ -271,59 +268,69 @@ export function applyDebug(frame, opts = {}) {
 		doc.__dbgRO = ro;
 	}
 	if (win?.addEventListener) {
-		// The filmstrip scrolls its sections under the fixed overlay, so a scroll must
-		// re-pin every chip to its box (getBoundingClientRect moves; the chip doesn't).
+		// The iframe document scrolls internally, so a scroll must re-pin every chip to
+		// its box (getBoundingClientRect moves). The overlay is document-anchored, so the
+		// chip's document coords already scroll with it — this redraw just keeps async
+		// growth / off-screen culling correct.
 		win.addEventListener('resize', redraw);
 		win.addEventListener('scroll', redraw, { passive: true });
 		doc.__dbgResize = redraw;
 	}
 
-	// HOVER mode: a transparent CAPTURE LAYER owns pointer input so debug takes
-	// precedence over the preview's own gestures (click-to-navigate, chart reveal).
-	// `always` mode stays passive — chips are pinned and the deck stays interactive.
-	if (enabled.some((s) => s.cfg.reveal === 'hover') && doc.createElement) {
-		const cap = doc.createElement('div');
-		cap.id = DEBUG_CAPTURE_ID;
-		(doc.body || doc.documentElement).appendChild(cap);
+	// HOVER mode owns pointer input via CAPTURE-PHASE listeners on the DOCUMENT — the
+	// same house pattern the chart-interact + SYNC agents use (drawing-board-chart-
+	// interact.js, deck-preview.js). No positioned overlay div (a `position:fixed`
+	// layer does NOT track an iframe's internal scroll on iOS Safari, which is what
+	// broke touch). A tap reveals the box beneath (hit-tested via elementsFromPoint);
+	// a vertical swipe scrolls untouched (we never preventDefault the pan); and the
+	// synthesized click is suppressed so the preview's own gestures don't fire. `always`
+	// mode stays passive — chips pinned, the deck interactive.
+	if (enabled.some((s) => s.cfg.reveal === 'hover') && doc.addEventListener) {
 		const reveal = (x, y, toggle) => {
 			const hit = hitFromPoint(doc, overlay, x, y);
 			doc.__dbgHot = toggle && hit && hit === doc.__dbgHot ? null : hit; // tap again / empty → dismiss
 			renderChips(doc, win);
 		};
-		// Mouse: hover reveals the box under the pointer.
-		cap.addEventListener('mousemove', (e) => reveal(e.clientX, e.clientY, false));
-		cap.addEventListener('mouseleave', () => {
+		let tap = null;
+		const onMove = (e) => {
+			// Mouse hover reveals live; a touch drag past the threshold is a swipe (no reveal).
+			if (e.pointerType === 'mouse' || (!e.pointerType && e.type === 'mousemove')) {
+				reveal(e.clientX, e.clientY, false);
+			} else if (tap && (Math.abs(e.clientX - tap.x) > 10 || Math.abs(e.clientY - tap.y) > 10)) {
+				tap.moved = true;
+			}
+		};
+		const onLeave = () => {
 			doc.__dbgHot = null;
 			renderChips(doc, win);
-		});
-		// Touch: a genuine TAP (down→up, no meaningful move, no pointercancel) reveals;
-		// a swipe MOVES or cancels → no reveal, and `touch-action:pan-y` lets it scroll.
-		let tap = null;
-		cap.addEventListener('pointerdown', (e) => {
+		};
+		const onDown = (e) => {
 			tap = e.pointerType === 'mouse' ? null : { x: e.clientX, y: e.clientY, moved: false };
-		});
-		cap.addEventListener('pointermove', (e) => {
-			if (tap && (Math.abs(e.clientX - tap.x) > 10 || Math.abs(e.clientY - tap.y) > 10)) tap.moved = true;
-		});
-		cap.addEventListener('pointerup', (e) => {
+		};
+		const onUp = (e) => {
 			const wasTap = tap && !tap.moved;
 			tap = null;
-			if (!wasTap) return; // a swipe — let it scroll, reveal nothing
+			if (!wasTap) return; // a swipe — it already scrolled; reveal nothing
 			reveal(e.clientX, e.clientY, true);
-		});
-		cap.addEventListener('pointercancel', () => {
+		};
+		const onCancel = () => {
 			tap = null;
-		});
-		// Suppress the click a tap synthesizes (and any mouse click) so the preview's
-		// click-to-navigate / chart reveal never fires while debug owns the surface.
-		cap.addEventListener(
-			'click',
-			(e) => {
-				e.stopImmediatePropagation();
-				e.preventDefault();
-			},
-			true,
-		);
+		};
+		// Capture phase (true) so debug wins BEFORE the preview's own bubble-phase
+		// handlers; stopImmediatePropagation on the click a tap synthesizes suppresses
+		// click-to-navigate / chart reveal. We never preventDefault a move, so scroll lives.
+		const onClick = (e) => {
+			e.stopImmediatePropagation();
+			e.preventDefault();
+		};
+		doc.addEventListener('mousemove', onMove, true);
+		doc.addEventListener('mouseleave', onLeave, true);
+		doc.addEventListener('pointermove', onMove, true);
+		doc.addEventListener('pointerdown', onDown, true);
+		doc.addEventListener('pointerup', onUp, true);
+		doc.addEventListener('pointercancel', onCancel, true);
+		doc.addEventListener('click', onClick, true);
+		doc.__dbgListeners = { onMove, onLeave, onDown, onUp, onCancel, onClick };
 	}
 	if (win?.setTimeout) {
 		for (const t of [80, 320, 1200]) win.setTimeout(redraw, t);
@@ -352,17 +359,17 @@ function makeChip(doc, el, mode, reveal, restText, fullText) {
 	return chip;
 }
 
-// The nearest chip-owning box beneath a viewport point → or null. The capture layer
-// sits on top, so we hit-test with elementsFromPoint (front-to-back) and step over
-// the debug layers by id; the overlay + chips are pointer-events:none and already
-// omitted. Then walk up to the nearest box that owns a chip.
+// The nearest chip-owning box at a viewport point → or null. The overlay + chips are
+// pointer-events:none, so elementsFromPoint already omits them and returns the deck
+// content; we walk up from the first hit to the nearest box that owns a chip. (Same
+// hit-test model as chart-interact's elementFromPoint.)
 function hitFromPoint(doc, overlay, x, y) {
 	if (!doc.elementsFromPoint) return null;
 	const owned = new Set(Array.from(overlay.children).map((c) => c.__dbgEl));
 	for (const start of doc.elementsFromPoint(x, y)) {
-		if (start.id === DEBUG_CAPTURE_ID || start.id === DEBUG_OVERLAY_ID) continue;
+		if (start.id === DEBUG_OVERLAY_ID) continue;
 		for (let n = start; n && n.nodeType === 1; n = n.parentElement) {
-			if (n.id === DEBUG_CAPTURE_ID || n.id === DEBUG_OVERLAY_ID) break;
+			if (n.id === DEBUG_OVERLAY_ID) break;
 			if (owned.has(n)) return n;
 		}
 	}
@@ -373,8 +380,11 @@ function hitFromPoint(doc, overlay, x, y) {
 // its container ancestors form the "chain": those chips reveal, enriched to full
 // detail. In `hover` mode everything OUTSIDE the chain hides (outlines only at
 // rest); in `always` mode it stays visible but dims while a box is isolated.
-// Positions come from getBoundingClientRect each call (transform-safe), then the
-// visible chips are de-overlapped.
+// Positions come from getBoundingClientRect (viewport, transform-safe) PLUS the
+// document scroll offset — the overlay is position:absolute anchored to the document,
+// so chips must sit at DOCUMENT coordinates to scroll with their boxes (this is what
+// survives iOS, where a fixed layer would not track the iframe's internal scroll).
+// Then the visible chips are de-overlapped.
 function renderChips(doc, win) {
 	const overlay = doc.getElementById?.(DEBUG_OVERLAY_ID);
 	if (!overlay) return;
@@ -383,6 +393,8 @@ function renderChips(doc, win) {
 	const chain = new Set();
 	for (let n = doc.__dbgHot || null; n; n = n.parentElement) if (owned.has(n)) chain.add(n);
 	const winH = win?.innerHeight || 1e9;
+	const sx = win?.scrollX || win?.pageXOffset || 0;
+	const sy = win?.scrollY || win?.pageYOffset || 0;
 	for (const chip of chips) {
 		const el = chip.__dbgEl;
 		const hot = chain.has(el);
@@ -392,8 +404,8 @@ function renderChips(doc, win) {
 		let onscreen = false;
 		if (el?.getBoundingClientRect) {
 			const r = el.getBoundingClientRect();
-			chip.style.left = `${Math.max(0, r.left)}px`;
-			chip.style.top = `${Math.max(0, r.top)}px`;
+			chip.style.left = `${Math.max(0, r.left + sx)}px`;
+			chip.style.top = `${Math.max(0, r.top + sy)}px`;
 			onscreen = r.bottom > 0 && r.top < winH;
 		}
 		// hover-mode chips only show while in the chain; always-mode chips always show.
@@ -432,9 +444,6 @@ function teardown(doc, win) {
 	if (style) style.remove();
 	const overlay = doc.getElementById?.(DEBUG_OVERLAY_ID);
 	if (overlay) overlay.remove();
-	// The capture layer holds all the pointer listeners; removing the node drops them.
-	const cap = doc.getElementById?.(DEBUG_CAPTURE_ID);
-	if (cap) cap.remove();
 	if (doc.__dbgRO) {
 		doc.__dbgRO.disconnect();
 		doc.__dbgRO = null;
@@ -443,7 +452,18 @@ function teardown(doc, win) {
 		win.removeEventListener('resize', doc.__dbgResize);
 		win.removeEventListener('scroll', doc.__dbgResize);
 	}
-	doc.__dbgResize = doc.__dbgHot = null;
+	// Remove the capture-phase document listeners (matching addEventListener's `true`).
+	const L = doc.__dbgListeners;
+	if (L && doc.removeEventListener) {
+		doc.removeEventListener('mousemove', L.onMove, true);
+		doc.removeEventListener('mouseleave', L.onLeave, true);
+		doc.removeEventListener('pointermove', L.onMove, true);
+		doc.removeEventListener('pointerdown', L.onDown, true);
+		doc.removeEventListener('pointerup', L.onUp, true);
+		doc.removeEventListener('pointercancel', L.onCancel, true);
+		doc.removeEventListener('click', L.onClick, true);
+	}
+	doc.__dbgListeners = doc.__dbgResize = doc.__dbgHot = null;
 	// Drop the per-element stamps so a toggled-off pass leaves the DOM pristine.
 	if (doc.querySelectorAll) {
 		for (const el of Array.from(doc.querySelectorAll('[data-dbg-layout]'))) el.removeAttribute('data-dbg-layout');

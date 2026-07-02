@@ -173,20 +173,44 @@ describe('applyDebug — lifecycle', () => {
 		assert.ok(frame.contentDocument.getElementById(DEBUG_OVERLAY_ID), 'overlay injected by override');
 	});
 
-	test('hover mode installs a pointer CAPTURE layer (debug owns input); always mode does not', async () => {
-		const { applyDebug, DEBUG_CAPTURE_ID } = await load();
-		// hover (the default) → a capture layer owns pointer input, and teardown removes it.
+	test('hover mode wires capture-phase document listeners (debug owns input); always does not; teardown clears', async () => {
+		const { applyDebug } = await load();
+		// hover (the default) → the agent owns pointer input via document listeners
+		// (no fixed capture div — that broke on iOS); teardown removes them.
 		const f1 = frameWith(deck('on'));
+		const d1 = f1.contentDocument;
 		applyDebug(f1, { force: null });
-		const cap = f1.contentDocument.getElementById(DEBUG_CAPTURE_ID);
-		assert.ok(cap, 'hover mode installs the capture layer');
-		assert.equal(cap.style.touchAction || '', ''); // style comes from the injected CSS, not inline
+		assert.ok(d1.__dbgListeners, 'hover mode wires the document listeners');
+		assert.equal(typeof d1.__dbgListeners.onUp, 'function');
 		applyDebug(f1, { force: 'off' });
-		assert.equal(f1.contentDocument.getElementById(DEBUG_CAPTURE_ID), null, 'teardown removes the capture layer');
+		assert.equal(d1.__dbgListeners, null, 'teardown clears the listeners');
 
-		// `always` mode pins the chips and leaves the deck interactive — no capture layer.
+		// `always` mode pins the chips and leaves the deck interactive — no input capture.
 		const f2 = frameWith(deck('always'));
 		applyDebug(f2, { force: null });
-		assert.equal(f2.contentDocument.getElementById(DEBUG_CAPTURE_ID), null, 'always mode does not capture input');
+		assert.equal(f2.contentDocument.__dbgListeners, null, 'always mode does not capture input');
+	});
+
+	test('touch: a TAP reveals the box beneath (then dismisses); a SWIPE reveals nothing', async () => {
+		const { applyDebug } = await load();
+		const frame = frameWith(deck('on'));
+		const doc = frame.contentDocument;
+		applyDebug(frame, { force: null });
+		const section = doc.querySelector('section');
+		doc.elementsFromPoint = () => [section]; // jsdom has no hit-testing
+		const L = doc.__dbgListeners;
+		const tap = (x = 5, y = 5) => {
+			L.onDown({ pointerType: 'touch', clientX: x, clientY: y });
+			L.onUp({ pointerType: 'touch', clientX: x, clientY: y });
+		};
+		tap();
+		assert.equal(doc.__dbgHot, section, 'a tap reveals the box beneath the finger');
+		tap();
+		assert.equal(doc.__dbgHot, null, 'a second tap dismisses');
+		// swipe: down → move past threshold → up ⇒ no reveal (the deck scrolled instead).
+		L.onDown({ pointerType: 'touch', clientX: 5, clientY: 5 });
+		L.onMove({ pointerType: 'touch', clientX: 5, clientY: 80 });
+		L.onUp({ pointerType: 'touch', clientX: 5, clientY: 80 });
+		assert.equal(doc.__dbgHot, null, 'a swipe reveals nothing');
 	});
 });
