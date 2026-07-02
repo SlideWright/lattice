@@ -36,7 +36,7 @@ var require_lint_core = __commonJS({
     var FOCUS_AXES = /* @__PURE__ */ new Set(["item", "row", "col", "cell", "line"]);
     var FOCUS_STYLES = /* @__PURE__ */ new Set(["spotlight", "ring", "list-fill", "blur", "pop"]);
     function focusSpecError(spec) {
-      if (!spec || !spec.trim()) return "empty target";
+      if (!spec?.trim()) return "empty target";
       const rest = spec.replace(/\bcell\s+\d+\s*,\s*\d+/gi, "");
       if (/\bcell\b/i.test(rest)) return 'cell needs "R,C" (e.g. cell 4,5)';
       for (const part of rest.split(",").map((s) => s.trim()).filter(Boolean)) {
@@ -91,7 +91,7 @@ var require_lint_core = __commonJS({
     ]);
     function deckOrientation(source) {
       const m = source.match(/^\s*size:\s*["']?([\w:/.-]+)/m);
-      const size = m && m[1];
+      const size = m?.[1];
       return size && PORTRAIT_SIZES.includes(size) ? "portrait" : "landscape";
     }
     function findAutosplitOrientationMismatch(source) {
