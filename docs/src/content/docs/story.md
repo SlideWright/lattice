@@ -7,6 +7,8 @@ description: Why Lattice Style exists, and the meaning behind the name — struc
 the engine that turns plain Markdown into boardroom-quality decks. Here is
 where it came from, and what the name means.
 
+*— Sharmarke Aden, who builds Lattice*
+
 ## Why Lattice Style exists
 
 I built Lattice because I can't stand what the slide tools we all use do to

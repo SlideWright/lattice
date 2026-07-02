@@ -1,12 +1,13 @@
 ---
 title: Getting started
-description: Install the Lattice toolchain, render the example galleries, and build your first deck.
+description: Install the Lattice toolchain, render the gallery deck, and build your first deck.
 ---
 
-Lattice runs on Node.js. `npm install` pulls in the Mermaid CLI and
-Puppeteer (which downloads a matching Chromium); it does **not** pull
-Marp — the owned engine renders every first-party path. Requires
-**Node 22+**.
+The quickest first look is the [playground](/playground/) — the full
+engine, in your browser, nothing to install. To render locally you need
+**Node 22 or newer**; `npm install` pulls in everything else, including a
+headless Chromium for rendering. You won't need an account or any
+configuration.
 
 ## Install
 
@@ -16,33 +17,33 @@ cd lattice
 npm install
 ```
 
-## Render the example galleries
+## Render the gallery deck
 
-The repository ships two gallery decks as ground-truth fixtures for what
-the renderer produces. Render them with the bundled emulator (no network
-required):
+The repository ships a gallery deck — an 87-slide tour of the system and
+the ground-truth fixture for what the renderer produces. Render it with
+the bundled `lattice` CLI (no network required):
 
 ```sh
-node lattice-emulator.js examples/gallery.md examples/gallery.pdf
-node lattice-emulator.js examples/gallery-mermaid.md examples/gallery-mermaid.pdf
+npx lattice test/integration/baseline-decks/gallery.md gallery.pdf
 ```
 
-Open `examples/gallery.pdf` — that is the fastest answer to "what does
-this produce?".
+Open `gallery.pdf` — that is the fastest answer to "what does this
+produce?" (Prefer not to render it yourself? The same deck is served on
+this site at [/gallery.pdf](/gallery.pdf).)
 
 The output extension picks the format — the same render, delivered as a
 vector PDF, a PowerPoint, or a PNG set:
 
 ```sh
-node lattice-emulator.js examples/gallery.md gallery.pptx   # PowerPoint (image slides)
-node lattice-emulator.js examples/gallery.md gallery.png    # → gallery.001.png, gallery.002.png, …
+npx lattice test/integration/baseline-decks/gallery.md gallery.pptx   # PowerPoint (image slides)
+npx lattice test/integration/baseline-decks/gallery.md gallery.png    # → gallery.001.png, gallery.002.png, …
 ```
 
 ## Render your own deck
 
 A deck is a Markdown file with a small front-matter block selecting a
 palette. Each slide is separated by `---`, and a `<!-- _class: ... -->`
-comment picks the component.
+comment picks the layout.
 
 ```markdown
 ---
@@ -68,13 +69,12 @@ A decision framework for product leaders.
 of pipeline stalls trace to a single approval step.
 ```
 
-Build it with the bundled `lattice` CLI (the owned engine) — the output
-extension picks the format:
+Build it with the same CLI — same rule, the extension picks the format:
 
 ```sh
-node lattice-emulator.js deck.md deck.pdf     # vector PDF
-node lattice-emulator.js deck.md deck.pptx    # PowerPoint (image slides)
-node lattice-emulator.js deck.md deck.png     # → deck.001.png, deck.002.png, …
+npx lattice deck.md deck.pdf     # vector PDF
+npx lattice deck.md deck.pptx    # PowerPoint (image slides)
+npx lattice deck.md deck.png     # → deck.001.png, deck.002.png, …
 ```
 
 Need a copy someone can render with Marp? Use **Export to Marp** in the Drawing
@@ -84,9 +84,10 @@ Lattice itself never renders through Marp.
 
 ## What to read next
 
-- [Authoring decks](/guides/authoring/) — the component catalog and the
-  authoring contract for each component.
+- [Authoring decks](/guides/authoring/) — the layout catalog and how to
+  feed each layout.
 - [Themes & palettes](/guides/themes/) — pick a palette, or author your
   own.
-- [Component reference](/components/) — every component, slot,
-  and modifier, browsable in any palette.
+- [Component reference](/components/) — every layout (a *component*, in
+  the catalog's vocabulary), each slot and modifier, browsable in any
+  palette.

@@ -756,11 +756,11 @@ Every composition is palette-blind — add `dark` and the solid card, scrim, and
 ## Vertical stacks the steps as rows; the connector becomes a down-arrow.
 
 1. Sense
-   - Inputs are signals. Signals are observed, never invented. The first step is to write down what you see, not what you conclude.
+   - Inputs are signals, observed and never invented — write down what you see, not what you conclude.
 2. Score
-   - A signal becomes data once it carries a number. The score is calibrated against outcomes, not against intuition.
+   - A signal becomes data once it carries a number, calibrated against outcomes.
 3. Decide
-   - A decision is a signal plus a deadline. Without the deadline it is an opinion, not a decision. The retrospective closes the loop on the score that earned it.
+   - A decision is a signal plus a deadline; without the deadline it is an opinion.
 
 ---
 
@@ -1111,9 +1111,7 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 
 ## Loose is the inverse — more breathing room, same layout machinery.
 
-The spacing scale grows ~25 % rather than shrinks. Sections that already look generous become luxurious; sections that look cramped become balanced. Reach for `loose` when the slide carries a single editorial point and you want the page to feel deliberately quiet — values pages, declarative principles, the closing line of an argument.
-
-The discipline is the same as `compact` from the other side: do not change the type ramp, do not change the chrome, do not change the layout. Only the variables that govern between-element rhythm move.
+The spacing scale grows ~25 % rather than shrinks. Reach for `loose` when the slide carries a single editorial point and you want the page to feel deliberately quiet — values pages, declarative principles, the closing line of an argument. The discipline mirrors `compact`: the type ramp, the chrome, and the layout all hold still; only the between-element rhythm moves.
 
 > Density is not the same as importance. `loose` says: this page deserves room — not because it carries more, but because it carries one thing well.
 

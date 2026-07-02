@@ -20,7 +20,15 @@ import '../styles/landing.css';
 import SiteHeader from '../components/site/SiteHeader.astro';
 import { HeroCopy } from '../components/landing/HeroCopy.tsx';
 import HeroPreview from '../components/landing/HeroPreview.tsx';
-import { FieldCards, NextSteps, SectionHead, WhyCards } from '../components/landing/sections.tsx';
+import {
+	ByomSection,
+	FieldCards,
+	HowItWorks,
+	NextSteps,
+	ProofStrip,
+	SectionHead,
+	WhyCards,
+} from '../components/landing/sections.tsx';
 import FieldCardsLive from '../components/landing/FieldCardsLive.tsx';
 import RestyleShowcase from '../components/landing/RestyleShowcase.tsx';
 import { assetBase } from '../playground/asset-version.mjs';
@@ -132,14 +140,20 @@ const nextSteps = [
 	{
 		href: url('guides/authoring/'),
 		title: 'Author decks',
-		body: 'Learn the layout catalog and the authoring contract slide by slide.',
+		body: "See every layout, what it's for, and the Markdown that feeds it.",
 		cta: 'Authoring guide',
 	},
 	{
 		href: url('components/'),
-		title: 'Component reference',
-		body: 'Every component with a live preview and an in-browser editor — themable in all palettes.',
-		cta: 'Browse components',
+		title: 'Browse the layouts',
+		body: 'Every layout (the reference calls them components) with a live preview and an in-browser editor — themable in all palettes.',
+		cta: 'Layout reference',
+	},
+	{
+		href: url('playground/'),
+		title: "Can't install anything?",
+		body: 'Open the playground — the full engine runs in your browser, nothing to install.',
+		cta: 'Open the playground',
 	},
 ];
 ---
@@ -150,10 +164,10 @@ const nextSteps = [
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<ResourceHints />
-		<title>Lattice — boardroom-quality slide decks from Markdown</title>
+		<title>Lattice — Markdown to boardroom-ready slide decks (PDF, PPTX)</title>
 		<meta
 			name="description"
-			content="Lattice turns a plain Markdown file into a boardroom-quality slide deck. Pick a named component per slide; the engine assembles every deck against one palette."
+			content="Write plain Markdown, pick a layout per slide, and Lattice renders a polished PDF, PPTX, or HTML deck with one palette and zero design work. Free, offline, MIT-licensed."
 		/>
 		<link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
 		<!-- Set palette/mode before first paint to avoid a flash. Shares the
@@ -180,20 +194,31 @@ const nextSteps = [
 			<section class="py-[clamp(48px,7vw,96px)] pb-[clamp(40px,5vw,72px)]">
 				<div class="wrap grid grid-cols-1 items-center gap-[clamp(28px,4vw,56px)] lg:grid-cols-[1.05fr_1fr]">
 					<!-- Static copy + CTAs (zero JS). -->
-					<HeroCopy playgroundHref={url('playground/')} getStartedHref={url('getting-started/')} />
+					<HeroCopy
+						playgroundHref={url('playground/')}
+						getStartedHref={url('getting-started/')}
+						galleryHref={url('gallery.pdf')}
+					/>
 					<!-- Interactive Preview/Source flip + live render (hydrates). -->
 					<HeroPreview client:load data={heroData} />
+				</div>
+			</section>
+
+			<!-- How it works — a slim three-step band -->
+			<section class="border-y border-border bg-muted py-[clamp(28px,3.5vw,44px)]">
+				<div class="wrap">
+					<HowItWorks />
 				</div>
 			</section>
 
 			<!-- Range: speaks your field -->
 			<section class="py-[clamp(48px,6vw,88px)]">
 				<div class="wrap">
-					<SectionHead eyebrow="Whatever you do, there's a slide for it" title="Plain Markdown — in the native language of your work.">
+					<SectionHead eyebrow="Whatever you do, there's a slide for it" title="Your field already has a notation. Lattice speaks it.">
 						You write the same lists, tables, and fenced blocks you already know. Lattice renders each in the notation
 						your discipline expects — no drawing tools, no boxes to nudge.
 					</SectionHead>
-					<FieldCards playgroundHref={url('playground/')} />
+					<FieldCards playgroundHref={url('playground/')} layoutCount={manifests.length} />
 				</div>
 				<!-- Invisible controller: fills the cards' live hosts + wires "Edit this
 				     deck". client:load (not client:visible) because this island renders
@@ -214,21 +239,37 @@ const nextSteps = [
 				</div>
 			</section>
 
+			<!-- Proof — one receipt from /comparison, a slim band -->
+			<section class="py-[clamp(40px,5vw,64px)]">
+				<div class="wrap">
+					<ProofStrip comparisonHref={url('comparison/')} />
+				</div>
+			</section>
+
+			<!-- Bring your own model — the agent-workflow wedge -->
+			<section class="border-y border-border bg-muted py-[clamp(48px,6vw,88px)]">
+				<div class="wrap">
+					<ByomSection featuresHref={url('features/') + '#ai-authoring'} />
+				</div>
+			</section>
+
 			<!-- Showcase -->
 			<section class="py-[clamp(48px,6vw,88px)]">
 				<div class="wrap">
 					<SectionHead eyebrow="One source, every palette" title="Change one line. Restyle the whole deck.">
-						Watch a single slide move through every palette — in light or dark. Brand colours live in one file and
-						the components never name a colour, so a whole deck restyles by editing one <code class="font-mono text-[0.88em] text-primary">theme:</code> line.
+						Watch a single slide move through every palette — in light or dark. This is the one-file palette
+						contract paying off: edit one <code class="font-mono text-[0.88em] text-primary">theme:</code> line and the whole deck follows.
 					</SectionHead>
 					<RestyleShowcase client:visible data={restyleData} />
 				</div>
 			</section>
 
 			<!-- Next steps -->
-			<section class="border-y border-border bg-muted py-[clamp(48px,6vw,88px)]">
+			<section class="border-t border-border bg-muted py-[clamp(48px,6vw,88px)]">
 				<div class="wrap">
-					<SectionHead eyebrow="Where to go next" title="Pick a starting point." />
+					<SectionHead eyebrow="Where to go next" title="Pick a starting point.">
+						The engine ships today; the SlideWright desktop app is on the way.
+					</SectionHead>
 					<NextSteps links={nextSteps} />
 				</div>
 			</section>
@@ -249,6 +290,8 @@ const nextSteps = [
 					<a href={url('workbench/')}>Workbench</a>
 					<a href={url('guides/authoring/')}>Authoring</a>
 					<a href={url('components/')}>Components</a>
+					<a href={url('features/')}>Features</a>
+					<a href={url('comparison/')}>Comparison</a>
 					<a href="https://github.com/slidewright/lattice">GitHub</a>
 				</nav>
 				<span class="legal">Designed by humans. Refined with Claude. · Part of Lattice Style · MIT-licensed</span>

@@ -7,14 +7,17 @@
 // area, with a details column. Same table styling as the comparison matrix, but
 // "just Lattice" (no competitor columns). Static, zero client JS.
 //
-// Honesty bar: every count/name is verified against the repo — 53 components /
-// 12 buckets (the `_chart-family` partial is internal, excluded), 14 editorial
-// palettes (+ 4 colour-blind-safe),
-// 29 treatments (18 tint + 11 mark), 12-token type scale, 25 Mermaid types.
+// Honesty bar: the component/bucket/palette counts and the per-bucket name
+// lists are GENERATED from the manifests and theme tokens at build time — a
+// new component or palette updates this page on the next build, so the counts
+// can't rot (they did: this page shipped "53 / 12" while the engine held
+// 55 / 13). Hand-maintained numbers remain only where no machine source
+// exists (treatments, type-scale tokens, Mermaid types).
 import '../styles/landing.css';
 import SiteHeader from '../components/site/SiteHeader.astro';
 import PerfOverlay from '../components/site/PerfOverlay.astro';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import { joinBase } from '../lib/base-url.mjs';
 
@@ -22,8 +25,50 @@ const base = import.meta.env.BASE_URL;
 const url = (p) => joinBase(base, p);
 
 const docsRoot = process.cwd();
+const repoRoot = join(docsRoot, '..');
+const require = createRequire(import.meta.url);
+const { loadAll } = require(join(repoRoot, 'lib/components', 'index.js'));
+const manifests = loadAll();
+const componentCount = manifests.length;
+
 const tokensCss = readFileSync(join(docsRoot, 'src/styles/lattice-tokens.generated.css'), 'utf8');
 const palettes = [...new Set([...tokensCss.matchAll(/data-palette="([^"]+)"/g)].map((m) => m[1]))];
+const editorialPalettes = palettes.filter((p) => !p.startsWith('a11y-'));
+const cbSafePalettes = palettes.filter((p) => p.startsWith('a11y-'));
+
+// Bucket → component names, straight from the catalog's directory layout
+// (lib/components/<bucket>/<name>/). `_`-prefixed dirs are internal partials.
+const componentsRoot = join(repoRoot, 'lib', 'components');
+const bucketMap = {};
+for (const bucket of readdirSync(componentsRoot, { withFileTypes: true })) {
+	if (!bucket.isDirectory() || bucket.name.startsWith('_')) continue;
+	const names = readdirSync(join(componentsRoot, bucket.name), { withFileTypes: true })
+		.filter((e) => e.isDirectory() && !e.name.startsWith('_'))
+		.map((e) => e.name)
+		.sort();
+	if (names.length) bucketMap[bucket.name] = names;
+}
+const bucketCount = Object.keys(bucketMap).length;
+const titleCase = (s) => s.replace(/(^|-)(\w)/g, (_, sep, c) => (sep ? ' ' : '') + c.toUpperCase());
+
+// Display order for the catalog rows; prose overrides where a name list says
+// less than a sentence would.
+const BUCKET_ORDER = [
+	'anchor', 'statement', 'inventory', 'comparison', 'progression', 'evidence',
+	'chart', 'diagram', 'math', 'code', 'legal', 'imagery', 'connect',
+];
+const BUCKET_DETAIL = {
+	diagram: 'All 25 Mermaid diagram types, pre-rendered to SVG and auto-themed to the deck.',
+	math: 'KaTeX with Definition/Theorem/Proof cards, derivation chains, matrix decompositions, and an equation beside its function-plot curve.',
+};
+const catalogRows = BUCKET_ORDER.filter((b) => bucketMap[b]).map((b) => [
+	`${titleCase(b)} (${bucketMap[b].length})`,
+	BUCKET_DETAIL[b] || bucketMap[b].join(' · '),
+]);
+// Buckets the display order doesn't know yet still ship — append, never drop.
+for (const b of Object.keys(bucketMap)) {
+	if (!BUCKET_ORDER.includes(b)) catalogRows.push([`${titleCase(b)} (${bucketMap[b].length})`, bucketMap[b].join(' · ')]);
+}
 
 // ── The catalog ─────────────────────────────────────────────────────────────
 // Segments → rows (feature · details). Comprehensive on purpose: this is a
@@ -33,7 +78,7 @@ const CATALOG = [
 		cat: 'Authoring',
 		rows: [
 			['Plain-Markdown source', 'Write decks in the Markdown you already know. No GUI, no proprietary file, no boxes to nudge.'],
-			['53 components, 12 buckets', 'Pick a component per slide by intent; the engine composes it. Full catalog two sections down.'],
+			[`${componentCount} components, ${bucketCount} buckets`, 'Pick a component per slide by intent; the engine composes it. Full catalog two sections down.'],
 			['Function · Form · Substance · Finish', 'A four-axis vocabulary for choosing a component by what it’s for — not by scrolling a gallery.'],
 			['Nested-list slots', 'Structured titles and bodies come from ordinary Markdown lists. No drawing tools.'],
 			['Front-matter directives', 'Set theme, header, footer, pagination, eyebrow, and subtitle once; they apply deck-wide.'],
@@ -42,30 +87,17 @@ const CATALOG = [
 	},
 	{
 		cat: 'Component catalog — field-native',
-		rows: [
-			['Anchor (3)', 'title · divider · closing'],
-			['Statement (4)', 'content · big-number · quote · split-panel'],
-			['Inventory (11)', 'inventory · cards-grid · cards-stack · agenda · checklist · glossary · list · list-tabular · logo-wall · actors · q-and-a'],
-			['Comparison (8)', 'compare-prose · compare-table · matrix-2x2 · verdict-grid · decision · pricing · redline · split-compare'],
-			['Progression (2)', 'list-steps · list-criteria'],
-			['Evidence (2)', 'kpi · stats'],
-			['Chart (13)', 'radar · quadrant · funnel · gantt · kanban · roadmap · journey · piechart · progress · state-chart · timeline-list · word-cloud · map'],
-			['Diagram (1)', 'All 25 Mermaid diagram types, pre-rendered to SVG and auto-themed to the deck.'],
-			['Math (1)', 'KaTeX with Definition/Theorem/Proof cards, derivation chains, matrix decompositions, and an equation beside its function-plot curve.'],
-			['Code (2)', 'code (syntax-highlighted) · compare-code (side-by-side diff)'],
-			['Legal (5)', 'statute-stack · authority-chain · obligation-matrix · citation-card · regulatory-update'],
-			['Imagery (1)', 'image'],
-		],
+		rows: catalogRows,
 	},
 	{
 		cat: 'Theming & brand',
 		rows: [
-			['14 palettes, light + dark', 'Every palette ships a dark variant. Switch the whole deck in one line.'],
-			['Palette-blind components', 'Components never name a colour — they read var(--token). Restyle a deck by editing one line.'],
+			[`${editorialPalettes.length} palettes, light + dark`, 'Nearly every palette pairs a dark variant — carbone is dark-native. Switch the whole deck in one line.'],
+			['Palette-blind components', 'Components never name a color — they read var(--token). Restyle a deck by editing one line.'],
 			['WCAG-AA guaranteed', 'Contrast clears AA on every text-bearing surface, in every palette, light and dark.'],
-			['4 colour-blind-safe palettes', 'Beyond the 14 editorial palettes: deuteranopia-, protanopia-, tritanopia-, and achromatopsia-safe palettes, selectable in the picker.'],
+			[`${cbSafePalettes.length} color-blind-safe palettes`, `Beyond the ${editorialPalettes.length} editorial palettes: deuteranopia-, protanopia-, tritanopia-, and achromatopsia-safe palettes, selectable in the picker.`],
 			['12-token type scale', 'A fixed --fs-* scale. No t-shirt sizes, no per-slide drift.'],
-			['29 treatments', '18 tint and 11 mark peripheral accents (glows, washes, geometric marks), composable on any component.'],
+			['23 treatments', '12 tint and 11 mark peripheral accents (washes, geometric marks) plus a reset, composable on any component.'],
 			['Native dark canvas', 'Driven by the CSS color-scheme cascade, not class-list hacks — one mechanism across every render path.'],
 		],
 	},
@@ -91,6 +123,7 @@ const CATALOG = [
 	},
 	{
 		cat: 'AI authoring',
+		id: 'ai-authoring',
 		rows: [
 			['Machine catalog + spec', 'A machine-readable component catalog and a published authoring spec let an agent compose valid, on-brand decks.'],
 			['Bring your own model', 'Drive 300+ models through OpenRouter on your own account. Default: Claude Sonnet.'],
@@ -116,7 +149,7 @@ const CATALOG = [
 		<title>Features — the full Lattice capability catalog</title>
 		<meta
 			name="description"
-			content="A scannable, segmented catalog of everything Lattice does: 53 field-native components across 12 buckets, 14 palettes with guaranteed WCAG-AA, one source rendered pixel-identical to PDF/PPTX/PNG/HTML, a deck that behaves like code, native diagrams and math, AI authoring, and MIT/offline/no-lock-in."
+			content={`A scannable, segmented catalog of everything Lattice does: ${componentCount} field-native components across ${bucketCount} buckets, ${editorialPalettes.length} palettes with guaranteed WCAG-AA, one source rendered pixel-identical to PDF/PPTX/PNG/HTML, a deck that behaves like code, native diagrams and math, AI authoring, and MIT/offline/no-lock-in.`}
 		/>
 		<link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
 		<script is:inline>
@@ -195,7 +228,7 @@ const CATALOG = [
 							<tbody>
 								{CATALOG.map((seg) => (
 									<>
-										<tr class="cat-band">
+										<tr class="cat-band" id={seg.id}>
 											<th colspan="2" scope="colgroup">{seg.cat}</th>
 										</tr>
 										{seg.rows.map(([f, d]) => (
@@ -210,7 +243,7 @@ const CATALOG = [
 						</table>
 					</div>
 					<p class="mt-4 text-[13px] leading-[1.6] text-muted-foreground">
-						53 components across 12 buckets · 14 palettes (light + dark) · four output formats from one source.
+						{componentCount} components across {bucketCount} buckets · {editorialPalettes.length} palettes (light + dark) · four output formats from one source.
 						Counts are live against the engine — see the <a href={url('components/')} class="font-semibold text-primary hover:underline">component reference</a> for every component with a live preview.
 					</p>
 				</div>
@@ -232,7 +265,7 @@ const CATALOG = [
 							class="group block rounded-xl border border-border bg-card p-[24px] text-card-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary hover:shadow-lg"
 						>
 							<h3 class="mb-2 font-[var(--font-body)] text-[18px] font-semibold tracking-[-0.01em] text-[var(--text-heading)]">Browse the components</h3>
-							<p class="m-0 text-[14.5px] text-foreground">All 53 components, live and themable in every palette.</p>
+							<p class="m-0 text-[14.5px] text-foreground">All {componentCount} components, live and themable in every palette.</p>
 						</a>
 						<a
 							href={url('getting-started/')}

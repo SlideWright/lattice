@@ -1,13 +1,14 @@
 ---
-status: proposed
-summary: Pre-GA website copy & positioning review — personas, Munger inversion, per-surface from→to copy changes, landing IA restructure, and the broken getting-started funnel (P0)
+status: shipped
+summary: Pre-GA website copy & positioning review — personas, Munger inversion, per-surface from→to copy changes, landing IA restructure, and the broken getting-started funnel (P0). Implemented in the follow-up PR; §12 records the deviations.
 last-updated: 2026-07-02
 ---
 
 # Website copy & positioning review — pre-GA traction pass
 
 **Date:** 2026-07-02
-**Status:** Proposed (recommendations only; no site copy changed in this PR)
+**Status:** Shipped — implemented in the follow-up PR on this branch; §12
+records where the implementation deviates from the recommendation and why.
 **Surfaces reviewed:** landing (`docs/src/pages/index.astro`, `HeroCopy.tsx`,
 `sections.tsx`), `features.astro`, `comparison.astro`, `introduction.md`,
 `overview.mdx`, `getting-started.md`, `story.md`, root `README.md`, site nav +
@@ -633,9 +634,11 @@ while the features-page footer includes both — one footer nav, shared.
    earlier draft that deferred this as a later upgrade).
 4. **Restyle carousel rendered as an empty gray panel** in the full-page
    1440px screenshot (client:visible island; IntersectionObserver may simply
-   not fire in a full-page headless capture). **UNVERIFIED as a real-user
-   bug** — verify in a scrolled interactive session before treating it as
-   one.
+   not fire in a full-page headless capture). **RESOLVED — capture artifact,
+   not a bug**: during implementation, an interactive session that scrolled
+   the section into view and waited for hydration showed the carousel fully
+   rendering (live slide, palette cycling). Full-page captures simply never
+   trigger `client:visible`.
 5. **Off-path tooling finding, logged per HARD RULE #18:** the US-English
    scan in `tools/check-ownership.js` counts gitignored generated artifacts
    when they exist on disk (`docs/public/components.md`,
@@ -650,7 +653,12 @@ while the features-page footer includes both — one footer nav, shared.
    raw `readdirSync` walk with a hard-coded skip list and no gitignore
    consultation, and `docs/.gitignore` ignores both paths. Fix direction:
    skip gitignored paths (or add these two generated paths to the scan's
-   skip list).
+   skip list). **Fixed in the implementation PR**: the footgun blocked this
+   very PR's commit (running the docs dev server for the screenshot pass
+   regenerated the artifacts, 1351 → 1517), which put it on the path per
+   HARD RULE #18 — the scan now skips `docs/public/playground/v/` and
+   exempts the staged `docs/public/components.md`, verified green with the
+   artifacts present on disk.
 
 ## 9. Independent checks run on this review
 
@@ -801,3 +809,73 @@ version-controlled" in the intro description (inherited, not introduced).
 - No claim in this doc about live production behavior (lattice.style) was
   tested against production; all rendering evidence is from the local dev
   server build of this commit.
+
+## 12. Implementation record — deviations from the recommendation
+
+Shipped in the follow-up PR on this branch. Where the implementation
+deviates from the doc, the deviation and its reason:
+
+1. **The "Can't install anything?" card ships without the email field.**
+   §5.5/§8.3 made a one-field email capture the card's prerequisite. The
+   site is static (GitHub Pages / Cloudflare Pages) with no backend, and
+   standing up a capture service is a product decision — a vendor, a
+   privacy note, and a list owner — not an overnight copy change. The card
+   ships with the playground CTA and the desktop-app forward pointer only,
+   and makes no follow-me promise it can't keep (the specific failure the
+   red team vetoed was promising a follow mechanism that doesn't work).
+   §8.3 stays open as the tracked gap.
+2. **`/gallery.pdf` is a build-time staged copy, not a committed
+   `examples/gallery.pdf`.** The gallery's source of truth stays the
+   baseline fixture (HARD RULE #8); `docs/scripts/sync-portal.mjs` stages
+   the committed PDF into `docs/public/` at build (gitignored, like
+   `components.md`). The hero and introduction link the served URL — the
+   §5.1 veto (never link the test path from the hero) is honored.
+3. **`marp: true` stays in the getting-started example.** §8.2's flag is a
+   product/engine change (front-matter contract), out of scope for a copy
+   PR. Flag stays open.
+4. **The story page keeps its structure; the byline is one line** (*—
+   Sharmarke Aden, who builds Lattice*, the name on the repo's commits).
+   README's duplicated brand-story sections collapsed to one short
+   paragraph linking lattice.style/story per §5.12.
+5. **Getting-started teaches `npx lattice …`** (the existing bin alias)
+   instead of `node lattice-emulator.js …` — verified by running it against
+   the real gallery fixture (87 slides rendered). The emulator filename
+   itself (§8.1) is unchanged; npm publish stays pending.
+6. **Comparison's "53 components across 12 buckets" summary** became "more
+   than fifty components across thirteen buckets" (hand-written prose on a
+   page with no manifest load; §7.3's vague-where-not-generated rule). The
+   features page, which already pays the build cost, generates its counts
+   and per-bucket name lists from the manifests and theme tokens.
+
+### §12b — inversion round on the implementation (third check round)
+
+A final red-team pass ran against the *shipped* implementation (real dev
+server, the real `npx lattice` render, the committed PDF rasterized and
+inspected). Its two HIGH findings were fixed before the PR opened:
+
+1. **The promoted gallery PDF clipped text on two slides** (pages 48 and
+   71 — density-modifier demos whose body copy overflowed the frame). The
+   funnel fix had promoted a flawed artifact without page-level inspection.
+   Both slides were trimmed, the PDF rebuilt (still 87 slides, so the
+   page-count integration fixtures hold), and the repaired pages
+   rasterized and verified clean.
+2. **"Every layout" was false.** Getting-started said the gallery
+   "exercises every layout" and the introduction said it "shows every
+   component the engine knows" — 24 of 55 components (the whole legal
+   bucket among them) are not in the deck. The copy now calls it "an
+   87-slide tour of the system," and "every component" points only at
+   `/components/`, which genuinely has all 55. Extending the fixture to
+   true full coverage stays open as follow-up work.
+
+Also fixed from the same pass: the stale `examples/gallery*` paths in the
+canonical internal docs (`engineering/workflow.md` regression table,
+`design/theming.md` palette-check commands, `design/design-system.md`);
+the features page's "29 treatments" row (canon is 12 tints + 11 marks +
+a reset — `engineering/treatments.md`); the missing layout/component
+gloss on the "Browse the layouts" card; the BYOM link now lands on the
+features page's `#ai-authoring` band; the duplicated "desktop app is on
+the way" sentence in next steps; and the hero gallery link opens in a
+new tab. Logged, not fixed (code, off this PR's path):
+`tools/preview.js` `CANONICAL_DECKS` still lists `gallery-mermaid`, a
+deck that no longer exists. Accepted as-is: the README's split origins
+(lattice.style for the story, github.io for the raw PDF — both resolve).

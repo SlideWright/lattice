@@ -1,6 +1,6 @@
 ---
 title: What is Lattice?
-description: Lattice is a Marp-based slide-deck engine that turns plain Markdown into polished, repeatable, version-controlled PDFs.
+description: Lattice turns plain Markdown into polished, repeatable, version-controlled slide decks.
 ---
 
 You have been on the receiving end of slide decks where every slide is
@@ -8,7 +8,8 @@ slightly different from the one before. The headline is in one font on
 page 4 and another on page 5. The accent blue drifts between two
 shades. A chart copied from a 2022 deck still says "FY22" in the
 corner. Nobody planned the drift — it happens because slide tools
-make every slide a blank canvas, and humans are humans.
+make every slide a blank canvas, and no one owns consistency the night
+before the meeting.
 
 **Lattice is what you build when you want to stop that from happening.**
 
@@ -16,20 +17,18 @@ The author writes the deck as a plain text file in Markdown — the same
 format GitHub READMEs use. For each slide, the author picks one of the
 named components ("split panel", "verdict grid", "big number"). The
 engine assembles the slide using those components and a shared color
-palette. Every deck looks like it came from the same team — because,
-structurally, it did.
+palette. Every deck comes out of the same frame, so every deck reads
+like one team made it.
 
-Think of it this way: **Lattice is to slide decks what Markdown was
-to writing on the web.** A simple text source that produces something
+**Lattice is to slide decks what Markdown was to writing on the web.** A simple text source that produces something
 polished, repeatable, and easy to change.
 
 ## See it first
 
-The repository ships with a gallery deck that shows every component the
-engine knows. Open
-[`examples/gallery.pdf`](https://github.com/slidewright/lattice/blob/main/examples/gallery.pdf).
-That is the answer to "what does this actually produce?". For an
-interactive tour of every component — themable in any palette — see the
+The repository ships with a gallery deck, and this site serves the
+rendered PDF at [/gallery.pdf](/gallery.pdf). That is the answer to
+"what does this actually produce?" For an interactive tour of *every*
+component — themable in any palette — see the
 [component reference](/components/).
 
 ## What you get
@@ -65,8 +64,8 @@ the notation your discipline already uses:
 - **Analysts** — radar, quadrant, KPI, stats, progress, pie, and
   word-cloud components that turn numbers into an argument.
 
-Fifty-three components in all — and you reach every one of them with the
-same Markdown, never a new tool to learn.
+More than fifty components in all — and you reach every one of them with
+the same Markdown, never a new tool to learn.
 
 ## What changes for…
 
@@ -75,7 +74,7 @@ them — whether the author sat in finance, engineering, or legal. The
 argument lands without formatting drift competing for attention.
 
 **Authors** stop fiddling with text boxes. They write the words, pick
-a component, and the deck assembles itself.
+a component, and the engine does the rest.
 
 **Brand and design** set the visual system once, in one file, and
 stop policing every deck individually.

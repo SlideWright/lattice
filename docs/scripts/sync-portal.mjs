@@ -25,4 +25,17 @@ for (const name of ['components.md']) {
 	copyFileSync(src, join(publicDir, name));
 	copied++;
 }
+
+// Stage the committed gallery PDF so the site serves it at /gallery.pdf —
+// the landing hero's "skim a finished deck" link and the introduction's
+// "See it first" link both point here. The PDF's source of truth stays the
+// baseline-deck fixture (rebuilt with the galleries, HARD RULE #8); this is
+// a staged copy, gitignored like components.md above.
+const galleryPdf = join(here, '..', '..', 'test', 'integration', 'baseline-decks', 'gallery.pdf');
+if (!existsSync(galleryPdf)) {
+	console.error(`sync-portal: missing ${galleryPdf} — the committed gallery fixture is gone.`);
+	process.exit(1);
+}
+copyFileSync(galleryPdf, join(publicDir, 'gallery.pdf'));
+copied++;
 console.log(`sync-portal: staged ${copied} file(s) into public/.`);
