@@ -45,6 +45,18 @@ describe('makeStudioCompletion', () => {
 		expect(labels(complete('---\nmod', 7))).toContain('mode');
 	});
 
+	it('completes finish register VALUES — built-ins AND the user\'s saved finishes', () => {
+		const withFinishes = makeStudioCompletion(COMPS, ['atrium', 'halo', 'my-brand']);
+		const done = (doc: string, pos = doc.length) => {
+			const r = withFinishes(new CompletionContext(EditorState.create({ doc }), pos, true));
+			return r ? r.options.map((o) => o.label) : [];
+		};
+		expect(done('---\nfinish: at')).toContain('atrium');
+		expect(done('---\nfinish: my-')).toContain('my-brand'); // the saved finish is offered
+		// only on a finish: line, and not out in prose
+		expect(done('Just prose finish: at', 21)).toEqual([]);
+	});
+
 	it('does not fire in plain prose', () => {
 		expect(complete('Just some body text here')).toBeNull();
 	});

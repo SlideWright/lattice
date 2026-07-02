@@ -51,8 +51,11 @@ function inFrontMatter(doc: string, pos: number): boolean {
  * Build a CodeMirror CompletionSource from the component catalog. Returns null
  * when nothing applies, so other sources (none, here) can take over.
  */
-export function makeStudioCompletion(components: CompletionComponent[]) {
+export function makeStudioCompletion(components: CompletionComponent[], finishes: string[] = []) {
 	const componentOptions: Completion[] = components.map((c) => ({ label: c.name, type: 'class', detail: c.bucket, info: c.description, boost: 1 }));
+	// The finish register — built-in presets PLUS the user's saved/fabricated
+	// finishes — completed after `finish:` so an authored value stays valid.
+	const finishOptions: Completion[] = finishes.map((f) => ({ label: f, type: 'constant', detail: 'finish' }));
 
 	return function studioComplete(context: CompletionContext): CompletionResult | null {
 		const line = context.state.doc.lineAt(context.pos);
@@ -75,7 +78,13 @@ export function makeStudioCompletion(components: CompletionComponent[]) {
 			};
 		}
 
-		// 3. Front-matter directive key (start of a line inside the `---` block).
+		// 3. Finish register value on a `finish:` line — built-ins + saved finishes.
+		if (finishOptions.length && /^[ \t]*finish:[ \t]*[\w-]*$/.test(before) && inFrontMatter(context.state.doc.toString(), context.pos)) {
+			const word = context.matchBefore(/[\w-]*/);
+			return { from: word ? word.from : context.pos, options: finishOptions, validFor: /^[\w-]*$/ };
+		}
+
+		// 4. Front-matter directive key (start of a line inside the `---` block).
 		if (inFrontMatter(context.state.doc.toString(), context.pos) && /^[ \t]*[\w-]*$/.test(before)) {
 			const word = context.matchBefore(/[\w-]*/);
 			// Don't fire on the `---` fence lines themselves.

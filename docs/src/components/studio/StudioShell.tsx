@@ -341,6 +341,16 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 		() => savedFinishes.map((f) => ({ id: f.id, name: f.name, label: f.label, swatch: finishSwatch(f.recipe) })),
 		[savedFinishes],
 	);
+	// Saved-finish NAMES — folded into the lint's finish register (so applying a
+	// fabricated finish isn't flagged `unknown-finish`) and the editor's finish
+	// value completion (so it offers the user's own finishes as context).
+	const savedFinishNames = React.useMemo(() => savedFinishes.map((f) => f.name), [savedFinishes]);
+	// The full `finish:` value vocabulary the editor completes: built-in register
+	// presets (from the page's lint vocab) + the user's saved finishes.
+	const editorFinishNames = React.useMemo(
+		() => [...(((lintVocab as { finishNames?: string[] } | null)?.finishNames) || []), ...savedFinishNames],
+		[lintVocab, savedFinishNames],
+	);
 	// When the active `finish:` value names a SAVED finish (not a built-in register
 	// entry), it renders via injected CSS + an applied class — the engine doesn't
 	// know its name. `activeSavedFinish` is that record (or undefined).
@@ -621,13 +631,13 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 			return;
 		}
 		let live = true;
-		listFindings(lintVocab, source, localNames).then((f) => {
+		listFindings(lintVocab, source, localNames, savedFinishNames).then((f) => {
 			if (live) setFindings(f);
 		});
 		return () => {
 			live = false;
 		};
-	}, [validation, source, lintVocab, localNames]);
+	}, [validation, source, lintVocab, localNames, savedFinishNames]);
 	// A clean proposal can outlive its finding after an edit; clear it when the
 	// finding set changes so a stale diff card never lingers.
 	// biome-ignore lint/correctness/useExhaustiveDependencies: intentionally keyed on findings identity only — clearing a stale proposal when the list changes.
@@ -1030,7 +1040,7 @@ export default function StudioShell({ options, components = [], lintVocab }: Pro
 				<button type="button" onClick={() => setNotesOpen(true)} aria-label="Speaker notes" title="Speaker notes" className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 font-sans text-[12px] font-semibold normal-case tracking-normal text-[var(--accent)] hover:bg-[var(--accent-soft)]"><StickyNote className="size-3" /><span className="hidden lg:inline">Notes</span></button>
 				<span className="hidden items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-sans text-[12px] font-semibold normal-case tracking-normal text-foreground lg:inline-flex"><FileText className="size-3" />Markdown</span>
 			</div>
-			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? knownWithLocal : NO_KNOWN} completionComponents={insertComponents} lintVocab={lintVocab} extraComponentNames={localNames} onCursorSlide={onEditorCursorSlide} onSelectionChange={setHasSelection} onUserEdit={onFirstUserEdit} className="flex-1" />
+			<Editor ref={editorRef} value={source} onChange={setSource} knownComponents={validation ? knownWithLocal : NO_KNOWN} completionComponents={insertComponents} completionFinishes={editorFinishNames} lintVocab={lintVocab} extraComponentNames={localNames} onCursorSlide={onEditorCursorSlide} onSelectionChange={setHasSelection} onUserEdit={onFirstUserEdit} className="flex-1" />
 		</section>
 	);
 

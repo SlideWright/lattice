@@ -25,6 +25,15 @@ in patch versions.
 
 ## Unreleased
 
+### Fixed
+
+- **Saved (fabricated) finishes are first-class in the Studio editor.** Applying a
+  finish you created no longer trips an `unknown-finish` lint warning — your saved
+  finish names are folded into the deck-lint's finish register — and the editor now
+  completes `finish:` values from the built-in presets **plus** your own saved
+  finishes. (Follow-up to #669; the lint fix is reactive, the completion list
+  refreshes on the next editor mount, matching saved-component behavior.)
+
 ### Added
 
 - **The gallery PDF is served on the docs site at `/gallery.pdf`.** The

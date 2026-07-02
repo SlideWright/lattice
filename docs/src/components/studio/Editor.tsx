@@ -94,6 +94,9 @@ export const Editor = React.forwardRef<EditorHandle, {
 	knownComponents?: string[];
 	/** The component catalog, for autocomplete (name/bucket/description). */
 	completionComponents?: CompletionComponent[];
+	/** Finish register names (built-in presets + the user's saved finishes) for
+	 *  `finish:` value completion. */
+	completionFinishes?: string[];
 	/** The deterministic lint vocabulary. When present, the editor runs the FULL
 	 *  shared lint-core (severity tiers + per-finding fixes) instead of the
 	 *  unknown-component-only fallback. */
@@ -111,7 +114,7 @@ export const Editor = React.forwardRef<EditorHandle, {
 	 *  an external setSource so callers can react to authoring, not to their own writes. */
 	onUserEdit?: () => void;
 	className?: string;
-}>(function Editor({ value, onChange, knownComponents = [], completionComponents = [], lintVocab, extraComponentNames, onCursorSlide, onSelectionChange, onUserEdit, className }, ref) {
+}>(function Editor({ value, onChange, knownComponents = [], completionComponents = [], completionFinishes = [], lintVocab, extraComponentNames, onCursorSlide, onSelectionChange, onUserEdit, className }, ref) {
 	const hostRef = React.useRef<HTMLDivElement>(null);
 	const viewRef = React.useRef<EditorView | null>(null);
 	const onChangeRef = React.useRef(onChange);
@@ -210,7 +213,7 @@ export const Editor = React.forwardRef<EditorHandle, {
 						history(),
 						keymap.of([...defaultKeymap, ...historyKeymap, ...completionKeymap]),
 						markdown(),
-						autocompletion({ override: [makeStudioCompletion(completionComponents)], activateOnTyping: true, icons: false }),
+						autocompletion({ override: [makeStudioCompletion(completionComponents, completionFinishes)], activateOnTyping: true, icons: false }),
 						useRealLint && vocabSets
 							? linter(async (view): Promise<Diagnostic[]> => {
 									// Validation is gated by the Studio's toggle: with it off the
