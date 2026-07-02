@@ -1,0 +1,110 @@
+name: Docs PR preview (Cloudflare Pages)
+
+# Per-PR preview of the docs site. Production docs deploy to GitHub Pages
+# (docs.yml, push to main) — GitHub Pages has ONE environment and no per-PR
+# preview, which is why PR previews vanished when the site moved off the
+# Cloudflare dashboard integration. This restores them IN-REPO: build the same
+# Astro site the production job builds, then push it to the existing
+# `lattice-docs` Cloudflare Pages project as a PREVIEW deployment (any branch
+# other than the production `main` gets its own *.pages.dev URL). The URL is
+# posted back as a sticky PR comment.
+#
+# Setup: one repo secret — CLOUDFLARE_API_TOKEN (a token scoped to
+# "Cloudflare Pages: Edit" for the account below). The account id is not a
+# secret (it appears in the project's dashboard URL), so it is inlined.
+# See engineering/decisions/2026-07-01-docs-pr-preview.md.
+
+on:
+  pull_request:
+    # Mirror docs.yml's trigger set: the playground stages engine assets at
+    # build time, so an engine/theme change alters the preview without touching
+    # docs/ and must still rebuild.
+    paths:
+      - 'docs/**'
+      - 'dist/**'
+      - 'themes/**'
+      - 'lib/**'
+      - '.github/workflows/docs-preview.yml'
+
+# One preview per PR; a new push supersedes the in-flight build.
+concurrency:
+  group: docs-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write # post / update the preview-URL comment
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    # Secrets are withheld from fork PRs, so wrangler can't authenticate there —
+    # skip cleanly rather than fail. Same-repo branches (claude/*, ci/*, …) run.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      # Fail SAFE, not red: until CLOUDFLARE_API_TOKEN is added, skip the build
+      # and deploy so the check stays green (a no-op) rather than X-ing every PR.
+      # Secrets can't be read in an `if:`, but a boolean expression over one is
+      # allowed and never exposes its value.
+      - name: Check for Cloudflare token
+        id: guard
+        run: echo "have=${{ secrets.CLOUDFLARE_API_TOKEN != '' }}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        if: steps.guard.outputs.have == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.guard.outputs.have == 'true'
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Build docs site
+        if: steps.guard.outputs.have == 'true'
+        working-directory: docs
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy preview to Cloudflare Pages
+        id: deploy
+        if: steps.guard.outputs.have == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # Not a secret — the account id is visible in the project's dashboard URL.
+          accountId: 6e1dd8d852d61410a91dd1c909404e63
+          # --branch marks this a PREVIEW (non-production) deployment; the head
+          # branch name also becomes the stable preview alias.
+          command: pages deploy docs/dist --project-name=lattice-docs --branch=${{ github.head_ref }}
+
+      - name: Post preview URL
+        if: steps.deploy.outputs.deployment-url != ''
+        uses: actions/github-script@v7
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.deployment-url }}
+          ALIAS_URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+        with:
+          script: |
+            const marker = '<!-- docs-preview -->';
+            const url = process.env.PREVIEW_URL;
+            const alias = process.env.ALIAS_URL;
+            const body = [
+              marker,
+              '### 🔎 Docs preview',
+              '',
+              `**Deployment:** ${url}`,
+              alias && alias !== url ? `**Branch alias:** ${alias}` : '',
+              '',
+              `_Cloudflare Pages preview of \`${context.payload.pull_request.head.ref}\` @ \`${context.payload.pull_request.head.sha.slice(0, 7)}\`._`,
+            ].filter(Boolean).join('\n');
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+            const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number });
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
