@@ -143,6 +143,21 @@ always fire, even through a scroll), so hold-to-peek is reliable on iOS. Verifie
 real Playground with CDP touch events (hold reveals, lift hides, swipe drops the peek);
 final iOS-Safari confirmation is on-device.
 
+**The Studio preview `pointer-events:none` swipe-wrapper (the real reason it worked in
+Present but not the preview window).** After the touch model was right, press-and-hold
+worked in Studio's **Present** overlay but did nothing in the main **preview window** —
+same `DeckPreview`, same in-iframe agent. The difference was environmental: the main
+preview wraps the (touch-swallowing) engine iframe in a `pointer-events:none` div so a
+horizontal **swipe** passes through to the slide-nav container (`StudioShell.tsx`). But
+`pointer-events:none` blocks ALL input to the iframe — including the debug agent's
+press-and-hold (and desktop hover). Present has no such wrapper, so it worked. **Fix:**
+drop `pointer-events:none` from that wrapper *only while debug is active* (`debugActive`),
+so the iframe owns touch during debug (swipe-nav yields — the ‹ › buttons + slide rail
+still navigate; matches "in debug, debug takes precedence"). Universal CSS semantics, so
+it fixes every engine, not just iOS. Verified on the real Studio preview with CDP touch
+(off → `pointer-events:none`; on → `auto`; hold reveals the section). This wrapper is
+Studio-only — Playground/Drawing Board iframes receive touch directly.
+
 **Root cause of the iOS touch failures (post-mortem — three wrong fixes before this).**
 The first touch attempts put a `position:fixed` chip overlay AND a `position:fixed`
 capture div INSIDE the preview iframe. But the preview iframe's document scrolls

@@ -387,4 +387,19 @@ describe('Studio — Inspector controls respond', () => {
 		// A multi-word value is YAML-quoted; the parser + lint both strip the quotes.
 		expect(screen.getByLabelText('Deck source').textContent).toMatch(/debug:\s*"?on-always verbose"?/);
 	});
+
+	it('enabling debug lets the preview iframe receive touch (drops pointer-events:none)', async () => {
+		const user = setup();
+		// The preview normally sits under `pointer-events:none` so a swipe reaches the
+		// slide-nav container — but that also blocks the debug agent's press-and-hold
+		// inside the iframe. Turning debug on must drop it so touch reaches the iframe.
+		// DeckPreview is mocked to render its aria-label as text; the pointer-events
+		// wrapper is that node's parent.
+		const wrapper = () => screen.getByText('Live deck preview').parentElement as HTMLElement;
+		expect(wrapper().classList.contains('pointer-events-none')).toBe(true); // off by default
+		await user.click(screen.getByRole('button', { name: 'Toggle Deck inspector' }));
+		await user.click(await screen.findByRole('button', { name: 'Debug overlay' }));
+		await user.click(await screen.findByRole('menuitem', { name: 'On hover' }));
+		expect(wrapper().classList.contains('pointer-events-none')).toBe(false); // debug owns touch
+	});
 });
