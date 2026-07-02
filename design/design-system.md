@@ -738,8 +738,8 @@ the snippets freshness gate). If anyone modifies a per-component
 ### Migration
 
 Components are extracted from the monolithic `lattice.css` in batches
-of 5, with per-batch validation: rebuild the two baseline decks
-(`gallery.md`, `gallery-mermaid.md`) plus the 58 per-component
+of 5, with per-batch validation: rebuild the baseline deck
+(`test/integration/baseline-decks/gallery.md`) plus the 58 per-component
 galleries, then diff page-by-page (via `pdftoppm` rendering
 to PNG) against the pre-batch baseline. Any visual change fails the
 batch.

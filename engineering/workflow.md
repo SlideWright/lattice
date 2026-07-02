@@ -77,8 +77,8 @@ theirs from `expectedGallerySlideCount(manifest)`):
 
 | Deck | npm script | Slides |
 | --- | --- | --- |
-| `examples/gallery.md` | `build:gallery` | 89 |
-| `examples/gallery-mermaid.md` | `build:gallery-mermaid` | 31 |
+| `test/integration/baseline-decks/gallery.md` | `npx lattice test/integration/baseline-decks/gallery.md …` | 87 |
+
 
 A page-count drift on either fails `npm run test:integration`.
 

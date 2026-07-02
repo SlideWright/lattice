@@ -97,7 +97,7 @@ const CATALOG = [
 			['WCAG-AA guaranteed', 'Contrast clears AA on every text-bearing surface, in every palette, light and dark.'],
 			[`${cbSafePalettes.length} color-blind-safe palettes`, `Beyond the ${editorialPalettes.length} editorial palettes: deuteranopia-, protanopia-, tritanopia-, and achromatopsia-safe palettes, selectable in the picker.`],
 			['12-token type scale', 'A fixed --fs-* scale. No t-shirt sizes, no per-slide drift.'],
-			['29 treatments', '18 tint and 11 mark peripheral accents (glows, washes, geometric marks), composable on any component.'],
+			['23 treatments', '12 tint and 11 mark peripheral accents (washes, geometric marks) plus a reset, composable on any component.'],
 			['Native dark canvas', 'Driven by the CSS color-scheme cascade, not class-list hacks — one mechanism across every render path.'],
 		],
 	},
@@ -123,6 +123,7 @@ const CATALOG = [
 	},
 	{
 		cat: 'AI authoring',
+		id: 'ai-authoring',
 		rows: [
 			['Machine catalog + spec', 'A machine-readable component catalog and a published authoring spec let an agent compose valid, on-brand decks.'],
 			['Bring your own model', 'Drive 300+ models through OpenRouter on your own account. Default: Claude Sonnet.'],
@@ -227,7 +228,7 @@ const CATALOG = [
 							<tbody>
 								{CATALOG.map((seg) => (
 									<>
-										<tr class="cat-band">
+										<tr class="cat-band" id={seg.id}>
 											<th colspan="2" scope="colgroup">{seg.cat}</th>
 										</tr>
 										{seg.rows.map(([f, d]) => (

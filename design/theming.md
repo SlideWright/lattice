@@ -512,10 +512,9 @@ new colour values flow through unchanged.
 When the values look right:
 
 ```sh
-# Build the regression galleries with your palette and inspect each PDF.
-node lattice-emulator.js examples/gallery.md         /tmp/<name>.pdf         -p <name>
-node lattice-emulator.js examples/gallery-mermaid.md /tmp/<name>-mermaid.pdf -p <name>
-node lattice-emulator.js examples/gallery-jargon.md  /tmp/<name>-jargon.pdf  -p <name>
+# Build the regression gallery decks with your palette and inspect each PDF.
+npx lattice test/integration/baseline-decks/gallery.md /tmp/<name>.pdf        -p <name>
+npx lattice examples/gallery-jargon.md                 /tmp/<name>-jargon.pdf -p <name>
 ```
 
 Then register the palette in `.vscode/settings.json` under

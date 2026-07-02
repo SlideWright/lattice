@@ -43,8 +43,8 @@ export function HeroCopy({
 			</p>
 			<p className="m-0 mt-2 text-[13px] text-muted-foreground">
 				Or skim a finished deck first —{' '}
-				<a className="font-semibold text-primary hover:underline" href={galleryHref}>
-					the full gallery, as a PDF
+				<a className="font-semibold text-primary hover:underline" href={galleryHref} target="_blank" rel="noopener">
+					the gallery, as a PDF
 				</a>
 				.
 			</p>

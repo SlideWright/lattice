@@ -846,3 +846,36 @@ deviates from the doc, the deviation and its reason:
    page with no manifest load; §7.3's vague-where-not-generated rule). The
    features page, which already pays the build cost, generates its counts
    and per-bucket name lists from the manifests and theme tokens.
+
+### §12b — inversion round on the implementation (third check round)
+
+A final red-team pass ran against the *shipped* implementation (real dev
+server, the real `npx lattice` render, the committed PDF rasterized and
+inspected). Its two HIGH findings were fixed before the PR opened:
+
+1. **The promoted gallery PDF clipped text on two slides** (pages 48 and
+   71 — density-modifier demos whose body copy overflowed the frame). The
+   funnel fix had promoted a flawed artifact without page-level inspection.
+   Both slides were trimmed, the PDF rebuilt (still 87 slides, so the
+   page-count integration fixtures hold), and the repaired pages
+   rasterized and verified clean.
+2. **"Every layout" was false.** Getting-started said the gallery
+   "exercises every layout" and the introduction said it "shows every
+   component the engine knows" — 24 of 55 components (the whole legal
+   bucket among them) are not in the deck. The copy now calls it "an
+   87-slide tour of the system," and "every component" points only at
+   `/components/`, which genuinely has all 55. Extending the fixture to
+   true full coverage stays open as follow-up work.
+
+Also fixed from the same pass: the stale `examples/gallery*` paths in the
+canonical internal docs (`engineering/workflow.md` regression table,
+`design/theming.md` palette-check commands, `design/design-system.md`);
+the features page's "29 treatments" row (canon is 12 tints + 11 marks +
+a reset — `engineering/treatments.md`); the missing layout/component
+gloss on the "Browse the layouts" card; the BYOM link now lands on the
+features page's `#ai-authoring` band; the duplicated "desktop app is on
+the way" sentence in next steps; and the hero gallery link opens in a
+new tab. Logged, not fixed (code, off this PR's path):
+`tools/preview.js` `CANONICAL_DECKS` still lists `gallery-mermaid`, a
+deck that no longer exists. Accepted as-is: the README's split origins
+(lattice.style for the story, github.io for the raw PDF — both resolve).

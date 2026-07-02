@@ -146,13 +146,13 @@ const nextSteps = [
 	{
 		href: url('components/'),
 		title: 'Browse the layouts',
-		body: 'Every layout with a live preview and an in-browser editor — themable in all palettes.',
+		body: 'Every layout (the reference calls them components) with a live preview and an in-browser editor — themable in all palettes.',
 		cta: 'Layout reference',
 	},
 	{
 		href: url('playground/'),
 		title: "Can't install anything?",
-		body: 'Open the playground — the full engine runs in your browser, nothing to install. The SlideWright desktop app is on the way.',
+		body: 'Open the playground — the full engine runs in your browser, nothing to install.',
 		cta: 'Open the playground',
 	},
 ];
@@ -249,7 +249,7 @@ const nextSteps = [
 			<!-- Bring your own model — the agent-workflow wedge -->
 			<section class="border-y border-border bg-muted py-[clamp(48px,6vw,88px)]">
 				<div class="wrap">
-					<ByomSection featuresHref={url('features/')} />
+					<ByomSection featuresHref={url('features/') + '#ai-authoring'} />
 				</div>
 			</section>
 

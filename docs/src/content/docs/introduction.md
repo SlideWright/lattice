@@ -25,11 +25,11 @@ polished, repeatable, and easy to change.
 
 ## See it first
 
-The repository ships with a gallery deck that shows every component the
-engine knows, and this site serves the rendered PDF at
-[/gallery.pdf](/gallery.pdf). That is the answer to "what does this
-actually produce?" For an interactive tour of every component — themable
-in any palette — see the [component reference](/components/).
+The repository ships with a gallery deck, and this site serves the
+rendered PDF at [/gallery.pdf](/gallery.pdf). That is the answer to
+"what does this actually produce?" For an interactive tour of *every*
+component — themable in any palette — see the
+[component reference](/components/).
 
 ## What you get
 
