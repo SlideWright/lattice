@@ -582,11 +582,11 @@ for signal in calibrator.intake.unscored():
 <!-- _class: image -->
 <!-- _footer: "Image · auto → clean floated card · image" -->
 
-`Layout · Image`
+`Offsite · Day One`
 
-## Hand it any photo — the layout resolves the composition.
+## The strategy offsite opened with a mandate and a lake view.
 
-A moderate-aspect photo lands in the clean default: a floated card shaped to the asset, beside the argument. No modifier, no crop — the engine reads the asset's shape and the deck size and decides.
+Think deeper, plan longer, decide once — the mandate fit on a napkin, so the venue got two days. The layout resolves the composition itself: a moderate-aspect photo lands as a floated card beside the argument, no modifier, no crop.
 
 ![bg](../../../lib/components/imagery/image/sample-photo-wide.svg)
 
@@ -595,11 +595,11 @@ A moderate-aspect photo lands in the clean default: a floated card shaped to the
 <!-- _class: image mirror -->
 <!-- _footer: "Image · clean, mirrored · image mirror" -->
 
-`Layout · Image Mirror`
+`Offsite · Day One, Continued`
 
-## Mirror flips the card — image left, text right.
+## The afternoon session mirrored the morning session, exactly.
 
-`mirror` is the cross-cutting side modifier; `![bg left]` is preserved as a deprecated alias. The composition is unchanged — only the side flips.
+Same lake, same mandate, opposite wall. `mirror` flips the card — image left, text right — and the composition is otherwise unchanged, which was also true of the discussion.
 
 ![bg left](../../../lib/components/imagery/image/sample-photo-wide.svg)
 
@@ -608,11 +608,11 @@ A moderate-aspect photo lands in the clean default: a floated card shaped to the
 <!-- _class: image gallery -->
 <!-- _footer: "Image · opt-in gallery (contain, no crop) · image gallery" -->
 
-`Layout · Image Gallery`
+`Offsite · The Artifact`
 
-## When a chart or screenshot must show in full, opt into `gallery`.
+## The whiteboard was photographed before anyone could erase it.
 
-The whole asset is contained at native aspect on a clean `--bg-alt` matte with a placard caption — an editorial plate, not a placeholder. Use it for diagrams, schematics, and any asset where cropping would destroy meaning.
+`gallery` contains the whole asset at native aspect on a matte with a placard — for artifacts where cropping would destroy meaning. The whiteboard held the four framework parts and one org chart nobody claims to have drawn.
 
 ![bg](../../../lib/components/imagery/image/sample-photo-square.svg)
 
@@ -622,9 +622,9 @@ The whole asset is contained at native aspect on a clean `--bg-alt` matte with a
 <!-- _footer: "Image · auto → spotlight (full-bleed + solid card) · image spotlight" -->
 <!-- _paginate: false -->
 
-## Signal Pipeline · Reference Visualization
+## The venue cost roughly what the calibration tooling would have.
 
-A panorama matches the canvas, so it goes full-bleed — and the message rides a solid card, so it stays legible over any photo.
+A panorama goes full-bleed — the message rides a solid card, so it stays legible over any photo, including this one of the grounds we will reference in three consecutive planning cycles.
 
 ![bg](../../../lib/components/imagery/image/sample-photo-pano.svg)
 
@@ -633,11 +633,11 @@ A panorama matches the canvas, so it goes full-bleed — and the message rides a
 <!-- _class: image split -->
 <!-- _footer: "Image · auto → split (extreme aspect, shown whole) · image split" -->
 
-`Image Layout · Split`
+`Offsite · Team Building`
 
-## A tall photo keeps every pixel.
+## The trust climb went vertical; so does the layout.
 
-An extreme aspect would waste a card, so the layout shows it whole in a full-height column with the argument alongside — zero crop, the canvas filled.
+An extreme aspect would waste a card, so a tall photo shows whole in a full-height column with the argument alongside. The climb produced two insights and one signed waiver.
 
 ![bg](../../../lib/components/imagery/image/sample-photo-tall.svg)
 
@@ -647,9 +647,9 @@ An extreme aspect would waste a card, so the layout shows it whole in a full-hei
 <!-- _footer: "Image · opt-in statement (scrim + editorial title) · image statement" -->
 <!-- _paginate: false -->
 
-## Architecture dependencies — the editorial frame
+## Think deeper. Plan longer. Return unchanged.
 
-`statement` rides the title on the photo over a scrim — a deliberate, editorial moment for an opener or a closer, taken when the photo is known to carry it.
+`statement` rides the title on the photo over a scrim — the editorial moment reserved for a line the room will repeat. This one made the T-shirts before it made the plan.
 
 ![bg](../../../lib/components/imagery/image/sample-photo-wide.svg)
 
@@ -683,9 +683,9 @@ All colours reference CSS variables — `--bg`, `--text-heading`, `--text-body`,
 <!-- _footer: "Image · spotlight, dark · image spotlight dark" -->
 <!-- _paginate: false -->
 
-## Signal Pipeline · Reference Visualization
+## By dinner, the mandate had survived its first sunset.
 
-Every composition is palette-blind — add `dark` and the solid card, scrim, and matte all track the theme through the same tokens. The photo carries; the message stays legible.
+Every composition is palette-blind — add `dark` and the card, scrim, and matte track the theme through the same tokens. The photo carries; the message, like the mandate, stays legible after dark.
 
 ![bg](../../../lib/components/imagery/image/sample-photo-pano.svg)
 
