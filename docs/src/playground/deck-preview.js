@@ -155,6 +155,42 @@ function syncAgent(gap) {
 	].join('\n');
 }
 
+// LINK GUARD agent — a preview-only click interceptor so an external link tap
+// can never navigate (and blank) the preview frame.
+//
+// A slide can carry a real `<a href="https://…" target="_blank">` — the `video`
+// poster links to the clip, `contact`/`qr`/`closing` carry live URLs — because in
+// the EXPORTED HTML/PDF those are genuine, clickable links. But inside the scaled
+// `srcdoc` preview iframe, iOS Safari follows the tap INTO the iframe: it navigates
+// the frame to the external site, which frame-blocks (X-Frame-Options / CSP), so
+// the preview goes blank and never returns (reported: tap the video poster on
+// iPhone → blank; desktop opened a new tab so it was invisible). Same class as the
+// debug touch saga — the frame is the wrong place for the interaction
+// (2026-07-01-debug-bounding-boxes.md).
+//
+// Capture-phase: for any http(s) anchor, cancel the frame navigation and open the
+// URL in a real TOP-LEVEL tab instead (same-origin srcdoc → window.top reachable).
+// If the popup is blocked the frame is still preserved (preventDefault ran), so the
+// worst case is an inert tap, never a blanked preview. In-page/relative anchors
+// (`#id`, `mailto:`, `tel:`) are left alone. Preview-only: the exported artifact's
+// link is untouched. Injected into every filmstrip srcdoc (Playground + Drawing
+// Board); the Drawing Board's SYNC slide-select still fires (we don't stop
+// propagation), so tapping a linked slide both opens the tab and selects the slide.
+function linkGuardAgent() {
+	return [
+		'(function(){',
+		'  document.addEventListener("click",function(e){',
+		'    var t=e.target,a=t&&t.closest?t.closest("a[href]"):null;',
+		'    if(!a)return;',
+		'    var href=a.getAttribute("href")||"";',
+		'    if(!/^https?:/i.test(href))return;',
+		'    e.preventDefault();',
+		'    try{(window.top||window).open(href,"_blank","noopener,noreferrer");}catch(_e){}',
+		'  },true);',
+		'})();',
+	].join('\n');
+}
+
 // Build the full srcdoc for a rendered deck. `geom` is the resolved `@size` box
 // {w,h}; every visual knob defaults to the simplest (playground) host.
 export function buildSrcdoc({
@@ -247,6 +283,7 @@ export function buildSrcdoc({
 		'<scr' + 'ipt src="' + runtimeUrl + '"></scr' + 'ipt>' +
 		'<scr' + 'ipt>' + GEOM_GLOBALS + '</scr' + 'ipt>' +
 		'<scr' + 'ipt>' + fitAgent(gap, clamp) + '</scr' + 'ipt>' +
+		'<scr' + 'ipt>' + linkGuardAgent() + '</scr' + 'ipt>' +
 		(sync ? '<scr' + 'ipt>' + syncAgent(gap) + '</scr' + 'ipt>' : '') +
 		'</body></html>'
 	);

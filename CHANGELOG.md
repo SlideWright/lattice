@@ -49,6 +49,17 @@ in patch versions.
 
 ### Fixed
 
+- **Tapping an external link in the live preview no longer blanks it on iOS.** A
+  slide can carry a real `<a href="https://…">` (the `video` poster links to the
+  clip; `contact`/`qr`/`closing` carry live URLs) — genuine, clickable links in the
+  exported HTML/PDF. But inside the scaled `srcdoc` preview iframe, iOS Safari
+  followed the tap *into the iframe*, navigated it to the external site, which
+  frame-blocks → the preview went blank and never returned (desktop opened a new
+  tab, so it was invisible). The shared filmstrip builder (`deck-preview.js`,
+  Playground + Drawing Board) now injects a preview-only link guard that opens
+  `http(s)` link taps in a real top-level tab instead of letting the frame
+  navigate; in-page (`#id`), `mailto:`, and `tel:` links are untouched, and the
+  exported artifact's link is unchanged.
 - **The common quadrant chart fills its slide again instead of rendering as a
   thumbnail.** When charts moved into the Form, `.chart-body` became a
   size-query container, which silently re-based the quadrant SVG's
