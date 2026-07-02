@@ -8,6 +8,18 @@ summary: A finish can OVERPOWER content — too intense, or covering the area be
 **Status:** proposed 2026-07-01. Design-before-code for a structural change;
 prototype-validated. Implementation staged into slices (§9), each its own PR.
 
+> **Revision 2026-07-02 — backdrop is ALSO a finish design element.** §1/§3 below
+> frame the controls as living purely on the *layer*, "not on any preset." In
+> practice a *fabricated* finish now **bakes** its own backdrop defaults (`strength`
+> + `clearance`) as part of its design: you set them in the Fabricate designer, they
+> save on the recipe (`recipe.backdrop`), and **Apply stamps them into the deck's
+> `backdrop:` front matter**, where the deck author tunes them. So the finish carries
+> a considered *default* restraint; the deck-level `backdrop:` axes (this doc) remain
+> the *tuning* surface — the two compose, they don't conflict. The baked value never
+> reaches the generated finish CSS (it's a front-matter stamp, not a layer), so the
+> render model here is unchanged. (Built-in presets stay bare — only saved finishes
+> bake a backdrop.) Landed with the clearance slice (#695).
+
 ## 1. The problem
 
 A finish is a stack of palette-blind gradient layers painted *behind* slide
@@ -206,16 +218,22 @@ wrapper resolves or neutralizes the blockers:
 
 ## 9. Implementation slices (each its own PR, HARD #17)
 
-1. **Backdrop wrapper migration (engine).** Emit `.backdrop` in all three paths
+1. ✅ **Backdrop wrapper migration (engine).** Emit `.backdrop` in all three paths
    (materialize on a finish/backdrop); move the compositor onto it; keep presets
    setting `--fin-*` on the section. Visual regression over all presets. *Frees
    `section::after` — verify/repair the vignette edges (F5).* **Export sign-off.**
-2. **Nested-block reader + strength.** The one-level nested reader for `backdrop:`,
+   *(shipped #674)*
+2. ✅ **Nested-block reader + strength.** The one-level nested reader for `backdrop:`,
    shared across the render paths + `deck-config` + lint; then `opacity:
    var(--backdrop-strength,1)` + the `backdrop.strength` axis + Deck-setup slider +
-   the editor's nested autocomplete.
-3. **Clearance.** `.backdrop-mask` zone gradient (rich+opaque) + `backdrop.clearance`
-   axis + drawer toggle + autocomplete. Opt-in.
+   the editor's nested autocomplete. *(shipped #674)*
+3. ✅ **Clearance.** `.backdrop-mask` zone gradient (rich+opaque) + `backdrop.clearance`
+   axis + drawer toggle + autocomplete. Opt-in. *(shipped: `backdrop-clear` class →
+   `section.finish.backdrop-clear` sets `--backdrop-mask` to a `var(--bg)` central
+   ellipse, feathered on screen / hard-edged in the opaque flip; parsed by
+   `backdropClasses`, propagated as a deck class across all three paths, with the
+   Deck-setup toggle + autocomplete + a `backdrop-clearance-value` lint check.
+   Validated in both faces.)*
 4. **Spotlight.** `.backdrop-mask` window gradient + `backdrop.spotlight` axis
    (joystick+slider), face-parity gate, joystick disambiguation (F12).
 5. **Docs + demo deck** (`examples/`), CHANGELOG, gate wiring, vocabulary pass.
