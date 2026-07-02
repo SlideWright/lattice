@@ -108,3 +108,5 @@ jobs:
             } else {
               await github.rest.issues.createComment({ owner, repo, issue_number, body });
             }
+
+# (smoke test: verifying the preview pipeline deploys with CLOUDFLARE_API_TOKEN set)
