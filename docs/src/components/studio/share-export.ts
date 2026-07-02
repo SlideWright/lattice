@@ -11,7 +11,7 @@
 import { ensureEngine } from '@/lib/load-engine';
 import type { SingleSlideOptions } from '@/lib/single-slide-render';
 import { createThemeFetcher } from '@/lib/theme-fetch';
-import { mergeClassTokens } from './front-matter';
+import { mergeClassTokens, setFrontMatter } from './front-matter';
 
 type EngineRender = { html: string; css: string; width?: number; height?: number };
 type PG = {
@@ -126,7 +126,13 @@ export async function renderThemeShowcase(options: SingleSlideOptions, theme: { 
  */
 export function embedFinishInMarkdown(source: string, finishClass?: string, finishCss?: string): string {
 	if (!finishCss) return source;
-	const classed = finishClass ? mergeClassTokens(source, finishClass) : source;
+	// Deck-wide saved finish: merge its `finish finish-<slug>` class into `class:` AND
+	// drop the now-redundant `finish: finish-<slug>` front-matter value. The bare value
+	// names a finish the recipient's register doesn't know — it renders nothing on its
+	// own (the merged class + embedded CSS do the work) and would otherwise trip an
+	// `unknown-finish` lint warning in the shared artifact. Per-slide finishes carry
+	// their class in the source already, so they need neither the merge nor the strip.
+	const classed = finishClass ? setFrontMatter(mergeClassTokens(source, finishClass), 'finish', null) : source;
 	const block = `<style>\n/* Lattice Studio — embedded finish (self-contained: this deck keeps its surface\n   finish even where the saved finish is not installed). Generated on export. */\n${finishCss.trim()}\n</style>\n`;
 	const fm = /^(---[ \t]*\r?\n[\s\S]*?\r?\n---[ \t]*(?:\r?\n|$))/.exec(classed);
 	if (fm) return classed.slice(0, fm[0].length) + '\n' + block + '\n' + classed.slice(fm[0].length);

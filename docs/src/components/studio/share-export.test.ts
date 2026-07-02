@@ -21,11 +21,15 @@ describe('embedFinishInMarkdown', () => {
 		expect(out).not.toMatch(/^class:/m);
 	});
 
-	it('also merges the deck-wide finish class when one is given', () => {
+	it('merges the deck-wide finish class AND strips the now-redundant finish: value', () => {
 		const src = '---\nfinish: finish-shu\n---\n\n# Hi\n';
 		const out = embedFinishInMarkdown(src, 'finish finish-shu', CSS);
 		expect(out).toContain('<style>');
 		expect(out).toMatch(/^class:.*\bfinish\b.*\bfinish-shu\b/m); // stamped deck-wide
+		// the bare `finish: finish-shu` value is dropped — it names a finish the
+		// recipient's register can't resolve (would trip unknown-finish), and the
+		// class + embedded CSS already render it.
+		expect(out).not.toMatch(/^finish:\s*finish-shu/m);
 	});
 
 	it('is a no-op when the deck references no saved finish (nothing to embed)', () => {
