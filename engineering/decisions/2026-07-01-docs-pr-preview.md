@@ -1,7 +1,7 @@
 ---
-status: in-progress
-summary: Restores per-PR docs previews in-repo via a wrangler pages-deploy workflow, after the site moved to GitHub Pages (which has no PR previews) left only a dashboard-side Cloudflare integration that had stopped building previews
-last-updated: 2026-07-01
+status: shipped
+summary: Restores per-PR docs previews in-repo via a wrangler pages-deploy workflow, after the site moved to GitHub Pages (which has no PR previews) and the dashboard-side Cloudflare integration began intermittently skipping builds — the real cause was Cloudflare's monthly build quota, amplified by the merge queue and all-branches builds
+last-updated: 2026-07-02
 companion:
   - ./2026-06-15-docs-perf-gating-policy.md
   - ../../.github/workflows/docs-preview.yml
@@ -31,25 +31,43 @@ Two independent facts, neither of them a regression in any PR:
    Cloudflare workflow in `.github/` and there never was (`grep` for
    `cloudflare|wrangler|pages.dev` over the repo history is empty). The
    "Cloudflare Pages" check comes from the Cloudflare Pages ↔ GitHub App,
-   configured entirely in the Cloudflare dashboard. Its check now completes in
-   the same second it starts (a 0-second "success") — the signature of a
-   **skipped build**, i.e. the project's preview deployments were disabled or
-   its branch filter no longer matches our branch names. That state is only
-   changeable in the Cloudflare dashboard, not from the repo.
+   configured entirely in the Cloudflare dashboard.
 
-So the preview didn't break — the mechanism that produced it (the Cloudflare
-dashboard integration) was left behind when the site's canonical deploy became
-GitHub Pages, and no in-repo preview replaced it.
+**The actual root cause — Cloudflare's monthly build quota.** The give-away
+that reframed everything: previews were *intermittent*, not gone — they worked
+on some PRs and not others, and the owner had changed no Cloudflare setting. A
+skipped build shows as a 0-second "success" check with no `*.pages.dev` URL. On
+the free plan Cloudflare Pages builds **500 sites/month**, and once that cap is
+hit it silently skips further builds until the monthly reset — exactly the
+on-again/off-again pattern observed. Three things were burning the quota:
+
+- **~95 open branches**, each built on push (Cloudflare's default is "all
+  non-production branches").
+- **The merge queue** (the one recent change): every queued PR pushes a
+  `gh-readonly-queue/*` branch that Cloudflare *also* built — roughly doubling
+  the builds per merge.
+- **CI artifact branches** (`ci-drift-images`, `ci/preview-e2e-screenshots`)
+  that get pushed constantly and each triggered a wasted build.
+
+So the preview didn't break from a config change — the *build volume* crossed
+Cloudflare's free-plan cap, and no in-repo preview existed to fall back on.
 
 ## Decision
 
-Own the preview in the repo instead of depending on a dashboard toggle.
+Own the preview in the repo, and **build on GitHub instead of on Cloudflare**.
 `.github/workflows/docs-preview.yml` runs on `pull_request`, builds the same
-Astro site `docs.yml` builds, and pushes it to the existing `lattice-docs`
-Cloudflare Pages project as a **preview** deployment via
-`cloudflare/wrangler-action@v3` (`pages deploy … --branch=<head_ref>`). Any
-branch other than the production `main` gets its own `*.pages.dev` URL, which
-the workflow posts back as a single sticky PR comment.
+Astro site `docs.yml` builds, and **direct-uploads** the prebuilt `docs/dist`
+to the existing `lattice-docs` Cloudflare Pages project as a **preview**
+deployment via `cloudflare/wrangler-action@v3`
+(`pages deploy … --branch=<head_ref>`). Any branch other than the production
+`main` gets its own `*.pages.dev` URL, which the workflow posts back as a single
+sticky PR comment.
+
+This is what fixes the root cause: a **direct upload does not count against
+Cloudflare's monthly *build* quota** (only Cloudflare-run git builds do). The
+building moves to GitHub Actions' own (far larger) allowance, and only fires on
+PRs that touch docs paths — never on all ~95 branches or the merge-queue
+branches. Cloudflare's own git builds are turned off so the two don't double up.
 
 - **Account id is inlined** (`6e1dd8d…`) — it is not a secret; it is visible in
   the project's dashboard URL. The only required repo secret is
@@ -74,9 +92,17 @@ var on the Actions build step, not in the CF dashboard.
 
 ## Status / follow-up
 
-Blocked on one repo setting only: add the `CLOUDFLARE_API_TOKEN` secret. Until
-then the job runs but the deploy step fails to authenticate. Once the secret is
-present, flip this note to `shipped`. If the team would rather retire Cloudflare
-entirely, the alternative is a GitHub-native preview (per-PR artifact or a
-Pages sub-path), tracked separately — not adopted here because the existing
-`lattice-docs` project and its `*.pages.dev` host already exist.
+**Shipped.** The `CLOUDFLARE_API_TOKEN` secret (a token scoped to *Account →
+Cloudflare Pages → Edit*) is configured, and the pipeline was verified
+end-to-end on a throwaway smoke-test PR: GitHub Actions built the site,
+`wrangler` uploaded it, the workflow posted its sticky preview comment, and both
+the deployment and branch-alias URLs served HTTP 200. Cloudflare's own git
+builds have been switched off (dashboard → `lattice-docs` → Builds & deployments
+→ preview = None, production automatic deployments = Off), so nothing double-
+deploys and the build quota is no longer spent. Production (`lattice.style`)
+is unaffected — it is served by GitHub Pages, not this Cloudflare project.
+
+If the team ever wants to retire Cloudflare entirely, the alternative is a
+GitHub-native preview (per-PR artifact or a Pages sub-path), tracked
+separately — not adopted here because the existing `lattice-docs` project and
+its `*.pages.dev` host already work.
