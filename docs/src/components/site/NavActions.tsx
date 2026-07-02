@@ -2,6 +2,7 @@ import { Menu, Search } from 'lucide-react';
 import * as React from 'react';
 import { CommandMenu, GithubIcon, type NavLink } from '@/components/site/CommandMenu';
 import PaletteControls from '@/components/site/PaletteControls';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
 	Sheet,
@@ -169,7 +170,14 @@ function SheetSection({
 					aria-current={l.current ? 'page' : undefined}
 					className="flex flex-col rounded-md px-2 py-2 text-[15px] font-medium text-foreground hover:bg-accent aria-[current=page]:bg-accent aria-[current=page]:text-primary"
 				>
-					<span>{l.label}</span>
+					<span className="flex items-center gap-1.5">
+						{l.label}
+						{l.badge && (
+							<Badge className="border-transparent bg-primary/15 px-1.5 py-0 text-[10px] font-semibold tracking-wide text-primary uppercase">
+								{l.badge}
+							</Badge>
+						)}
+					</span>
 					{l.desc && <span className="text-xs font-normal text-muted-foreground">{l.desc}</span>}
 				</a>
 			))}

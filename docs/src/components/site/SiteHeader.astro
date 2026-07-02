@@ -65,7 +65,10 @@ const Wrapper = standalone ? 'header' : 'div';
 				<div class="sh-tools-menu" role="menu">
 					{tools.map((l) => (
 						<a class="sh-tools-item" href={l.href} role="menuitem" aria-current={l.current ? 'page' : undefined}>
-							<span class="sh-tools-item-label">{l.label}</span>
+							<span class="sh-tools-item-head">
+								<span class="sh-tools-item-label">{l.label}</span>
+								{l.badge && <span class="sh-tools-item-badge">{l.badge}</span>}
+							</span>
 							{l.desc && <span class="sh-tools-item-desc">{l.desc}</span>}
 						</a>
 					))}
@@ -241,10 +244,28 @@ const Wrapper = standalone ? 'header' : 'div';
 	.sh-tools-item[aria-current='page'] .sh-tools-item-label {
 		color: var(--accent);
 	}
+	.sh-tools-item-head {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
 	.sh-tools-item-label {
 		font-size: 0.9rem;
 		font-weight: 600;
 		color: var(--text-heading);
+	}
+	/* "Preview" (or any nav pill) — a small accent-tinted chip; palette-token
+	   only, so it recolours with the theme in both light and dark. */
+	.sh-tools-item-badge {
+		font-size: 0.6rem;
+		font-weight: 700;
+		line-height: 1;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		padding: 0.2rem 0.4rem;
+		border-radius: 999px;
+		color: var(--accent);
+		background: color-mix(in srgb, var(--accent) 14%, transparent);
 	}
 	.sh-tools-item-desc {
 		font-size: 0.78rem;

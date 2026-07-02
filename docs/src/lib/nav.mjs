@@ -41,6 +41,15 @@ export function toolsNav(url) {
 		{ label: 'Playground', href: url('playground/'), match: ['playground'], desc: 'Write Markdown, render live' },
 		{ label: 'Drawing Board', href: url('drawing-board/'), match: ['drawing-board'], desc: 'Compose a deck visually' },
 		{ label: 'Workbench', href: url('workbench/'), match: ['workbench'], desc: 'Build themes & layouts' },
+		{
+			label: 'Studio',
+			href: url('studio/'),
+			match: ['studio'],
+			desc: 'The unified deck workspace',
+			// A preview surface (the unified-workspace prototype). The optional
+			// `badge` rides through every nav surface via the shared renderers.
+			badge: 'Preview',
+		},
 	];
 }
 
