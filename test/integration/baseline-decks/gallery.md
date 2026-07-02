@@ -133,11 +133,11 @@ flowchart LR
 ## Signal Intake produces three outputs.
 
 1. Weekly Signal Brief
-   - A ranked list of the top 10 signals from the prior week, with confidence scores and source attribution. Distributed to product leads every Monday morning.
+   - The week's top ten signals, ranked and attributed. Lands Monday morning.
 2. Anomaly Alerts
-   - Real-time flags when a signal exceeds the 2σ threshold on any dimension. Routed directly to the accountable PM with a 4-hour response SLA, observed in spirit.
+   - Real-time flags past the 2σ threshold, routed to the accountable PM. Four-hour response SLA, observed in spirit.
 3. Monthly Signal Index
-   - The source of truth for the calibration loop. A complete record of all signals logged, scored, and resolved in the prior month. Required reading before each retrospective.
+   - The calibration loop's source of truth. Required reading before each retrospective; skimming is detectable.
 
 ---
 
@@ -147,9 +147,9 @@ flowchart LR
 ## Two failure modes the framework is designed to prevent.
 
 - False signal amplification
-  - A single loud voice — one enterprise customer, one analyst report, one competitive announcement — dominates the decision without being weighed against the full signal set. The scoring model caps any single source at 30% of a decision's signal weight — a ceiling one enterprise customer tests monthly.
+  - One loud voice dominating the decision. The model caps any source at 30% — a ceiling one enterprise customer tests monthly.
 - Signal hoarding
-  - Teams collect signals but do not log decisions, so the calibration loop has nothing to learn from. The Decision Log is a required artifact for any prioritization change above P2 severity. No log, no change.
+  - Signals collected, decisions unlogged — the loop learns nothing. Above P2, the log is required. No log, no change.
 
 ---
 
@@ -159,9 +159,9 @@ flowchart LR
 ## Two intake modes for different signal types.
 
 - Structured Intake
-  - Signals with clear schema: NPS verbatims, support ticket categories, feature request volumes, win/loss notes. Ingested automatically via API connectors. Scored on arrival. Zero manual handling.
+  - Clear-schema signals — NPS verbatims, tickets, win/loss notes — ingested by connector, scored on arrival.
 - Unstructured Intake
-  - Signals without schema: field observations, conference conversations, analyst briefings, competitive demos. Require human classification before scoring. Routed to the signal owner for a 48-hour classification window, of which the productive hour is the forty-eighth.
+  - Schema-less signals — field notes, briefings, demos — need human classification. A 48-hour window; the productive hour is the forty-eighth.
 
 ---
 
@@ -171,9 +171,9 @@ flowchart LR
 ## Scoring model: before and after the calibration loop.
 
 - Before Calibration
-  - Equal weights across all three dimensions. Confidence, recency, and relevance each contribute 33% to the final score. Simple, consistent, and blind to what the market rewards — which nobody minded until the market did.
+  - Equal weights, 33% each. Simple, consistent, and blind to what the market rewards — which nobody minded until the market did.
 - After Calibration
-  - Weights reflect your team's historical signal accuracy. If recency has consistently been the weakest predictor for your product, it gets downweighted. The model becomes a record of what you have learned.
+  - Weights track your historical accuracy; weak predictors get downweighted. The model becomes a record of what you have learned.
 
 The shift from equal weights to calibrated weights takes two retrospective cycles — roughly 60 days from adoption, both of which must occur.
 
@@ -282,9 +282,9 @@ The scoring model is the most configurable component, and therefore the most arg
 ## Structured intake performed above expectations — volume and latency were not concerns.
 
 - What worked
-  - API connectors handled 94% of structured signals without manual intervention. Average scoring latency was 4 minutes from ingestion. Schema normalization held across all five connected sources.
+  - Connectors handled 94% of structured signals untouched; scoring latency averaged four minutes.
 - What required tuning
-  - NPS verbatim classification had an 18% error rate in the first two weeks. Required a training pass on the classification model before accuracy reached the 92% target.
+  - Verbatim classification opened at an 18% error rate; one training pass reached the 92% target.
 
 > Viable as designed — the classifier needs a 2-week warm-up on new deployments, booked under "known issue."
 
@@ -336,11 +336,11 @@ _Source: pilot retrospective — six months, four teams, one deck, this one._
 ## Three scoring failure modes found in the pilot.
 
 1. Recency dominance
-   - High-recency noise crowding out durable signal. Teams set recency weight above 50% in the first calibration pass. Corrected by capping recency weight at 40% until two calibration cycles complete.
+   - Fresh noise crowding out durable signal. Corrected by capping recency at 40% for two cycles.
 2. Source concentration
-   - Single-customer signals inflating confidence scores. One enterprise customer's verbatims represented 34% of all structured intake in month one. Corrected by adding a source-diversity floor to the scoring model.
+   - One customer was 34% of month-one intake. Corrected with a source-diversity floor.
 3. Outcome misclassification
-   - PMs logging outcomes too vague to score. "Improve retention" is not scoreable. "Reduce 30-day churn from 8.2% to below 7%" is.
+   - Outcomes too vague to score. "Improve retention" is not scoreable. "Churn below 7%" is.
 
 ---
 
@@ -350,13 +350,13 @@ _Source: pilot retrospective — six months, four teams, one deck, this one._
 ## Four requirements every decision system must meet.
 
 - **Speed**
-  - Decisions must close within the window they are relevant to. Systems that add latency consume the value they exist to protect.
+  - Decisions close inside their window. Latency consumes the value the system protects.
 - **Auditability**
-  - Every prioritization decision above a threshold must carry a traceable rationale. Required for alignment and compliance.
+  - Every decision above the threshold carries a traceable rationale.
 - **Adoption**
-  - If the team won't use it weekly, calibration never runs and the model never improves. Ninety minutes per PM is the ceiling.
+  - Unused weekly, calibration never runs. Ninety minutes per PM is the ceiling.
 - **Calibration**
-  - The system must improve over time. A static scoring model is a spreadsheet with extra steps.
+  - It must improve over time. A static scoring model is a spreadsheet with extra steps.
 
 ---
 
@@ -370,25 +370,25 @@ _Source: pilot retrospective — six months, four teams, one deck, this one._
   - [ ] Auditability
   - [x] Adoption
   - [ ] Calibration
-  - Everyone has it open already; nobody can say which version. Decisions leave no trace, which was, in fairness, the appeal.
+  - Open everywhere, version unknown. No trace — in fairness, the appeal.
 - Path B · Vendor North
   - [x] Speed
   - [x] Auditability
   - [ ] Adoption
   - [ ] Calibration
-  - Clean intake and a real audit trail. The calibration weights stay on their side of the contract, priced per seat.
+  - Clean intake, real audit trail. The weights stay on their side of the contract.
 - Path C · Vendor West
   - [x] Speed
   - [x] Auditability
   - [x] Adoption
   - [ ] Calibration
-  - The best demo of the two, by some distance. The weights are also theirs, and §9.2 is in the contract for a reason.
+  - The better demo, by some distance. The weights are theirs; so is §9.2.
 - Path D · Build in-house
   - [x] Speed
   - [x] Auditability
   - [x] Adoption
   - [x] Calibration
-  - Meets all four criteria inside the 90-minute weekly budget, and the weights stay ours. Recommended.
+  - All four criteria, inside the budget, weights ours. Recommended.
 
 ---
 
@@ -471,13 +471,13 @@ The pilot kept both — the feed for the two teams that mute nothing, the digest
 ## How to roll this out across your organization.
 
 1. Pick one team and one decision type
-   - Start with a team that already has a regular prioritization rhythm. Apply the framework only to a single decision category for the first 30 days.
+   - A team with an existing rhythm, one decision category, thirty days.
 2. Log everything, decide nothing differently
-   - In the first month, do not change how you make decisions. Just log signals and decisions as you would have made them anyway.
+   - Month one changes nothing but the record. Decide as you always did; write it down.
 3. Run your first retrospective
-   - At day 30, score the logged decisions against outcomes. This is where the model gets its first calibration pass.
+   - Day 30: score decisions against outcomes. The model's first calibration pass.
 4. Expand to a second team
-   - With one retrospective complete, you have evidence. Use it to onboard the second team with real data, not promises.
+   - One retrospective in hand, onboard team two with data, not promises.
 
 ---
 
@@ -700,7 +700,7 @@ Every composition is palette-blind — add `dark` and the card, scrim, and matte
 
 - Every card uses `--bg-alt` for fill and `--border` for the border — both remap in dark mode.
 - The accent left border uses `--accent` which is unchanged — the gold reads well against dark.
-- Body text shifts to `--text-body` — in dark mode a warm light tone, not pure white. Even the dark mode declines to be dramatic.
+- Body text shifts to `--text-body`, a warm light tone. Even dark mode declines to be dramatic.
 
 ---
 
@@ -711,8 +711,8 @@ Every composition is palette-blind — add `dark` and the card, scrim, and matte
 
 ## Two-card layouts work equally well inverted to dark.
 
-- The framework introduces exactly one hard question — who owns the scoring weights, and what happens to every past decision the morning someone changes them. The next forty slides are a confident, well-resourced exercise in deferring the answer.
-- The pattern is the same as any page of written argument — claim, then support. Dark changes the canvas, not the argument; the deferral above reads identically at any hour.
+- One hard question — who owns the weights when they change. Forty slides now defer it, confidently, with resources.
+- Claim, then support — the pattern of any written argument. Dark changes the canvas, not the argument; the deferral reads identically at any hour.
 
 ---
 
@@ -724,11 +724,11 @@ Every composition is palette-blind — add `dark` and the card, scrim, and matte
 ## The phase modifier renames the prefix word from STEP to PHASE.
 
 1. Architecture
-   - The first phase scopes the technical surface — what we build, what we buy, what we defer. Output is an architecture decision record signed by the platform owner.
+   - Scope what we build, buy, and defer. Output: a decision record the platform owner signs.
 2. Pilot
-   - One internal team, one workload, one quarter. The phase ends when the integration is in production and the on-call rota covers it.
+   - One team, one workload, one quarter. Done when production holds and on-call covers it.
 3. Rollout
-   - Five teams in two months. The phase ends when no team needs handholding and incident volume is at or below pre-rollout baseline.
+   - Five teams in two months. Done when nobody needs handholding and incidents hold baseline.
 
 ---
 
@@ -740,11 +740,11 @@ Every composition is palette-blind — add `dark` and the card, scrim, and matte
 ## Modifiers compose: milestone renames the word, lettered swaps the format.
 
 1. Scoring policy in production
-   - The signed scoring policy runs end-to-end. The first calibrated brief lands in leadership's inbox, which we are calling general availability.
+   - The first calibrated brief lands in leadership's inbox, which we are calling general availability.
 2. Per-team weights
-   - One framework carries distinct scoring weights per team with no per-team fork. Recalibration is a single policy update. Each team will still want its own anyway.
+   - One framework, per-team weights, no forks. Each team will still want its own anyway.
 3. Per-decision-class profiles
-   - A scoring profile scoped to a single decision class takes minutes to author and a workshop series to agree on. Audit trails distinguish the classes nobody disputes.
+   - Minutes to author, a workshop series to agree on. The audit trail survives both.
 
 ---
 
@@ -772,9 +772,9 @@ Every composition is palette-blind — add `dark` and the card, scrim, and matte
 ## Chosen flags the right-hand card as the winner.
 
 - Quarterly re-litigation
-  - Every decision reopened from first principles each review. Close time is a function of seniority in the room, not evidence — average 4 hours, and the debate runs long precisely when the board joins.
+  - Every decision reopened from first principles. Average close 4 hours — longer when the board joins.
 - Calibrated weights
-  - The decision resolves against logged weights and prior outcomes. Average 18 minutes, and the argument stops cascading into the next quarter — a property we discovered after building the loop, not before.
+  - Decisions resolve against logged weights and outcomes. Average 18 minutes; the argument stops cascading — a property we discovered after building it.
 
 The right card carries an accent left-edge and accent-tinted background — the same visual contract used by other recommended-option cards.
 
@@ -804,9 +804,9 @@ The left card is struck through to read as the option considered then dropped; t
 ## Vertical stacks the two cards; the arrow connector rotates 90°.
 
 - Before — manual recalibration
-  - Operators book a recalibration window, freeze new decisions, swap weights, run a verification pass, lift the freeze. Average review pause 18 working hours; average post-mortem, ninety.
+  - Book a window, freeze decisions, swap weights, verify, unfreeze. Pause: 18 working hours. Post-mortem: ninety.
 - After — version-floor recalibration
-  - The calibration loop emits a new scoring policy with an incremented version. Teams pick it up on next refresh. No freeze, no cutover, no heroics worth a slide at all-hands.
+  - The loop emits a versioned policy; teams pick it up on refresh. No freeze, no heroics worth an all-hands slide.
 
 ---
 
@@ -818,11 +818,11 @@ The left card is struck through to read as the option considered then dropped; t
 ## Three switches the grid from 2 columns to 3 columns.
 
 - Signal
-  - The observed input — a verbatim, a metric move, a competitor announcement. The unit of intake, and frequently confused with "things the VP heard at a conference," which score a 5 on relevance every time.
+  - The observed input — frequently confused with "things the VP heard at a conference," which score a 5 on relevance every time.
 - Decision
-  - A signal plus a deadline, logged with rationale and predicted outcome. In theory traceable to its signals; in practice the signal is often "we discussed it at the offsite," logged after the fact, if at all.
+  - A signal plus a deadline, logged with rationale. In practice, often "we discussed it at the offsite," logged after the fact.
 - Outcome
-  - The observed result, compared at retrospective to what we predicted. The unit of calibration. Eighteen logged so far, against roughly three hundred forty that occurred.
+  - The result, scored at retrospective. Eighteen logged, against roughly three hundred forty that occurred.
 
 ---
 
@@ -899,9 +899,9 @@ Mirror moves the dark accent panel to the right. The watermark, eyebrow, and sec
 ## Mirror composes with chosen — the accented card reads from the left.
 
 - Considered alternative
-  - Source order keeps this card first, so `chosen` rules continue to target the second card in the markdown. Mirror only flips the rendering; the editorial intent (left = considered, right = chosen) is preserved by reading order.
+  - Source order keeps this card first; `chosen` still targets the second card. Mirror flips only the rendering.
 - The choice
-  - With `mirror`, the chosen card now appears on the left visually. Use this when the surrounding deck reads right-to-left or when the chosen path needs to land first in the audience's scan path. Executives scan left first; plan accordingly.
+  - With `mirror`, the chosen card lands on the left. Executives scan left first; plan accordingly.
 
 The below-note still appears under both cards after the hairline rule.
 
@@ -952,13 +952,13 @@ The divider light counter is independent of the dark-divider counter, so a mid-d
 `Coverage · Cost`
 
 - High coverage / Low cost
-  - In-house build — strongest coverage on the slide, cheapest on a slide that omits the four engineers. Built by the evaluation team.
+  - In-house build — cheapest once the slide omits the engineers. Built by the evaluators.
 - High coverage / High cost
-  - Vendor West — full coverage, premium seats, and a roadmap slide that is mostly our logo.
+  - Vendor West — premium seats; the roadmap is mostly our logo.
 - Low coverage / Low cost
-  - The spreadsheet — covers two criteria, costs nothing, popular anyway.
+  - The spreadsheet — two criteria, no cost, popular anyway.
 - Low coverage / High cost
-  - Vendor North — narrower than the demo implied, once the connectors were priced.
+  - Vendor North — narrower than the demo, once connectors were priced.
 
 ---
 
@@ -1066,7 +1066,7 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 - Consumption `Product team`
   - Holds scoring profiles; runs intake and decision-logging; finds the bugs first.
 - Oversight `Auditor`
-  - Reads the audit trail, cannot edit weights, and is the only role anyone fears — having read it once.
+  - Reads the trail, edits nothing — the one role anyone fears, having read it once.
 
 ---
 
@@ -1093,13 +1093,13 @@ The first column is sticky workstream label; phase columns carry numbered chrome
 ## Compact tightens the spacing scale ~25 %, end-to-end.
 
 - What changes
-  - `--sp-xs` through `--sp-2xl` shrink. Card gaps, list gutters, and section padding follow because every layout reads them via `var()`.
+  - `--sp-xs` through `--sp-2xl` shrink; gaps, gutters, and padding follow via `var()`.
 - What does not change
-  - Type ramp, palette, and chrome reservation (header / footer / pagination) are untouched. Compact is a density flag, not a different layout.
+  - Type ramp, palette, chrome. Compact is a density flag, not a layout.
 - When to reach for it
-  - You have one more card than fits, or your prose runs the section by 1-2 lines, or you want a denser visual rhythm without rewriting copy, which nobody was going to do.
+  - One more card than fits, without rewriting copy — which nobody was going to do.
 - Composition
-  - `compact` composes with `dark`, `accent`, and any layout where density makes sense. It is silently incompatible with `title`, `divider`, and `image-full`.
+  - Composes with `dark`, `accent`, most layouts. Silently incompatible with `title` and `divider`.
 
 ---
 
@@ -1493,12 +1493,12 @@ Three signal clusters explain most of the quarter's surprise — every one logge
 
 Measured across the pilot's first six months, all four teams, no grading curve.
 
-- The log holds eighteen entries against roughly three hundred decisions
-  - Coverage is six percent. The six percent, however, can be reconstructed three months later without the author in the room.
-- Coverage has doubled each cycle since the operating rhythm landed
-  - From four entries a month to nine. The trend is the argument; the base is the confession.
-- The framework does not need every decision — it needs the expensive ones
-  - Those are also, conveniently, the ones people remember to log.
+- Eighteen entries against roughly three hundred decisions
+  - Six percent — reconstructible three months later without the author in the room.
+- Coverage doubles each cycle since the rhythm landed
+  - Four entries a month, now nine. The trend is the argument; the base is the confession.
+- The framework needs the expensive decisions, not all of them
+  - Conveniently, those are the ones people remember to log.
 
 ---
 
@@ -1532,13 +1532,13 @@ Four weeks. The workstream previously known as "next phase," now with dates.
 Building is settled. The remaining question is which layers deserve our engineers.
 
 - Build everything
-  - Owns the intake plumbing and the scoring alike
-  - Two more engineer-quarters before anyone scores a signal
-  - The pager stays ours at every layer, including the boring ones
+  - Owns the plumbing and the scoring alike
+  - Two engineer-quarters before anyone scores a signal
+  - The pager stays ours, all layers
 - Buy the plumbing
-  - Intake connectors ship in six weeks
-  - Engineering stays on the scoring model and the log — the part that is the point
-  - Exit stays honest: transcripts export; the weights never existed to lose
+  - Connectors ship in six weeks
+  - Engineering stays on the scoring and the log
+  - Exit stays honest — the weights never existed to lose
 
 > Buy the plumbing. Build the framework. Revisit at the 24-month calibration review.
 
@@ -1551,12 +1551,12 @@ Building is settled. The remaining question is which layers deserve our engineer
 
 `Head of Product · Pilot Team 3 · month five`
 
-- The log is the memory the org kept declining to fund
-  - Decisions could always be reconstructed — from whoever was in the room and still employed.
+- The log is the memory the org declined to fund
+  - Decisions were reconstructible — from whoever was in the room and still employed.
 - Calibration turns opinion into a track record
-  - After two cycles, "I had a feeling" comes with a batting average attached.
-- Belief arrived with the second retro, not the first
-  - The first retro produced attendance. The second produced behavior.
+  - After two cycles, "I had a feeling" carries a batting average.
+- Belief arrived with the second retro
+  - The first produced attendance. The second produced behavior.
 
 ---
 
@@ -1763,12 +1763,12 @@ $$ \hat\beta = (X^\top X)^{-1} X^\top y $$
 
 ## The board will press on three questions; here are the answers.
 
-- Why not just buy Vendor West and be done with it?
-  - Neither vendor exposes the calibration weights, and the weights are the framework. We would be renting our own judgment back at $52 a seat.
+- Why not just buy Vendor West?
+  - Neither vendor sells the weights — the framework itself. We would rent back our own judgment.
 - What does staying in-house actually cost?
-  - Four engineers and the enablement work we keep deferring to "next phase." That line is now in the plan with a date on it.
+  - Four engineers, plus the enablement we kept deferring — now in the plan, with a date.
 - When do we revisit this decision?
-  - At the 24-month calibration review, with the decision log as evidence. If our scores stop beating the vendors' demos, the log will say so first.
+  - The 24-month review, log as evidence. If our scores stop winning, the log says so.
 
 ---
 
