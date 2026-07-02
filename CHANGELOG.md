@@ -58,7 +58,7 @@ in patch versions.
   `identity · layout · size` by default, plus opt-in `class` and `box` (add `verbose`
   to show everything). Labels default to **hover reveal** (`debug: on-hover`): at rest
   you see only the color-coded outlines, and hovering a box (desktop) or **pressing and
-  holding** it (touch) reveals its label — and its container chain — in full detail, so
+  holding** it (touch) reveals its label — and its container chain — so
   a dense grid never becomes a wall of chips (`debug: on-always` pins every chip on at
   once for a static map). On touch it's **press-and-hold to peek** (lift to hide),
   driven by a capture layer in the parent page rather than inside the iframe — iOS

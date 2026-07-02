@@ -240,11 +240,13 @@ export function applyDebug(frame, opts = {}) {
 				className: el.tagName === 'SECTION' ? '' : el.getAttribute('class') || '',
 				padding: shortPadding(cs),
 			};
-			// Two label strings: the configured (lean) set shown at rest in `always`
-			// mode, and the FULL detail shown on hover (and always, for `hover` mode).
-			const fullText = facetLabel(info, FACETS);
-			if (!fullText) continue;
-			overlay.appendChild(makeChip(doc, el, mode, cfg.reveal, facetLabel(info, cfg.facets), fullText));
+			// One label string — the CONFIGURED facet set. `verbose` is what adds detail
+			// (class + box); a plain hover chip stays short so it doesn't truncate or bury
+			// the content it's labelling. (Previously hover ballooned to every facet and
+			// ellipsis-truncated — worse than the lean line it replaced.)
+			const text = facetLabel(info, cfg.facets);
+			if (!text) continue;
+			overlay.appendChild(makeChip(doc, el, mode, cfg.reveal, text));
 		}
 	}
 	// Initial paint at rest (no box hovered): hover-mode chips hide, always-mode show.
@@ -392,17 +394,17 @@ function injectStyle(doc) {
 	(doc.head || doc.documentElement).appendChild(style);
 }
 
-function makeChip(doc, el, mode, reveal, restText, fullText) {
+function makeChip(doc, el, mode, reveal, text) {
 	const chip = doc.createElement('div');
 	chip.className = 'dbg-chip';
 	chip.setAttribute('data-dbg-layout', mode);
 	chip.__dbgEl = el;
 	chip.__dbgReveal = reveal;
-	// A `hover` chip is only ever seen while revealed, so it shows the full detail
-	// then; an `always` chip shows the configured (lean) set at rest, full on hover.
-	chip.__dbgRest = reveal === 'hover' ? fullText : restText;
-	chip.__dbgFull = fullText;
-	chip.textContent = chip.__dbgRest; // trusted first-party text, never innerHTML — #22
+	// One label — the configured facet set (short by default; `verbose` adds detail).
+	// Rest and hot are the same string, so a revealed chip never balloons/truncates.
+	chip.__dbgRest = text;
+	chip.__dbgFull = text;
+	chip.textContent = text; // trusted first-party text, never innerHTML — #22
 	return chip;
 }
 
