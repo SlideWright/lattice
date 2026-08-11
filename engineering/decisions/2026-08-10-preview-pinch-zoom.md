@@ -519,8 +519,11 @@ of which reads the deck's declared size. Exporting `examples/gallery-jargon.md`
 while its content lays out at 3840×2160, so `scrollHeight` is 1503 px in a 708 px box
 and the heading renders at 112 px against a default deck's 37 px — type at ~3×,
 headings overlapping body text, the slide cut off mid-word. The PDF of the same slide
-is correct, so this is the export player alone. **54 committed decks declare a
-`size:`, and the 32 that are not the default aspect all export this way.** The
+is correct, so this is the export player alone. **87 committed decks declare a
+non-default `size:` and all of them export this way** — the criterion is "the declared
+canvas is not 1280x720", not "not the default aspect": `4K` IS 16:9 and still spills 3x.
+(An earlier count here said 32, from a non-recursive `examples/*.md` glob that missed 45
+exemplars and the fixtures. Fixed in #1599.) The
 verification harness now asserts its sign-off slide fits its frame, so this can no
 longer be photographed and handed over as evidence without someone noticing — which
 is exactly what happened the first time.
