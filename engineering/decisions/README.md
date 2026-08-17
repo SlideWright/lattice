@@ -10,14 +10,6 @@ later, it lives here.
 - Filename: `YYYY-MM-DD-topic.md` (e.g. `2026-04-30-mermaid-theming.md`).
   Date is when the investigation/note was first authored, not when
   it was last edited. ISO order keeps `ls` chronological.
-  **66 characters or fewer always fits**; past that it depends on your
-  summary. The index renders the filename TWICE per row (link text + link
-  target), so it is the one part of a row's cost the author controls, and it
-  is paid on every read forever. A row over `ROW_CAP` (285 characters, in
-  `tools/build-decisions-index.js`) makes `npm run decisions:index` refuse to
-  run and name the note; the summary side is already capped by `GIST_CAP`, so
-  the filename is the lever. Today's longest is 69 characters and clears the
-  cap only because its gist is short.
 - One root cause or one decision per file. Don't merge unrelated
   investigations.
 - Lead with the symptom, then the root cause, then the fix. Future
@@ -77,7 +69,7 @@ grouping makes the ~70% that are historical skippable at a glance. See
 front-matter summary at whatever length the note deserves — but put the
 identifying claim FIRST, because the first sentence is what the index shows.
 
-**That cuts both ways, so read a row as an OPENING, not a verdict.** 205 of 425
+**That cuts both ways, so read a row as an OPENING, not a verdict.** 294 of 408
 rows are truncated, and a `…` means only "there is more" — it cannot tell you that
 the sense *flips* after it. A note that opens by quoting the bug report it goes on
 to refute will advertise the refuted claim. Two such rows were found by an
@@ -92,17 +84,12 @@ gists, search the notes themselves — `grep -rln <term> engineering/decisions/`
 costs the same, because you pay for the hits, not the haystack.
 
 This index is a **pick-list**: it exists to get you to the right note, and the
-note is where the record lives. Rendering every summary in full made this file
-395 KB (96k tokens) — more expensive to read than the handful of notes anyone
-actually wanted, so the corpus went unfound. At one line per note it is 98 KB
-(27.1k tokens) and, more usefully, **greppable**: `grep -i mermaid` returns 9
-rows for ~560 tokens rather than nine paragraphs. Start there, then open the
-two or three notes it names.
-
-**Grep is the access mode, and it is what this file is budgeted against.** The
-whole-file total is not the number that matters — a row is
-(`2026-08-17-context-index-tiering.md` §"Amendment", which restated the index
-budget after this file missed its first form of it by 2.5x).
+note is where the record lives. Rendering all 406 summaries in full made this
+file 395 KB (96k tokens) — more expensive to read than the handful of notes
+anyone actually wanted, so the corpus went unfound. At one line per note it is
+90 KB (26k tokens) and, more usefully, **greppable**: `grep -i mermaid
+engineering/decisions/README.md` returns lines rather than paragraphs. Start
+there, then open the two or three notes it names.
 
 ## What does **not** belong here
 
@@ -131,8 +118,6 @@ it is load-bearing.
 
 ### Active — proposed · in-progress · blocked
 
-- ◐ [2026-08-18-inspection-oracle-catalog.md](2026-08-18-inspection-oracle-catalog.md) — Asked whether the build leans too hard on visual inspection and whether CSS-based checking could replace it.
-- ⏸ [2026-08-17-codeql-merge-gate.md](2026-08-17-codeql-merge-gate.md) — CodeQL is NOT a required status check on this repo — the "Main Merge Queue" ruleset requires exactly one context, `ci`, so a red CodeQL…
 - ☐ [2026-08-11-palette-concat-signoff.md](2026-08-11-palette-concat-signoff.md) — The sign-off package #1527 asked for, and it changes the recommendation.
 - ◐ [2026-08-11-per-theme-texture-ramp.md](2026-08-11-per-theme-texture-ramp.md) — #1562's blocker was supply-side: only four texture sets exist and each bakes a literal ramp for one palette, so a generated theme could…
 - ☐ [2026-08-10-palette-concat-order.md](2026-08-10-palette-concat-order.md) — The export bundle concatenates the theme BEFORE the base, so base.tokens.css's plain :root block lands later at equal specificity and wins…
@@ -288,24 +273,14 @@ it is load-bearing.
 
 ### Shipped — the work landed; the note stays as the record
 
-- ☑ [2026-08-18-contrast-floor-deck-scale.md](2026-08-18-contrast-floor-deck-scale.md) — The contrast prober applied WCAG's 18pt large-text line to RAW CANVAS PIXELS, but every `--fs-*` token is authored in `cqi`, so one design…
-- ☑ [2026-08-18-post-sanitize-injection-queue.md](2026-08-18-post-sanitize-injection-queue.md) — Three carried-over items from the HARD RULE #22 work.
-- ☑ [2026-08-18-status-trio-own-hue-tints.md](2026-08-18-status-trio-own-hue-tints.md) — Seven palettes inked `--warn` on a 10-12% tint OF `--warn`, so the band moved with the value and no canvas-based reading could see it.
-- ☑ [2026-08-18-undeclared-color-tokens.md](2026-08-18-undeclared-color-tokens.md) — Four color defects with one shape — a token whose DECLARED contract does not match what it paints — fixed together, gated together.
-- ☑ [2026-08-17-canvas-relative-sequential-ramp.md](2026-08-17-canvas-relative-sequential-ramp.md) — The sequential ramp derived 600-900 toward BLACK on every canvas, so on a dark one --seq-700 walked toward the background — 1.66-3.19:1…
 - ☑ [2026-08-17-component-pick-surface.md](2026-08-17-component-pick-surface.md) — The component catalog cost 95k tokens to read and HARD RULE #6 makes reading it mandatory before every _class: slide, so it was the…
 - ☑ [2026-08-17-composed-surface-contrast.md](2026-08-17-composed-surface-contrast.md) — The SECOND #1527 prerequisite — a palette's curated value being worse, on a surface a COMPONENT composes, than the base default it…
 - ☑ [2026-08-17-composition-stays-content-addressed.md](2026-08-17-composition-stays-content-addressed.md) — The manifest-contract thread left one follow-up: make the ENGINE's composition chain-driven too, so `ThemeStore.resolveThemeImports` stops…
 - ☑ [2026-08-17-context-index-tiering.md](2026-08-17-context-index-tiering.md) — The one doc CLAUDE.md routes to most, plus the index it did not route to at all, had both grown past the size where an index is useful…
 - ☑ [2026-08-17-corner-export-capability.md](2026-08-17-corner-export-capability.md) — #1676 gave the slide a `corners:` register but left two export questions open, and the artifacts turned up a third nobody had: the two…
 - ☑ [2026-08-17-dark-surface-ink.md](2026-08-17-dark-surface-ink.md) — A title slide rendered with three bold words at 1.61:1 against a 3:1 floor — near-black ink on the dark navy bookend — reported from a real…
-- ☑ [2026-08-17-generated-bundles-uncommitted.md](2026-08-17-generated-bundles-uncommitted.md) — The merge queue ejected PRs with MERGE_CONFLICT on the committed generated bundles — 36 of the last 50 commits touch dist/, the minified…
+- ☑ [2026-08-17-export-cascade-flip.md](2026-08-17-export-cascade-flip.md) — #1527 itself — the export path composed its stylesheet `paletteCSS + layoutCSS`, so `dist/lattice.css`'s universal defaults loaded LAST and…
 - ☑ [2026-08-17-gotchas-topic-refile.md](2026-08-17-gotchas-topic-refile.md) — The gotchas split shipped ten topic files whose titles two of them did not honor — `ci.md` was six-sevenths Playground hydration entries…
-- ☑ [2026-08-17-journey-stage-ink-and-contrast-gate.md](2026-08-17-journey-stage-ink-and-contrast-gate.md) — The `journey` stage ribbon painted 92%-white labels on a fill that is only dark on one of the three canvases it renders on — 1.87:1 in…
-- ☑ [2026-08-17-portrait-roadmap-pagination-drift.md](2026-08-17-portrait-roadmap-pagination-drift.md) — examples/portrait-roadmap renders 5 pages against its committed 8-page golden, at origin/main and at 602858c (2026-08-13), which predates…
-- ☑ [2026-08-17-studio-dynamic-loading-audit.md](2026-08-17-studio-dynamic-loading-audit.md) — SHIPPED — all seven fixes landed in #1727, then a second adversarial-trio pass found four defects in them and corrected the numbers.
-- ☑ [2026-08-17-studio-inline-search-dropdown.md](2026-08-17-studio-inline-search-dropdown.md) — The ⌘K search becomes the Studio header's own expanding combobox instead of a centered overlay.
-- ☑ [2026-08-17-studio-syntax-ink-tier.md](2026-08-17-studio-syntax-ink-tier.md) — The Studio's code editors painted strings and numbers with --pass / --warn — status tokens doing a syntax job, #1703's stopgap after those…
 - ☑ [2026-08-17-theme-css-is-a-preview-sink.md](2026-08-17-theme-css-is-a-preview-sink.md) — #1709 reported that a Theme Studio description escapes its CSS comment into the preview.
 - ☑ [2026-08-16-flat-palette-dark-companions.md](2026-08-16-flat-palette-dark-companions.md) — ONE of at least three prerequisites for #1527 — it removes the flat-over-pair blocker and logs two more it found (see the end of this…
 - ☑ [2026-08-16-lint-popup-finding-card.md](2026-08-16-lint-popup-finding-card.md) — The Studio's lint hover popup was the last surface still wearing `@codemirror/lint`'s stock chrome — a 5px `#d11`/`orange` rail and a…
@@ -561,7 +536,6 @@ it is load-bearing.
 
 ### Historical — superseded
 
-- ⊘ [2026-08-17-bot-owned-bundles.md](2026-08-17-bot-owned-bundles.md) — The merge queue ejected PRs with MERGE_CONFLICT on the committed generated bundles; #1686 needed three rebase cycles for a change that was…
 - ⊘ [2026-07-21-studio-compose-listener-leak.md](2026-07-21-studio-compose-listener-leak.md) — A perf-torture run on the studio scenario surfaced a REAL, reproducible event-LISTENER leak on the compose (and insert) cycles — CONFIRMED…
 - ⊘ [2026-07-13-pace-calibration-apply-and-rewriter.md](2026-07-13-pace-calibration-apply-and-rewriter.md) — CLOSED (2026-07-14) — NOT BUILT. → [2026-07-13-estimator-trailing-silence-and-number-syllables.md](2026-07-13-estimator-trailing-silence-and-number-syllables.md)
 - ⊘ [2026-06-30-studio-output-language.md](2026-06-30-studio-output-language.md) — Studio AI produced British-leaning prose with no way for a user to choose otherwise — there was no language/locale setting anywhere, and… → [2026-07-14-language-settings.md](2026-07-14-language-settings.md)

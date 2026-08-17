@@ -793,7 +793,22 @@ const layoutCSS  = flattenCssImports(cssFile, {
   resolve: (from, name) => path.join(path.dirname(from), `${name}.css`),
   exists: fs.existsSync,
 });
-const css = paletteCSS + '\n' + layoutCSS;
+// LAYOUT FIRST, PALETTE SECOND — the one cascade order in the repo (HARD RULE #1).
+// `lib/engine/css.js` composeCss has always composed this way (scaffold, then the
+// theme with `@import 'lattice'` inlined), which is what the Studio and the docs
+// Playground render, and it is the order every palette is AUTHORED against: a
+// theme's `:root` is meant to override the base defaults it imports, at equal
+// specificity, by coming later.
+//
+// This line used to be the lone exception, and it inverted the meaning of every
+// curated palette value on the export path: base's universal defaults in
+// `base.tokens.css` were loaded LAST and won, so a palette's own `--hljs-*`,
+// `--pass-bg`, `--seq-*` etc. never painted in a PDF. The file already contradicted
+// itself about it — the var parser below and the mermaid scratch doc both compose
+// layout-first — so the document the emulator RENDERED disagreed with the token map
+// it REASONED about. Flipping here removes the third order rather than adding one.
+// See engineering/decisions/2026-08-17-export-cascade-flip.md (#1527).
+const css = layoutCSS + '\n' + paletteCSS;
 
 // ── The TWO front-matter readers, defined once (HARD RULE #1) ─────────────
 // This file used to carry four hand-written copies of "match the front matter" and three of

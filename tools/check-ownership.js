@@ -6889,13 +6889,22 @@ function checkHljsContrast(errors, themesDir = THEMES_DIR) {
   const maps = new Map(scan.map((n) => [n, catParseTokens(catPaletteSource(n, new Set(), themesDir))]));
 
   // EVERY panel a token can land on. The base's tokens do not only paint on the
-  // base's own --code-bg: `lattice-emulator.js` concatenates `paletteCSS +
-  // layoutCSS`, so on the EXPORT path the base is loaded AFTER the theme and its
-  // --hljs-* WIN over the theme's. Pairing base-with-base and theme-with-theme
-  // models the post-flip world (#1527) and leaves the shipping one unmeasured:
-  // that hole hid indaco rendering --hljs-literal at 3.71:1 and --hljs-comment at
-  // 3.06:1 while this gate reported clean and a "Fixed" changelog entry shipped.
-  // Until the flip lands, a base value must clear the floor on EVERY panel.
+  // base's own --code-bg — but the REASON changed when #1527 landed, and the check
+  // survives it, so read this before narrowing the scan.
+  //
+  // It used to be a cascade accident: `lattice-emulator.js` concatenated
+  // `paletteCSS + layoutCSS`, so on the export path the base was loaded AFTER the
+  // theme and its --hljs-* WON over the theme's, on every panel. That hole hid
+  // indaco rendering --hljs-literal at 3.71:1 and --hljs-comment at 3.06:1 while
+  // this gate reported clean and a "Fixed" changelog entry shipped.
+  //
+  // Post-flip the theme wins, and the theme-with-theme pairing is now the shipping
+  // surface — measured below, where a non-base palette is scored against `own`.
+  // The base is STILL scored against every panel, because INHERITANCE puts it
+  // there: a palette declares only some of the twelve tokens, and for every one it
+  // does not declare, the base's value is what paints on that palette's --code-bg.
+  // So the broad arm is not a leftover of the old order; narrowing it to
+  // base-on-base would stop measuring the majority of real panels.
   const panels = new Map();   // bg -> the palette/mode that owns it, for the message
   for (const [name, map] of maps) {
     for (const mode of ['light', 'dark']) {

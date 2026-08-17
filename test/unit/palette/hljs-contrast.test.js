@@ -183,12 +183,20 @@ describe('--hljs-* contrast against --code-bg', () => {
   });
 
   test('EXPORT PATH — base tokens clear the floor on every theme panel', () => {
-    // `lattice-emulator.js` concatenates `paletteCSS + layoutCSS`, so the base is
-    // loaded AFTER the theme and its --hljs-* WIN there — a theme's own value never
-    // paints on the export. Pairing base-with-base and theme-with-theme models the
-    // post-flip world (#1527) and left indaco rendering --hljs-literal at 3.71:1
-    // and --hljs-comment at 3.06:1 while the gate reported clean and a "Fixed"
-    // changelog entry shipped. Until the flip lands, this is the real surface.
+    // This used to hold because the export path INVERTED the cascade:
+    // `lattice-emulator.js` concatenated `paletteCSS + layoutCSS`, so the base was
+    // loaded AFTER the theme and its --hljs-* won on every panel, and a theme's own
+    // value never painted in a PDF. That is what left indaco rendering
+    // --hljs-literal at 3.71:1 and --hljs-comment at 3.06:1 while the gate reported
+    // clean and a "Fixed" changelog entry shipped.
+    //
+    // #1527 flipped the order, so the theme now wins — and this assertion still
+    // holds, for a different and more durable reason: a palette declares only SOME
+    // of the twelve tokens, and every token it leaves undeclared inherits the
+    // base's value onto that palette's --code-bg. The base still has to clear the
+    // floor on every panel; it just gets there by inheritance now rather than by
+    // out-ordering the theme. (The theme-wins surface is covered by
+    // 'no shipped value sits under the floor' above.)
     const base = tokens(flatten('lattice'));
     const panels = new Map();
     for (const f of fs.readdirSync(THEMES).sort()) {

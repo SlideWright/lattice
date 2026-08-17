@@ -27,10 +27,10 @@
  * ── What it resolves ──────────────────────────────────────────────────────────
  * The merged token map is `dist/lattice.css`'s `:root` defaults with the palette
  * chain's `:root` on top — PALETTE WINS. That is the order `lib/engine/css.js`
- * `composeCss` has always used (Studio, docs Playground) and the order the export
- * path takes once #1527 lands, so this gate is truthful for the engine path today
- * and for both paths after the flip. Evaluation is delegated to
- * `lib/core/resolve-token-expr` — the engine's own custom-property evaluator
+ * `composeCss` has always used (Studio, docs Playground) and, since #1527 landed,
+ * the order the export path takes too — so this gate is now truthful for EVERY
+ * render path in the repo rather than for the engine path alone. Evaluation is
+ * delegated to `lib/core/resolve-token-expr` — the engine's own custom-property evaluator
  * (var() with fallback, light-dark() arms, color-mix() in oklab/srgb, a
  * `transparent` stop reduced to rgba) — so this gate cannot disagree with the
  * renderer about what a token means.
@@ -629,11 +629,13 @@ function bundleVars() {
 /**
  * Merged token map for one palette.
  *
- * `baseWins` composes the OTHER way — the order `lattice-emulator.js` uses for
- * the document shell until #1527 flips it, where `base.tokens.css`'s universal
- * defaults override everything a palette curated. The REGRESSION arm needs both
- * so it can ask whether the palette's own value is worse than the default it
- * replaces.
+ * `baseWins` composes the OTHER way, where `base.tokens.css`'s universal defaults
+ * override everything a palette curated. That was the order `lattice-emulator.js`
+ * used for the document shell until #1527 flipped it, so it no longer describes any
+ * render path — but the REGRESSION arm still needs it, and outlives the flip as the
+ * palette-curation rule the header describes: it is how this gate asks whether a
+ * palette's own value is WORSE than the base default it replaces. Read it as "the
+ * reference standard", not "the export path".
  */
 function mergedVars(theme, { baseWins = false } = {}) {
   const palette = {};
