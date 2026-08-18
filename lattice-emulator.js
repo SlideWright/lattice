@@ -793,7 +793,55 @@ const layoutCSS  = flattenCssImports(cssFile, {
   resolve: (from, name) => path.join(path.dirname(from), `${name}.css`),
   exists: fs.existsSync,
 });
-const css = paletteCSS + '\n' + layoutCSS;
+// THE BASE FIRST, THE PALETTE LAST — the order every theme declares (#1527).
+//
+// A theme opens with `@import 'lattice';`, and in CSS an imported sheet's rules
+// come BEFORE the importing sheet's own. That is the whole point of the at-rule,
+// and it is the only reason a theme can override the base at all.
+// `loadPaletteWithImports` skips that import (the base is not on the theme
+// search path), so this line is where the relationship is re-established — and
+// until now it re-established it BACKWARDS, appending the base after the theme
+// so `base.tokens.css`'s plain `:root` block landed later at equal specificity
+// and won. 925 declarations across 37 distinct tokens were dead on this path,
+// on all 32 selectable themes (measured today; the 2026-08-10 note's 932 across
+// 36 was the same corpus six days earlier). `--hljs-*`, the `--diagram-*` state
+// family and `--seq-500` are the curated families that never painted, which is
+// why concrete and onyx shipped hand-solved ramp anchors no PDF had ever
+// rendered.
+// NOT `--cat-N-ink`: the base declares no `:root` default for that tier, so
+// nothing competed with a palette's value in either order and it was never dead
+// here. Its exemption's JUSTIFICATION is what this line retires, not the tier.
+//
+// The other three sites that order these two stylesheets already agreed with the
+// themes: the Mermaid var reader below (which cites this same `@import`
+// rationale in as many words), `engine.addThemes` further down, and
+// `lib/engine/css.js`'s `composeCss`, which inlines the base at the theme's own
+// `@import` position — so the Studio, the docs Playground and the browser
+// playground have always rendered the palette's value. Measured on the real
+// engine on 2026-08-11, against that day's corpus: 932 of 932 disputed tokens
+// resolved there exactly as this line now does, and none as it used to. This
+// makes the export agree with the preview rather than swapping which one is
+// wrong.
+//
+// ONE CONSEQUENCE ON THE PUBLIC CLI, called out because the reasoning above does
+// not cover it. `--css` / `-c` (and the positional form) name a CALLER-SUPPLIED
+// layout sheet, and the `@import 'lattice'` argument is about the BUNDLED base —
+// a theme's import still refers to the bundled sheet, not to the caller's. This
+// file already knows that: `engine.addThemes` registers a custom layout sheet
+// ANONYMOUSLY for exactly that reason. So a `:root` override in a hand-passed
+// stylesheet used to win and now loses to the theme. That is a behavior change on
+// a documented surface, it is in the changelog as breaking, and the answer for a
+// caller who wants to override tokens is a theme rather than a layout sheet.
+//
+// There is no selector that wins in BOTH orders, which is what made this a
+// concat change rather than a specificity one: `:where(:root)` on the base's
+// defaults renders correctly here and is unusable, because Marpit's
+// root-replacement only fires for a BARE `:root` and a wrapped block is scoped
+// as a section inside a section, undefined on the engine path.
+// `:root:root` in the palette fails symmetrically.
+// See engineering/decisions/2026-08-10-palette-concat-order.md,
+// 2026-08-11-palette-concat-signoff.md and 2026-08-17-palette-concat-flip.md.
+const css = layoutCSS + '\n' + paletteCSS;
 
 // ── The TWO front-matter readers, defined once (HARD RULE #1) ─────────────
 // This file used to carry four hand-written copies of "match the front matter" and three of
