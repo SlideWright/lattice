@@ -97,7 +97,7 @@ jobs:
       PUPPETEER_SKIP_DOWNLOAD: '1'
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -166,7 +166,7 @@ jobs:
       PUPPETEER_SKIP_DOWNLOAD: '1'
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
@@ -225,7 +225,7 @@ jobs:
     name: integration (node 22)
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -322,7 +322,7 @@ jobs:
           # something asks for it, which is exactly this job's access pattern.
           fetch-depth: 0
           filter: blob:none
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -462,7 +462,7 @@ jobs:
       PUPPETEER_SKIP_DOWNLOAD: '1' # the build is render-free; overflow uses a system Chrome
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -544,7 +544,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
