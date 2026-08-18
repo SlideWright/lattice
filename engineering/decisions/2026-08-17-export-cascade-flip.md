@@ -1,6 +1,6 @@
 ---
 status: shipped
-summary: #1527 itself — the export path composed its stylesheet `paletteCSS + layoutCSS`, so `dist/lattice.css`'s universal defaults loaded LAST and won, and every value a palette curated for itself was overridden in the exported artifact while the Studio and the docs Playground rendered the theme's own value. One line in `lattice-emulator.js` flips it to `layoutCSS + paletteCSS`, matching `lib/engine/css.js` `composeCss` (HARD RULE #1). The file already contradicted itself — the var parser and the mermaid scratch doc composed layout-first while the RENDER composed palette-first, so the document the emulator drew disagreed with the token map it reasoned about; the flip removes the third order rather than adding one. Unblocked by #1681 (flat-over-pair) and #1704 (composed surfaces). Reproduced on a rebuilt 32-palette x 6-slide probe (the original harness lived in gitignored `.scratch/pcg/`): 2240 rendered text runs, 148 below AA before, 115 after, 760 runs moved, and exactly 4 regressions — all of them `redline stacked` `<ins>` on `a11y-tritanopia` (4.70 -> 4.45) and `concrete` (4.79 -> 4.17), which are `proactive: true` entries in the composed-contrast frozen baseline and agree with that static gate to within 0.01. Proactive means the CSS produces the pairing but no shipped deck writes the markup; the probe writes it deliberately to reach the surface. Nothing regresses on any surface a shipped deck renders, and the closest a still-passing run comes to its bar is +0.69. Also corrects three comments that asserted the old order as fact — in `check-ownership.js`, `hljs-contrast.test.js` and `composed-contrast.js` — where the base-against-every-panel arm SURVIVES the flip for a different reason (token inheritance, not cascade order), so the logic is unchanged and only the rationale moves.
+summary: #1527 itself — the export path composed its stylesheet `paletteCSS + layoutCSS`, so `dist/lattice.css`'s universal defaults loaded LAST and won, and every value a palette curated for itself was overridden in the exported artifact while the Studio and the docs Playground rendered the theme's own value. One line in `lattice-emulator.js` flips it to `layoutCSS + paletteCSS`, matching `lib/engine/css.js` `composeCss` (HARD RULE #1). The file already contradicted itself — the var parser and the mermaid scratch doc composed layout-first while the RENDER composed palette-first, so the document the emulator drew disagreed with the token map it reasoned about; the flip removes the third order rather than adding one. Unblocked by #1681 (flat-over-pair) and #1704 (composed surfaces). Reproduced on a rebuilt 32-palette x 6-slide probe (the original harness lived in gitignored `.scratch/pcg/`): 2240 rendered text runs, 148 below AA before, 115 after, 760 runs moved, and exactly 4 regressions — all of them `redline stacked` `<ins>` on `a11y-tritanopia` (4.70 -> 4.45) and `concrete` (4.79 -> 4.17), which are `proactive: true` entries in the composed-contrast frozen baseline and agree with that static gate to within 0.01. Proactive means the CSS produces the pairing but no shipped deck writes the markup; the probe writes it deliberately to reach the surface. Nothing regresses on any surface a shipped deck renders, and the closest a still-passing run comes to its bar is +0.69. Maintainer confirmed the direction is original design intent — themes always win, the default is a fallback — so agreeing the other way would have been equally consistent and equally wrong. SEPARATE REUSABLE FINDING: `npm run regress` reported 211 of 268 artifacts drifted, which is NOT the blast radius — those goldens were blessed on another machine and Skia is not bit-identical across hosts, so the number is dominated by antialiasing noise. `examples/portrait-roadmap` reported 64.07% and is visually identical; an A/B of two renders on ONE machine puts it at 0.27%, and 5 of 10 sampled decks at exactly 0.00%. The error runs both ways — `redline`, the deck that genuinely moves most, is the one regress UNDERSTATED, 2.28% vs a true 43.15% — so its ranking is unusable even as a review order. When a change alters color, regress means "goldens are stale", nothing more; A/B two renders on one host to learn what actually changed. Also corrects three comments that asserted the old order as fact — in `check-ownership.js`, `hljs-contrast.test.js` and `composed-contrast.js` — where the base-against-every-panel arm SURVIVES the flip for a different reason (token inheritance, not cascade order), so the logic is unchanged and only the rationale moves.
 ---
 
 # Flipping the export-path cascade
@@ -34,6 +34,20 @@ override the base it imports by coming later. So the Studio and the docs
 Playground rendered a palette's curated value while the PDF rendered base's
 default, from the same source deck.
 
+## Confirmed design intent, not just consistency
+
+Worth recording, because it settles *why* this is a fix rather than a preference.
+The maintainer confirmed on review:
+
+> themes always win. that was the original intent as the default is a fallback.
+
+So `base.tokens.css` was always meant to be the FALLBACK layer — the value you get
+when a palette does not care — and the palette was always meant to override it.
+The export path was not making a defensible alternative choice; it was inverting
+the design. That also makes the direction of this change non-negotiable in a way a
+pure "make the two paths agree" argument would not: agreeing the OTHER way (engine
+adopts palette-first) would have been equally consistent and equally wrong.
+
 ## The file already disagreed with itself
 
 This is what makes the change a one-liner rather than a redesign. Three other
@@ -52,7 +66,7 @@ pointed at line 691 by the time this was picked up.)
 So the token map the emulator **reasoned** about (what `--pass` resolves to) was
 computed under one cascade, and the document it **drew** used the other. Mermaid
 diagrams baked their colors from the palette-wins map and then sat on a page whose
-CSS resolved base-wins. Flipping line 782 **removes the third order**; it does not
+CSS resolved base-wins. Flipping the render line **removes the third order**; it does not
 introduce one.
 
 Two further sites need no change and are worth naming so a later reader does not
@@ -145,6 +159,56 @@ visually a word cloud with no spectrum at all); now they take the palette's cura
 The number that matters is the **margin to the bar**, not the size of the drop.
 The closest any still-passing run comes to failing after the flip is **+0.69**
 (3.69 against a 3:1 bar). Nothing lands near the edge.
+
+## The regression gate's drift number is not the blast radius
+
+This cost real time and is the most reusable thing learned here, so it is written
+down rather than left in a thread.
+
+`npm run regress` re-renders every committed deck and pixel-diffs it against its
+committed golden. After the flip it reported **211 of 268 artifacts drifted**, with
+individual decks as high as 64%. Read naively that says the flip repaints the whole
+corpus. It does not.
+
+Those goldens were blessed on a DIFFERENT machine, and Skia's rasterization is
+CPU-dispatched and not bit-identical across hosts (the gate's own header says so).
+So its number is the flip PLUS cross-machine antialiasing, and the second term
+dominates. `examples/portrait-roadmap` reported **64.07%** — and its before/after
+images are indistinguishable to the eye, every glyph merely re-smoothed.
+
+The control the gate cannot give is an A/B on ONE machine: render the same deck
+through an `origin/main` worktree and through the branch, and diff those two
+renders. Same host, same fonts, only the code differs, so every moved pixel is the
+change. Measured that way:
+
+| deck | `regress` said | true A/B |
+|---|---|---|
+| `redline.gallery` | 2.28% | **43.15%** (9/12 pages) |
+| `examples/gallery-jargon` | 20.59% | 8.36% (7/58) |
+| `examples/chart-family-coverage` | 10.43% | 2.24% (6/9) |
+| `exemplars/general-team/status-update` | 4.23% | 0.78% (2/11) |
+| `examples/portrait-roadmap` | 64.07% | 0.27% (2/5) |
+| `examples/a11y` | 9.73% | **0.00%** |
+| `examples/state-chart` | 13.22% | **0.00%** |
+| `examples/pie-detail-notes` | 8.76% | **0.00%** |
+| `examples/universal-tokens-p6-chart-cat` | 9.78% | **0.00%** |
+| `examples/inline-code-contrast` | DRIFT | **0.00%** |
+
+Half the sample is bit-identical under the flip. And the error runs BOTH ways —
+`redline`, the deck that actually moves most, is the one the gate UNDERSTATED, by
+19x. So the gate's ranking is not even usable as a rough ordering of what to review;
+it is noise in both directions.
+
+**The rule to carry forward:** when a change alters rendered color, `regress` tells
+you the goldens are stale — nothing more. To know what your change actually did,
+A/B two renders on one machine. The A/B differ used here is ~50 lines over
+`tools/pixel-check.js`'s own `pixelDiff` + `montageTriptych`; it is not committed
+(it lives in `.scratch/ab/`), but it is trivial to rebuild from that description.
+
+The blessed goldens in this PR therefore carry both: the real recolor, and this
+machine's rasterization. That is the pre-existing condition of a committed-PDF
+corpus, not something this change introduced — but it is why the diff is ~200 files
+for a change whose visual footprint is concentrated in a handful of components.
 
 ## The three comments that asserted the old order
 
