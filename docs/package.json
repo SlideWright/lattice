@@ -39,7 +39,7 @@
     "check:route-budget": "node scripts/check-route-budget.mjs"
   },
   "dependencies": {
-    "@astrojs/react": "^5.0.7",
+    "@astrojs/react": "^6.0.2",
     "@astrojs/starlight": "^0.39.2",
     "@breezystack/lamejs": "^1.2.7",
     "@codemirror/autocomplete": "^6.20.3",
