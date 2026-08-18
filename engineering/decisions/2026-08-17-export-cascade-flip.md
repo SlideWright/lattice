@@ -250,8 +250,14 @@ shipped decks.
 
 ## Logged, not fixed
 
-Unchanged from #1704, and both fail identically before and after the flip, so
-neither is caused or worsened here (HARD RULE #18, off-path):
+Both failed identically before and after the flip, so neither is caused or worsened
+here (HARD RULE #18, off-path):
 
-- **#1697** — the canvas-blind sequential ramp.
-- **#1698** — the status trios on their own-hue tints.
+- **#1697 — the canvas-blind sequential ramp. FIXED ON MAIN while this branch was
+  in flight**, by #1724 (`theme(seq): make the sequential ramp canvas-relative`),
+  which landed in the twelve commits this branch rebased onto. The ramp used to
+  derive its 50–400 stops toward literal white and 600–900 toward literal black on
+  every canvas, so on a dark one the high stops walked into the background. This
+  branch inherits that fix rather than working around it, and the goldens here are
+  blessed on top of it.
+- **#1698** — the status trios on their own-hue tints. Still open.
