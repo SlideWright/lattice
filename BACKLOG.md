@@ -7,27 +7,22 @@
 
 The live, claimable work queue — a read-only mirror of [open issues](https://github.com/SlideWright/lattice/issues),
 grouped by board column. Design lives in `engineering/decisions/`; this tracks
-only *status*. **167 open** items.
+only *status*. **216 open** items.
 
-> ⚠️ **8 cards need triage** (missing `area:`/`type:`/`priority:`): [#1502](https://github.com/SlideWright/lattice/issues/1502), [#1503](https://github.com/SlideWright/lattice/issues/1503), [#1509](https://github.com/SlideWright/lattice/issues/1509), [#1511](https://github.com/SlideWright/lattice/issues/1511), [#1513](https://github.com/SlideWright/lattice/issues/1513), [#1514](https://github.com/SlideWright/lattice/issues/1514), [#1516](https://github.com/SlideWright/lattice/issues/1516), [#1526](https://github.com/SlideWright/lattice/issues/1526).
+> ⚠️ **30 cards need triage** (missing `area:`/`type:`/`priority:`): [#1502](https://github.com/SlideWright/lattice/issues/1502), [#1503](https://github.com/SlideWright/lattice/issues/1503), [#1509](https://github.com/SlideWright/lattice/issues/1509), [#1511](https://github.com/SlideWright/lattice/issues/1511), [#1513](https://github.com/SlideWright/lattice/issues/1513), [#1514](https://github.com/SlideWright/lattice/issues/1514), [#1516](https://github.com/SlideWright/lattice/issues/1516), [#1526](https://github.com/SlideWright/lattice/issues/1526), [#1558](https://github.com/SlideWright/lattice/issues/1558), [#1578](https://github.com/SlideWright/lattice/issues/1578), [#1579](https://github.com/SlideWright/lattice/issues/1579), [#1585](https://github.com/SlideWright/lattice/issues/1585), [#1601](https://github.com/SlideWright/lattice/issues/1601), [#1602](https://github.com/SlideWright/lattice/issues/1602), [#1603](https://github.com/SlideWright/lattice/issues/1603), [#1604](https://github.com/SlideWright/lattice/issues/1604), [#1611](https://github.com/SlideWright/lattice/issues/1611), [#1615](https://github.com/SlideWright/lattice/issues/1615), [#1623](https://github.com/SlideWright/lattice/issues/1623), [#1634](https://github.com/SlideWright/lattice/issues/1634), [#1685](https://github.com/SlideWright/lattice/issues/1685), [#1729](https://github.com/SlideWright/lattice/issues/1729), [#1730](https://github.com/SlideWright/lattice/issues/1730), [#1734](https://github.com/SlideWright/lattice/issues/1734), [#1735](https://github.com/SlideWright/lattice/issues/1735), [#1736](https://github.com/SlideWright/lattice/issues/1736), [#1747](https://github.com/SlideWright/lattice/issues/1747), [#1753](https://github.com/SlideWright/lattice/issues/1753), [#1754](https://github.com/SlideWright/lattice/issues/1754), [#1767](https://github.com/SlideWright/lattice/issues/1767).
 
-## Backlog (156)
+## Backlog (207)
 
 - [#1437](https://github.com/SlideWright/lattice/issues/1437) Configure Release Pipeline — critical · infra
 - [#287](https://github.com/SlideWright/lattice/issues/287) refactor(engine): LPM Phase 1 — manifest `render` block + `transformSection` adapter; migrate the chart kernels — high · engine
 - [#506](https://github.com/SlideWright/lattice/issues/506) feat(runtime): runtime auto-split (Option B) via eventual consistency — high · engine
 - [#515](https://github.com/SlideWright/lattice/issues/515) feat(playground): Google Drive bring-your-own-storage — Connect / Save / Open — high · website
 - [#617](https://github.com/SlideWright/lattice/issues/617) Harden .lattice-*.zip import against zip-slip / path traversal on filesystem-backed (desktop/CLI) imports — high · engine
-- [#669](https://github.com/SlideWright/lattice/issues/669) Backdrop controls — implement strength / clearance / spotlight on a .backdrop layer — high · engine
-- [#680](https://github.com/SlideWright/lattice/issues/680) quadrant chart renders at a fraction of its container — unreadable at presentation size — high · chart
 - [#688](https://github.com/SlideWright/lattice/issues/688) regress: 10 gallery goldens are stale on main (fail the regression gate against main's own code) — high · infra
 - [#759](https://github.com/SlideWright/lattice/issues/759) fix(studio): harden the demo walkthrough — race-driven drawer/render glitches + retime to a paced ~2-min showcase — high · website
-- [#1208](https://github.com/SlideWright/lattice/issues/1208) e2e: demo.spec.ts "walkthrough reskin drives the REAL deck Inspector" fails deterministically on main — high · infra
 - [#1213](https://github.com/SlideWright/lattice/issues/1213) HARD RULE #4: human-readable chart text is sized in raw cqi with no floor — ~9px labels at portrait — high · chart
 - [#1246](https://github.com/SlideWright/lattice/issues/1246) security: Mermaid renders after sanitizeSlideHtml, so a diagram can put javascript: into a same-origin preview frame — high · website
 - [#1252](https://github.com/SlideWright/lattice/issues/1252) spike: eleven agent errors in one session cluster into three shapes — find the procedural fix, not more reviewers — high · infra
-- [#1281](https://github.com/SlideWright/lattice/issues/1281) [Bug] Reshape of Slides broken — high · website
-- [#1294](https://github.com/SlideWright/lattice/issues/1294) [Bug] Navigation Support — high · website
 - [#1295](https://github.com/SlideWright/lattice/issues/1295) [Bug] Present Screen Rework — high · website
 - [#1324](https://github.com/SlideWright/lattice/issues/1324) ci(docs-build): the docs suite is flaky on main — at least 3 tests fail nondeterministically, ejecting unrelated PRs — high · infra
 - [#1328](https://github.com/SlideWright/lattice/issues/1328) docs suite: studio.theme-depth flakes under full-suite load — on main, and it masks real failures — high · infra
@@ -36,18 +31,20 @@ only *status*. **167 open** items.
 - [#1412](https://github.com/SlideWright/lattice/issues/1412) a11y palettes fail categorical layer ① (mark vs canvas) on 9 of 12 slots in dark, unremarked — high · theming
 - [#1426](https://github.com/SlideWright/lattice/issues/1426) studio: the @visual baselines are stale on main — all three viewports fail on content the snapshots predate — high · infra
 - [#1442](https://github.com/SlideWright/lattice/issues/1442) Adjacency-preserving equivalence harness + structural gating for the preview render — high · engine
-- [#1457](https://github.com/SlideWright/lattice/issues/1457) A Studio-generated theme paints Mermaid subgraph boxes solid black — `--c-*` and `--spectrum` have no safe default, and #1411 is a class — high · theming
-- [#1458](https://github.com/SlideWright/lattice/issues/1458) Untrusted theme CSS reaches the Studio preview's `<style>` verbatim — the sink is unguarded, and HARD RULE #22's gate only inspects the HTML half — high · website
 - [#1471](https://github.com/SlideWright/lattice/issues/1471) test(docs): two Studio suites fail only in a full run — order-dependent, names now captured — high · infra
 - [#1501](https://github.com/SlideWright/lattice/issues/1501) export(player): the only real guard on forged chrome is ungated, and two collection lookups are still forgeable — high · engine
 - [#1507](https://github.com/SlideWright/lattice/issues/1507) Studio E2E: the first restored run reports 16 failures — inventory, card mapping, and the 10 with no card — high · infra
 - [#1524](https://github.com/SlideWright/lattice/issues/1524) `checkLineEndingBoundaries` / `SANCTIONED_EOL_BOUNDARIES` do not exist — a gate documented as shipped in 9 places was never written — high · infra
 - [#1527](https://github.com/SlideWright/lattice/issues/1527) 150 palette declarations are dead on the export path — the base `:root` block wins the concat order — high · theming
-- [#1528](https://github.com/SlideWright/lattice/issues/1528) Hoist `var(--spectrum)` out of the `background:` shorthand, so a missing ribbon can't drop the canvas — high · theming
 - [#1529](https://github.com/SlideWright/lattice/issues/1529) [integration-nightly] render-regression tier failing on main — high · engine
 - [#1530](https://github.com/SlideWright/lattice/issues/1530) [preview-e2e] playground gallery preview fails to render — high · website
-- [#1531](https://github.com/SlideWright/lattice/issues/1531) [studio-e2e] Studio E2E suite failing on main — high · infra
 - [#1532](https://github.com/SlideWright/lattice/issues/1532) [perf-nightly] docs perf regression detected — high · website
+- [#1605](https://github.com/SlideWright/lattice/issues/1605) quadrant: one crowded slide sets the label size for every slide — and a name that doesn't fit is silently deleted — high · chart
+- [#1621](https://github.com/SlideWright/lattice/issues/1621) fix(studio): the crash report is invisible on the browser's own post-crash reload — three designs withdrawn — high · website
+- [#1640](https://github.com/SlideWright/lattice/issues/1640) Unblock the export-path cascade fix: flat-token dark companions first, plus three defects logged off-path by #1632 — high · theming
+- [#1705](https://github.com/SlideWright/lattice/issues/1705) [studio-e2e] Studio E2E suite failing on main — high · infra
+- [#1743](https://github.com/SlideWright/lattice/issues/1743) test(e2e): the nightly's `e2e-ai` job has failed 8 nights running on one Architect case, and it is the only job in the family with no alarm — high · infra
+- [#1750](https://github.com/SlideWright/lattice/issues/1750) test(invariants): "slide does not overflow its frame" measures a box that cannot overflow — the gate is inert for all 61 components — high · infra
 - [#286](https://github.com/SlideWright/lattice/issues/286) refactor(css): namespace variant classes that collide with component names — medium · engine
 - [#288](https://github.com/SlideWright/lattice/issues/288) feat(engine): implement the front-matter deck-config contract (vars, object background/logo, fonts, metadata, sizes) — medium · engine
 - [#289](https://github.com/SlideWright/lattice/issues/289) feat(engine): implement the `$`-sigil inline-code variable interpolation grammar — medium · engine
@@ -116,6 +113,28 @@ only *status*. **167 open** items.
 - [#1506](https://github.com/SlideWright/lattice/issues/1506) e2e: `getByText('Structure')` matches 3 elements — architect.spec.ts:31 is a strict-mode collision, not a missing scorecard — medium · website
 - [#1517](https://github.com/SlideWright/lattice/issues/1517) [Bug] Closing the add-slide gallery leaves ~70 documents (~380MB) resident — medium · website
 - [#1522](https://github.com/SlideWright/lattice/issues/1522) Classify every component's variants into variantAxes (36 components, 172 tokens) — medium · components
+- [#1534](https://github.com/SlideWright/lattice/issues/1534) Spike: let the pre-paint skeletons wrap the real components instead of hand-mirroring them — medium · website
+- [#1536](https://github.com/SlideWright/lattice/issues/1536) The chart categorical cycle has no curated ink — charts still run the live color-mix the --cat-* tier retired — medium · theming
+- [#1537](https://github.com/SlideWright/lattice/issues/1537) SessionStart hook skips the docs install on a warm container, so docs deps go stale — medium · infra
+- [#1538](https://github.com/SlideWright/lattice/issues/1538) The thumbnail preview budget is device-blind — a phone holds a workstation's working set — medium · website
+- [#1542](https://github.com/SlideWright/lattice/issues/1542) Read the divider flag off the engine's token stream — `blankCode` is the last hand-written approximation on the preview path — medium · engine
+- [#1543](https://github.com/SlideWright/lattice/issues/1543) Cache the sanitized slice HTML — ~4.4ms flat on every preview render, larger than the engine on a small deck — medium · website
+- [#1549](https://github.com/SlideWright/lattice/issues/1549) math: three variants centre the MASTHEAD with the body, dropping the title ~150px off the top berth — medium · math
+- [#1550](https://github.com/SlideWright/lattice/issues/1550) `coverWindow`'s balanced-chunking fix is unguarded — reverting it passes 5773 tests — medium · engine
+- [#1562](https://github.com/SlideWright/lattice/issues/1562) A generated theme has no texture channel — `--cat-N-texture` can't join REQUIRED_TOKENS until a set can be derived per theme — medium · theming
+- [#1569](https://github.com/SlideWright/lattice/issues/1569) lint: flag a `---`-delimited YAML block below offset 0 — the stray front matter that costs a slide — medium · website
+- [#1570](https://github.com/SlideWright/lattice/issues/1570) studio: `splitSlides` is blind to HEADING splits, so the caller's slide count disagrees with the engine's — medium · website
+- [#1574](https://github.com/SlideWright/lattice/issues/1574) theming: the chart categorical cycle needs an ON-FILL ink — text on a tint has no curated value — medium · theming
+- [#1591](https://github.com/SlideWright/lattice/issues/1591) verify(playground): the pre-paint boot seed on real iPadOS Safari — the coarse-pointer editor metrics especially — medium · website
+- [#1600](https://github.com/SlideWright/lattice/issues/1600) chart: `check:chart-fit` is red on main — progress clips at portrait AND square, timeline-list at portrait — medium · engine
+- [#1617](https://github.com/SlideWright/lattice/issues/1617) verify(studio): the crash report on real iOS Safari — discoverability, layout, and the missing memory trend — medium · website
+- [#1633](https://github.com/SlideWright/lattice/issues/1633) chart(state-chart): the layout installer rebuilds on every content pass, so the deck never settles — medium · chart
+- [#1678](https://github.com/SlideWright/lattice/issues/1678) [Feat] Saved motion scenes have no Library presence — and imported ones are silently discarded — medium · website
+- [#1716](https://github.com/SlideWright/lattice/issues/1716) fix(studio): tell the author when an export squares a `corners: rounded` deck — medium · website
+- [#1748](https://github.com/SlideWright/lattice/issues/1748) e2e: playground-first-paint.spec.ts flakes across at least four different tests under parallel load — medium · infra
+- [#1749](https://github.com/SlideWright/lattice/issues/1749) test(integration): move deck-class-fm / deck-mode-fm / deck-logo to unit — lib/engine already produces what they assert, no browser needed — medium · engine
+- [#1751](https://github.com/SlideWright/lattice/issues/1751) spike(studio): decide whether StudioShell's 96 static imports should become an opt-in registry — payload is the symptom, the import list is the cause — medium · website
+- [#1764](https://github.com/SlideWright/lattice/issues/1764) refactor(playground): fold deck-config.js onto the Studio's setting rows — two of the four drifting front-matter lists collapse into one — medium · website
 - [#180](https://github.com/SlideWright/lattice/issues/180) epic(chart): resolution-independent charts — cqi-first, kill fixed-px, for any-format / 10K export — low · chart
 - [#279](https://github.com/SlideWright/lattice/issues/279) docs: reconcile Mermaid diagram-type count (README "25" vs gallery "26") — low · diagram
 - [#280](https://github.com/SlideWright/lattice/issues/280) docs: fix phantom `--hljs-name`/`--hljs-meta` token rows in highlight-js.docs.md — low · docs
@@ -161,6 +180,15 @@ only *status*. **167 open** items.
 - [#1436](https://github.com/SlideWright/lattice/issues/1436) [Idea] Prefetch all assets after the homepage loads — low · website
 - [#1460](https://github.com/SlideWright/lattice/issues/1460) `tools/contrast-audit.js:53` cannot see `--hljs-built_in` — its token regex excludes underscores — low · theming
 - [#1492](https://github.com/SlideWright/lattice/issues/1492) export(narration): a per-export audio quality control, alongside the workspace one — low · website
+- [#1539](https://github.com/SlideWright/lattice/issues/1539) SLICE_CACHE_MAX (24) sits below PREVIEW_BUDGET (32), so a long overview traversal outruns the cache that makes recycling cheap — low · website
+- [#1541](https://github.com/SlideWright/lattice/issues/1541) verify(studio): the presenter screen's new swipe + wheel are unverified on a real touch device — low · website
+- [#1576](https://github.com/SlideWright/lattice/issues/1576) regress: the `math` gallery golden has drifted on main (1 page, 1.00%, both modes) — low · math
+- [#1586](https://github.com/SlideWright/lattice/issues/1586) test(e2e): nothing bounds the Studio's cold first-paint time — the only de facto tripwire is a fixture timeout — low · infra
+- [#1607](https://github.com/SlideWright/lattice/issues/1607) test(e2e): split.spec.ts's component-pick test flakes ~1 in 4 at workers=2 — low · infra
+- [#1639](https://github.com/SlideWright/lattice/issues/1639) merge: the auto-merge tool ignores `mergeMethod` (cosmetic while the merge queue rule holds) — low · infra
+- [#1683](https://github.com/SlideWright/lattice/issues/1683) `size: 4:3` is in the Studio's size map but absent from the engine registry, so it silently falls back to hd — low · engine
+- [#1713](https://github.com/SlideWright/lattice/issues/1713) feat(export): write a slide background into PPTX so a rounded deck can keep its corner — low · engine
+- [#1765](https://github.com/SlideWright/lattice/issues/1765) spike(studio): design a control for the per-slide narrative grammar — _focus / _focusStyle / _focusSteps / _build have no UI at all — low · website
 - [#1502](https://github.com/SlideWright/lattice/issues/1502) core: two different exported functions named buildReadAlong in lib/core/ — engine
 - [#1503](https://github.com/SlideWright/lattice/issues/1503) narration: finish the encoder integration — Gemini encodes on the main thread, clips gain untrimmed codec delay, LAME notice unlinked — engine
 - [#1509](https://github.com/SlideWright/lattice/issues/1509) narration: ask the provider for compressed audio — four response_format values have never been tried — engine
@@ -169,6 +197,29 @@ only *status*. **167 open** items.
 - [#1514](https://github.com/SlideWright/lattice/issues/1514) Two rotation/orientation Studio e2e specs fail intermittently on main (~1 per full matrix run)
 - [#1516](https://github.com/SlideWright/lattice/issues/1516) Two narrow narration hazards found by red team but not reproduced: the warm drop-channel's doomed promise, and a whitespace-only cue
 - [#1526](https://github.com/SlideWright/lattice/issues/1526) Studio e2e: 34 fixed `waitForTimeout` settles across 9 specs — each needs judging, not a find-and-replace — infra
+- [#1558](https://github.com/SlideWright/lattice/issues/1558) export player: a pinch turns the slide, and the deck cannot be zoomed at all
+- [#1578](https://github.com/SlideWright/lattice/issues/1578) export(player): the exported .html player still has no zoom — a pinch is now inert rather than wrong
+- [#1579](https://github.com/SlideWright/lattice/issues/1579) verify(export): the player's pinch guard is unverified on a real phone — and its latch path is unverifiable by CDP touch at all
+- [#1585](https://github.com/SlideWright/lattice/issues/1585) export(player): a resting thumb silently disables swipe navigation — the pinch guard's disclosed cost, unmitigated
+- [#1601](https://github.com/SlideWright/lattice/issues/1601) export: nothing detects a player-only defect — the PDF is right, the webpage is wrong, and no gate compares them
+- [#1602](https://github.com/SlideWright/lattice/issues/1602) export(player): the no-JS floor's ladder is width-only, so a tall deck's slide is 2.2× the screen height
+- [#1603](https://github.com/SlideWright/lattice/issues/1603) export(player): the player re-asserts a slide size the document already states — can three of the six sizing rules be deleted?
+- [#1604](https://github.com/SlideWright/lattice/issues/1604) docs: `2026-07-20-adaptive-viewport-fill.md` still says the player pins 1280×720 — #1599 made that false
+- [#1611](https://github.com/SlideWright/lattice/issues/1611) authority-chain: the 8n tier cycle only defines 4 residues, so tier 5+ loses its hue
+- [#1615](https://github.com/SlideWright/lattice/issues/1615) a11y palettes: a per-slide `dark` class defeats the forced light scheme, collapsing the categorical value ramp
+- [#1623](https://github.com/SlideWright/lattice/issues/1623) A theme color change stales committed artifacts three hops deep, and no per-PR gate sees it
+- [#1634](https://github.com/SlideWright/lattice/issues/1634) crash sentinel: onVisibility persists without a catchUpOnWipe guard
+- [#1685](https://github.com/SlideWright/lattice/issues/1685) a11y palettes: `--chart-state-*` and `--diagram-critical` stay flat, so they now disagree with the status trio on a dark slide
+- [#1729](https://github.com/SlideWright/lattice/issues/1729) theme(seq): the base's own ramp anchor still has the headroom defect — nothing gates `--seq-500`
+- [#1730](https://github.com/SlideWright/lattice/issues/1730) component gallery PDFs are stale against #1724's sequential-ramp token change
+- [#1734](https://github.com/SlideWright/lattice/issues/1734) the pick-surface bake-off has no harness — its results are hand-transcribed
+- [#1735](https://github.com/SlideWright/lattice/issues/1735) CHANGELOG.md is 382k tokens and all-or-nothing to read — the read side of #1593
+- [#1736](https://github.com/SlideWright/lattice/issues/1736) a11y palettes: nothing prevents `color-mode: dark` on a light-only theme, and the `:root:root` pin cannot reach it
+- [#1745](https://github.com/SlideWright/lattice/issues/1745) contrast(sweep): 285 sub-AA text runs in the exported players — 148 genuinely low-contrast, 137 from the new 4.5:1 floor — p3 · theme
+- [#1747](https://github.com/SlideWright/lattice/issues/1747) test(docs): PlaygroundApp's rAF loop can re-arm the shell-drop timer after unmount, failing docs-build with `window is not defined`
+- [#1753](https://github.com/SlideWright/lattice/issues/1753) security: decide the remote-subresource posture for preview frames — website
+- [#1754](https://github.com/SlideWright/lattice/issues/1754) design: one guarded assembleDocument() chokepoint, instead of a fifth text-matching gate
+- [#1767](https://github.com/SlideWright/lattice/issues/1767) golden-diff drops its montage artifact on large diffs, and blames a missing ImageMagick that is installed
 
 ## Ready (6)
 
@@ -187,10 +238,8 @@ _none_
 
 _none_
 
-## Inbox (no status) (5)
+## Inbox (no status) (3)
 
-- [#1273](https://github.com/SlideWright/lattice/issues/1273) SPIKE: recover the typing-latency regression on deck-context previews (up to 4.5× slower on the real Studio) — high · engine
-- [#1463](https://github.com/SlideWright/lattice/issues/1463) [Bug] Scrolling the add-slide gallery during search crashes the tab and the page reloads — high · website
 - [#1266](https://github.com/SlideWright/lattice/issues/1266) studio(panel): one settings row, so the keyboard pin is a property of the row and not of one file — medium · website
 - [#1461](https://github.com/SlideWright/lattice/issues/1461) Measure the LLM fit judge before building any recommender UI — medium · website
 - [#1464](https://github.com/SlideWright/lattice/issues/1464) [Bug] The search confidence meter is unreadable and needs a redesign — medium · website
